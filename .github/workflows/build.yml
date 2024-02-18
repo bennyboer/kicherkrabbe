@@ -34,6 +34,7 @@ jobs:
     
   build-backend:
     name: Build backend
+    needs: build-frontend
     runs-on: ubuntu-latest
     steps:
     - name: Checkout project sources
