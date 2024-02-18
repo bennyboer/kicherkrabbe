@@ -55,7 +55,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: backend
-          path: backend/app/build/libs/app.jar
+          path: backend/app/build/libs
 
   deploy-backend:
     name: Deploy backend
@@ -66,7 +66,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: backend
-          path: backend/app/build/libs/app.jar
+          path: backend/app/build/libs
       - name: Deploy backend via SSH
         uses: easingthemes/ssh-deploy@main
         with:
