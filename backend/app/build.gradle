@@ -1,9 +1,10 @@
 plugins {
     id 'de.bennyboer.kicherkrabbe.java-application-conventions'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 dependencies {
-    def javalinVersion = '6.0.1'
+    def javalinVersion = '6.1.0'
     implementation "io.javalin:javalin-bundle:${javalinVersion}"
     implementation "io.javalin.community.ssl:ssl-plugin:${javalinVersion}"
 }
@@ -12,20 +13,14 @@ application {
     mainClass = 'de.bennyboer.kicherkrabbe.app.App'
 }
 
-jar {
-    manifest {
-        attributes 'Main-Class': application.mainClass
-    }
+shadowJar {
+    archiveBaseName.set('app')
+    archiveClassifier.set('')
+    archiveVersion.set('')
 
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    } {
-        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
-    }
+    mergeServiceFiles()
 
     from('../../frontend/dist/frontend') {
         into('static')
     }
-
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
