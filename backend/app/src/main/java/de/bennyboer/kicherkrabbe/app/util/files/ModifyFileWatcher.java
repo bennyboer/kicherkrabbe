@@ -35,7 +35,7 @@ public class ModifyFileWatcher implements FileWatcher {
 
         try {
             watchService = FileSystems.getDefault().newWatchService();
-            filePath.register(watchService, ENTRY_MODIFY);
+            filePath.getParent().register(watchService, ENTRY_MODIFY);
 
             thread = startWatchThread();
 
@@ -64,14 +64,18 @@ public class ModifyFileWatcher implements FileWatcher {
                 WatchKey key;
                 while ((key = watchService.take()) != null) {
                     for (WatchEvent<?> event : key.pollEvents()) {
-                        log.info(
-                                "Watched file '{}' changed with event kind '{}' and context '{}'",
-                                filePath,
-                                event.kind(),
-                                event.context()
-                        );
+                        Path eventPath = (Path) event.context();
+                        Path changedPath = filePath.getParent().resolve(eventPath);
+                        if (Files.isSameFile(filePath, changedPath)) {
+                            log.info(
+                                    "Watched file '{}' changed with event kind '{}' and context '{}'",
+                                    filePath,
+                                    event.kind(),
+                                    event.context()
+                            );
 
-                        callback.run();
+                            callback.run();
+                        }
                     }
                     key.reset();
                 }
@@ -79,6 +83,8 @@ public class ModifyFileWatcher implements FileWatcher {
                 log.info("Stopped file watcher thread for file '{}' gracefully", filePath, e);
             } catch (InterruptedException e) {
                 log.info("Watch service thread for file '{}' interrupted", filePath, e);
+            } catch (IOException e) {
+                log.error("Failed to watch file '{}'", filePath, e);
             }
         });
 
