@@ -46,7 +46,7 @@ jobs:
         name: frontend
         path: frontend/dist
     - name: Build Jar
-      run: ./gradlew jar
+      run: ./backend/gradlew jar
     - name: Upload built Jar
       uses: actions/upload-artifact@master
       with:
