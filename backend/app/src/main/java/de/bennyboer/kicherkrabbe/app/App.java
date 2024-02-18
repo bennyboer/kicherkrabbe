@@ -80,7 +80,6 @@ public class App {
     private Javalin setupJavalin() {
         return Javalin.create(config -> {
             config.http.maxRequestSize = 16 * 1024 * 1024;
-            config.useVirtualThreads = true;
             config.jsonMapper(jsonMapper);
 
             setupCors(config);
