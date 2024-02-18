@@ -20,38 +20,57 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: install
-          dir: 'frontend'
+          dir: frontend
       - name: Build
         uses: borales/actions-yarn@v4
         with:
           cmd: build
-          dir: 'frontend'
+          dir: frontend
       - name: Upload built frontend
         uses: actions/upload-artifact@master
         with:
           name: frontend
           path: frontend/dist
-    
+
   build-backend:
     name: Build backend
     needs: build-frontend
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout project sources
-      uses: actions/checkout@v3
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
-    - name: Download built frontend
-      uses: actions/download-artifact@master
-      with:
-        name: frontend
-        path: frontend/dist
-    - name: Build Jar
-      run: ./backend/gradlew jar
-    - name: Upload built Jar
-      uses: actions/upload-artifact@master
-      with:
-        name: backend
-        path: backend/app/build/libs/app.jar
+      - name: Checkout project sources
+        uses: actions/checkout@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          build-root-directory: backend
+      - name: Download built frontend
+        uses: actions/download-artifact@master
+        with:
+          name: frontend
+          path: frontend/dist
+      - name: Build Jar
+        run: ./backend/gradlew jar
+        with:
+          working-directory: backend
+      - name: Upload built Jar
+        uses: actions/upload-artifact@master
+        with:
+          name: backend
+          path: backend/app/build/libs/app.jar
 
-  # deploy-backend: TODO
+  deploy-backend:
+    name: Deploy backend
+    needs: build-backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy backend via SSH
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SOURCE: "backend/app/build/libs/app.jar"
+          REMOTE_HOST: ${{ secrets.SSH_REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_REMOTE_USER }}
+          REMOTE_PORT: ${{ secrets.SSH_REMOTE_PORT }}
+          TARGET: ${{ secrets.SSH_REMOTE_TARGET }}
+          SCRIPT_AFTER: |
+            service kicherkrabbe restart
