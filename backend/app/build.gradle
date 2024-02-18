@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    def javalinVersion = '6.1.0'
+    def javalinVersion = '6.0.1'
     implementation "io.javalin:javalin-bundle:${javalinVersion}"
     implementation "io.javalin.community.ssl:ssl-plugin:${javalinVersion}"
 }
