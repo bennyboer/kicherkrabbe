@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.app;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import de.bennyboer.kicherkrabbe.app.plugins.frontend.FrontendPlugin;
+import de.bennyboer.kicherkrabbe.app.util.files.FileWatcher;
 import de.bennyboer.kicherkrabbe.app.util.files.FileWatcherFactory;
 import io.javalin.Javalin;
 import io.javalin.community.ssl.SslPlugin;
@@ -136,9 +137,9 @@ public class App {
             });
             config.registerPlugin(plugin);
 
-            FileWatcherFactory.getInstance().createWatcher(certPath, () -> {
+            FileWatcher fileWatcher = FileWatcherFactory.getInstance().createWatcher(certPath, () -> {
                 log.info("Certificate file changed, reloading HTTPS configuration");
-                
+
                 plugin.reload(conf -> {
                     conf.pemFromPath(
                             certPath.toAbsolutePath().toString(),
@@ -146,6 +147,7 @@ public class App {
                     );
                 });
             });
+            fileWatcher.start();
         }
     }
 
