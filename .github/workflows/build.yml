@@ -1,0 +1,57 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-frontend:
+    name: Build frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+      - name: Install
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install
+          dir: 'frontend'
+      - name: Build
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: build
+          dir: 'frontend'
+      - name: Upload built frontend
+        uses: actions/upload-artifact@master
+        with:
+          name: frontend
+          path: frontend/dist
+    
+  build-backend:
+    name: Build backend
+    needs: build-frontend
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout project sources
+      uses: actions/checkout@v3
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+    - name: Download built frontend
+      uses: actions/download-artifact@master
+      with:
+        name: frontend
+        path: frontend/dist
+    - name: Build Jar
+      run: ./backend/gradlew jar
+    - name: Upload built Jar
+      uses: actions/upload-artifact@master
+      with:
+        name: backend
+        path: backend/app/build/libs/app.jar
+
+  # deploy-backend: TODO
