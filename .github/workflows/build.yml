@@ -49,7 +49,7 @@ jobs:
           name: frontend
           path: frontend/dist
       - name: Build Jar
-        run: ./backend/gradlew jar
+        run: ./gradlew :app:jar
         working-directory: backend
       - name: Upload built Jar
         uses: actions/upload-artifact@master
