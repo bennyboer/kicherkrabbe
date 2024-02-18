@@ -34,10 +34,12 @@ public class ModifyFileWatcher implements FileWatcher {
         }
 
         try {
-            WatchService watchService = FileSystems.getDefault().newWatchService();
+            watchService = FileSystems.getDefault().newWatchService();
             filePath.register(watchService, ENTRY_MODIFY);
 
             thread = startWatchThread();
+
+            log.info("Started file watcher for file '{}'", filePath);
         } catch (IOException e) {
             log.error("Failed to create watch service for file '{}'", filePath, e);
         }
