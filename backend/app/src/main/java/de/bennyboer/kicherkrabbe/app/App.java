@@ -94,7 +94,7 @@ public class App {
     private void setupApi(JavalinConfig config) {
         config.router.apiBuilder(() -> {
             path("api", () -> {
-                get("/", ctx -> ctx.result("Hello World"));
+                get("/", ctx -> ctx.result("Boo!"));
             });
         });
     }
