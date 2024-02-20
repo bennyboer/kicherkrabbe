@@ -13,7 +13,8 @@ public class FrontendPlugin extends Plugin<Void> {
     @Override
     public void onInitialize(@NotNull JavalinConfig config) {
         config.staticFiles.add(staticFileConfig -> {
-            staticFileConfig.hostedPath = "/*";
+            staticFileConfig.hostedPath = "/";
+            staticFileConfig.aliasCheck = (path, resource) -> !path.startsWith("/api");
             staticFileConfig.directory = "/static/browser";
             staticFileConfig.location = CLASSPATH;
         });
