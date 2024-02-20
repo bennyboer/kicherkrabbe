@@ -1,0 +1,12 @@
+<div class="container">
+  <div class="logo">
+    <img src="assets/banner.svg" [height]="getHeight() | async"/>
+  </div>
+  <nav class="navigation">
+    <a routerLink="/" routerLinkActive="active">Start</a>
+    <a routerLink="/imprint" routerLinkActive="active">Impressum</a>
+    <a routerLink="/terms-and-conditions" routerLinkActive="active">AGB</a>
+    <a routerLink="/cancellation-policy" routerLinkActive="active">Widerrufsbelehrung</a>
+    <a routerLink="/privacy-policy" routerLinkActive="active">Datenschutzerklärung</a>
+  </nav>
+</div>

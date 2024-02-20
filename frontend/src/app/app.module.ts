@@ -2,11 +2,25 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AppComponent } from './components';
-import { NotFoundPage, StartPage } from './pages';
+import { AppComponent, HeaderComponent } from './components';
+import {
+  CancellationPolicyPage,
+  ImprintPage,
+  NotFoundPage,
+  PrivacyPolicyPage,
+  StartPage,
+  TermsAndConditionsPage,
+} from './pages';
 
-const COMPONENTS = [AppComponent];
-const PAGES = [StartPage, NotFoundPage];
+const COMPONENTS = [AppComponent, HeaderComponent];
+const PAGES = [
+  StartPage,
+  NotFoundPage,
+  TermsAndConditionsPage,
+  PrivacyPolicyPage,
+  CancellationPolicyPage,
+  ImprintPage,
+];
 
 @NgModule({
   declarations: [...COMPONENTS, ...PAGES],
