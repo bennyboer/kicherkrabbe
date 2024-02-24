@@ -9,6 +9,7 @@ import {
   animationFrameScheduler,
   BehaviorSubject,
   distinctUntilChanged,
+  filter,
   fromEvent,
   Observable,
   Subject,
@@ -16,6 +17,7 @@ import {
   throttleTime,
 } from 'rxjs';
 import { Option } from '../../util';
+import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -32,7 +34,19 @@ export class HeaderComponent implements AfterViewInit, OnDestroy {
   );
   private readonly destroy$: Subject<void> = new Subject<void>();
 
-  constructor(private readonly elementRef: ElementRef<HTMLElement>) {}
+  constructor(
+    private readonly elementRef: ElementRef<HTMLElement>,
+    private readonly router: Router,
+  ) {
+    this.router.events
+      .pipe(
+        filter((e) => e instanceof NavigationEnd),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(() => {
+        this.closeOverlay();
+      });
+  }
 
   ngAfterViewInit(): void {
     this.headerHeight = Option.some(this.elementRef.nativeElement.clientHeight);
