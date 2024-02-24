@@ -1,0 +1,35 @@
+.theme {
+  --primary-1: #FF4E43;
+  --primary-1-rgb: 255, 78, 67;
+
+  --primary-2: #8CF2F6;
+  --primary-2-rgb: 140, 242, 246;
+
+  &.dark {
+    --text: #FFFFFF;
+    --text-rgb: 255, 255, 255;
+
+    --contrast: #000000;
+    --contrast-rgb: 0, 0, 0;
+
+    --background: #222222;
+    --background-rgb: 17, 17, 17;
+
+    --background-low-contrast: #333333;
+    --background-low-contrast-rgb: 51, 51, 51;
+  }
+
+  &.light {
+    --text: #000000;
+    --text-rgb: 0, 0, 0;
+
+    --contrast: #FFFFFF;
+    --contrast-rgb: 255, 255, 255;
+
+    --background: #FFFFFF;
+    --background-rgb: 255, 255, 255;
+
+    --background-low-contrast: #EAEAEA;
+    --background-low-contrast-rgb: 234, 234, 234;
+  }
+}

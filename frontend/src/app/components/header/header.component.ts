@@ -2,14 +2,14 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  Input,
+  ElementRef,
   OnDestroy,
 } from '@angular/core';
 import {
   animationFrameScheduler,
   BehaviorSubject,
+  distinctUntilChanged,
   fromEvent,
-  map,
   Observable,
   Subject,
   takeUntil,
@@ -24,67 +24,60 @@ import { Option } from '../../util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent implements AfterViewInit, OnDestroy {
-  @Input()
-  startHeight: number = 128;
+  protected headerHeight: Option<number> = Option.none();
 
-  @Input()
-  endHeight: number = 64;
-
-  @Input()
-  scrollDistance: number = 100;
-
-  @Input()
-  scrollContainerSelector: string = 'body';
-
-  private readonly progress$: Subject<number> = new BehaviorSubject(0.0);
-
+  private readonly sticky$: Subject<boolean> = new BehaviorSubject(false);
+  private readonly overlayActive$: Subject<boolean> = new BehaviorSubject(
+    false,
+  );
   private readonly destroy$: Subject<void> = new Subject<void>();
 
+  constructor(private readonly elementRef: ElementRef<HTMLElement>) {}
+
   ngAfterViewInit(): void {
+    this.headerHeight = Option.some(this.elementRef.nativeElement.clientHeight);
+
     this.setupScrollListener();
   }
 
   ngOnDestroy(): void {
-    this.progress$.complete();
+    this.sticky$.complete();
+    this.overlayActive$.complete();
 
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  getHeight(): Observable<number> {
-    return this.progress$.asObservable().pipe(
-      map((progress) => {
-        const heightDiff = this.endHeight - this.startHeight;
-        const heightProgress = progress * heightDiff;
+  isSticky(): Observable<boolean> {
+    return this.sticky$.asObservable().pipe(distinctUntilChanged());
+  }
 
-        return this.startHeight + heightProgress;
-      }),
-    );
+  isOverlayActive(): Observable<boolean> {
+    return this.overlayActive$.asObservable().pipe(distinctUntilChanged());
+  }
+
+  openOverlay(): void {
+    this.overlayActive$.next(true);
+  }
+
+  closeOverlay(): void {
+    this.overlayActive$.next(false);
   }
 
   private setupScrollListener(): void {
-    const scrollContainer = Option.someOrNone(
-      document.querySelector(this.scrollContainerSelector),
-    ).orElseThrow(
-      `Could not resolve scroll container for selector '${this.scrollContainerSelector}'`,
-    );
-
-    fromEvent(scrollContainer!, 'scroll', { passive: true })
+    fromEvent(window, 'scroll', { passive: true })
       .pipe(throttleTime(0, animationFrameScheduler), takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.onScroll(scrollContainer as HTMLElement);
-      });
+      .subscribe(() => this.onScroll());
   }
 
-  private onScroll(container: HTMLElement): void {
-    this.updateScrollProgress(container);
+  private onScroll(): void {
+    this.updateScrollProgress();
   }
 
-  private updateScrollProgress(container: HTMLElement): void {
-    const scrollHeight = container.scrollHeight - container.clientHeight;
-    const scrollTop = container.scrollTop;
-    const progress = scrollTop / scrollHeight;
+  private updateScrollProgress(): void {
+    const scrollDistance = window.scrollY;
+    const isSticky = scrollDistance > this.headerHeight.orElse(256);
 
-    this.progress$.next(progress);
+    this.sticky$.next(isSticky);
   }
 }

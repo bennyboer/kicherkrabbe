@@ -1,12 +1,50 @@
-<div class="container">
-  <div class="logo">
-    <img src="assets/banner.svg" [height]="getHeight() | async"/>
+<div class="placeholder" *ngIf="isSticky() | async" [style.height.px]="headerHeight.orElse(0)"></div>
+
+<div class="actual-header" [class.sticky]="isSticky() | async">
+  <div class="container" [class.small]="isSticky() | async">
+    <div class="logo" routerLink="/">
+      <img src="assets/kicherkrabbe.svg" height="100%"/>
+      Kicherkrabbe
+    </div>
+
+    <div class="other">
+      <div class="desktop">
+        <nav class="navigation">
+          <ng-container *ngTemplateOutlet="links"></ng-container>
+        </nav>
+      </div>
+
+      <div class="mobile">
+        <nav class="navigation">
+          <a (click)="openOverlay()">
+          <span class="icon-link">
+            <span class="material-icons">menu</span>
+          </span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="actions">
+        <app-dark-mode-toggle></app-dark-mode-toggle>
+      </div>
+    </div>
   </div>
-  <nav class="navigation">
-    <a routerLink="/" routerLinkActive="active">Start</a>
-    <a routerLink="/imprint" routerLinkActive="active">Impressum</a>
-    <a routerLink="/terms-and-conditions" routerLinkActive="active">AGB</a>
-    <a routerLink="/cancellation-policy" routerLinkActive="active">Widerrufsbelehrung</a>
-    <a routerLink="/privacy-policy" routerLinkActive="active">Datenschutzerklärung</a>
+</div>
+
+<div class="navigation-overlay mobile" *ngIf="isOverlayActive() | async">
+  <div class="mobile-navigation-header">
+    <span class="close-button" (click)="closeOverlay()">
+      <span class="material-icons">close</span>
+    </span>
+  </div>
+  <nav class="mobile-navigation">
+    <ng-container *ngTemplateOutlet="links"></ng-container>
   </nav>
 </div>
+
+<ng-template #links>
+  <a routerLink="/imprint" routerLinkActive="active">Impressum</a>
+  <a routerLink="/terms-and-conditions" routerLinkActive="active">AGB</a>
+  <a routerLink="/cancellation-policy" routerLinkActive="active">Widerrufsbelehrung</a>
+  <a routerLink="/privacy-policy" routerLinkActive="active">Datenschutzerklärung</a>
+</ng-template>

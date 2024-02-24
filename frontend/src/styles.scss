@@ -1,16 +1,26 @@
+@import "material-icons/iconfont/filled.css";
+@import "theme.scss";
+
 @font-face {
   font-family: Lexend;
   src: url(assets/fonts/lexend/Lexend-VariableFont_wght.ttf);
 }
 
+@font-face {
+  font-family: "Grandstander";
+  src: url(assets/fonts/grandstander/Grandstander-VariableFont_wght.ttf);
+}
+
 html,
 body {
-  height: 100%;
+  color: var(--text);
 }
 
 body {
   margin: 0;
   font-family: Lexend, sans-serif;
+  background-color: var(--background);
+  transition: background-color 0.5s ease-in-out;
 }
 
 p {
@@ -18,15 +28,31 @@ p {
 }
 
 a {
+  cursor: pointer;
   text-decoration: none;
-  color: lightcoral;
+  color: var(--primary-1);
 
   &:hover {
-    color: black;
     text-decoration: underline;
   }
 }
 
 h1 {
+  font-size: 2.5em;
+  font-weight: 100;
+}
+
+h2 {
   font-size: 2.0em;
+  font-weight: 200;
+}
+
+h3 {
+  font-size: 1.5em;
+  font-weight: 200;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: Grandstander, sans-serif;
+  word-break: break-word;
 }
