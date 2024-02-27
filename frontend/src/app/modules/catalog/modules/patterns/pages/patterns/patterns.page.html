@@ -1,1 +1,13 @@
-Schnitte sollen hier erscheinen
+<ul class="patterns-list">
+  <li class="pattern" *ngFor="let pattern of patterns" [routerLink]="pattern">
+    <div class="pattern-image">
+      <img src="/assets/examples/example.jpg">
+    </div>
+    <div class="pattern-description">
+      <span class="description">Basic Sweater der Fünfte</span>
+      <span class="price">
+        ab 25,00 €
+      </span>
+    </div>
+  </li>
+</ul>

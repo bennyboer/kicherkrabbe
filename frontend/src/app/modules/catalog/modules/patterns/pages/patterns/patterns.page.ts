@@ -6,4 +6,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrls: ['./patterns.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PatternsPage {}
+export class PatternsPage {
+  protected readonly patterns = Array(20).fill(0);
+}

@@ -17,6 +17,9 @@
 
     --background-low-contrast: #333333;
     --background-low-contrast-rgb: 51, 51, 51;
+
+    --background-mid-contrast: #666666;
+    --background-mid-contrast-rgb: 102, 102, 102;
   }
 
   &.light {
@@ -31,5 +34,8 @@
 
     --background-low-contrast: #EAEAEA;
     --background-low-contrast-rgb: 234, 234, 234;
+
+    --background-mid-contrast: #CCCCCC;
+    --background-mid-contrast-rgb: 204, 204, 204;
   }
 }

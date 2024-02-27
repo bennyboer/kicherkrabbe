@@ -1,11 +1,15 @@
 import { RouterModule, Routes } from '@angular/router';
-import { PatternsPage } from './pages';
+import { PatternPage, PatternsPage } from './pages';
 import { NgModule } from '@angular/core';
 
 const routes: Routes = [
   {
     path: '',
     component: PatternsPage,
+  },
+  {
+    path: ':id',
+    component: PatternPage,
   },
 ];
 
