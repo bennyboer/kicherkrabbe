@@ -16,10 +16,14 @@ const routes: Routes = [
       import('./modules/admin/admin.module').then((m) => m.AdminModule),
   },
   {
+    path: 'catalog',
+    loadChildren: () =>
+      import('./modules/catalog/catalog.module').then((m) => m.CatalogModule),
+  },
+  {
     path: '',
     component: StartPage,
   },
-  // TODO Refactor pages to use common header and footer
   {
     path: 'terms-and-conditions',
     component: TermsAndConditionsPage,
