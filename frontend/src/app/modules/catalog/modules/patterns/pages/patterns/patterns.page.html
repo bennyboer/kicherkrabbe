@@ -1,1 +1,1 @@
-<app-card-list [items]="patterns"></app-card-list>
+<app-card-list *ngIf="items$ | async as items" [items]="items"></app-card-list>

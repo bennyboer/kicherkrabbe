@@ -9,25 +9,25 @@ import { CardListItem } from '../../../shared';
 })
 export class CatalogPage {
   readonly items: CardListItem[] = [
-    {
+    CardListItem.of({
       title: 'Schnitte',
       link: 'patterns',
       imageUrl: '/assets/examples/example.jpg',
-    },
-    {
+    }),
+    CardListItem.of({
       title: 'Stoffe',
       link: 'fabrics',
       imageUrl: '/assets/examples/example.jpg',
-    },
-    {
+    }),
+    CardListItem.of({
       title: 'Stickereien',
       link: 'embroideries',
       imageUrl: '/assets/examples/example.jpg',
-    },
-    {
+    }),
+    CardListItem.of({
       title: 'Accessoires',
       link: 'accessories',
       imageUrl: '/assets/examples/example.jpg',
-    },
+    }),
   ];
 }

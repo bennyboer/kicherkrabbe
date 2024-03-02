@@ -6,8 +6,8 @@
       </div>
       <div class="content">
         <div class="title">{{ item.title }}</div>
-        @if (!!item.description) {
-          <div class="description">{{ item.description }}</div>
+        @if (item.description.isSome()) {
+          <div class="description">{{ item.description.orElse('') }}</div>
         }
       </div>
     </li>

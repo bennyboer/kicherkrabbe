@@ -16,12 +16,6 @@
   gap: 32px;
 }
 
-.theme.dark {
-  .logo {
-    filter: invert(99%) sepia(0%) saturate(1%) hue-rotate(178deg) brightness(107%) contrast(102%);
-  }
-}
-
 .navigation-title {
   font-size: 1.2em;
   margin-bottom: 16px;
