@@ -5,28 +5,20 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   AppComponent,
   DarkModeToggleComponent,
+  FooterComponent,
   HeaderComponent,
 } from './components';
-import {
-  CancellationPolicyPage,
-  ImprintPage,
-  NotFoundPage,
-  PrivacyPolicyPage,
-  StartPage,
-  TermsAndConditionsPage,
-} from './pages';
+import { NotFoundPage, StartPage } from './pages';
 import { SharedModule } from './modules/shared/shared.module';
 import { ThemeService } from './services';
 
-const COMPONENTS = [AppComponent, HeaderComponent, DarkModeToggleComponent];
-const PAGES = [
-  StartPage,
-  NotFoundPage,
-  TermsAndConditionsPage,
-  PrivacyPolicyPage,
-  CancellationPolicyPage,
-  ImprintPage,
+const COMPONENTS = [
+  AppComponent,
+  HeaderComponent,
+  DarkModeToggleComponent,
+  FooterComponent,
 ];
+const PAGES = [StartPage, NotFoundPage];
 
 @NgModule({
   declarations: [...COMPONENTS, ...PAGES],
@@ -34,7 +26,7 @@ const PAGES = [
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    SharedModule,
+    SharedModule.forRoot(),
   ],
   providers: [ThemeService],
   bootstrap: [AppComponent],

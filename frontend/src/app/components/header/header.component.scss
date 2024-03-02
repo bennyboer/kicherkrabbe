@@ -1,6 +1,7 @@
 :host {
   display: block;
   width: 100%;
+  border-bottom: 2px solid var(--background-low-contrast);
 }
 
 .mobile {
@@ -12,6 +13,7 @@
 
   &.sticky {
     position: fixed;
+    z-index: 9999;
     top: 0;
     box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(8px);

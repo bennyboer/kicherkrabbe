@@ -1,0 +1,24 @@
+import { Injectable } from '@angular/core';
+import { Option } from '../../../util';
+import { environment } from '../../../../environments';
+
+export enum Flag {
+  CATALOG = 'CATALOG',
+}
+
+@Injectable()
+export class FlagService {
+  private readonly activeFlags = new Map<Flag, boolean>();
+
+  constructor() {
+    const activeFlags = environment.flags;
+    for (const flagName of activeFlags) {
+      const flag = Flag[flagName as keyof typeof Flag];
+      this.activeFlags.set(flag, true);
+    }
+  }
+
+  isActive(flag: Flag): boolean {
+    return Option.someOrNone(this.activeFlags.get(flag)).orElse(false);
+  }
+}

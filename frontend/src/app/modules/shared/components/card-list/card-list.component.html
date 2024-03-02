@@ -1,0 +1,15 @@
+<ul class="card-list">
+  @for (item of items; track item.link) {
+    <li class="card-list-item" [routerLink]="item.link">
+      <div class="image">
+        <img [src]="item.imageUrl" alt="@{item.title}">
+      </div>
+      <div class="content">
+        <div class="title">{{ item.title }}</div>
+        @if (!!item.description) {
+          <div class="description">{{ item.description }}</div>
+        }
+      </div>
+    </li>
+  }
+</ul>

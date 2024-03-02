@@ -1,6 +1,7 @@
-import {Environment} from "./environment";
+import { Environment } from './environment';
 
 export const environment: Environment = {
   production: true,
-  apiUrl: "https://kicherkrabbe.com/api"
+  apiUrl: 'https://kicherkrabbe.com/api',
+  flags: [],
 };

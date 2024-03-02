@@ -1,10 +1,34 @@
 import { NgModule } from '@angular/core';
-import { ButtonComponent } from './components';
+import {
+  ButtonComponent,
+  CardListComponent,
+  PriceTagComponent,
+} from './components';
+import { FlagService } from './services';
+import { FlagDirective, UnlessFlagDirective } from './directives';
+import { RouterLink } from '@angular/router';
 
-const COMPONENTS = [ButtonComponent];
+const COMPONENTS = [ButtonComponent, PriceTagComponent, CardListComponent];
+
+const DIRECTIVES = [FlagDirective, UnlessFlagDirective];
 
 @NgModule({
-  declarations: [...COMPONENTS],
-  exports: [...COMPONENTS],
+  declarations: [...COMPONENTS, ...DIRECTIVES],
+  exports: [...COMPONENTS, FlagDirective, UnlessFlagDirective],
+  imports: [RouterLink],
 })
-export class SharedModule {}
+export class SharedModule {
+  static forRoot() {
+    return {
+      ngModule: SharedModule,
+      providers: [FlagService],
+    };
+  }
+
+  static forChild() {
+    return {
+      ngModule: SharedModule,
+      providers: [],
+    };
+  }
+}

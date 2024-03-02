@@ -2,6 +2,10 @@
   display: block;
 }
 
+.mobile {
+  display: none;
+}
+
 .layout {
   display: flex;
   flex-direction: row;
@@ -36,20 +40,7 @@
     flex-basis: 40%;
 
     .price {
-      border: 2px solid var(--text);
-      padding: 8px 16px 16px 16px;
-      display: inline-flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 20px;
-
-      .price-value {
-        font-size: 2.5em;
-      }
-
-      .price-info {
-        font-size: 0.8em;
-      }
+      margin-bottom: 24px;
     }
   }
 }
@@ -74,6 +65,14 @@ h2 {
 }
 
 @media only screen and (max-width: 1000px) {
+  .desktop {
+    display: none;
+  }
+
+  .mobile {
+    display: block;
+  }
+
   .layout {
     flex-direction: column;
   }
