@@ -5,6 +5,7 @@ import { Image, Money, Option } from '../../../../../util';
 export class Pattern {
   readonly id: string;
   readonly name: string;
+  readonly previewImage: Image;
   readonly images: Image[];
   readonly variants: PatternVariant[];
   readonly extras: PatternExtra[];
@@ -13,6 +14,7 @@ export class Pattern {
   private constructor(props: {
     id: string;
     name: string;
+    previewImage: Image;
     images: Image[];
     variants: PatternVariant[];
     extras: PatternExtra[];
@@ -21,6 +23,9 @@ export class Pattern {
     this.id = Option.someOrNone(props.id).orElseThrow('Pattern ID is required');
     this.name = Option.someOrNone(props.name).orElseThrow(
       'Pattern name is required',
+    );
+    this.previewImage = Option.someOrNone(props.previewImage).orElseThrow(
+      'Pattern preview image is required',
     );
     this.images = Option.someOrNone(props.images).orElseThrow(
       'Pattern images are required',
@@ -39,17 +44,19 @@ export class Pattern {
   static of(props: {
     id: string;
     name: string;
+    previewImage: Image;
     images: Image[];
     variants: PatternVariant[];
-    extras: PatternExtra[];
+    extras?: PatternExtra[];
     attribution?: string;
   }): Pattern {
     return new Pattern({
       id: props.id,
       name: props.name,
+      previewImage: props.previewImage,
       images: props.images,
       variants: props.variants,
-      extras: props.extras,
+      extras: Option.someOrNone(props.extras).orElse([]),
       attribution: Option.someOrNone(props.attribution),
     });
   }
@@ -67,7 +74,26 @@ export class Pattern {
     );
   }
 
-  getSmallestSize(): number {
+  getFormattedSizeRange(): string {
+    const smallestSize = this.getSmallestSize();
+    const largestSize = this.getLargestSize();
+
+    const sizeUnit = this.getSizeUnit()
+      .map((unit) => ` ${unit}`)
+      .orElse('');
+
+    return largestSize
+      .map((l) => {
+        if (l === smallestSize) {
+          return `${smallestSize}${sizeUnit}`;
+        }
+
+        return `${smallestSize} - ${l}${sizeUnit}`;
+      })
+      .orElse(`ab ${smallestSize}${sizeUnit}`);
+  }
+
+  private getSmallestSize(): number {
     const sizes = this.variants.map((variant) => variant.getSmallestSize());
 
     if (sizes.length === 0) {
@@ -77,13 +103,30 @@ export class Pattern {
     return sizes.reduce((acc, size) => (size < acc ? size : acc), sizes[0]);
   }
 
-  getLargestSize(): number {
+  private getLargestSize(): Option<number> {
     const sizes = this.variants.map((variant) => variant.getLargestSize());
 
     if (sizes.length === 0) {
-      return 0;
+      return Option.none();
     }
 
     return sizes.reduce((acc, size) => (size > acc ? size : acc), sizes[0]);
+  }
+
+  private getSizeUnit(): Option<string> {
+    const units = this.variants.flatMap((variant) =>
+      variant.sizes.map((size) => size.unit.orElse('')),
+    );
+
+    if (units.length === 0) {
+      return Option.none();
+    }
+
+    const sameUnitForAllSizes = units.every((unit) => unit === units[0]);
+    if (sameUnitForAllSizes) {
+      return Option.some(units[0]);
+    }
+
+    return Option.none();
   }
 }

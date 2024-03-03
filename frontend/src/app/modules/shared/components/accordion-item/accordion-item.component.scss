@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 8px 16px;
+  border: 2px solid var(--text);
+
+  .expand-icon {
+    transition: transform 0.2s ease;
+    transform: rotate(-90deg);
+  }
+
+  &.visible {
+    .expand-icon {
+      transform: rotate(0deg);
+    }
+  }
+
+  &:hover {
+    .label {
+      text-decoration: underline;
+    }
+  }
+}
+
+.content-container {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.2s ease, opacity 0.2s ease;
+  opacity: 0;
+
+  &.visible {
+    grid-template-rows:  1fr;
+    opacity: 1;
+  }
+}
+
+.content {
+  overflow: hidden;
+}

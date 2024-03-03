@@ -3,7 +3,7 @@ import { Option } from '../../../util';
 import { environment } from '../../../../environments';
 
 export enum Flag {
-  CATALOG = 'CATALOG',
+  TEST = 'TEST',
 }
 
 @Injectable()

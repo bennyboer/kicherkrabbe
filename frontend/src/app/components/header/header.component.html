@@ -43,12 +43,8 @@
 </div>
 
 <ng-template #links>
-  <a *flag="'CATALOG'" routerLink="/catalog/patterns" routerLinkActive="active">Schnitte</a>
-  <a *flag="'CATALOG'" routerLink="/catalog/fabrics" routerLinkActive="active">Stoffe</a>
-  <a *flag="'CATALOG'" routerLink="/catalog/embroideries" routerLinkActive="active">Stickereien</a>
-  <a *flag="'CATALOG'" routerLink="/catalog/accessoires" routerLinkActive="active">Accessoires</a>
-  <a *unlessFlag="'CATALOG'" routerLink="/legal/imprint" routerLinkActive="active">Impressum</a>
-  <a *unlessFlag="'CATALOG'" routerLink="/legal/terms-and-conditions" routerLinkActive="active">AGB</a>
-  <a *unlessFlag="'CATALOG'" routerLink="/legal/cancellation-policy" routerLinkActive="active">Widerrufsbelehrung</a>
-  <a *unlessFlag="'CATALOG'" routerLink="/legal/privacy-policy" routerLinkActive="active">Datenschutzerklärung</a>
+  <a routerLink="/catalog/patterns" routerLinkActive="active">Schnitte</a>
+  <a routerLink="/catalog/fabrics" routerLinkActive="active">Stoffe</a>
+  <a routerLink="/catalog/embroideries" routerLinkActive="active">Stickereien</a>
+  <a routerLink="/catalog/accessoires" routerLinkActive="active">Accessoires</a>
 </ng-template>

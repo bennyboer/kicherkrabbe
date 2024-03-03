@@ -1,0 +1,10 @@
+<div class="header" [class.visible]="opened$ | async" (click)="open()">
+  <span class="material-icons expand-icon">expand_more</span>
+  <span class="label">{{ label }}</span>
+</div>
+
+<div class="content-container" [class.visible]="opened$ | async">
+  <div class="content">
+    <ng-content></ng-content>
+  </div>
+</div>

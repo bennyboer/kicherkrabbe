@@ -60,13 +60,20 @@ export class PatternVariant {
     return sizes.reduce((acc, size) => (size < acc ? size : acc), sizes[0]);
   }
 
-  getLargestSize(): number {
-    const sizes = this.sizes.map((size) => size.to);
-
-    if (sizes.length === 0) {
-      return 0;
+  getLargestSize(): Option<number> {
+    const allSizesAreDefined = this.sizes.every((size) => size.to.isSome());
+    if (!allSizesAreDefined) {
+      return Option.none();
     }
 
-    return sizes.reduce((acc, size) => (size > acc ? size : acc), sizes[0]);
+    const sizes = this.sizes.map((size) => size.to.orElse(size.from));
+
+    if (sizes.length === 0) {
+      return Option.some(0);
+    }
+
+    return Option.some(
+      sizes.reduce((acc, size) => (size > acc ? size : acc), sizes[0]),
+    );
   }
 }

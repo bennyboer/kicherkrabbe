@@ -4,3 +4,5 @@ export {
   CardListComponent,
   CardListItem,
 } from './card-list/card-list.component';
+export { AccordionComponent } from './accordion/accordion.component';
+export { AccordionItemComponent } from './accordion-item/accordion-item.component';

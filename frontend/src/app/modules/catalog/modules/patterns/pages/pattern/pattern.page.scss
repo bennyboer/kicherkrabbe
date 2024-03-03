@@ -6,6 +6,10 @@
   display: none;
 }
 
+.attribution {
+  font-size: 0.9em;
+}
+
 .layout {
   display: flex;
   flex-direction: row;
@@ -31,6 +35,7 @@
           height: 100%;
           object-fit: cover;
           object-position: center;
+          border-radius: 8px;
         }
       }
     }
@@ -47,11 +52,20 @@
 
 .price-table {
   width: 100%;
+  margin-top: 8px;
   border-collapse: collapse;
 
-  th, td {
-    padding: 8px;
-    border-bottom: 1px solid var(--background-mid-contrast);
+  tr {
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid var(--background-mid-contrast);
+    }
+
+    &:last-child {
+      td {
+        border-bottom: none;
+      }
+    }
   }
 
   th {

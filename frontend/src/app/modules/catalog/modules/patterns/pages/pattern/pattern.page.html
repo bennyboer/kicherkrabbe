@@ -1,61 +1,82 @@
-<h1>Basic Sweater der Fünfte</h1>
+@if (pattern$ | async; as pattern) {
+  <h1>{{ pattern.name }}</h1>
 
-<div *ngIf="pattern$ | async as pattern" class="layout">
-  <div class="images desktop">
-    <ul>
-      @for (image of pattern.images; track image.url) {
-        <li><img [src]="image.url"></li>
-      }
-    </ul>
-  </div>
-  <div class="images mobile">
-    <ul>
-      <li><img [src]="pattern.images[0].url"></li>
-    </ul>
-  </div>
-  <div class="details">
-    <app-price-tag class="price">ab {{ pattern.getStartingPrice().formatted() }}</app-price-tag>
-
-    @for (variant of pattern.variants; track variant.id) {
-      <h2>{{ variant.name }}</h2>
-
-      @if (variant.description.isSome()) {
-        <p>{{ variant.description }}</p>
-      }
-
-      <table class="price-table">
-        <thead>
-        <tr>
-          <th>Größe</th>
-          <th>Preis</th>
-        </tr>
-        </thead>
-        <tbody>
-          @for (sizeRange of variant.sizes; track sizeRange) {
-            <tr>
-              <td>{{ sizeRange.formatted() }}</td>
-              <td>{{ sizeRange.price.formatted() }}</td>
-            </tr>
-          }
-      </table>
-    }
-
-    @if (pattern.extras.length > 0) {
-      <h2>Extras</h2>
-
-      <p>
-        @for (extra of pattern.extras; track extra) {
-          + {{ extra.price.formatted() }} € für {{ extra.name }}<br>
+  <div class="layout">
+    <div class="images desktop">
+      <ul>
+        @for (image of pattern.images; track image.url) {
+          <li><img [src]="image.url"></li>
         }
-      </p>
-    }
-  </div>
-  <div class="images mobile">
-    <ul>
-      @for (image of pattern.images.slice(1); track image.url) {
-        <li><img [src]="image.url"></li>
-      }
-    </ul>
-  </div>
-</div>
+      </ul>
+    </div>
+    <div class="images mobile">
+      <ul>
+        <li><img [src]="pattern.images[0].url"></li>
+      </ul>
+    </div>
+    <div class="details">
+      <app-price-tag class="price">ab {{ pattern.getStartingPrice().formatted() }}</app-price-tag>
 
+      @if (pattern.variants.length > 1) {
+        <h2>Varianten</h2>
+
+        <app-accordion>
+          @for (variant of pattern.variants; track variant.id) {
+            <app-accordion-item [label]="variant.name">
+              @if (variant.description.isSome()) {
+                <p>{{ variant.description.orElse('') }}</p>
+              }
+
+              <ng-container *ngTemplateOutlet="priceTable; context: { $implicit: variant }"></ng-container>
+            </app-accordion-item>
+          }
+        </app-accordion>
+      } @else {
+        <ng-container *ngTemplateOutlet="priceTable; context: { $implicit: pattern.variants[0] }"></ng-container>
+      }
+
+      @if (pattern.extras.length > 0) {
+        <h2>Extras</h2>
+
+        <p>
+          @for (extra of pattern.extras; track extra) {
+            {{ extra.price.isPositive() ? '+' : '' }}{{ extra.price.formatted() }} {{ extra.name }}<br>
+          }
+        </p>
+      }
+
+      @if (pattern.attribution.isSome()) {
+        <hr>
+
+        <div class="attribution">
+          <p>Basierend auf dem Schnittmuster von &raquo;{{ pattern.attribution.orElse('') }}&laquo;.</p>
+        </div>
+      }
+    </div>
+    <div class="images mobile">
+      <ul>
+        @for (image of pattern.images.slice(1); track image.url) {
+          <li><img [src]="image.url"></li>
+        }
+      </ul>
+    </div>
+  </div>
+}
+
+<ng-template #priceTable let-variant>
+  <table class="price-table">
+    <thead>
+    <tr>
+      <th>Größe</th>
+      <th>Preis</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (sizeRange of variant.sizes; track sizeRange) {
+        <tr>
+          <td>{{ sizeRange.formatted() }}</td>
+          <td>{{ sizeRange.price.formatted() }}</td>
+        </tr>
+      }
+  </table>
+</ng-template>

@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import {
+  AccordionComponent,
+  AccordionItemComponent,
   ButtonComponent,
   CardListComponent,
   PriceTagComponent,
@@ -7,15 +9,22 @@ import {
 import { FlagService } from './services';
 import { FlagDirective, UnlessFlagDirective } from './directives';
 import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
-const COMPONENTS = [ButtonComponent, PriceTagComponent, CardListComponent];
+const COMPONENTS = [
+  ButtonComponent,
+  PriceTagComponent,
+  CardListComponent,
+  AccordionComponent,
+  AccordionItemComponent,
+];
 
 const DIRECTIVES = [FlagDirective, UnlessFlagDirective];
 
 @NgModule({
   declarations: [...COMPONENTS, ...DIRECTIVES],
   exports: [...COMPONENTS, FlagDirective, UnlessFlagDirective],
-  imports: [RouterLink],
+  imports: [CommonModule, RouterLink],
 })
 export class SharedModule {
   static forRoot() {

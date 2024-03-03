@@ -68,6 +68,14 @@ export class Money {
     return this.value === 0;
   }
 
+  isPositive(): boolean {
+    return this.value >= 0;
+  }
+
+  isNegative(): boolean {
+    return !this.isPositive();
+  }
+
   isEqualTo(other: Money): boolean {
     if (this.currency.differentFrom(other.currency)) {
       throw new Error('Currencies must match');
@@ -105,6 +113,6 @@ export class Money {
   }
 
   formatted(): string {
-    return `${this.toNatural().toFixed(2)} ${this.currency.symbol}`;
+    return `${this.toNatural().toFixed(2).replace('.', ',')} ${this.currency.symbol}`;
   }
 }

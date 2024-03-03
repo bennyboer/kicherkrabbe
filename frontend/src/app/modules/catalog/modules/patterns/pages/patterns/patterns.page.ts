@@ -24,9 +24,9 @@ export class PatternsPage {
   private mapPatternToItem(pattern: Pattern): CardListItem {
     return CardListItem.of({
       title: pattern.name,
-      description: `ab ${pattern.getStartingPrice().formatted()}, Größe ${pattern.getSmallestSize()} - ${pattern.getLargestSize()}`,
+      description: `ab ${pattern.getStartingPrice().formatted()}, Größe ${pattern.getFormattedSizeRange()}`,
       link: `/catalog/patterns/${pattern.id}`,
-      imageUrl: pattern.images[0].url ?? '',
+      imageUrl: pattern.previewImage.url ?? '',
     });
   }
 }
