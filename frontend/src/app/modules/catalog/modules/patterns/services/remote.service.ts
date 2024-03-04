@@ -17,9 +17,6 @@ export class RemotePatternsService {
           url: '/assets/images/patterns/babyshirt/A.jpg',
         }),
         Image.of({
-          url: '/assets/images/patterns/babyshirt/B.jpg',
-        }),
-        Image.of({
           url: '/assets/images/patterns/babyshirt/C.jpg',
         }),
         Image.of({
@@ -89,6 +86,9 @@ export class RemotePatternsService {
         }),
         Image.of({
           url: '/assets/images/patterns/basic-sweater-der-fuenfte/B.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/basic-sweater-der-fuenfte/C.jpg',
         }),
       ],
       variants: [
@@ -223,7 +223,7 @@ export class RemotePatternsService {
           price: Money.zero(),
         }),
         PatternExtra.of({
-          name: 'Kordell',
+          name: 'Kordel',
           price: Money.euro(100),
         }),
       ],
@@ -270,11 +270,11 @@ export class RemotePatternsService {
           price: Money.zero(),
         }),
         PatternExtra.of({
-          name: 'Säumrüsche',
+          name: 'Saumrüsche',
           price: Money.euro(300),
         }),
         PatternExtra.of({
-          name: 'Statinschleife',
+          name: 'Satinschleife',
           price: Money.euro(100),
         }),
       ],
@@ -353,13 +353,13 @@ export class RemotePatternsService {
             SizeRange.of({
               from: 35,
               to: 44,
-              unit: 'Kopfumfang',
+              unit: 'cm Kopfumfang',
               price: Money.euro(1300),
             }),
             SizeRange.of({
               from: 45,
               to: 54,
-              unit: 'Kopfumfang',
+              unit: 'cm Kopfumfang',
               price: Money.euro(1500),
             }),
           ],
@@ -379,15 +379,6 @@ export class RemotePatternsService {
         }),
         Image.of({
           url: '/assets/images/patterns/pumphose-penny/B.jpg',
-        }),
-        Image.of({
-          url: '/assets/images/patterns/pumphose-penny/C.jpg',
-        }),
-        Image.of({
-          url: '/assets/images/patterns/pumphose-penny/D.jpg',
-        }),
-        Image.of({
-          url: '/assets/images/patterns/pumphose-penny/E.jpg',
         }),
       ],
       variants: [
