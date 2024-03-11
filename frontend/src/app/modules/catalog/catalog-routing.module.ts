@@ -14,6 +14,11 @@ const routes: Routes = [
         (m) => m.PatternsModule,
       ),
   },
+  {
+    path: 'fabrics',
+    loadChildren: () =>
+      import('./modules/fabrics/fabrics.module').then((m) => m.FabricsModule),
+  },
 ];
 
 @NgModule({
