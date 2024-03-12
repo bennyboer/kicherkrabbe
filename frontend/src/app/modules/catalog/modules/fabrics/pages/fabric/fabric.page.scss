@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+.page-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+
+  .fabric-image {
+    flex-basis: 60%;
+    background-repeat: repeat;
+    background-size: 50%;
+    aspect-ratio: 1 / 1;
+    transition: background-size 0.2s ease-out;
+    background-position: center;
+    border-radius: 8px;
+
+    &:hover, &:active {
+      background-size: 100%;
+    }
+  }
+
+  .fabric-details {
+    flex-basis: 40%;
+  }
+}
+
+p.info {
+  color: rgba(var(--text-rgb), 0.7);
+  font-size: 0.8em;
+}
+
+@media only screen and (max-width: 1000px) {
+  .desktop {
+    display: none;
+  }
+
+  .mobile {
+    display: block;
+  }
+
+  .page-layout {
+    flex-direction: column;
+
+    .fabric-image {
+      width: 100%;
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PatternsStoreService } from '../../services';
-import { map } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { CardListItem } from '../../../../../shared';
 import { Pattern } from '../../model';
 
@@ -11,7 +11,7 @@ import { Pattern } from '../../model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PatternsPage {
-  protected readonly items$ = this.patternsStore
+  protected readonly items$: Observable<CardListItem[]> = this.patternsStore
     .getPatterns()
     .pipe(
       map((patterns) =>

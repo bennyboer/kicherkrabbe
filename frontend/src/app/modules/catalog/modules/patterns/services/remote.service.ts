@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Pattern, PatternExtra, PatternVariant, SizeRange } from '../model';
-import { delay, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Image, Money } from '../../../../../util';
 
 @Injectable()
@@ -506,9 +506,7 @@ export class RemotePatternsService {
     }),
   ];
 
-  // TODO use real backend API
-
   getPatterns(): Observable<Pattern[]> {
-    return of(this.mockPatterns).pipe(delay(300));
+    return of(this.mockPatterns);
   }
 }

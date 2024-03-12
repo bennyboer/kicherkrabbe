@@ -1,0 +1,12 @@
+.repeated-fabric-image {
+  background-repeat: repeat;
+  background-size: 50%;
+  aspect-ratio: 1 / 1;
+  transition: background-size 0.2s ease-out;
+  background-position: center;
+  border-radius: 8px;
+
+  &:hover {
+    background-size: 100%;
+  }
+}

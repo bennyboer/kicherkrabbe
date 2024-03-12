@@ -1,1 +1,6 @@
-Fabrics
+<app-card-list *ngIf="items$ | async as items" [items]="items" [template]="template">
+</app-card-list>
+
+<ng-template #template let-item>
+  <div class="repeated-fabric-image" [style.background-image]="'url(' + item.imageUrl + ')'"></div>
+</ng-template>

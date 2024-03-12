@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  TemplateRef,
+} from '@angular/core';
 import { Option } from '../../../../util';
 
 export class CardListItem {
@@ -49,6 +54,13 @@ export class CardListComponent {
   set setItems(items: CardListItem[]) {
     this.items = Option.someOrNone(items).orElse([]);
   }
+
+  @Input('template')
+  set setTemplate(template: TemplateRef<any>) {
+    this.template = Option.someOrNone(template);
+  }
+
+  protected template: Option<TemplateRef<any>> = Option.none();
 
   protected items: CardListItem[] = [];
 }

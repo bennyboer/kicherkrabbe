@@ -1,8 +1,13 @@
 <ul class="card-list">
   @for (item of items; track item.link) {
     <li class="card-list-item" [routerLink]="item.link">
-      <div class="image">
-        <img [src]="item.imageUrl" alt="@{item.title}">
+      <div class="upper-content">
+        <div *ngIf="template.isSome()">
+          <ng-container *ngTemplateOutlet="template.orElseThrow(); context: { $implicit: item }"></ng-container>
+        </div>
+        <div *ngIf="template.isNone()" class="image">
+          <img [src]="item.imageUrl" alt="@{item.title}">
+        </div>
       </div>
       <div class="content">
         <div class="title">{{ item.title }}</div>
