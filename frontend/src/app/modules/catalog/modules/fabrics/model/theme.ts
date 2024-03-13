@@ -21,5 +21,16 @@ export const MARITIM = Theme.of({ id: 'maritim', name: 'Maritim' });
 export const FANTASY = Theme.of({ id: 'fantasie', name: 'Fantasie' });
 export const ABSTRACT = Theme.of({ id: 'abstrakt', name: 'Abstrakt' });
 export const SPACE = Theme.of({ id: 'space', name: 'Weltraum' });
+export const FRUITS = Theme.of({ id: 'fruits', name: 'Früchte' });
+export const SUMMER = Theme.of({ id: 'summer', name: 'Sommer' });
 
-export const THEMES = [FLORAL, ANIMALS, MARITIM, FANTASY, ABSTRACT, SPACE];
+export const THEMES = [
+  FLORAL,
+  ANIMALS,
+  MARITIM,
+  FANTASY,
+  ABSTRACT,
+  SPACE,
+  FRUITS,
+  SUMMER,
+];

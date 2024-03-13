@@ -6,18 +6,23 @@ import {
   Availability,
   BEIGE,
   BLUE,
+  BROWN,
   Color,
   Fabric,
   FANTASY,
   FLORAL,
   FRENCH_TERRY,
+  FRUITS,
+  GOLD,
   GREEN,
+  GREY,
   JERSEY,
   MARITIM,
   ORANGE,
   PINK,
   RED,
   SPACE,
+  SUMMER,
   Theme,
   TypeAvailability,
   WHITE,
@@ -75,7 +80,7 @@ export class RemoteFabricsService {
       id: 'blaetterkuh',
       name: 'Blätterkuh',
       image: {
-        url: '/assets/images/fabrics/blätterkuh.jpg',
+        url: '/assets/images/fabrics/blaetterkuh.jpg',
       },
       colors: new Set<Color>([BLUE]),
       themes: new Set<Theme>([ANIMALS]),
@@ -120,7 +125,7 @@ export class RemoteFabricsService {
       id: 'eule-gruen',
       name: 'Eule Grün',
       image: {
-        url: '/assets/images/fabrics/eule_grün.jpg',
+        url: '/assets/images/fabrics/eule_gruen.jpg',
       },
       colors: new Set<Color>([GREEN]),
       themes: new Set<Theme>([ANIMALS]),
@@ -237,10 +242,10 @@ export class RemoteFabricsService {
       }),
     }),
     Fabric.of({
-      id: 'osterblumen',
-      name: 'Osterblumen',
+      id: 'osterbluemchen',
+      name: 'Osterblümchen',
       image: {
-        url: '/assets/images/fabrics/osterblumen.jpg',
+        url: '/assets/images/fabrics/osterbluemchen.jpg',
       },
       colors: new Set<Color>([WHITE, RED]),
       themes: new Set<Theme>([FLORAL]),
@@ -285,7 +290,7 @@ export class RemoteFabricsService {
       id: 'robbenspaß',
       name: 'Robbenspaß',
       image: {
-        url: '/assets/images/fabrics/robbenspaß.jpg',
+        url: '/assets/images/fabrics/robbenspass.jpg',
       },
       colors: new Set<Color>([BLUE]),
       themes: new Set<Theme>([ANIMALS, MARITIM]),
@@ -345,7 +350,7 @@ export class RemoteFabricsService {
       id: 'space-baer',
       name: 'Space Bär',
       image: {
-        url: '/assets/images/fabrics/space_bär.jpg',
+        url: '/assets/images/fabrics/space_baer.jpg',
       },
       colors: new Set<Color>([WHITE]),
       themes: new Set<Theme>([ANIMALS, SPACE]),
@@ -454,6 +459,216 @@ export class RemoteFabricsService {
       },
       colors: new Set<Color>([PINK]),
       themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'blumen-1',
+      name: 'Blumen 1',
+      image: {
+        url: '/assets/images/fabrics/blumen_1.jpg',
+      },
+      colors: new Set<Color>([PINK, WHITE]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'blumen-2',
+      name: 'Blumen 2',
+      image: {
+        url: '/assets/images/fabrics/blumen_2.jpg',
+      },
+      colors: new Set<Color>([PINK, WHITE]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'blumen-3',
+      name: 'Blumen 3',
+      image: {
+        url: '/assets/images/fabrics/blumen_3.jpg',
+      },
+      colors: new Set<Color>([GREY, BLUE]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'blumen-4',
+      name: 'Blumen 4',
+      image: {
+        url: '/assets/images/fabrics/blumen_4.jpg',
+      },
+      colors: new Set<Color>([PINK, WHITE]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'bluemchen',
+      name: 'Blümchen',
+      image: {
+        url: '/assets/images/fabrics/bluemchen.jpg',
+      },
+      colors: new Set<Color>([PINK, WHITE]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'blumen-neutral',
+      name: 'Blumen Neutral',
+      image: {
+        url: '/assets/images/fabrics/blumen_neutral.jpg',
+      },
+      colors: new Set<Color>([PINK, BEIGE]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'burgundy-biene',
+      name: 'Burgundy Biene',
+      image: {
+        url: '/assets/images/fabrics/burgundy_biene.jpg',
+      },
+      colors: new Set<Color>([RED]),
+      themes: new Set<Theme>([FLORAL, ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'dots',
+      name: 'Dots',
+      image: {
+        url: '/assets/images/fabrics/dots.jpg',
+      },
+      colors: new Set<Color>([WHITE]),
+      themes: new Set<Theme>([FLORAL, ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'erdbeer-cocktail',
+      name: 'Erdbeer Cocktail',
+      image: {
+        url: '/assets/images/fabrics/erdbeer_cocktail.jpg',
+      },
+      colors: new Set<Color>([PINK]),
+      themes: new Set<Theme>([FRUITS, SUMMER]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'flamingo',
+      name: 'Flamingo',
+      image: {
+        url: '/assets/images/fabrics/flamingo.jpg',
+      },
+      colors: new Set<Color>([PINK]),
+      themes: new Set<Theme>([ANIMALS, FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'floral-motte',
+      name: 'Floral Motte',
+      image: {
+        url: '/assets/images/fabrics/floral_motte.jpg',
+      },
+      colors: new Set<Color>([WHITE, BROWN]),
+      themes: new Set<Theme>([ANIMALS, FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'kicherkrabbes-lieblingsblume',
+      name: 'Kicherkrabbes Lieblingsblume',
+      image: {
+        url: '/assets/images/fabrics/kicherkrabbes_lieblingsblume.jpg',
+      },
+      colors: new Set<Color>([WHITE, PINK]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'koifisch',
+      name: 'Koifisch',
+      image: {
+        url: '/assets/images/fabrics/koifisch.jpg',
+      },
+      colors: new Set<Color>([PINK]),
+      themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'lieblingsblume-mit-gold',
+      name: 'Lieblingsblume mit Gold',
+      image: {
+        url: '/assets/images/fabrics/lieblingsblume_mit_gold.jpg',
+      },
+      colors: new Set<Color>([PINK, GOLD]),
+      themes: new Set<Theme>([FLORAL]),
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),

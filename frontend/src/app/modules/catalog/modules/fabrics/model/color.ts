@@ -48,10 +48,35 @@ export const WHITE = Color.of({
   name: 'Weiß',
   hex: '#FFFFFF',
 });
+export const BROWN = Color.of({
+  id: 'brown',
+  name: 'Braun',
+  hex: '#8B4513',
+});
 export const PINK = Color.of({
   id: 'pink',
   name: 'Rosa',
   hex: '#FFC0CB',
 });
+export const GOLD = Color.of({
+  id: 'gold',
+  name: 'Gold',
+  hex: '#FFD700',
+});
+export const GREY = Color.of({
+  id: 'grey',
+  name: 'Grau',
+  hex: '#808080',
+});
 
-export const COLORS = [BLUE, BEIGE, RED, GREEN, WHITE, ORANGE, PINK];
+export const COLORS = [
+  BLUE,
+  BEIGE,
+  RED,
+  GREEN,
+  WHITE,
+  ORANGE,
+  PINK,
+  GREY,
+  BROWN,
+];
