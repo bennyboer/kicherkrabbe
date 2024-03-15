@@ -73,6 +73,8 @@ export class FabricsPage implements OnInit, OnDestroy {
         if (v === 0) {
           return this.compareByName(a, b);
         }
+
+        return v;
       } else if (property.id === 'name') {
         return this.compareByName(a, b);
       } else {
