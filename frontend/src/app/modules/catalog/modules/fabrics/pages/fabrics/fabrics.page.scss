@@ -1,3 +1,8 @@
+:host {
+  display: block;
+  position: relative;
+}
+
 .repeated-fabric-image {
   background-repeat: repeat;
   background-size: 50%;
@@ -9,4 +14,21 @@
   &:hover {
     background-size: 100%;
   }
+}
+
+.sort-filter-header {
+  position: sticky;
+  top: 128px;
+  height: 48px;
+  width: 98%;
+  margin-left: 1%;
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  border-radius: 48px;
+  padding: 0 24px;
+  background-color: var(--background);
+  box-shadow: 0 6px 12px 0 rgba(var(--shadow-rgba));
+  box-sizing: border-box;
 }

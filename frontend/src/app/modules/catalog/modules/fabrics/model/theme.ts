@@ -23,6 +23,7 @@ export const ABSTRACT = Theme.of({ id: 'abstrakt', name: 'Abstrakt' });
 export const SPACE = Theme.of({ id: 'space', name: 'Weltraum' });
 export const FRUITS = Theme.of({ id: 'fruits', name: 'Früchte' });
 export const SUMMER = Theme.of({ id: 'summer', name: 'Sommer' });
+export const SWEETS = Theme.of({ id: 'sweets', name: 'Süßigkeiten' });
 
 export const THEMES = [
   FLORAL,
@@ -33,4 +34,5 @@ export const THEMES = [
   SPACE,
   FRUITS,
   SUMMER,
+  SWEETS,
 ];

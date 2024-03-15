@@ -22,6 +22,8 @@
 
     --background-mid-contrast: #666666;
     --background-mid-contrast-rgb: 102, 102, 102;
+
+    --shadow-rgba: 0, 0, 0, 0.5;
   }
 
   &.light {
@@ -39,5 +41,7 @@
 
     --background-mid-contrast: #CCCCCC;
     --background-mid-contrast-rgb: 204, 204, 204;
+
+    --shadow-rgba: 0, 0, 0, 0.2;
   }
 }

@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import {
   AccordionComponent,
   AccordionItemComponent,
-  ButtonComponent,
   CardListComponent,
   PriceTagComponent,
+  SortSelectorComponent,
 } from './components';
 import { FlagService } from './services';
 import { FlagDirective, UnlessFlagDirective } from './directives';
@@ -12,11 +12,11 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 const COMPONENTS = [
-  ButtonComponent,
   PriceTagComponent,
   CardListComponent,
   AccordionComponent,
   AccordionItemComponent,
+  SortSelectorComponent,
 ];
 
 const DIRECTIVES = [FlagDirective, UnlessFlagDirective];

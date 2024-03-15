@@ -23,6 +23,7 @@ import {
   RED,
   SPACE,
   SUMMER,
+  SWEETS,
   Theme,
   TypeAvailability,
   WHITE,
@@ -669,6 +670,111 @@ export class RemoteFabricsService {
       },
       colors: new Set<Color>([PINK, GOLD]),
       themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'regenbaer',
+      name: 'Regenbär',
+      image: {
+        url: '/assets/images/fabrics/regenbaer.jpg',
+      },
+      colors: new Set<Color>([WHITE]),
+      themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'rosa',
+      name: 'Rosa',
+      image: {
+        url: '/assets/images/fabrics/rosa.jpg',
+      },
+      colors: new Set<Color>([PINK]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'rosen',
+      name: 'Rosen',
+      image: {
+        url: '/assets/images/fabrics/rosen.jpg',
+      },
+      colors: new Set<Color>([PINK, WHITE]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'vielzupink',
+      name: 'VielZuPink',
+      image: {
+        url: '/assets/images/fabrics/vielzupink.jpg',
+      },
+      colors: new Set<Color>([PINK, WHITE]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'fuchs-mauve',
+      name: 'Fuchs Mauve',
+      image: {
+        url: '/assets/images/fabrics/fuchs_mauve.jpg',
+      },
+      colors: new Set<Color>([WHITE]),
+      themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'fuchs-rauchblau',
+      name: 'Fuchs Rauchblau',
+      image: {
+        url: '/assets/images/fabrics/fuchs_rauchblau.jpg',
+      },
+      colors: new Set<Color>([BLUE]),
+      themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'macarons',
+      name: 'Macarons',
+      image: {
+        url: '/assets/images/fabrics/macarons.jpg',
+      },
+      colors: new Set<Color>([BROWN, BEIGE]),
+      themes: new Set<Theme>([SWEETS]),
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),

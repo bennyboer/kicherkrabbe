@@ -15,7 +15,7 @@
     position: fixed;
     z-index: 9999;
     top: 0;
-    box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 12px 0 rgba(var(--shadow-rgba));
     backdrop-filter: blur(8px);
     animation: slide-in 0.5s ease-out;
     border-bottom: 1px solid rgba(var(--text-rgb), 0.2);

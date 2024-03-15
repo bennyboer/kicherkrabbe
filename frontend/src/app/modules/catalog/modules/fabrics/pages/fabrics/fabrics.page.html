@@ -1,3 +1,7 @@
+<div class="sort-filter-header">
+  <app-sort-selector [properties]="sortProperties" (sorted)="onSort($event)"></app-sort-selector>
+</div>
+
 <app-card-list *ngIf="items$ | async as items" [items]="items" [template]="template">
 </app-card-list>
 

@@ -1,0 +1,14 @@
+<span class="material-icons">swap_vert</span>
+
+<select name="sort-property" #select (change)="publishSortedEvent()">
+  @for (property of properties; track property.id) {
+    <option [value]="property.id">{{ property.label }}</option>
+  }
+</select>
+
+<div class="sort-direction"
+     [title]="getSortDirectionLabel()"
+     [class.ascending]="ascending"
+     (click)="toggleSortDirection()">
+  <span class="material-icons">arrow_downward</span>
+</div>

@@ -1,0 +1,26 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+
+.sort-direction {
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 8px;
+  border-radius: 50%;
+
+  &:hover {
+    background-color: var(--background-low-contrast);
+  }
+
+  &.ascending {
+    transform: rotate(180deg);
+  }
+}
