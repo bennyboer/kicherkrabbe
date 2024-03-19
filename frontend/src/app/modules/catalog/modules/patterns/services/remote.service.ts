@@ -17,6 +17,9 @@ export class RemotePatternsService {
           url: '/assets/images/patterns/babyshirt/A.jpg',
         }),
         Image.of({
+          url: '/assets/images/patterns/babyshirt/B.jpg',
+        }),
+        Image.of({
           url: '/assets/images/patterns/babyshirt/C.jpg',
         }),
         Image.of({
@@ -299,6 +302,9 @@ export class RemotePatternsService {
         Image.of({
           url: '/assets/images/patterns/kleid-morgan/D.jpg',
         }),
+        Image.of({
+          url: '/assets/images/patterns/kleid-morgan/E.jpg',
+        }),
       ],
       variants: [
         PatternVariant.of({
@@ -503,6 +509,50 @@ export class RemotePatternsService {
         }),
       ],
       attribution: 'LEMELdesign',
+    }),
+    Pattern.of({
+      id: 'latzhose',
+      name: 'Latzhose',
+      previewImage: Image.of({
+        url: '/assets/images/patterns/latzhose/preview.jpg',
+      }),
+      images: [
+        Image.of({
+          url: '/assets/images/patterns/latzhose/E.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/latzhose/F.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/latzhose/C.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/latzhose/D.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/latzhose/A.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/latzhose/B.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/latzhose/G.jpg',
+        }),
+      ],
+      variants: [
+        PatternVariant.of({
+          id: 'normal',
+          name: 'Normal',
+          sizes: [
+            SizeRange.of({ from: 50, to: 56, price: Money.euro(2800) }),
+            SizeRange.of({ from: 62, to: 68, price: Money.euro(3000) }),
+            SizeRange.of({ from: 74, to: 80, price: Money.euro(3200) }),
+            SizeRange.of({ from: 86, to: 92, price: Money.euro(3400) }),
+          ],
+        }),
+      ],
+      originalPatternName: 'Latzhose Oxford',
+      attribution: 'Seidenseele',
     }),
   ];
 

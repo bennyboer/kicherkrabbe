@@ -49,7 +49,10 @@
         <hr>
 
         <div class="attribution">
-          <p>Basierend auf dem Schnittmuster von &raquo;{{ pattern.attribution.orElse('') }}&laquo;.</p>
+          <p>Basierend auf dem Schnittmuster
+            <span *ngIf="pattern.originalPatternName.isSome()">&raquo;{{ pattern.originalPatternName.orElse('') }}&laquo;</span>
+            von &raquo;{{ pattern.attribution.orElse('') }}&laquo;.
+          </p>
         </div>
       }
     </div>

@@ -9,6 +9,7 @@ export class Pattern {
   readonly images: Image[];
   readonly variants: PatternVariant[];
   readonly extras: PatternExtra[];
+  readonly originalPatternName: Option<string>;
   readonly attribution: Option<string>;
 
   private constructor(props: {
@@ -18,6 +19,7 @@ export class Pattern {
     images: Image[];
     variants: PatternVariant[];
     extras: PatternExtra[];
+    originalPatternName: Option<string>;
     attribution: Option<string>;
   }) {
     this.id = Option.someOrNone(props.id).orElseThrow('Pattern ID is required');
@@ -36,6 +38,9 @@ export class Pattern {
     this.extras = Option.someOrNone(props.extras).orElseThrow(
       'Pattern extras are required',
     );
+    this.originalPatternName = Option.someOrNone(
+      props.originalPatternName,
+    ).orElse(Option.none());
     this.attribution = Option.someOrNone(props.attribution).orElse(
       Option.none(),
     );
@@ -48,6 +53,7 @@ export class Pattern {
     images: Image[];
     variants: PatternVariant[];
     extras?: PatternExtra[];
+    originalPatternName?: string;
     attribution?: string;
   }): Pattern {
     return new Pattern({
@@ -57,6 +63,7 @@ export class Pattern {
       images: props.images,
       variants: props.variants,
       extras: Option.someOrNone(props.extras).orElse([]),
+      originalPatternName: Option.someOrNone(props.originalPatternName),
       attribution: Option.someOrNone(props.attribution),
     });
   }
