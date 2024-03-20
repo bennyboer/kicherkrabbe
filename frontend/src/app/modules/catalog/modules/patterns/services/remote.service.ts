@@ -551,6 +551,12 @@ export class RemotePatternsService {
           ],
         }),
       ],
+      extras: [
+        PatternExtra.of({
+          name: 'Stickerei',
+          price: Money.euro(1200),
+        }),
+      ],
       originalPatternName: 'Latzhose Oxford',
       attribution: 'Seidenseele',
     }),
