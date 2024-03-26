@@ -560,6 +560,86 @@ export class RemotePatternsService {
       originalPatternName: 'Latzhose Oxford',
       attribution: 'Seidenseele',
     }),
+    Pattern.of({
+      id: 'easy-peasy-pants',
+      name: 'Easy Peasy Pants',
+      previewImage: Image.of({
+        url: '/assets/images/patterns/easy-peasy-pants/preview.jpg',
+      }),
+      images: [
+        Image.of({
+          url: '/assets/images/patterns/easy-peasy-pants/A.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/easy-peasy-pants/B.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/easy-peasy-pants/C.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/easy-peasy-pants/D.jpg',
+        }),
+      ],
+      variants: [
+        PatternVariant.of({
+          id: 'short',
+          name: 'Kurze',
+          sizes: [
+            SizeRange.of({ from: 56, to: 62, price: Money.euro(2000) }),
+            SizeRange.of({ from: 68, to: 74, price: Money.euro(2200) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(2400) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(2600) }),
+            SizeRange.of({ from: 104, to: 104, price: Money.euro(2800) }),
+          ],
+        }),
+        PatternVariant.of({
+          id: 'knee-long',
+          name: 'Knielang',
+          sizes: [
+            SizeRange.of({ from: 56, to: 62, price: Money.euro(2300) }),
+            SizeRange.of({ from: 68, to: 74, price: Money.euro(2500) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(2700) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(2900) }),
+            SizeRange.of({ from: 104, to: 104, price: Money.euro(3100) }),
+          ],
+        }),
+        PatternVariant.of({
+          id: 'long',
+          name: 'Lang',
+          sizes: [
+            SizeRange.of({ from: 56, to: 62, price: Money.euro(2600) }),
+            SizeRange.of({ from: 68, to: 74, price: Money.euro(2800) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(3000) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(3200) }),
+            SizeRange.of({ from: 104, to: 104, price: Money.euro(3400) }),
+          ],
+        }),
+      ],
+      extras: [
+        PatternExtra.of({
+          name: 'Gummi- oder Bündchenbund',
+          price: Money.zero(),
+        }),
+        PatternExtra.of({
+          name: 'Fake Knopfleiste',
+          price: Money.zero(),
+        }),
+        PatternExtra.of({
+          name: 'Fake Hosenträger',
+          price: Money.zero(),
+        }),
+        PatternExtra.of({
+          name: 'Aufgesetzte Hosen- und Potaschen',
+          price: Money.zero(),
+        }),
+        PatternExtra.of({
+          name: 'Richtige Hosenträger',
+          price: Money.euro(100),
+        }),
+      ],
+      originalPatternName: 'Easy Peasy Pants',
+      attribution: 'Herzklee Design',
+    }),
   ];
 
   getPatterns(): Observable<Pattern[]> {

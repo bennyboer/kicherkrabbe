@@ -15,7 +15,14 @@ export class PatternsPage {
     .getPatterns()
     .pipe(
       map((patterns) =>
-        patterns.map((pattern) => this.mapPatternToItem(pattern)),
+        patterns
+          .sort((a, b) =>
+            a.name.localeCompare(b.name, 'de-de', {
+              sensitivity: 'base',
+              numeric: true,
+            }),
+          )
+          .map((pattern) => this.mapPatternToItem(pattern)),
       ),
     );
 

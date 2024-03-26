@@ -9,6 +9,7 @@ import {
   BROWN,
   Color,
   Fabric,
+  FALL,
   FANTASY,
   FLORAL,
   FRENCH_TERRY,
@@ -16,6 +17,7 @@ import {
   GOLD,
   GREEN,
   GREY,
+  HALLOWEEN,
   JERSEY,
   MARITIM,
   ORANGE,
@@ -58,7 +60,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -72,7 +74,7 @@ export class RemoteFabricsService {
       themes: new Set<Theme>([FLORAL]),
       availability: Availability.of({
         types: [
-          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: true }),
           TypeAvailability.of({ type: JERSEY, inStock: false }),
         ],
       }),
@@ -88,7 +90,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -103,7 +105,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -133,7 +135,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -148,7 +150,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -163,7 +165,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -177,8 +179,8 @@ export class RemoteFabricsService {
       themes: new Set<Theme>([ANIMALS]),
       availability: Availability.of({
         types: [
-          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: true }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -193,7 +195,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -207,7 +209,7 @@ export class RemoteFabricsService {
       themes: new Set<Theme>([ANIMALS]),
       availability: Availability.of({
         types: [
-          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: true }),
           TypeAvailability.of({ type: JERSEY, inStock: false }),
         ],
       }),
@@ -238,7 +240,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -253,7 +255,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -267,7 +269,7 @@ export class RemoteFabricsService {
       themes: new Set<Theme>([ANIMALS]),
       availability: Availability.of({
         types: [
-          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: true }),
           TypeAvailability.of({ type: JERSEY, inStock: false }),
         ],
       }),
@@ -282,8 +284,8 @@ export class RemoteFabricsService {
       themes: new Set<Theme>([FANTASY]),
       availability: Availability.of({
         types: [
-          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: true }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -298,7 +300,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -313,7 +315,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -357,7 +359,7 @@ export class RemoteFabricsService {
       themes: new Set<Theme>([ANIMALS, SPACE]),
       availability: Availability.of({
         types: [
-          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: true }),
           TypeAvailability.of({ type: JERSEY, inStock: false }),
         ],
       }),
@@ -373,7 +375,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -388,7 +390,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -432,7 +434,7 @@ export class RemoteFabricsService {
       themes: new Set<Theme>([ANIMALS]),
       availability: Availability.of({
         types: [
-          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: true }),
           TypeAvailability.of({ type: JERSEY, inStock: false }),
         ],
       }),
@@ -448,7 +450,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -463,7 +465,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -493,7 +495,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -523,7 +525,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -553,7 +555,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -583,7 +585,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -612,7 +614,7 @@ export class RemoteFabricsService {
       themes: new Set<Theme>([ANIMALS, FLORAL]),
       availability: Availability.of({
         types: [
-          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: true }),
           TypeAvailability.of({ type: JERSEY, inStock: false }),
         ],
       }),
@@ -627,7 +629,7 @@ export class RemoteFabricsService {
       themes: new Set<Theme>([ANIMALS, FLORAL]),
       availability: Availability.of({
         types: [
-          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: true }),
           TypeAvailability.of({ type: JERSEY, inStock: false }),
         ],
       }),
@@ -643,7 +645,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -703,7 +705,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -718,7 +720,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
-          TypeAvailability.of({ type: JERSEY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
         ],
       }),
     }),
@@ -775,6 +777,81 @@ export class RemoteFabricsService {
       },
       colors: new Set<Color>([BROWN, BEIGE]),
       themes: new Set<Theme>([SWEETS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'fledermaeuschen',
+      name: 'Fledermäuschen',
+      image: {
+        url: '/assets/images/fabrics/fledermaeuschen.jpg',
+      },
+      colors: new Set<Color>([WHITE, GREY]),
+      themes: new Set<Theme>([ANIMALS, HALLOWEEN, FALL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'fuchs-weiss-blau',
+      name: 'Fuchs Weiß Blau',
+      image: {
+        url: '/assets/images/fabrics/fuchs_weiss_blau.jpg',
+      },
+      colors: new Set<Color>([BLUE, ORANGE, WHITE]),
+      themes: new Set<Theme>([ANIMALS, FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: true }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'herbsttiere',
+      name: 'Herbsttiere',
+      image: {
+        url: '/assets/images/fabrics/herbsttiere.jpg',
+      },
+      colors: new Set<Color>([BROWN, ORANGE]),
+      themes: new Set<Theme>([ANIMALS, FALL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'kuerbiskatze',
+      name: 'Kürbiskatze',
+      image: {
+        url: '/assets/images/fabrics/kuerbiskatze.jpg',
+      },
+      colors: new Set<Color>([ORANGE, GREY]),
+      themes: new Set<Theme>([ANIMALS, FALL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'loewenkoenig',
+      name: 'Löwenkönig',
+      image: {
+        url: '/assets/images/fabrics/loewenkoenig.jpg',
+      },
+      colors: new Set<Color>([WHITE, BROWN]),
+      themes: new Set<Theme>([ANIMALS]),
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
