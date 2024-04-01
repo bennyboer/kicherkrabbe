@@ -47,6 +47,9 @@ export class SortedEvent {
   }
 }
 
+/*
+TODO To be removed
+ */
 @Component({
   selector: 'app-sort-selector',
   templateUrl: './sort-selector.component.html',

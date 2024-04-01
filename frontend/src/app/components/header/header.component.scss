@@ -62,7 +62,7 @@ nav {
   overflow: auto;
   background-color: rgba(var(--contrast-rgb), 0.7);
   backdrop-filter: blur(8px);
-  animation: slide-in 0.5s ease-out;
+  animation: slide-in 0.3s ease-out;
 
   .mobile-navigation-header {
     width: 100%;
@@ -138,6 +138,14 @@ nav {
     flex-direction: row;
     align-items: center;
     gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--contrast);
+    border-radius: 12px;
+
+    & > .desktop {
+      width: 100%;
+    }
   }
 
   nav.navigation {
@@ -152,6 +160,7 @@ nav {
     flex-direction: row;
     align-items: center;
     gap: 8px;
+    margin-right: 12px;
   }
 }
 

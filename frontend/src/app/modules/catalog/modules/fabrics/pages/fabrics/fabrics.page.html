@@ -2,6 +2,8 @@
   <app-sort-selector [properties]="sortProperties" (sorted)="onSort($event)"></app-sort-selector>
 </div>
 
+<app-filter-sort-bar [style.display]="'none'" [filters]="filters"></app-filter-sort-bar>
+
 <app-card-list *ngIf="items$ | async as items" [items]="items" [template]="template">
 </app-card-list>
 

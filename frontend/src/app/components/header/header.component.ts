@@ -18,6 +18,7 @@ import {
 } from 'rxjs';
 import { Option } from '../../util';
 import { NavigationEnd, Router } from '@angular/router';
+import { Size } from '../../modules/shared/components/button/button.component';
 
 @Component({
   selector: 'app-header',
@@ -94,4 +95,6 @@ export class HeaderComponent implements AfterViewInit, OnDestroy {
 
     this.sticky$.next(isSticky);
   }
+
+  protected readonly Size = Size;
 }

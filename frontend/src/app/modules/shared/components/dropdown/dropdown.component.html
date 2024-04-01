@@ -1,0 +1,20 @@
+<app-button (click)="toggle()" [active]="isOpened() | async">
+  <span class="content">
+    <span class="placeholder">{{ placeholder }}</span> <!-- TODO Show selected value instead if one is selected -->
+    <span class="material-icons arrow" [class.opened]="isOpened() | async">expand_more</span>
+  </span>
+</app-button>
+
+@if (isOpened() | async) {
+  @if (getItems() | async; as items) {
+    <div class="dropdown">
+      @for (item of items; track item.id) {
+        <div class="dropdown-item">
+          <ng-container [ngTemplateOutlet]="itemTemplate"
+                        [ngTemplateOutletContext]="{ $implicit: item }">
+          </ng-container>
+        </div>
+      }
+    </div>
+  }
+}

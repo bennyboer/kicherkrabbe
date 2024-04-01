@@ -14,8 +14,11 @@
     --contrast: #000000;
     --contrast-rgb: 0, 0, 0;
 
+    --contrast-lower: #181818;
+    --contrast-lower-rgb: 24, 24, 24;
+
     --background: #222222;
-    --background-rgb: 17, 17, 17;
+    --background-rgb: 34, 34, 34;
 
     --background-low-contrast: #333333;
     --background-low-contrast-rgb: 51, 51, 51;
@@ -33,14 +36,17 @@
     --contrast: #FFFFFF;
     --contrast-rgb: 255, 255, 255;
 
-    --background: #FFFFFF;
-    --background-rgb: 255, 255, 255;
+    --contrast-lower: #F0F0F0;
+    --contrast-lower-rgb: 240, 240, 240;
 
-    --background-low-contrast: #EAEAEA;
-    --background-low-contrast-rgb: 234, 234, 234;
+    --background: #EAEAEA;
+    --background-rgb: 234, 234, 234;
 
-    --background-mid-contrast: #CCCCCC;
-    --background-mid-contrast-rgb: 204, 204, 204;
+    --background-low-contrast: #CCCCCC;
+    --background-low-contrast-rgb: 204, 204, 204;
+
+    --background-mid-contrast: #BBBBBB;
+    --background-mid-contrast-rgb: 187, 187, 187;
 
     --shadow-rgba: 0, 0, 0, 0.2;
   }

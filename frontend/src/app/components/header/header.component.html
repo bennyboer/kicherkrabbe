@@ -10,7 +10,10 @@
     <div class="other">
       <div class="desktop">
         <nav class="navigation">
-          <ng-container *ngTemplateOutlet="links"></ng-container>
+          <app-button-row #buttonRow [size]="Size.LARGE" [lastRounded]="false">
+            <ng-container [ngTemplateOutlet]="links" [ngTemplateOutletInjector]="buttonRow.getInjector()">
+            </ng-container>
+          </app-button-row>
         </nav>
       </div>
 
@@ -38,13 +41,16 @@
     </span>
   </div>
   <nav class="mobile-navigation">
-    <ng-container *ngTemplateOutlet="links"></ng-container>
+    <app-button-column #buttonColumn [size]="Size.LARGE">
+      <ng-container [ngTemplateOutlet]="links" [ngTemplateOutletInjector]="buttonColumn.getInjector()">
+      </ng-container>
+    </app-button-column>
   </nav>
 </div>
 
 <ng-template #links>
-  <a routerLink="/catalog/patterns" routerLinkActive="active">Schnitte</a>
-  <a routerLink="/catalog/fabrics" routerLinkActive="active">Stoffe</a>
-  <a routerLink="/catalog/embroideries" routerLinkActive="active">Stickereien</a>
-  <a routerLink="/catalog/accessoires" routerLinkActive="active">Accessoires</a>
+  <app-button routerLink="/catalog/patterns" routerLinkActive="active">Schnitte</app-button>
+  <app-button routerLink="/catalog/fabrics" routerLinkActive="active">Stoffe</app-button>
+  <app-button routerLink="/catalog/embroideries" routerLinkActive="active">Stickereien</app-button>
+  <app-button routerLink="/catalog/accessoires" routerLinkActive="active">Accessoires</app-button>
 </ng-template>

@@ -1,0 +1,57 @@
+:host {
+  display: inline-block;
+  position: relative;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  padding-left: 8px;
+}
+
+.arrow {
+  transition: transform 0.2s ease-out;
+
+  &.opened {
+    transform: rotate(180deg);
+  }
+}
+
+.dropdown {
+  position: absolute;
+  background-color: var(--contrast);
+  min-width: 100%;
+  z-index: 9;
+  border-radius: 4px;
+  box-shadow: 0px 4px 8px rgba(var(--shadow-rgba));
+  animation: slide-in 0.2s ease-out;
+
+  .dropdown-item {
+    padding: 8px;
+    color: var(--text);
+    cursor: pointer;
+    white-space: nowrap;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &:hover {
+      background-color: rgba(var(--text-rgb), 0.1);
+    }
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-25px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

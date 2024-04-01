@@ -5,10 +5,11 @@ import {
   OnInit,
 } from '@angular/core';
 import { combineLatest, map, ReplaySubject, Subject, takeUntil } from 'rxjs';
-import { CardListItem, SortProperty } from '../../../../../shared';
-import { Fabric } from '../../model';
+import { CardListItem, Filter, SortProperty } from '../../../../../shared';
+import { COLORS, Fabric, THEMES } from '../../model';
 import { FabricsStoreService } from '../../services';
 import { SortedEvent } from '../../../../../shared/components/sort-selector/sort-selector.component';
+import { FilterSelectionMode } from '../../../../../shared/components/filter-sort-bar/filter-sort-bar.component';
 
 @Component({
   selector: 'app-fabrics-page',
@@ -27,6 +28,35 @@ export class FabricsPage implements OnInit, OnDestroy {
   protected readonly sortProperties: SortProperty[] = [
     SortProperty.of({ id: 'name', label: 'Name' }),
     SortProperty.of({ id: 'availability', label: 'Verfügbarkeit' }),
+  ];
+
+  protected readonly filters: Filter[] = [
+    Filter.of({
+      id: 'theme',
+      placeholder: 'Thema',
+      items: THEMES.map((theme) => ({
+        id: theme.id,
+        label: theme.name,
+      })),
+      selectionMode: FilterSelectionMode.SINGLE, // TODO Selection mode multiple
+    }),
+    Filter.of({
+      id: 'color',
+      placeholder: 'Farbe',
+      items: COLORS.map((color) => ({
+        id: color.id,
+        label: color.name,
+      })),
+      selectionMode: FilterSelectionMode.SINGLE, // TODO Selection mode multiple
+    }),
+    Filter.of({
+      id: 'availability',
+      placeholder: 'Verfügbarkeit',
+      items: [
+        { id: 'available', label: 'Auf Lager' },
+        { id: 'unavailable', label: 'Nicht auf Lager' },
+      ],
+    }),
   ];
 
   constructor(private readonly fabricsStore: FabricsStoreService) {}

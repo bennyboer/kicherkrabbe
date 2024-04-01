@@ -1,0 +1,29 @@
+<div class="filter-area">
+  @if (filters$ | async; as filters) {
+    <app-button-row [lastRounded]="false">
+      @for (filter of filters; track filter.placeholder) {
+        <app-dropdown [placeholder]="filter.placeholder" [items]="filterToDropdownItems(filter.items)">
+          <ng-template let-item>
+            <span>{{ item.label }}</span>
+          </ng-template>
+        </app-dropdown>
+      }
+    </app-button-row>
+  }
+</div>
+
+<div class="sort-area">
+  <span class="area-label">Sortierung</span>
+  <app-button-row [firstRounded]="false">
+    <app-dropdown placeholder="Name" [items]="testItems">
+      <ng-template let-item>
+        <span>{{ item.id }}</span>
+      </ng-template>
+    </app-dropdown>
+    <app-dropdown placeholder="Aufsteigend" [items]="testItems">
+      <ng-template let-item>
+        <span>{{ item.id }}</span>
+      </ng-template>
+    </app-dropdown>
+  </app-button-row>
+</div>

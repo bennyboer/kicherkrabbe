@@ -689,7 +689,7 @@ export class RemoteFabricsService {
       themes: new Set<Theme>([ANIMALS]),
       availability: Availability.of({
         types: [
-          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: true }),
           TypeAvailability.of({ type: JERSEY, inStock: false }),
         ],
       }),
@@ -852,6 +852,51 @@ export class RemoteFabricsService {
       },
       colors: new Set<Color>([WHITE, BROWN]),
       themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'kuhbaer',
+      name: 'Kuhbär',
+      image: {
+        url: '/assets/images/fabrics/kuhbaer.jpg',
+      },
+      colors: new Set<Color>([WHITE, BROWN]),
+      themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'herzchendrache',
+      name: 'Herzchendrache',
+      image: {
+        url: '/assets/images/fabrics/herzchendrache.jpg',
+      },
+      colors: new Set<Color>([WHITE, PINK, RED]),
+      themes: new Set<Theme>([FANTASY]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'lavendelbiene',
+      name: 'Lavendelbiene',
+      image: {
+        url: '/assets/images/fabrics/lavendelbiene.jpg',
+      },
+      colors: new Set<Color>([WHITE]),
+      themes: new Set<Theme>([FLORAL, ANIMALS]),
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),

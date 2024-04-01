@@ -2,7 +2,12 @@ import { NgModule } from '@angular/core';
 import {
   AccordionComponent,
   AccordionItemComponent,
+  ButtonColumnComponent,
+  ButtonComponent,
+  ButtonRowComponent,
   CardListComponent,
+  DropdownComponent,
+  FilterSortBarComponent,
   PriceTagComponent,
   SortSelectorComponent,
 } from './components';
@@ -17,6 +22,11 @@ const COMPONENTS = [
   AccordionComponent,
   AccordionItemComponent,
   SortSelectorComponent,
+  FilterSortBarComponent,
+  DropdownComponent,
+  ButtonComponent,
+  ButtonRowComponent,
+  ButtonColumnComponent,
 ];
 
 const DIRECTIVES = [FlagDirective, UnlessFlagDirective];
