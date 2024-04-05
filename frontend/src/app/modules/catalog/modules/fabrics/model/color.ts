@@ -68,6 +68,11 @@ export const GREY = Color.of({
   name: 'Grau',
   hex: '#808080',
 });
+export const BLACK = Color.of({
+  id: 'black',
+  name: 'Schwarz',
+  hex: '#000000',
+});
 
 export const COLORS = [
   BLUE,
@@ -79,4 +84,5 @@ export const COLORS = [
   PINK,
   GREY,
   BROWN,
+  BLACK,
 ];

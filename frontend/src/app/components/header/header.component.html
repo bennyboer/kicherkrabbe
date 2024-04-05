@@ -10,7 +10,7 @@
     <div class="other">
       <div class="desktop">
         <nav class="navigation">
-          <app-button-row #buttonRow [size]="Size.LARGE" [lastRounded]="false">
+          <app-button-row #buttonRow [size]="Size.LARGE" [rounded]="false">
             <ng-container [ngTemplateOutlet]="links" [ngTemplateOutletInjector]="buttonRow.getInjector()">
             </ng-container>
           </app-button-row>
@@ -20,9 +20,9 @@
       <div class="mobile">
         <nav class="navigation">
           <a (click)="openOverlay()">
-          <span class="icon-link">
-            <span class="material-icons">menu</span>
-          </span>
+            <span class="icon-link">
+              <span class="material-icons">menu</span>
+            </span>
           </a>
         </nav>
       </div>

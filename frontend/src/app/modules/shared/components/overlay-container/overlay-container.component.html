@@ -1,0 +1,5 @@
+@if (getOverlays() | async; as overlays) {
+  @for (overlay of overlays; track overlay.id) {
+    <app-overlay [overlay]="overlay"></app-overlay>
+  }
+}

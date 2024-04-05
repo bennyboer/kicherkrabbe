@@ -1,0 +1,36 @@
+:host {
+  display: inline-block;
+}
+
+input[type="radio"] {
+  appearance: none;
+  margin: 0;
+  font: inherit;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background-color: var(--background-mid-contrast);
+  border-radius: 100%;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+
+  &::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em black;
+    border-radius: 100%;
+    transform-origin: center center;
+  }
+
+  &:checked::before {
+    transform: scale(1);
+  }
+
+  &:hover {
+    background-color: var(--background-low-contrast);
+  }
+}

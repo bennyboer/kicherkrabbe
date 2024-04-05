@@ -1,0 +1,36 @@
+:host {
+  display: inline-block;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  margin: 0;
+  font: inherit;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background-color: var(--background-mid-contrast);
+  border-radius: 4px;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+
+  &::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em black;
+    transform-origin: center center;
+    clip-path: polygon(2.3% 51.3%, 38% 87%, 98% 27%, 84.5% 13.5%, 38% 60%, 15.8% 37.8%);
+  }
+
+  &:checked::before {
+    transform: scale(1);
+  }
+
+  &:hover {
+    background-color: var(--background-low-contrast);
+  }
+}

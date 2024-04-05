@@ -1,0 +1,5 @@
+@if (isMobile() | async) {
+  <ng-content select="[mobile]"></ng-content>
+} @else {
+  <ng-content select="[desktop]"></ng-content>
+}

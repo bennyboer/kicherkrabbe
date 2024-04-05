@@ -1,0 +1,4 @@
+<input [id]="id" [checked]="isChecked() | async" (click)="onCheckboxClicked($event)" type="checkbox">
+@if (getLabel() | async; as label) {
+  <label [for]="id"></label><br>
+}

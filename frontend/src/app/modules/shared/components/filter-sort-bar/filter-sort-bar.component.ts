@@ -1,13 +1,28 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   Input,
   OnDestroy,
+  OnInit,
+  Output,
 } from '@angular/core';
-import { DropdownItem } from '../dropdown/dropdown.component';
-import { BehaviorSubject, map, Observable, ReplaySubject, Subject } from 'rxjs';
+import { DropdownItem, DropdownItemId } from '../dropdown/dropdown.component';
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  ReplaySubject,
+  Subject,
+  take,
+  takeUntil,
+} from 'rxjs';
 import { Option } from '../../../../util';
 
+export type FilterId = string;
 export type FilterItemId = string;
 
 export interface FilterItem {
@@ -38,8 +53,8 @@ class FilterDropdownItem implements DropdownItem {
 }
 
 export class Filter {
-  readonly id: string;
-  readonly placeholder: string;
+  readonly id: FilterId;
+  readonly label: string;
   readonly items: FilterItem[];
   readonly selectionMode: FilterSelectionMode = FilterSelectionMode.SINGLE;
 
@@ -47,29 +62,25 @@ export class Filter {
     new BehaviorSubject<Set<FilterItemId>>(new Set<FilterItemId>());
 
   private constructor(props: {
-    id: string;
-    placeholder: string;
+    id: FilterId;
+    label: string;
     items: FilterItem[];
     selectionMode: Option<FilterSelectionMode>;
   }) {
     this.id = props.id;
-    this.placeholder = props.placeholder;
+    this.label = props.label;
     this.items = props.items;
     this.selectionMode = props.selectionMode.orElse(FilterSelectionMode.SINGLE);
-
-    if (this.selectionMode === FilterSelectionMode.MULTIPLE) {
-      throw new Error('Multiple selection mode is not supported yet'); // TODO Implement multiple selection mode
-    }
   }
 
   static of(props: {
-    id: string;
-    placeholder: string;
+    id: FilterId;
+    label: string;
     items: FilterItem[];
     selectionMode?: FilterSelectionMode;
   }): Filter {
-    if (!props.placeholder || props.placeholder.trim().length === 0) {
-      throw new Error('Placeholder is required');
+    if (!props.label || props.label.trim().length === 0) {
+      throw new Error('Label is required');
     }
 
     if (!props.items || props.items.length === 0) {
@@ -78,39 +89,114 @@ export class Filter {
 
     return new Filter({
       id: props.id,
-      placeholder: props.placeholder,
+      label: props.label,
       items: props.items,
       selectionMode: Option.someOrNone(props.selectionMode),
     });
   }
 
+  canSelectMultiple(): boolean {
+    return this.selectionMode === FilterSelectionMode.MULTIPLE;
+  }
+
   getSelected(): Observable<FilterItemId[]> {
-    return this.selected$.asObservable().pipe(map((set) => Array.from(set)));
+    return this.selected$.pipe(map((selected) => Array.from(selected)));
+  }
+
+  setSelected(ids: FilterItemId[]): void {
+    const updatedSet = new Set(ids);
+    this.selected$.next(updatedSet);
   }
 
   isSelected(id: FilterItemId): boolean {
     return this.selected$.value.has(id);
   }
 
-  toggle(id: FilterItemId): void {
-    const isSingleSelectionMode =
-      this.selectionMode === FilterSelectionMode.SINGLE;
+  isActive(): boolean {
+    return this.selected$.value.size > 0;
+  }
+}
 
-    const updatedSet = new Set([...this.selected$.value]);
+export class FilterEvent {
+  readonly filters: Filter[];
 
-    if (this.isSelected(id)) {
-      const updated = updatedSet.delete(id);
-      if (updated) {
-        this.selected$.next(updatedSet);
-      }
-    } else {
-      if (isSingleSelectionMode) {
-        updatedSet.clear();
-      }
+  private constructor(props: { filters: Filter[] }) {
+    this.filters = props.filters;
+  }
 
-      updatedSet.add(id);
-      this.selected$.next(updatedSet);
-    }
+  static of(props: { filters: Filter[] }): FilterEvent {
+    return new FilterEvent({
+      filters: props.filters,
+    });
+  }
+}
+
+export type SortingOptionId = string;
+
+export class SortingOption {
+  readonly id: SortingOptionId;
+  readonly label: string;
+  readonly ascendingLabel: string;
+  readonly descendingLabel: string;
+
+  private constructor(props: {
+    id: string;
+    label: string;
+    ascendingLabel: string;
+    descendingLabel: string;
+  }) {
+    this.id = props.id;
+    this.label = props.label;
+    this.ascendingLabel = props.ascendingLabel;
+    this.descendingLabel = props.descendingLabel;
+  }
+
+  static of(props: {
+    id: string;
+    label: string;
+    ascendingLabel: string;
+    descendingLabel: string;
+  }): SortingOption {
+    return new SortingOption({
+      id: props.id,
+      label: props.label,
+      ascendingLabel: props.ascendingLabel,
+      descendingLabel: props.descendingLabel,
+    });
+  }
+}
+
+class SortingOptionDropdownItem implements DropdownItem {
+  readonly id: SortingOptionId;
+  readonly label: string;
+
+  private constructor(props: { id: SortingOptionId; label: string }) {
+    this.id = props.id;
+    this.label = props.label;
+  }
+
+  static fromSortingOption(item: SortingOption): FilterDropdownItem {
+    return new SortingOptionDropdownItem({
+      id: item.id,
+      label: item.label,
+    });
+  }
+}
+
+export class SortEvent {
+  readonly option: SortingOption;
+  readonly ascending: boolean;
+
+  private constructor(props: { option: SortingOption; ascending: boolean }) {
+    this.option = props.option;
+    this.ascending = props.ascending;
+  }
+
+  static of(props: { option: SortingOption; ascending: boolean }): SortEvent {
+    return new SortEvent({
+      option: props.option,
+      ascending: props.ascending,
+    });
   }
 }
 
@@ -120,34 +206,168 @@ export class Filter {
   styleUrls: ['./filter-sort-bar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FilterSortBarComponent implements OnDestroy {
+export class FilterSortBarComponent implements OnInit, OnDestroy {
   @Input('filters')
   set setFilters(filters: Filter[]) {
     Option.someOrNone(filters).ifSome((filters) => this.filters$.next(filters));
   }
 
-  // TODO Set sorting options
+  @Input('sortingOptions')
+  set setSortingOptions(sortingOptions: SortingOption[]) {
+    Option.someOrNone(sortingOptions).ifSome((sortingOptions) => {
+      this.sortingOptions$.next(sortingOptions);
+      this.sortBy$.next(sortingOptions[0].id);
+    });
+  }
 
-  // TODO Remove when having sorting options
-  testItems: DropdownItem[] = [
-    { id: 'Item 1' },
-    {
-      id: 'Long item tralalala fjiwej  fwefjwef wefjjewfijwe fwje fiojwe fjweiojf ewifj we2',
-    },
-    { id: 'Item 3' },
-  ];
+  @Output()
+  filtered: EventEmitter<FilterEvent> = new EventEmitter<FilterEvent>();
 
-  protected filters$: Subject<Filter[]> = new ReplaySubject<Filter[]>(1);
+  @Output()
+  sorted: EventEmitter<SortEvent> = new EventEmitter<SortEvent>();
+
+  private readonly filters$: Subject<Filter[]> = new ReplaySubject<Filter[]>(1);
+  private readonly sortingOptions$: Subject<SortingOption[]> =
+    new ReplaySubject<SortingOption[]>(1);
+  private readonly sortBy$: Subject<SortingOptionId> =
+    new ReplaySubject<SortingOptionId>(1);
+  private readonly ascending$: Subject<boolean> = new BehaviorSubject<boolean>(
+    true,
+  );
+  private readonly filtersChanged$: Subject<void> = new Subject<void>();
+  private readonly destroy$: Subject<void> = new Subject<void>();
+
+  ngOnInit(): void {
+    this.filtersChanged$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.emitFilteredEvent());
+
+    combineLatest([this.sortBy$, this.ascending$])
+      .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(() => this.emitSortedEvent());
+  }
 
   ngOnDestroy(): void {
     this.filters$.complete();
+    this.sortingOptions$.complete();
+    this.sortBy$.complete();
+    this.ascending$.complete();
+    this.filtersChanged$.complete();
+
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  getFilters(): Observable<Filter[]> {
+    return this.filters$.asObservable();
+  }
+
+  getSortingOptions(): Observable<SortingOption[]> {
+    return this.sortingOptions$.asObservable();
+  }
+
+  getSelectedSortingOption(): Observable<SortingOptionId> {
+    return this.sortBy$.asObservable();
   }
 
   protected filterToDropdownItems(items: FilterItem[]): DropdownItem[] {
     return items.map((item) => this.filterToDropdownItem(item));
   }
 
+  protected updateFilterDropdownItemsSelection(
+    filter: Filter,
+    dropdownItemIds: DropdownItemId[],
+  ): void {
+    const filterItemIds = dropdownItemIds.map((id) => id as FilterItemId);
+    filter.setSelected(filterItemIds);
+
+    this.filtersChanged$.next();
+  }
+
+  protected updateSortingOptionDropdownItemSelection(
+    dropdownItemIds: DropdownItemId[],
+  ): void {
+    const selectedSortingOptionId = dropdownItemIds[0] as SortingOptionId;
+    this.sortBy$.next(selectedSortingOptionId);
+  }
+
+  protected updateSortDirectionDropdownItemSelection(
+    dropdownItemIds: DropdownItemId[],
+  ): void {
+    const selectedSortDirection = dropdownItemIds[0];
+    const isAscending = selectedSortDirection === 'ascending';
+    this.ascending$.next(isAscending);
+  }
+
+  private emitSortedEvent(): void {
+    combineLatest([this.sortingOptions$, this.sortBy$, this.ascending$])
+      .pipe(take(1))
+      .subscribe(([sortingOptions, selectedSortingOptionId, ascending]) => {
+        const selectedSortingOption = sortingOptions.find(
+          (option) => option.id === selectedSortingOptionId,
+        );
+
+        if (!!selectedSortingOption) {
+          // TODO Only emit event if changed!
+          this.sorted.emit(
+            SortEvent.of({
+              option: selectedSortingOption,
+              ascending,
+            }),
+          );
+        }
+      });
+  }
+
+  private emitFilteredEvent(): void {
+    this.filters$.pipe(take(1)).subscribe((filters) => {
+      const activeFilters = filters.filter((filter) => filter.isActive());
+      this.filtered.emit(FilterEvent.of({ filters: activeFilters })); // TODO Only emit event is changed!
+    });
+  }
+
   private filterToDropdownItem(item: FilterItem): DropdownItem {
     return FilterDropdownItem.fromFilterItem(item);
+  }
+
+  protected sortingOptionsToDropdownItems(
+    sortingOptions: SortingOption[],
+  ): DropdownItem[] {
+    return sortingOptions.map((sortingOption) =>
+      this.sortingOptionToDropdownItem(sortingOption),
+    );
+  }
+
+  private sortingOptionToDropdownItem(
+    sortingOption: SortingOption,
+  ): DropdownItem {
+    return SortingOptionDropdownItem.fromSortingOption(sortingOption);
+  }
+
+  protected sortDirectionToDropdownItems(
+    selectedSortingOption: SortingOption,
+  ): DropdownItem[] {
+    return [
+      {
+        id: 'ascending',
+        label: selectedSortingOption.ascendingLabel,
+      },
+      {
+        id: 'descending',
+        label: selectedSortingOption.descendingLabel,
+      },
+    ];
+  }
+
+  protected getSortingOption(
+    selectedSortingOption: SortingOptionId,
+  ): Observable<SortingOption> {
+    return this.sortingOptions$.pipe(
+      map((sortingOptions) =>
+        sortingOptions.find((option) => option.id === selectedSortingOption),
+      ),
+      filter((option) => !!option),
+      map((option) => option as SortingOption),
+    );
   }
 }

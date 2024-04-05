@@ -5,6 +5,7 @@ import {
   ANIMALS,
   Availability,
   BEIGE,
+  BLACK,
   BLUE,
   BROWN,
   Color,
@@ -897,6 +898,96 @@ export class RemoteFabricsService {
       },
       colors: new Set<Color>([WHITE]),
       themes: new Set<Theme>([FLORAL, ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'bienchen',
+      name: 'Bienchen',
+      image: {
+        url: '/assets/images/fabrics/bienchen.jpg',
+      },
+      colors: new Set<Color>([WHITE, BROWN, BEIGE]),
+      themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'blumen-5',
+      name: 'Blumen 5',
+      image: {
+        url: '/assets/images/fabrics/blumen_5.jpg',
+      },
+      colors: new Set<Color>([BEIGE, RED, PINK]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'blumen-schwarz-1',
+      name: 'Blumen schwarz 1',
+      image: {
+        url: '/assets/images/fabrics/blumen_schwarz_1.jpg',
+      },
+      colors: new Set<Color>([BLACK, PINK, GOLD]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'blumen-schwarz-2',
+      name: 'Blumen schwarz 2',
+      image: {
+        url: '/assets/images/fabrics/blumen_schwarz_2.jpg',
+      },
+      colors: new Set<Color>([BLACK, PINK, GOLD]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'leoprint-schwarz',
+      name: 'Leoprint schwarz 2',
+      image: {
+        url: '/assets/images/fabrics/leoprint_schwarz.jpg',
+      },
+      colors: new Set<Color>([BLACK, GOLD]),
+      themes: new Set<Theme>([FANTASY, ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'pilzchen',
+      name: 'Pilzchen',
+      image: {
+        url: '/assets/images/fabrics/pilzchen.jpg',
+      },
+      colors: new Set<Color>([BEIGE, RED]),
+      themes: new Set<Theme>([FANTASY, FALL]),
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),

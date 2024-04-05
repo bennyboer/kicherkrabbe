@@ -1,20 +1,61 @@
-<app-button (click)="toggle()" [active]="isOpened() | async">
+<app-button (click)="toggleOpened()" [active]="isOpened() | async">
   <span class="content">
-    <span class="placeholder">{{ placeholder }}</span> <!-- TODO Show selected value instead if one is selected -->
+    <span class="placeholder">
+      @if (getSelected() | async; as selected) {
+        @if (multiple) {
+          {{ label }}
+          @if (selected.length > 0) {
+            <span class="multi-selection-indicator">{{ selected.length }}</span>
+          }
+        } @else {
+          {{ getSelectedLabel(selected) }}
+          @if (selected.length > 0) {
+            <span class="single-selection-indicator"></span>
+          }
+        }
+      }
+    </span>
     <span class="material-icons arrow" [class.opened]="isOpened() | async">expand_more</span>
   </span>
 </app-button>
 
-@if (isOpened() | async) {
-  @if (getItems() | async; as items) {
-    <div class="dropdown">
-      @for (item of items; track item.id) {
-        <div class="dropdown-item">
-          <ng-container [ngTemplateOutlet]="itemTemplate"
-                        [ngTemplateOutletContext]="{ $implicit: item }">
-          </ng-container>
-        </div>
+<ng-template #dropdownTemplate>
+  <div class="dropdown">
+    <div class="dropdown-header">
+      <ng-content select="[header]"></ng-content>
+    </div>
+
+    <div class="dropdown-content">
+      @if (getItems() | async; as items) {
+        <app-button-column [rounded]="false">
+          @for (item of items; track item.id) {
+            <app-button (click)="onItemClick(item, $event)">
+              <div class="dropdown-item">
+                <div class="dropdown-item-prefix">
+                  @if (multiple) {
+                    <app-checkbox [checked]="isSelected(item.id) | async"
+                                  [passive]="true">
+                    </app-checkbox>
+                  } @else {
+                    <app-radio [checked]="isSelected(item.id) | async"
+                               [passive]="true">
+                    </app-radio>
+                  }
+                </div>
+                <div class="dropdown-item-content">
+                  <ng-container [ngTemplateOutlet]="itemTemplate"
+                                [ngTemplateOutletContext]="{ $implicit: item }">
+                  </ng-container>
+                </div>
+              </div>
+            </app-button>
+          }
+        </app-button-column>
       }
     </div>
-  }
-}
+
+    <div class="dropdown-footer">
+      <ng-content select="[footer]"></ng-content>
+    </div>
+  </div>
+</ng-template>

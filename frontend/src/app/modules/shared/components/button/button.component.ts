@@ -12,7 +12,7 @@ import {
   Renderer2,
 } from '@angular/core';
 import { Option } from '../../../../util';
-import { combineLatest, map, Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { ButtonId, ButtonRegistry } from './button-registry';
 
 export enum Size {
@@ -31,6 +31,10 @@ export class ButtonComponent implements OnInit, OnDestroy {
   @HostBinding('class.active')
   @Input({ transform: booleanAttribute })
   active: boolean = false;
+
+  @HostBinding('class.rounded')
+  @Input({ transform: booleanAttribute })
+  rounded: boolean = true;
 
   @Input('size')
   set setSize(size: Size) {
@@ -56,25 +60,21 @@ export class ButtonComponent implements OnInit, OnDestroy {
     Option.someOrNone(this.buttonRegistry).ifSome((registry) => {
       const buttonId = registry.register(this);
       this.buttonId = Option.some(buttonId);
+      this.rounded = false;
 
-      const isFirstAndRounded$ = combineLatest([
-        registry.isFirst(buttonId),
-        registry.isFirstRounded(),
-      ]).pipe(map(([first, firstRounded]) => first && firstRounded));
-      const isLastAndRounded$ = combineLatest([
-        registry.isLast(buttonId),
-        registry.isLastRounded(),
-      ]).pipe(map(([last, lastRounded]) => last && lastRounded));
+      registry
+        .isFirst(buttonId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((rounded) => {
+          if (rounded) {
+            this.addClass('first-item');
+          } else {
+            this.removeClass('first-item');
+          }
+        });
 
-      isFirstAndRounded$.pipe(takeUntil(this.destroy$)).subscribe((rounded) => {
-        if (rounded) {
-          this.addClass('first-item');
-        } else {
-          this.removeClass('first-item');
-        }
-      });
-
-      isLastAndRounded$
+      registry
+        .isLast(buttonId)
         .pipe(takeUntil(this.destroy$))
         .subscribe((lastAndRounded) => {
           if (lastAndRounded) {

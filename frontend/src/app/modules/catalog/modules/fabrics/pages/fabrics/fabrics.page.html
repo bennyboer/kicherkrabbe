@@ -1,11 +1,18 @@
-<div class="sort-filter-header">
-  <app-sort-selector [properties]="sortProperties" (sorted)="onSort($event)"></app-sort-selector>
-</div>
+<app-filter-sort-bar [filters]="filters"
+                     [sortingOptions]="sortingOptions"
+                     (filtered)="updateFilters($event.filters)"
+                     (sorted)="updateSorting($event.option, $event.ascending)">
+</app-filter-sort-bar>
 
-<app-filter-sort-bar [style.display]="'none'" [filters]="filters"></app-filter-sort-bar>
-
-<app-card-list *ngIf="items$ | async as items" [items]="items" [template]="template">
-</app-card-list>
+@if (items$ | async; as items) {
+  @if (items.length > 0) {
+    <app-card-list [items]="items" [template]="template"></app-card-list>
+  } @else {
+    <div class="no-results-hint">
+      <p>Es konnten keine Stoffe gefunden werden.</p>
+    </div>
+  }
+}
 
 <ng-template #template let-item>
   <div class="repeated-fabric-image" [style.background-image]="'url(' + item.imageUrl + ')'"></div>

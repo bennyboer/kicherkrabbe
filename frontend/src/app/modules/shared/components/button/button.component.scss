@@ -6,11 +6,14 @@
   cursor: pointer;
   user-select: none;
   background-color: var(--contrast);
-  border-radius: 12px;
   padding: 8px;
   font-size: 16px;
   color: var(--text);
-  transition: background-color 0.2s ease-out, box-shadow 0.2s ease-out;
+  transition: background-color 0.2s ease-out;
+
+  &.rounded {
+    border-radius: 12px;
+  }
 
   &.small {
     padding: 4px;
@@ -23,36 +26,10 @@
   }
 
   &:hover, &.active {
-    background-color: var(--contrast-lower);
-    box-shadow: inset 0px -2px 0 rgba(var(--text-rgb), 0.2);
+    background-color: var(--background-low-contrast);
   }
 
-  &.in-button-row {
-    border-radius: 0;
-
-    &.first-item {
-      border-top-left-radius: 12px;
-      border-bottom-left-radius: 12px;
-    }
-
-    &.last-item {
-      border-top-right-radius: 12px;
-      border-bottom-right-radius: 12px;
-    }
+  &:active {
+    background-color: var(--background-mid-contrast);
   }
-
-  &.in-button-column {
-    border-radius: 0;
-
-    &.first-item {
-      border-top-left-radius: 12px;
-      border-top-right-radius: 12px;
-    }
-
-    &.last-item {
-      border-bottom-left-radius: 12px;
-      border-bottom-right-radius: 12px;
-    }
-  }
-
 }

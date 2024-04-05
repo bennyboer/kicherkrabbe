@@ -32,3 +32,13 @@
   box-shadow: 0 6px 12px 0 rgba(var(--shadow-rgba));
   box-sizing: border-box;
 }
+
+.no-results-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--contrast);
+  border-radius: 12px;
+  padding: 8px;
+  text-align: center;
+}

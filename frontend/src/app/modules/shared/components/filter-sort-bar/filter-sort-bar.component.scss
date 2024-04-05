@@ -5,9 +5,38 @@
   background-color: var(--contrast);
   border-radius: 12px;
   margin-bottom: 16px;
+  overflow: hidden;
 }
 
-.area-label {
-  margin-right: 8px;
-  color: rgba(var(--text-rgb), 0.7);
+.sort-area {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.dropdown-header {
+  border-bottom: 1px solid var(--background-low-contrast);
+}
+
+.dropdown-footer {
+  border-top: 1px solid var(--background-low-contrast);
+}
+
+.dropdown-header, .dropdown-footer {
+  white-space: nowrap;
+}
+
+@media only screen and (max-width: 1000px) {
+  .filter-area {
+    width: 50%;
+  }
+
+  app-mobile-switch {
+    width: 100%;
+  }
+
+  .sort-area {
+    width: 50%;
+    flex-direction: column;
+  }
 }

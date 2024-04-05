@@ -3,16 +3,31 @@ import {
   Component,
   ContentChild,
   ElementRef,
-  HostListener,
+  EventEmitter,
   Input,
   OnDestroy,
+  OnInit,
+  Output,
   TemplateRef,
+  ViewChild,
 } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { Option } from '../../../../util';
+import {
+  BehaviorSubject,
+  map,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
+import { Option, Point, Rect, Size } from '../../../../util';
+import { OverlayRef, OverlayService } from '../../services';
+
+export type DropdownItemId = string;
 
 export interface DropdownItem {
-  id: string;
+  id: DropdownItemId;
+  label: string;
 }
 
 @Component({
@@ -21,50 +36,172 @@ export interface DropdownItem {
   styleUrls: ['./dropdown.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DropdownComponent<I extends DropdownItem> implements OnDestroy {
+export class DropdownComponent implements OnDestroy, OnInit {
   @ContentChild(TemplateRef)
   itemTemplate!: TemplateRef<any>;
 
+  @ViewChild('dropdownTemplate')
+  dropdownTemplateRef!: TemplateRef<any>;
+
   @Input()
-  placeholder: string = '';
+  label: string = '';
+
+  @Input()
+  multiple: boolean = false;
 
   @Input('items')
-  set setItems(items: I[]) {
+  set setItems(items: DropdownItem[]) {
     Option.someOrNone(items).ifSome((items) => this.items$.next(items));
   }
 
-  private readonly items$: Subject<I[]> = new ReplaySubject<I[]>(1);
-  private readonly opened$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-
-  constructor(private readonly elementRef: ElementRef) {}
-
-  ngOnDestroy(): void {
-    this.items$.complete();
-    this.opened$.complete();
+  @Input('selected')
+  set setSelected(selected: DropdownItemId[]) {
+    Option.someOrNone(selected).ifSome((selected) => {
+      this.selected$.next(new Set(selected));
+    });
   }
 
-  @HostListener('document:click', ['$event'])
-  onClickOut(event: MouseEvent) {
-    const isClickOutsideComponent = !this.elementRef.nativeElement.contains(
-      event.target,
-    );
-    const isCurrentlyOpened = this.opened$.value;
+  @Output()
+  selectionChanged: EventEmitter<DropdownItemId[]> = new EventEmitter<
+    DropdownItemId[]
+  >();
 
-    if (isClickOutsideComponent && isCurrentlyOpened) {
-      this.toggle();
+  private readonly items$: BehaviorSubject<DropdownItem[]> =
+    new BehaviorSubject<DropdownItem[]>([]);
+  private readonly selected$: BehaviorSubject<Set<DropdownItemId>> =
+    new BehaviorSubject<Set<DropdownItemId>>(new Set<DropdownItemId>());
+  private readonly destroy$: Subject<void> = new Subject<void>();
+  private readonly openedOverlay$: BehaviorSubject<Option<OverlayRef>> =
+    new BehaviorSubject<Option<OverlayRef>>(Option.none());
+
+  constructor(
+    private readonly elementRef: ElementRef,
+    private readonly overlayService: OverlayService,
+  ) {}
+
+  ngOnInit(): void {
+    this.selected$.pipe(takeUntil(this.destroy$)).subscribe((selected) => {
+      this.selectionChanged.emit(Array.from(selected));
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.closeOpenedOverlay();
+
+    this.openedOverlay$.complete();
+    this.items$.complete();
+    this.selected$.complete();
+
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  getSelected(): Observable<DropdownItemId[]> {
+    return this.selected$
+      .asObservable()
+      .pipe(map((selected) => Array.from(selected)));
+  }
+
+  isSelected(id: DropdownItemId): Observable<boolean> {
+    return this.getSelected().pipe(map((selected) => selected.includes(id)));
+  }
+
+  toggleItemSelection(id: DropdownItemId): void {
+    const updatedSet = new Set([...this.selected$.value]);
+    const isSelected = updatedSet.has(id);
+
+    if (isSelected) {
+      const updated = updatedSet.delete(id);
+      if (updated) {
+        this.selected$.next(updatedSet);
+      }
+    } else {
+      if (!this.multiple) {
+        updatedSet.clear();
+      }
+
+      updatedSet.add(id);
+
+      this.selected$.next(updatedSet);
     }
   }
 
   isOpened(): Observable<boolean> {
-    return this.opened$.asObservable();
+    return this.openedOverlay$.pipe(
+      switchMap((overlay) =>
+        overlay.map((o) => o.isOpened()).orElse(of(false)),
+      ),
+    );
   }
 
-  getItems(): Observable<I[]> {
+  getItems(): Observable<DropdownItem[]> {
     return this.items$.asObservable();
   }
 
-  toggle(): void {
-    this.opened$.next(!this.opened$.value);
+  toggleOpened(): void {
+    const openedOverlayId = this.openedOverlay$.value;
+    const isOpened = openedOverlayId
+      .map((overlay) => overlay.isCurrentlyOpened())
+      .orElse(false);
+
+    if (isOpened) {
+      this.closeOpenedOverlay();
+      this.openedOverlay$.next(Option.none());
+    } else {
+      const rect = this.getElementRect();
+
+      this.openedOverlay$.next(
+        Option.some(
+          this.overlayService.pushOverlay({
+            templateRef: this.dropdownTemplateRef,
+            parent: this.elementRef.nativeElement as HTMLElement,
+            offset: Point.of({ x: 0, y: rect.size.height }),
+            minWidth: rect.size.width,
+          }),
+        ),
+      );
+    }
+  }
+
+  selectAll(): void {
+    const itemIds = this.items$.value.map((item) => item.id);
+    this.selected$.next(new Set(itemIds));
+  }
+
+  clearSelection(): void {
+    this.selected$.next(new Set<DropdownItemId>());
+  }
+
+  onItemClick(item: DropdownItem, _event: MouseEvent): void {
+    this.toggleItemSelection(item.id);
+  }
+
+  getSelectedLabel(selected: DropdownItemId[]): string {
+    if (selected.length === 0) {
+      return this.label;
+    }
+
+    const selectedItemId = selected[0];
+    const selectedItem = this.items$.value.find(
+      (item) => item.id === selectedItemId,
+    );
+    return selectedItem ? selectedItem.label : this.label;
+  }
+
+  private getElementRect(): Rect {
+    const element = this.elementRef.nativeElement as HTMLElement;
+    const rect = element.getBoundingClientRect();
+
+    const position = Point.of({ x: rect.left, y: rect.top });
+    const size = Size.of({ width: rect.width, height: rect.height });
+
+    return Rect.of({
+      position,
+      size,
+    });
+  }
+
+  private closeOpenedOverlay(): void {
+    this.openedOverlay$.value.ifSome((overlay) => overlay.close());
   }
 }

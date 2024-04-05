@@ -6,12 +6,16 @@ import {
   ButtonComponent,
   ButtonRowComponent,
   CardListComponent,
+  CheckboxComponent,
   DropdownComponent,
   FilterSortBarComponent,
+  MobileSwitchComponent,
+  OverlayComponent,
+  OverlayContainerComponent,
   PriceTagComponent,
-  SortSelectorComponent,
+  RadioComponent,
 } from './components';
-import { FlagService } from './services';
+import { FlagService, OverlayService } from './services';
 import { FlagDirective, UnlessFlagDirective } from './directives';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -21,12 +25,16 @@ const COMPONENTS = [
   CardListComponent,
   AccordionComponent,
   AccordionItemComponent,
-  SortSelectorComponent,
   FilterSortBarComponent,
   DropdownComponent,
   ButtonComponent,
   ButtonRowComponent,
   ButtonColumnComponent,
+  CheckboxComponent,
+  RadioComponent,
+  MobileSwitchComponent,
+  OverlayContainerComponent,
+  OverlayComponent,
 ];
 
 const DIRECTIVES = [FlagDirective, UnlessFlagDirective];
@@ -40,7 +48,7 @@ export class SharedModule {
   static forRoot() {
     return {
       ngModule: SharedModule,
-      providers: [FlagService],
+      providers: [FlagService, OverlayService],
     };
   }
 

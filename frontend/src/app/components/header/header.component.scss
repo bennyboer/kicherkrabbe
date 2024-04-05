@@ -137,11 +137,13 @@ nav {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
     gap: 16px;
     width: 100%;
     box-sizing: border-box;
     background-color: var(--contrast);
     border-radius: 12px;
+    overflow: hidden;
 
     & > .desktop {
       width: 100%;

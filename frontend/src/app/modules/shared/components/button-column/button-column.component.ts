@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  HostBinding,
   Injector,
   Input,
 } from '@angular/core';
@@ -26,15 +27,9 @@ export class ButtonColumnComponent {
     this.buttonRegistry.setSize(size);
   }
 
-  @Input('firstRounded')
-  set setFirstRounded(rounded: boolean) {
-    this.buttonRegistry.setFirstRounded(rounded);
-  }
-
-  @Input('lastRounded')
-  set setLastRounded(rounded: boolean) {
-    this.buttonRegistry.setLastRounded(rounded);
-  }
+  @HostBinding('class.rounded')
+  @Input()
+  rounded: boolean = true;
 
   constructor(
     private readonly buttonRegistry: ButtonRegistry,

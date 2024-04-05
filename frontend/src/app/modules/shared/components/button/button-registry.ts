@@ -43,16 +43,9 @@ export abstract class ButtonRegistry implements OnDestroy {
     Size.NORMAL,
   );
 
-  private readonly firstRounded$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
-  private readonly lastRounded$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
-
   ngOnDestroy(): void {
     this.lookup$.complete();
     this.size$.complete();
-    this.firstRounded$.complete();
-    this.lastRounded$.complete();
   }
 
   protected abstract afterRegister(button: RegisteredButton): void;
@@ -96,28 +89,12 @@ export abstract class ButtonRegistry implements OnDestroy {
       );
   }
 
-  isFirstRounded(): Observable<boolean> {
-    return this.firstRounded$.asObservable();
-  }
-
-  isLastRounded(): Observable<boolean> {
-    return this.lastRounded$.asObservable();
-  }
-
   getSize(): Observable<Size> {
     return this.size$.asObservable();
   }
 
   setSize(size: Size): void {
     this.size$.next(size);
-  }
-
-  setFirstRounded(rounded: boolean): void {
-    this.firstRounded$.next(rounded);
-  }
-
-  setLastRounded(rounded: boolean): void {
-    this.lastRounded$.next(rounded);
   }
 
   protected getCurrentLookup(): RegisteredButtonsLookup {
