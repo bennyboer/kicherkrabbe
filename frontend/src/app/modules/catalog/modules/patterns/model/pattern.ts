@@ -1,10 +1,12 @@
 import { PatternVariant } from './variant';
 import { PatternExtra } from './extra';
 import { Image, Money, Option } from '../../../../../util';
+import { Category } from './category';
 
 export class Pattern {
   readonly id: string;
   readonly name: string;
+  readonly categories: Set<Category>;
   readonly previewImage: Image;
   readonly images: Image[];
   readonly variants: PatternVariant[];
@@ -15,6 +17,7 @@ export class Pattern {
   private constructor(props: {
     id: string;
     name: string;
+    categories: Set<Category>;
     previewImage: Image;
     images: Image[];
     variants: PatternVariant[];
@@ -26,6 +29,7 @@ export class Pattern {
     this.name = Option.someOrNone(props.name).orElseThrow(
       'Pattern name is required',
     );
+    this.categories = Option.someOrNone(props.categories).orElse(new Set());
     this.previewImage = Option.someOrNone(props.previewImage).orElseThrow(
       'Pattern preview image is required',
     );
@@ -49,6 +53,7 @@ export class Pattern {
   static of(props: {
     id: string;
     name: string;
+    categories: Set<Category>;
     previewImage: Image;
     images: Image[];
     variants: PatternVariant[];
@@ -59,6 +64,7 @@ export class Pattern {
     return new Pattern({
       id: props.id,
       name: props.name,
+      categories: props.categories,
       previewImage: props.previewImage,
       images: props.images,
       variants: props.variants,
@@ -98,6 +104,10 @@ export class Pattern {
         return `${smallestSize} - ${l}${sizeUnit}`;
       })
       .orElse(`ab ${smallestSize}${sizeUnit}`);
+  }
+
+  isAvailableInSize(size: number): boolean {
+    return this.variants.some((variant) => variant.isAvailableInSize(size));
   }
 
   private getSmallestSize(): number {

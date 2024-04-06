@@ -111,9 +111,11 @@ export class DropdownComponent implements OnDestroy, OnInit {
     const isSelected = updatedSet.has(id);
 
     if (isSelected) {
-      const updated = updatedSet.delete(id);
-      if (updated) {
-        this.selected$.next(updatedSet);
+      if (this.multiple) {
+        const updated = updatedSet.delete(id);
+        if (updated) {
+          this.selected$.next(updatedSet);
+        }
       }
     } else {
       if (!this.multiple) {

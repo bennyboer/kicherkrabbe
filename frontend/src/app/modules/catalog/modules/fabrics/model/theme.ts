@@ -26,6 +26,7 @@ export const FRUITS = Theme.of({ id: 'fruits', name: 'Früchte' });
 export const SUMMER = Theme.of({ id: 'summer', name: 'Sommer' });
 export const SWEETS = Theme.of({ id: 'sweets', name: 'Süßigkeiten' });
 export const FALL = Theme.of({ id: 'fall', name: 'Herbst' });
+export const WINTER = Theme.of({ id: 'winter', name: 'Winter' });
 
 export const THEMES = [
   FLORAL,
@@ -39,4 +40,5 @@ export const THEMES = [
   SWEETS,
   HALLOWEEN,
   FALL,
+  WINTER,
 ];

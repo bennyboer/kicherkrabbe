@@ -99,8 +99,8 @@ export class Filter {
     return this.selectionMode === FilterSelectionMode.MULTIPLE;
   }
 
-  getSelected(): Observable<FilterItemId[]> {
-    return this.selected$.pipe(map((selected) => Array.from(selected)));
+  getSelected(): FilterItemId[] {
+    return Array.from(this.selected$.value);
   }
 
   setSelected(ids: FilterItemId[]): void {
@@ -308,7 +308,6 @@ export class FilterSortBarComponent implements OnInit, OnDestroy {
         );
 
         if (!!selectedSortingOption) {
-          // TODO Only emit event if changed!
           this.sorted.emit(
             SortEvent.of({
               option: selectedSortingOption,
@@ -322,7 +321,7 @@ export class FilterSortBarComponent implements OnInit, OnDestroy {
   private emitFilteredEvent(): void {
     this.filters$.pipe(take(1)).subscribe((filters) => {
       const activeFilters = filters.filter((filter) => filter.isActive());
-      this.filtered.emit(FilterEvent.of({ filters: activeFilters })); // TODO Only emit event is changed!
+      this.filtered.emit(FilterEvent.of({ filters: activeFilters }));
     });
   }
 

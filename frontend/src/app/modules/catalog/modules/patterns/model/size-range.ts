@@ -53,4 +53,10 @@ export class SizeRange {
 
     return this.unit.map((unit) => `${range} ${unit}`).orElse(range);
   }
+
+  includes(size: number): boolean {
+    return this.to
+      .map((to) => size >= this.from && size <= to)
+      .orElse(size === this.from);
+  }
 }

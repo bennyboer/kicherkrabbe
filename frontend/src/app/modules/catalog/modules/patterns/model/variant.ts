@@ -76,4 +76,8 @@ export class PatternVariant {
       sizes.reduce((acc, size) => (size > acc ? size : acc), sizes[0]),
     );
   }
+
+  isAvailableInSize(size: number): boolean {
+    return this.sizes.some((variantSize) => variantSize.includes(size));
+  }
 }

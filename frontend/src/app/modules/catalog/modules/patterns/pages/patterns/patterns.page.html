@@ -1,1 +1,15 @@
-<app-card-list *ngIf="items$ | async as items" [items]="items"></app-card-list>
+<app-filter-sort-bar [filters]="filters"
+                     [sortingOptions]="sortingOptions"
+                     (filtered)="updateFilters($event.filters)"
+                     (sorted)="updateSorting($event.option, $event.ascending)">
+</app-filter-sort-bar>
+
+@if (items$ | async; as items) {
+  @if (items.length > 0) {
+    <app-card-list [items]="items"></app-card-list>
+  } @else {
+    <div class="no-results-hint">
+      <p>Es konnten keine Schnitte gefunden werden.</p>
+    </div>
+  }
+}

@@ -30,6 +30,7 @@ import {
   Theme,
   TypeAvailability,
   WHITE,
+  WINTER,
 } from '../model';
 
 @Injectable()
@@ -988,6 +989,21 @@ export class RemoteFabricsService {
       },
       colors: new Set<Color>([BEIGE, RED]),
       themes: new Set<Theme>([FANTASY, FALL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'winternacht',
+      name: 'Winternacht',
+      image: {
+        url: '/assets/images/fabrics/winternacht.jpg',
+      },
+      colors: new Set<Color>([BLUE]),
+      themes: new Set<Theme>([ANIMALS, WINTER]),
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),

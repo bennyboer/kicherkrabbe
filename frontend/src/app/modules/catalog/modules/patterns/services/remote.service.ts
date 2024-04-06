@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Pattern, PatternExtra, PatternVariant, SizeRange } from '../model';
 import { Observable, of } from 'rxjs';
 import { Image, Money } from '../../../../../util';
+import { ACCESSORY, DRESS, ONESIE, PANTS, TOP } from '../model/category';
 
 @Injectable()
 export class RemotePatternsService {
@@ -9,6 +10,7 @@ export class RemotePatternsService {
     Pattern.of({
       id: 'babyshirt',
       name: 'Babyshirt',
+      categories: new Set([TOP]),
       previewImage: Image.of({
         url: '/assets/images/patterns/babyshirt/preview.jpg',
       }),
@@ -43,6 +45,7 @@ export class RemotePatternsService {
     Pattern.of({
       id: 'basic-kleid-die-dritte',
       name: 'Basic Kleid die Dritte',
+      categories: new Set([DRESS]),
       previewImage: Image.of({
         url: '/assets/images/patterns/basic-kleid-die-dritte/preview.jpg',
       }),
@@ -80,6 +83,7 @@ export class RemotePatternsService {
     Pattern.of({
       id: 'basic-sweater-der-fuenfte',
       name: 'Basic Sweater der Fünfte',
+      categories: new Set([TOP]),
       previewImage: Image.of({
         url: '/assets/images/patterns/basic-sweater-der-fuenfte/preview.jpg',
       }),
@@ -145,6 +149,7 @@ export class RemotePatternsService {
     Pattern.of({
       id: 'dreieckstuch',
       name: 'Dreieckstuch',
+      categories: new Set([ACCESSORY]),
       previewImage: Image.of({
         url: '/assets/images/patterns/dreieckstuch/preview.jpg',
       }),
@@ -186,6 +191,7 @@ export class RemotePatternsService {
     Pattern.of({
       id: 'knickaboo',
       name: 'Hose Knickaboo',
+      categories: new Set([PANTS]),
       previewImage: Image.of({
         url: '/assets/images/patterns/knickaboo/preview.jpg',
       }),
@@ -235,6 +241,7 @@ export class RemotePatternsService {
     Pattern.of({
       id: 'kleid-heidi',
       name: 'Kleid Heidi',
+      categories: new Set([DRESS]),
       previewImage: Image.of({
         url: '/assets/images/patterns/kleid-heidi/preview.jpg',
       }),
@@ -286,6 +293,7 @@ export class RemotePatternsService {
     Pattern.of({
       id: 'kleid-morgan',
       name: 'Kleid Morgan',
+      categories: new Set([DRESS]),
       previewImage: Image.of({
         url: '/assets/images/patterns/kleid-morgan/preview.jpg',
       }),
@@ -343,6 +351,7 @@ export class RemotePatternsService {
     Pattern.of({
       id: 'muetzzel',
       name: 'Mützzel',
+      categories: new Set([ACCESSORY]),
       previewImage: Image.of({
         url: '/assets/images/patterns/muetzzel/preview.jpg',
       }),
@@ -376,6 +385,7 @@ export class RemotePatternsService {
     Pattern.of({
       id: 'pumphose-penny',
       name: 'Pumphose Penny',
+      categories: new Set([PANTS]),
       previewImage: Image.of({
         url: '/assets/images/patterns/pumphose-penny/preview.jpg',
       }),
@@ -412,6 +422,7 @@ export class RemotePatternsService {
     Pattern.of({
       id: 'sommerkleid-yuna',
       name: 'Sommerkleid Yuna',
+      categories: new Set([DRESS]),
       previewImage: Image.of({
         url: '/assets/images/patterns/sommerkleid-yuna/preview.jpg',
       }),
@@ -456,6 +467,7 @@ export class RemotePatternsService {
     Pattern.of({
       id: 'stracciatella',
       name: 'Top & Kleid Stracciatella',
+      categories: new Set([TOP, DRESS]),
       previewImage: Image.of({
         url: '/assets/images/patterns/stracciatella/preview.jpg',
       }),
@@ -513,6 +525,7 @@ export class RemotePatternsService {
     Pattern.of({
       id: 'latzhose',
       name: 'Latzhose',
+      categories: new Set([PANTS, ONESIE]),
       previewImage: Image.of({
         url: '/assets/images/patterns/latzhose/preview.jpg',
       }),
@@ -563,6 +576,7 @@ export class RemotePatternsService {
     Pattern.of({
       id: 'easy-peasy-pants',
       name: 'Easy Peasy Pants',
+      categories: new Set([PANTS]),
       previewImage: Image.of({
         url: '/assets/images/patterns/easy-peasy-pants/preview.jpg',
       }),
