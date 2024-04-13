@@ -473,10 +473,7 @@ export class RemotePatternsService {
       }),
       images: [
         Image.of({
-          url: '/assets/images/patterns/stracciatella/A.jpg',
-        }),
-        Image.of({
-          url: '/assets/images/patterns/stracciatella/B.jpg',
+          url: '/assets/images/patterns/stracciatella/Z.jpg',
         }),
         Image.of({
           url: '/assets/images/patterns/stracciatella/C.jpg',
@@ -653,6 +650,44 @@ export class RemotePatternsService {
       ],
       originalPatternName: 'Easy Peasy Pants',
       attribution: 'Herzklee Design',
+    }),
+    Pattern.of({
+      id: 'strampler',
+      name: 'Strampler',
+      categories: new Set([ONESIE]),
+      previewImage: Image.of({
+        url: '/assets/images/patterns/strampler/preview.jpg',
+      }),
+      images: [
+        Image.of({
+          url: '/assets/images/patterns/strampler/A.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/strampler/B.jpg',
+        }),
+      ],
+      variants: [
+        PatternVariant.of({
+          id: 'normal',
+          name: 'Normal',
+          sizes: [
+            SizeRange.of({ from: 56, to: 62, price: Money.euro(2700) }),
+            SizeRange.of({ from: 68, to: 74, price: Money.euro(2900) }),
+          ],
+        }),
+      ],
+      extras: [
+        PatternExtra.of({
+          name: 'Rüsche',
+          price: Money.zero(),
+        }),
+        PatternExtra.of({
+          name: 'Stickerei',
+          price: Money.euro(1200),
+        }),
+      ],
+      originalPatternName: 'Tigerstrampler',
+      attribution: 'Tigerlilly',
     }),
   ];
 

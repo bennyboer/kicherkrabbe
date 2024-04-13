@@ -1011,6 +1011,21 @@ export class RemoteFabricsService {
         ],
       }),
     }),
+    Fabric.of({
+      id: 'tierreich',
+      name: 'Tierreich',
+      image: {
+        url: '/assets/images/fabrics/tierreich.jpg',
+      },
+      colors: new Set<Color>([WHITE]),
+      themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
   ];
 
   getFabrics(): Observable<Fabric[]> {

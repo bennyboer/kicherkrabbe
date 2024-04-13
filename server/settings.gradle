@@ -1,0 +1,12 @@
+rootProject.name = 'server'
+
+include('app')
+
+include('libs:commons')
+include('libs:eventsourcing:core')
+include('libs:eventsourcing:example')
+include('libs:testing')
+
+include('domains:users')
+include('domains:patterns')
+include('domains:fabrics')
