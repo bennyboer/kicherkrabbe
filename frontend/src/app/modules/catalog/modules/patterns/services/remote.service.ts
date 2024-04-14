@@ -157,6 +157,9 @@ export class RemotePatternsService {
         Image.of({
           url: '/assets/images/patterns/dreieckstuch/A.jpg',
         }),
+        Image.of({
+          url: '/assets/images/patterns/dreieckstuch/B.jpg',
+        }),
       ],
       variants: [
         PatternVariant.of({
@@ -479,9 +482,6 @@ export class RemotePatternsService {
           url: '/assets/images/patterns/stracciatella/C.jpg',
         }),
         Image.of({
-          url: '/assets/images/patterns/stracciatella/D.jpg',
-        }),
-        Image.of({
           url: '/assets/images/patterns/stracciatella/E.jpg',
         }),
       ],
@@ -688,6 +688,116 @@ export class RemotePatternsService {
       ],
       originalPatternName: 'Tigerstrampler',
       attribution: 'Tigerlilly',
+    }),
+    Pattern.of({
+      id: 'sommer-romper',
+      name: 'Sommerromper',
+      categories: new Set([ONESIE]),
+      previewImage: Image.of({
+        url: '/assets/images/patterns/sommer-romper/preview.jpg',
+      }),
+      images: [
+        Image.of({
+          url: '/assets/images/patterns/sommer-romper/A.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/sommer-romper/B.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/sommer-romper/C.jpg',
+        }),
+      ],
+      variants: [
+        PatternVariant.of({
+          id: 'short',
+          name: 'Kurz',
+          sizes: [
+            SizeRange.of({ from: 56, to: 62, price: Money.euro(3200) }),
+            SizeRange.of({ from: 68, to: 74, price: Money.euro(3400) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(3600) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(3800) }),
+          ],
+        }),
+        PatternVariant.of({
+          id: 'long',
+          name: 'Lang',
+          sizes: [
+            SizeRange.of({ from: 56, to: 62, price: Money.euro(3500) }),
+            SizeRange.of({ from: 68, to: 74, price: Money.euro(3700) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(3900) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(4100) }),
+          ],
+        }),
+      ],
+      extras: [
+        PatternExtra.of({
+          name: 'Fake Knopfleiste',
+          price: Money.euro(300),
+        }),
+        PatternExtra.of({
+          name: 'Schleife zum Binden oder Knöpfe',
+          price: Money.zero(),
+        }),
+      ],
+      originalPatternName: 'Baby Festival Combo',
+      attribution: 'Tadah Patterns',
+    }),
+    Pattern.of({
+      id: 'sommer-kleid',
+      name: 'Sommerkleid',
+      categories: new Set([DRESS]),
+      previewImage: Image.of({
+        url: '/assets/images/patterns/sommer-kleid/preview.jpg',
+      }),
+      images: [
+        Image.of({
+          url: '/assets/images/patterns/sommer-kleid/A.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/sommer-kleid/B.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/sommer-kleid/C.jpg',
+        }),
+      ],
+      variants: [
+        PatternVariant.of({
+          id: 'onestep',
+          name: 'Einstufig',
+          sizes: [
+            SizeRange.of({ from: 56, to: 62, price: Money.euro(3000) }),
+            SizeRange.of({ from: 68, to: 74, price: Money.euro(3200) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(3400) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(3600) }),
+            SizeRange.of({ from: 104, to: 110, price: Money.euro(3800) }),
+            SizeRange.of({ from: 116, to: 116, price: Money.euro(4000) }),
+          ],
+        }),
+        PatternVariant.of({
+          id: 'twostep',
+          name: 'Zweistufig',
+          sizes: [
+            SizeRange.of({ from: 56, to: 62, price: Money.euro(3300) }),
+            SizeRange.of({ from: 68, to: 74, price: Money.euro(3500) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(3700) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(3900) }),
+            SizeRange.of({ from: 104, to: 110, price: Money.euro(4100) }),
+            SizeRange.of({ from: 116, to: 116, price: Money.euro(4300) }),
+          ],
+        }),
+      ],
+      extras: [
+        PatternExtra.of({
+          name: 'Fake Knopfleiste',
+          price: Money.euro(300),
+        }),
+        PatternExtra.of({
+          name: 'Schleife zum Binden oder Knöpfe',
+          price: Money.zero(),
+        }),
+      ],
+      originalPatternName: 'Baby Festival Combo',
+      attribution: 'Tadah Patterns',
     }),
   ];
 

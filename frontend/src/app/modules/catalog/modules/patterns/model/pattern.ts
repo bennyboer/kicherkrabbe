@@ -127,7 +127,11 @@ export class Pattern {
       return Option.none();
     }
 
-    return sizes.reduce((acc, size) => (size > acc ? size : acc), sizes[0]);
+    return Option.some(
+      sizes
+        .flatMap((size) => size.map((s) => [s]).orElse([]))
+        .reduce((acc, size) => (size > acc ? size : acc), sizes[0].orElse(0)),
+    );
   }
 
   private getSizeUnit(): Option<string> {
