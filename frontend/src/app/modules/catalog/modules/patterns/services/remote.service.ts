@@ -313,40 +313,37 @@ export class RemotePatternsService {
         Image.of({
           url: '/assets/images/patterns/kleid-morgan/D.jpg',
         }),
-        Image.of({
-          url: '/assets/images/patterns/kleid-morgan/E.jpg',
-        }),
       ],
       variants: [
         PatternVariant.of({
           id: 'normal',
           name: 'Normal',
           sizes: [
-            SizeRange.of({ from: 80, to: 86, price: Money.euro(4400) }),
-            SizeRange.of({ from: 92, to: 98, price: Money.euro(4600) }),
-            SizeRange.of({ from: 104, to: 110, price: Money.euro(4800) }),
-            SizeRange.of({ from: 116, to: 116, price: Money.euro(5000) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(4000) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(4200) }),
+            SizeRange.of({ from: 104, to: 110, price: Money.euro(4400) }),
+            SizeRange.of({ from: 116, to: 116, price: Money.euro(4600) }),
           ],
         }),
         PatternVariant.of({
           id: 'top-length',
           name: 'Toplänge',
           sizes: [
-            SizeRange.of({ from: 80, to: 86, price: Money.euro(3800) }),
-            SizeRange.of({ from: 92, to: 98, price: Money.euro(4000) }),
-            SizeRange.of({ from: 104, to: 110, price: Money.euro(4200) }),
-            SizeRange.of({ from: 116, to: 116, price: Money.euro(4400) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(3400) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(3600) }),
+            SizeRange.of({ from: 104, to: 110, price: Money.euro(3800) }),
+            SizeRange.of({ from: 116, to: 116, price: Money.euro(4000) }),
           ],
         }),
       ],
       extras: [
         PatternExtra.of({
           name: 'Fake Knopfleiste (mit Knöpfen und Spitze)',
-          price: Money.euro(500),
+          price: Money.euro(300),
         }),
         PatternExtra.of({
-          name: 'Kurze Puffärmel',
-          price: Money.euro(-400),
+          name: 'Lange Puffärmel',
+          price: Money.euro(400),
         }),
       ],
       attribution: 'LLK',
