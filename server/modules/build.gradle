@@ -4,8 +4,12 @@ subprojects {
 
     dependencies {
         implementation project(':libs:commons')
+        implementation project(':libs:eventsourcing:core')
 
         implementation 'org.springframework.boot:spring-boot-starter'
         implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+
+        testImplementation project(':libs:testing')
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
     }
 }
