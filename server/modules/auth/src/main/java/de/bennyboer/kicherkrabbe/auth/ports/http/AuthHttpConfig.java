@@ -1,11 +1,10 @@
 package de.bennyboer.kicherkrabbe.auth.ports.http;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import de.bennyboer.kicherkrabbe.auth.AuthModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -14,15 +13,15 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
-public class HttpConfig {
+public class AuthHttpConfig {
 
     @Bean
-    public HttpHandler authHttpHandler() {
-        return new HttpHandler();
+    public AuthHttpHandler authHttpHandler(AuthModule module) {
+        return new AuthHttpHandler(module);
     }
 
     @Bean
-    public RouterFunction<ServerResponse> authHttpRouting(@Qualifier("authHttpHandler") HttpHandler handler) {
+    public RouterFunction<ServerResponse> authHttpRouting(AuthHttpHandler handler) {
         return route()
                 .nest(path("/auth"), () -> route()
                         .nest(path("/credentials"), () -> route()
@@ -33,14 +32,9 @@ public class HttpConfig {
     }
 
     @Bean
-    public SecurityWebFilterChain authSpringSecurityFilterChain(ServerHttpSecurity http) {
-        http
-                .securityMatcher(new PathPatternParserServerWebExchangeMatcher("/auth/**"))
-                .authorizeExchange((exchanges) -> exchanges
-                        .pathMatchers(POST, "/auth/credentials/use").permitAll()
-                        .anyExchange().authenticated());
-
-        return http.build();
+    public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> authAuthorizeExchangeSpecCustomizer() {
+        return exchanges -> exchanges
+                .pathMatchers(POST, "/auth/credentials/use").permitAll();
     }
 
 }
