@@ -42,44 +42,44 @@ export class RemotePatternsService {
       ],
       attribution: 'RosaRosa',
     }),
-    Pattern.of({
-      id: 'basic-kleid-die-dritte',
-      name: 'Basic Kleid die Dritte',
-      categories: new Set([DRESS]),
-      previewImage: Image.of({
-        url: '/assets/images/patterns/basic-kleid-die-dritte/preview.jpg',
-      }),
-      images: [
-        Image.of({
-          url: '/assets/images/patterns/basic-kleid-die-dritte/A.jpg',
-        }),
-        Image.of({
-          url: '/assets/images/patterns/basic-kleid-die-dritte/B.jpg',
-        }),
-        Image.of({
-          url: '/assets/images/patterns/basic-kleid-die-dritte/C.jpg',
-        }),
-      ],
-      variants: [
-        PatternVariant.of({
-          id: 'basic',
-          name: 'Basic',
-          sizes: [
-            SizeRange.of({ from: 80, to: 86, price: Money.euro(3300) }),
-            SizeRange.of({ from: 92, to: 98, price: Money.euro(3500) }),
-            SizeRange.of({ from: 104, to: 110, price: Money.euro(3700) }),
-            SizeRange.of({ from: 116, to: 116, price: Money.euro(3900) }),
-          ],
-        }),
-      ],
-      extras: [
-        PatternExtra.of({
-          name: 'Rollkragen',
-          price: Money.euro(500),
-        }),
-      ],
-      attribution: 'kiOo kiOo',
-    }),
+    // Pattern.of({
+    //   id: 'basic-kleid-die-dritte',
+    //   name: 'Basic Kleid die Dritte',
+    //   categories: new Set([DRESS]),
+    //   previewImage: Image.of({
+    //     url: '/assets/images/patterns/basic-kleid-die-dritte/preview.jpg',
+    //   }),
+    //   images: [
+    //     Image.of({
+    //       url: '/assets/images/patterns/basic-kleid-die-dritte/A.jpg',
+    //     }),
+    //     Image.of({
+    //       url: '/assets/images/patterns/basic-kleid-die-dritte/B.jpg',
+    //     }),
+    //     Image.of({
+    //       url: '/assets/images/patterns/basic-kleid-die-dritte/C.jpg',
+    //     }),
+    //   ],
+    //   variants: [
+    //     PatternVariant.of({
+    //       id: 'basic',
+    //       name: 'Basic',
+    //       sizes: [
+    //         SizeRange.of({ from: 80, to: 86, price: Money.euro(3300) }),
+    //         SizeRange.of({ from: 92, to: 98, price: Money.euro(3500) }),
+    //         SizeRange.of({ from: 104, to: 110, price: Money.euro(3700) }),
+    //         SizeRange.of({ from: 116, to: 116, price: Money.euro(3900) }),
+    //       ],
+    //     }),
+    //   ],
+    //   extras: [
+    //     PatternExtra.of({
+    //       name: 'Rollkragen',
+    //       price: Money.euro(500),
+    //     }),
+    //   ],
+    //   attribution: 'kiOo kiOo',
+    // }),
     Pattern.of({
       id: 'basic-sweater-der-fuenfte',
       name: 'Basic Sweater der Fünfte',

@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.auth.ports.http;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -21,7 +22,7 @@ public class HttpConfig {
     }
 
     @Bean
-    public RouterFunction<ServerResponse> authHttpRouting(HttpHandler handler) {
+    public RouterFunction<ServerResponse> authHttpRouting(@Qualifier("authHttpHandler") HttpHandler handler) {
         return route()
                 .nest(path("/auth"), () -> route()
                         .nest(path("/credentials"), () -> route()
@@ -32,7 +33,7 @@ public class HttpConfig {
     }
 
     @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+    public SecurityWebFilterChain authSpringSecurityFilterChain(ServerHttpSecurity http) {
         http
                 .securityMatcher(new PathPatternParserServerWebExchangeMatcher("/auth/**"))
                 .authorizeExchange((exchanges) -> exchanges

@@ -35,3 +35,5 @@ out/
 
 ### VS Code ###
 .vscode/
+
+app/src/main/resources/keys/key_pair.pem

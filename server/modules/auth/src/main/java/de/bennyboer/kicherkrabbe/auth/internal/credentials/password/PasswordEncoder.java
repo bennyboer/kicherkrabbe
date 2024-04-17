@@ -36,4 +36,8 @@ public class PasswordEncoder {
         return encoder.matches(password, encodedPassword);
     }
 
+    public org.springframework.security.crypto.password.PasswordEncoder getInternalEncoder() {
+        return encoder;
+    }
+
 }
