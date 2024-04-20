@@ -9,6 +9,8 @@ subprojects {
 
     apply plugin: 'java'
     apply plugin: 'io.freefair.lombok'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
 
     group = 'de.bennyboer.kicherkrabbe'
     version = '0.0.1'
@@ -25,6 +27,11 @@ subprojects {
 
     dependencies {
         implementation 'io.projectreactor:reactor-core:3.6.5'
+
+        implementation 'org.springframework.boot:spring-boot-starter'
+        implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+        implementation 'org.springframework.boot:spring-boot-starter-security'
+        implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
         testImplementation 'io.projectreactor:reactor-test:3.6.5'
         testImplementation("org.assertj:assertj-core:3.25.1")

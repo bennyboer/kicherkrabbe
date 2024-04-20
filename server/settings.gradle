@@ -3,9 +3,11 @@ rootProject.name = 'server'
 include('app')
 
 include('libs:commons')
-include('libs:eventsourcing:core')
-include('libs:eventsourcing:example')
+include('libs:eventsourcing:eventsourcing-core')
+include('libs:eventsourcing:eventsourcing-example')
 include('libs:testing')
+include('libs:messaging:messaging-core')
+include('libs:messaging:messaging-example')
 
 include('modules:auth')
 include('modules:users')

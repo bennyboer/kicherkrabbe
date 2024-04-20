@@ -4,16 +4,18 @@ import de.bennyboer.kicherkrabbe.auth.internal.credentials.CredentialsEventPaylo
 import de.bennyboer.kicherkrabbe.auth.internal.credentials.CredentialsService;
 import de.bennyboer.kicherkrabbe.auth.ports.http.AuthHttpConfig;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.messaging.MessagingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.mongo.MongoEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
 import java.time.Clock;
+import java.util.Optional;
 
 @Configuration
 @Import({
@@ -22,24 +24,27 @@ import java.time.Clock;
 })
 public class AuthModuleConfig {
 
-    @Bean
-    @ConditionalOnMissingBean(Clock.class)
-    public Clock clock() {
-        return Clock.systemUTC();
-    }
-
-    @Bean
+    @Bean("credentialsEventSourcingRepo")
     public EventSourcingRepo credentialsEventSourcingRepo(ReactiveMongoTemplate template) {
         return new MongoEventSourcingRepo("credentials_events", template, new CredentialsEventPayloadSerializer());
+    }
+
+    @Bean("credentialsEventPublisher")
+    public MessagingEventPublisher credentialsEventPublisher(MessagingOutbox outbox, Optional<Clock> clock) {
+        return new MessagingEventPublisher(
+                outbox,
+                new CredentialsEventPayloadSerializer(),
+                clock.orElse(Clock.systemUTC())
+        );
     }
 
     @Bean
     public CredentialsService credentialsService(
             @Qualifier("credentialsEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
-            Clock clock
+            Optional<Clock> clock
     ) {
         // TODO Replace logging event publisher with a messaging bound one
-        return new CredentialsService(eventSourcingRepo, new LoggingEventPublisher(), clock);
+        return new CredentialsService(eventSourcingRepo, new LoggingEventPublisher(), clock.orElse(Clock.systemUTC()));
     }
 
     @Bean

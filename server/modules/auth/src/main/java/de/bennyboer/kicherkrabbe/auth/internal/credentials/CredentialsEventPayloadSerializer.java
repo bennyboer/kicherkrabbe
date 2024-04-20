@@ -5,13 +5,13 @@ import de.bennyboer.kicherkrabbe.auth.internal.credentials.password.EncodedPassw
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
-import de.bennyboer.kicherkrabbe.eventsourcing.persistence.mongo.MongoEventPayloadSerializer;
+import de.bennyboer.kicherkrabbe.eventsourcing.serialization.EventSerializer;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CredentialsEventPayloadSerializer implements MongoEventPayloadSerializer {
+public class CredentialsEventPayloadSerializer implements EventSerializer {
 
     @Override
     public Map<String, Object> serialize(Event event) {
