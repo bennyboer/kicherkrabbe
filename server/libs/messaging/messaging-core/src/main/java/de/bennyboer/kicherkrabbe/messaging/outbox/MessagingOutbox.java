@@ -4,7 +4,7 @@ import de.bennyboer.kicherkrabbe.messaging.outbox.persistence.MessagingOutboxRep
 import de.bennyboer.kicherkrabbe.messaging.outbox.publisher.MessagingOutboxEntryPublisher;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.reactive.TransactionContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -82,8 +82,10 @@ public class MessagingOutbox {
     }
 
     private Mono<Void> assertThatWeAreInATransaction() {
-        return Mono.defer(() -> {
-            if (!TransactionSynchronizationManager.isActualTransactionActive()) {
+        return Mono.deferContextual(context -> {
+            boolean isInTransaction = context.getOrEmpty(TransactionContext.class).isPresent();
+
+            if (!isInTransaction) {
                 return Mono.error(new IllegalStateException(
                         "No transaction active. A transaction is required to insert entries into the outbox."
                 ));

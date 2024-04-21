@@ -3,7 +3,6 @@ package de.bennyboer.kicherkrabbe.auth;
 import de.bennyboer.kicherkrabbe.auth.internal.credentials.CredentialsEventPayloadSerializer;
 import de.bennyboer.kicherkrabbe.auth.internal.credentials.CredentialsService;
 import de.bennyboer.kicherkrabbe.auth.ports.http.AuthHttpConfig;
-import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.messaging.MessagingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.mongo.MongoEventSourcingRepo;
@@ -41,10 +40,10 @@ public class AuthModuleConfig {
     @Bean
     public CredentialsService credentialsService(
             @Qualifier("credentialsEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
+            MessagingEventPublisher eventPublisher,
             Optional<Clock> clock
     ) {
-        // TODO Replace logging event publisher with a messaging bound one
-        return new CredentialsService(eventSourcingRepo, new LoggingEventPublisher(), clock.orElse(Clock.systemUTC()));
+        return new CredentialsService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));
     }
 
     @Bean

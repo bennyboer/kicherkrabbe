@@ -26,6 +26,7 @@ public class AuthHttpConfig {
                 .nest(path("/auth"), () -> route()
                         .nest(path("/credentials"), () -> route()
                                 .POST("/use", handler::useCredentials)
+                                .POST("/test", handler::test)
                                 .build())
                         .build())
                 .build();
@@ -34,7 +35,8 @@ public class AuthHttpConfig {
     @Bean
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> authAuthorizeExchangeSpecCustomizer() {
         return exchanges -> exchanges
-                .pathMatchers(POST, "/auth/credentials/use").permitAll();
+                .pathMatchers(POST, "/auth/credentials/use").permitAll()
+                .pathMatchers(POST, "/auth/credentials/test").permitAll(); // TODO Remove
     }
 
 }
