@@ -22,9 +22,4 @@ public class AuthHttpHandler {
                 .switchIfEmpty(ServerResponse.status(UNAUTHORIZED).build());
     }
 
-    // TODO Remove
-    public Mono<ServerResponse> test(ServerRequest request) {
-        return module.createCredentials("Test", "Password", "USER_ID")
-                .then(ServerResponse.ok().build());
-    }
 }
