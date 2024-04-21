@@ -48,7 +48,17 @@ public class MessagingEventPublisher implements EventPublisher {
                 .toLowerCase(Locale.ROOT);
         var routingKey = RoutingKey.ofParts("events", eventName);
 
-        Map<String, Object> payload = serializer.serialize(event);
+        Map<String, Object> eventPayload = serializer.serialize(event);
+        Map<String, Object> payload = Map.of(
+                "event", eventPayload,
+                "metadata", Map.of(
+                        "aggregateId", metadata.getAggregateId().getValue(),
+                        "aggregateType", metadata.getAggregateType().getValue(),
+                        "aggregateVersion", metadata.getAggregateVersion().getValue(),
+                        "eventName", event.getEventName().getValue(),
+                        "eventVersion", event.getVersion().getValue()
+                )
+        );
 
         return MessagingOutboxEntry.create(
                 target,

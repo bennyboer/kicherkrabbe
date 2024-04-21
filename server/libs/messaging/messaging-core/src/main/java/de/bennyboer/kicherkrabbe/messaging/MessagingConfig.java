@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import de.bennyboer.kicherkrabbe.messaging.listener.MessageListener;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -71,6 +72,11 @@ public class MessagingConfig {
     @Bean
     public Receiver receiver(ReceiverOptions options) {
         return RabbitFlux.createReceiver(options);
+    }
+    
+    @Bean
+    public MessageListener messageListener(Sender sender, Receiver receiver) {
+        return new MessageListener(sender, receiver);
     }
 
 }

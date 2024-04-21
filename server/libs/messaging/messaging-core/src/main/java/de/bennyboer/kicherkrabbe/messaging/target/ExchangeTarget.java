@@ -20,6 +20,10 @@ public class ExchangeTarget {
         return new ExchangeTarget(name);
     }
 
+    public static ExchangeTarget dead() {
+        return of("dead");
+    }
+
     @Override
     public String toString() {
         return "ExchangeTarget(%s)".formatted(name);

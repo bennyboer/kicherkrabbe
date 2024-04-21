@@ -1,11 +1,13 @@
 package de.bennyboer.kicherkrabbe.auth;
 
+import de.bennyboer.kicherkrabbe.auth.adapters.messaging.CredentialsCreatedListener;
 import de.bennyboer.kicherkrabbe.auth.internal.credentials.CredentialsEventPayloadSerializer;
 import de.bennyboer.kicherkrabbe.auth.internal.credentials.CredentialsService;
 import de.bennyboer.kicherkrabbe.auth.ports.http.AuthHttpConfig;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.messaging.MessagingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.mongo.MongoEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.messaging.listener.MessageListener;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +51,11 @@ public class AuthModuleConfig {
     @Bean
     public AuthModule authModule(CredentialsService credentialsService) {
         return new AuthModule(credentialsService);
+    }
+
+    @Bean
+    public CredentialsCreatedListener credentialsCreatedListener(MessageListener messageListener) {
+        return new CredentialsCreatedListener(messageListener);
     }
 
 }
