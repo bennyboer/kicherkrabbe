@@ -102,7 +102,8 @@ public class MongoMessagingOutboxRepo implements MessagingOutboxRepo {
 
     private Flux<MongoMessagingOutboxEntry> findNextPublishableEntries(int maxEntries) {
         var criteria = where("lockedAt").is(null)
-                .and("failedAt").is(null);
+                .and("failedAt").is(null)
+                .and("acknowledgedAt").is(null);
         var query = query(criteria)
                 .with(Sort.by(Sort.Order.asc("createdAt")))
                 .limit(maxEntries);
@@ -126,7 +127,8 @@ public class MongoMessagingOutboxRepo implements MessagingOutboxRepo {
 
         var publishableIndex = new CompoundIndexDefinition(new Document()
                 .append("lockedAt", 1)
-                .append("failedAt", 1));
+                .append("failedAt", 1)
+                .append("acknowledgedAt", 1));
         var lockedAtIndex = new Index().on("lockedAt", Sort.Direction.ASC);
         var lockIndex = new Index().on("lock", Sort.Direction.ASC);
         var acknowledgedIndex = new Index().on("acknowledgedAt", Sort.Direction.ASC);

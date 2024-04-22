@@ -1,106 +1,86 @@
 package de.bennyboer.kicherkrabbe.messaging.listener;
 
-import de.bennyboer.kicherkrabbe.messaging.RoutingKey;
-import de.bennyboer.kicherkrabbe.messaging.target.ExchangeTarget;
-import lombok.AllArgsConstructor;
-import lombok.Value;
+import com.rabbitmq.client.Delivery;
+import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.reactive.TransactionalOperator;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import reactor.rabbitmq.AcknowledgableDelivery;
-import reactor.rabbitmq.Receiver;
-import reactor.rabbitmq.Sender;
+import reactor.util.retry.Retry;
 
-import java.util.Map;
+import java.time.Duration;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
-import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
-import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
-import static lombok.AccessLevel.PRIVATE;
-import static reactor.rabbitmq.BindingSpecification.queueBinding;
-import static reactor.rabbitmq.ExchangeSpecification.exchange;
-import static reactor.rabbitmq.QueueSpecification.queue;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
-@AllArgsConstructor
+@Slf4j
 public class MessageListener {
 
-    private final Sender sender;
+    private final ReactiveTransactionManager transactionManager;
 
-    private final Receiver receiver;
+    private final Supplier<Flux<AcknowledgableDelivery>> deliveries;
 
-    public Flux<AcknowledgableDelivery> listen(
-            ExchangeTarget exchange,
-            RoutingKey routingKey,
-            String listenerName
+    private final String name;
+
+    private final Function<Delivery, Mono<Void>> handler;
+
+    public MessageListener(
+            ReactiveTransactionManager transactionManager,
+            Supplier<Flux<AcknowledgableDelivery>> deliveries,
+            String name,
+            Function<Delivery, Mono<Void>> handler
     ) {
-        return setupQueuesAndBindings(exchange, routingKey, listenerName)
-                .flatMapMany(queues -> receiver.consumeManualAck(queues.getNormal()));
+        this.transactionManager = transactionManager;
+        this.deliveries = deliveries;
+        this.name = name;
+        this.handler = handler;
     }
 
-    private Mono<MessageListenerQueues> setupQueuesAndBindings(
-            ExchangeTarget exchange,
-            RoutingKey routingKey,
-            String listenerName
-    ) {
-        return declareExchangeIfNotExists(exchange)
-                .then(declareDeadExchangeIfNotExists())
-                .then(declareAndBindListenerQueuesToExchangeForRoutingKey(exchange, routingKey, listenerName));
+    @Nullable
+    private Disposable disposable;
+
+    @PostConstruct
+    public void start() {
+        log.info("Starting message listener '{}'", name);
+        disposable = deliveries.get()
+                .delayUntil(this::handleDelivery)
+                .onErrorResume(e -> {
+                    log.error("An unrecoverable error occurred in message listener '{}'", name, e);
+                    return Mono.empty();
+                })
+                .subscribeOn(Schedulers.boundedElastic())
+                .subscribe();
     }
 
-    private Mono<MessageListenerQueues> declareAndBindListenerQueuesToExchangeForRoutingKey(
-            ExchangeTarget exchange,
-            RoutingKey routingKey,
-            String listenerName
-    ) {
-        String baseName = "%s-%s-%s".formatted(exchange.getName(), routingKey.asString(), listenerName);
-        String normalQueueName = baseName + "-normal";
-        String deadQueueName = baseName + "-dead";
-
-        var declareNormalQueue$ = sender.declareQueue(queue(normalQueueName)
-                .durable(true)
-                .arguments(Map.of(
-                        "x-dead-letter-exchange", ExchangeTarget.dead().getName(),
-                        "x-dead-letter-routing-key", deadQueueName
-                )));
-
-        var declareDeadQueue$ = sender.declareQueue(queue(deadQueueName)
-                .durable(true));
-
-        return Mono.zip(declareNormalQueue$, declareDeadQueue$)
-                .delayUntil(tuple -> sender.bind(queueBinding(
-                        exchange.getName(),
-                        routingKey.asString(),
-                        normalQueueName
-                )))
-                .thenReturn(MessageListenerQueues.of(normalQueueName, deadQueueName));
+    @PreDestroy
+    public void destroy() {
+        log.info("Stopping message listener '{}'", name);
+        Optional.ofNullable(disposable).ifPresent(Disposable::dispose);
     }
 
-    private Mono<Void> declareExchangeIfNotExists(ExchangeTarget exchange) {
-        return sender.declareExchange(exchange(exchange.getName())
-                        .type("topic")
-                        .durable(true))
-                .then();
-    }
+    private Mono<Void> handleDelivery(AcknowledgableDelivery delivery) {
+        TransactionalOperator transactionalOperator = TransactionalOperator.create(transactionManager);
 
-    private Mono<Void> declareDeadExchangeIfNotExists() {
-        return declareExchangeIfNotExists(ExchangeTarget.dead());
-    }
+        return handler.apply(delivery)
+                .as(transactionalOperator::transactional)
+                .retryWhen(Retry.backoff(3, Duration.ofMillis(200)))
+                .onErrorResume(e -> {
+                    delivery.nack(false);
 
-    @Value
-    @AllArgsConstructor(access = PRIVATE)
-    public static class MessageListenerQueues {
+                    String body = new String(delivery.getBody(), UTF_8);
+                    log.error("Could not process message '{}' in message listener '{}'", body, name, e);
 
-        String normal;
-
-        String dead;
-
-        public static MessageListenerQueues of(String normal, String dead) {
-            notNull(normal, "Normal queue name must be given");
-            notNull(dead, "Dead queue name must be given");
-            check(!normal.isBlank(), "Normal queue name must not be empty");
-            check(!dead.isBlank(), "Dead queue name must not be empty");
-
-            return new MessageListenerQueues(normal, dead);
-        }
-
+                    return Mono.empty();
+                })
+                .doOnSuccess(ignored -> delivery.ack());
     }
 
 }

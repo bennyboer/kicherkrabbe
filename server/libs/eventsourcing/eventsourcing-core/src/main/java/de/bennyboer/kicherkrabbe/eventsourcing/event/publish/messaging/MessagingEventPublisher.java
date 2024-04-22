@@ -56,7 +56,11 @@ public class MessagingEventPublisher implements EventPublisher {
                         "aggregateType", metadata.getAggregateType().getValue(),
                         "aggregateVersion", metadata.getAggregateVersion().getValue(),
                         "eventName", event.getEventName().getValue(),
-                        "eventVersion", event.getVersion().getValue()
+                        "eventVersion", event.getVersion().getValue(),
+                        "agentType", metadata.getAgent().getType().name(),
+                        "agentId", metadata.getAgent().getId().getValue(),
+                        "date", metadata.getDate(),
+                        "isSnapshot", metadata.isSnapshot()
                 )
         );
 

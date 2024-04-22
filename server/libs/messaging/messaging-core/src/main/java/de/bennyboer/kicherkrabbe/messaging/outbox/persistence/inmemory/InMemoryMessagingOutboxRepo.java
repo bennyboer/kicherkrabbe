@@ -40,7 +40,9 @@ public class InMemoryMessagingOutboxRepo implements MessagingOutboxRepo {
     @Override
     public Mono<Void> lockNextPublishableEntries(MessagingOutboxEntryLock lock, int maxEntries, Clock clock) {
         return findAll()
-                .filter(entry -> entry.getLockedAt().isEmpty() && entry.getFailedAt().isEmpty())
+                .filter(entry -> entry.getLockedAt().isEmpty()
+                        && entry.getFailedAt().isEmpty()
+                        && entry.getAcknowledgedAt().isEmpty())
                 .sort(Comparator.comparing(MessagingOutboxEntry::getCreatedAt))
                 .take(maxEntries)
                 .map(entry -> entry.lock(lock, clock))

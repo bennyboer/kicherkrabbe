@@ -104,7 +104,9 @@ public abstract class MessagingOutboxRepoTests {
                 .failed(clock)
                 .failed(clock)
                 .failed(clock);
-        save(entry1, entry2, entry3, failedEntry);
+        var acknowledgedEntry = MessagingOutboxEntry.create(target, routingKey, payload, clock)
+                .acknowledge(clock);
+        save(entry1, entry2, entry3, failedEntry, acknowledgedEntry);
 
         // when: locking the next 2 publishable entries
         var lock = MessagingOutboxEntryLock.create();

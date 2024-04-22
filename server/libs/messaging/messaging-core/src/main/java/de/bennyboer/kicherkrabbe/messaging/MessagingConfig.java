@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import de.bennyboer.kicherkrabbe.messaging.listener.MessageListener;
+import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.rabbitmq.*;
@@ -73,10 +74,14 @@ public class MessagingConfig {
     public Receiver receiver(ReceiverOptions options) {
         return RabbitFlux.createReceiver(options);
     }
-    
+
     @Bean
-    public MessageListener messageListener(Sender sender, Receiver receiver) {
-        return new MessageListener(sender, receiver);
+    public MessageListenerFactory messageListenerFactory(
+            Sender sender,
+            Receiver receiver,
+            ReactiveTransactionManager transactionManager
+    ) {
+        return new MessageListenerFactory(sender, receiver, transactionManager);
     }
 
 }

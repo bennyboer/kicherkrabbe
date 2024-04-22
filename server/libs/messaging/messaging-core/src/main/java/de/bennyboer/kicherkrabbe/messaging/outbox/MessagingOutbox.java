@@ -49,6 +49,7 @@ public class MessagingOutbox {
                 .collectList()
                 .flatMap(entries -> publisher.publishAll(entries)
                         .then(acknowledgeEntries(entries))
+                        .doOnSuccess(ignored -> log.debug("Published {} entries.", entries.size()))
                         .onErrorResume(e -> {
                             log.warn("Failed to publish entries. Unlocking entries.", e);
                             return resetEntriesAfterPublishingFailed(entries).then(Mono.empty());
