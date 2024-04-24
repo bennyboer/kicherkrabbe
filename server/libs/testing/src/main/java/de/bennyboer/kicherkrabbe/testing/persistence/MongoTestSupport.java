@@ -18,7 +18,7 @@ public class MongoTestSupport {
 
         @Override
         public void initialize(ConfigurableApplicationContext applicationContext) {
-            TestPropertyValues values = TestPropertyValues.of(
+            var values = TestPropertyValues.of(
                     "spring.data.mongodb.uri=" + CONTAINER.getReplicaSetUrl()
             );
 

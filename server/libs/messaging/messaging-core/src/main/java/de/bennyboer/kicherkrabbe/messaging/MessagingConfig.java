@@ -4,11 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInbox;
+import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInboxConfig;
 import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
+import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutboxConfig;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -18,6 +22,10 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
 @Configuration
+@Import({
+        MessagingInboxConfig.class,
+        MessagingOutboxConfig.class
+})
 public class MessagingConfig {
 
     @Bean("messagingObjectMapper")
@@ -79,9 +87,10 @@ public class MessagingConfig {
     public MessageListenerFactory messageListenerFactory(
             Sender sender,
             Receiver receiver,
-            ReactiveTransactionManager transactionManager
+            ReactiveTransactionManager transactionManager,
+            MessagingInbox inbox
     ) {
-        return new MessageListenerFactory(sender, receiver, transactionManager);
+        return new MessageListenerFactory(sender, receiver, transactionManager, inbox);
     }
 
 }

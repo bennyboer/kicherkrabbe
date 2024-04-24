@@ -1,8 +1,10 @@
-package de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel;
+package de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.inmemory;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.EventSourcingReadModelRepo;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -84,6 +86,14 @@ public abstract class InMemoryEventSourcingReadModelRepo<ID, T> implements Event
         return Mono.fromCallable(() -> {
             synchronized (lookup) {
                 return lookup.get(id);
+            }
+        });
+    }
+
+    public Flux<T> getAll() {
+        return Flux.defer(() -> {
+            synchronized (lookup) {
+                return Flux.fromIterable(lookup.values());
             }
         });
     }

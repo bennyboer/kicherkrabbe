@@ -1,12 +1,11 @@
 package de.bennyboer.kicherkrabbe.auth;
 
+import de.bennyboer.kicherkrabbe.auth.adapters.AuthMessaging;
+import de.bennyboer.kicherkrabbe.auth.adapters.persistence.lookup.CredentialsLookupRepo;
+import de.bennyboer.kicherkrabbe.auth.adapters.persistence.lookup.mongo.MongoCredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.auth.internal.credentials.CredentialsEventPayloadSerializer;
 import de.bennyboer.kicherkrabbe.auth.internal.credentials.CredentialsService;
 import de.bennyboer.kicherkrabbe.auth.ports.http.AuthHttpConfig;
-import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
-import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
-import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListener;
-import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListenerFactory;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.messaging.MessagingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.mongo.MongoEventSourcingRepo;
@@ -16,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import reactor.core.publisher.Mono;
 
 import java.time.Clock;
 import java.util.Optional;
@@ -24,7 +22,8 @@ import java.util.Optional;
 @Configuration
 @Import({
         AuthHttpConfig.class,
-        SecurityConfig.class
+        SecurityConfig.class,
+        AuthMessaging.class
 })
 public class AuthModuleConfig {
 
@@ -52,32 +51,13 @@ public class AuthModuleConfig {
     }
 
     @Bean
-    public AuthModule authModule(CredentialsService credentialsService) {
-        return new AuthModule(credentialsService);
+    public CredentialsLookupRepo credentialsLookupRepo(ReactiveMongoTemplate template) {
+        return new MongoCredentialsLookupRepo(template);
     }
 
     @Bean
-    public EventListener onCredentialsCreatedUpdateLookup(EventListenerFactory factory) {
-        // TODO Implement inbox repository to guarantee exactly once delivery!
-
-        return factory.createEventListenerForEvent(
-                "credentials-created-update-lookup",
-                AggregateType.of("CREDENTIALS"),
-                EventName.of("CREATED"),
-                (metadata, version, payload) -> {
-                    System.out.println("Received event (credentials created) with version %d, ID %s and name %s".formatted(
-                            version.getValue(),
-                            metadata.getAggregateId().getValue(),
-                            payload.get("name")
-                    ));
-
-                    // TODO We need a lookup repository first..
-                    // TODO Update Lookup repository! - write username and credentials ID to lookup repository in
-                    //  order to be able to find credentials when trying to login
-
-                    return Mono.empty();
-                }
-        );
+    public AuthModule authModule(CredentialsService credentialsService, CredentialsLookupRepo credentialsLookupRepo) {
+        return new AuthModule(credentialsService, credentialsLookupRepo);
     }
 
 }

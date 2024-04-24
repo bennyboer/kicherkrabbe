@@ -1,5 +1,7 @@
 package de.bennyboer.kicherkrabbe.auth;
 
+import de.bennyboer.kicherkrabbe.auth.adapters.persistence.lookup.CredentialsLookup;
+import de.bennyboer.kicherkrabbe.auth.adapters.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.auth.internal.credentials.CredentialsId;
 import de.bennyboer.kicherkrabbe.auth.internal.credentials.CredentialsService;
 import de.bennyboer.kicherkrabbe.auth.internal.credentials.Name;
@@ -20,8 +22,10 @@ public class AuthModule {
 
     private final CredentialsService credentialsService;
 
+    private final CredentialsLookupRepo credentialsLookupRepo;
+
     @Transactional
-    public Mono<Void> createCredentials(
+    public Mono<String> createCredentials(
             String name,
             String password,
             String userId
@@ -31,7 +35,7 @@ public class AuthModule {
                 Password.of(password),
                 UserId.of(userId),
                 Agent.system()
-        ).then();
+        ).map(result -> result.getId().getValue());
     }
 
     @Transactional
@@ -43,11 +47,19 @@ public class AuthModule {
                         Password.of(password),
                         Agent.anonymous()
                 ).then())
-                .then(Mono.fromCallable(() -> UseCredentialsResult.of("token")));
+                .then(Mono.fromCallable(() -> UseCredentialsResult.of("token"))); // TODO Use proper token generation
+    }
+
+    public Mono<Void> updateCredentialsInLookup(String credentialsId) {
+        return credentialsService.get(CredentialsId.of(credentialsId))
+                .flatMap(credentials -> credentialsLookupRepo.update(CredentialsLookup.of(
+                        credentials.getId(),
+                        credentials.getName()
+                )));
     }
 
     private Mono<CredentialsId> findCredentialsByName(Name name) {
-        return Mono.empty(); // TODO We need a read model repo here!
+        return credentialsLookupRepo.findCredentialsIdByName(name);
     }
 
     @Value

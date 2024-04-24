@@ -2,6 +2,7 @@ package de.bennyboer.kicherkrabbe.messaging.outbox.publisher;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rabbitmq.client.AMQP;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutboxEntry;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,11 +53,17 @@ public class RabbitOutboxEntryPublisher implements MessagingOutboxEntryPublisher
                 "We currently only support publishing to an exchange target"
         )).getName();
         String routingKey = entry.getRoutingKey().asString();
+        var properties = new AMQP.BasicProperties.Builder()
+                .contentType("application/json")
+                .contentEncoding("UTF-8")
+                .messageId(entry.getId().getValue())
+                .build();
 
         return serializePayload(entry)
                 .map(payload -> new OutboundMessage(
                         exchange,
                         routingKey,
+                        properties,
                         payload.getBytes(StandardCharsets.UTF_8)
                 ));
     }

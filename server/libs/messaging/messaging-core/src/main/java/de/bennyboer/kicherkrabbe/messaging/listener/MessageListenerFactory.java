@@ -2,6 +2,7 @@ package de.bennyboer.kicherkrabbe.messaging.listener;
 
 import com.rabbitmq.client.Delivery;
 import de.bennyboer.kicherkrabbe.messaging.RoutingKey;
+import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInbox;
 import de.bennyboer.kicherkrabbe.messaging.target.ExchangeTarget;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -31,6 +32,8 @@ public class MessageListenerFactory {
 
     private final ReactiveTransactionManager transactionManager;
 
+    private final MessagingInbox inbox;
+
     public MessageListener createListener(
             ExchangeTarget exchange,
             RoutingKey routingKey,
@@ -39,6 +42,7 @@ public class MessageListenerFactory {
     ) {
         return new MessageListener(
                 transactionManager,
+                inbox,
                 () -> listen(exchange, routingKey, listenerName),
                 listenerName,
                 handler
@@ -54,7 +58,7 @@ public class MessageListenerFactory {
                 .flatMapMany(queues -> receiver.consumeManualAck(queues.getNormal()));
     }
 
-    private Mono<MessageListenerQueues> setupQueuesAndBindings(
+    public Mono<MessageListenerQueues> setupQueuesAndBindings(
             ExchangeTarget exchange,
             RoutingKey routingKey,
             String listenerName

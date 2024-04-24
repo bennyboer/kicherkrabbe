@@ -2,6 +2,7 @@ dependencies {
     implementation project(':libs:messaging:messaging-core')
 
     testImplementation project(':libs:testing')
+    testImplementation project(':libs:messaging:messaging-testing')
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

@@ -1,6 +1,9 @@
 package de.bennyboer.kicherkrabbe.messaging.listener;
 
 import com.rabbitmq.client.Delivery;
+import de.bennyboer.kicherkrabbe.messaging.inbox.IncomingMessageId;
+import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInbox;
+import de.bennyboer.kicherkrabbe.messaging.inbox.persistence.IncomingMessageAlreadySeenException;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -26,6 +29,8 @@ public class MessageListener {
 
     private final ReactiveTransactionManager transactionManager;
 
+    private final MessagingInbox inbox;
+
     private final Supplier<Flux<AcknowledgableDelivery>> deliveries;
 
     private final String name;
@@ -34,11 +39,13 @@ public class MessageListener {
 
     public MessageListener(
             ReactiveTransactionManager transactionManager,
+            MessagingInbox inbox,
             Supplier<Flux<AcknowledgableDelivery>> deliveries,
             String name,
             Function<Delivery, Mono<Void>> handler
     ) {
         this.transactionManager = transactionManager;
+        this.inbox = inbox;
         this.deliveries = deliveries;
         this.name = name;
         this.handler = handler;
@@ -68,16 +75,25 @@ public class MessageListener {
 
     private Mono<Void> handleDelivery(AcknowledgableDelivery delivery) {
         TransactionalOperator transactionalOperator = TransactionalOperator.create(transactionManager);
+        IncomingMessageId incomingMessageId = IncomingMessageId.of(delivery.getProperties().getMessageId());
 
-        return handler.apply(delivery)
+        String body = new String(delivery.getBody(), UTF_8);
+
+        return inbox.addMessage(incomingMessageId)
+                .then(handler.apply(delivery))
                 .as(transactionalOperator::transactional)
+                .onErrorResume(IncomingMessageAlreadySeenException.class, e -> {
+                    log.warn(
+                            "Message '{}' was already seen in message listener '{}'. Ignoring...",
+                            incomingMessageId,
+                            name
+                    );
+                    return Mono.empty();
+                })
                 .retryWhen(Retry.backoff(3, Duration.ofMillis(200)))
                 .onErrorResume(e -> {
                     delivery.nack(false);
-
-                    String body = new String(delivery.getBody(), UTF_8);
                     log.error("Could not process message '{}' in message listener '{}'", body, name, e);
-
                     return Mono.empty();
                 })
                 .doOnSuccess(ignored -> delivery.ack());

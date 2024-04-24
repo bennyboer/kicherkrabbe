@@ -1,10 +1,11 @@
-package de.bennyboer.kicherkrabbe.eventsourcing.persistence;
+package de.bennyboer.kicherkrabbe.eventsourcing.persistence.inmemory;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventWithMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.EventSourcingRepo;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;

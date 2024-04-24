@@ -5,6 +5,8 @@ subprojects {
         implementation project(':libs:messaging:messaging-core')
 
         testImplementation project(':libs:testing')
+        testImplementation project(':libs:messaging:messaging-testing')
+        testImplementation project(':libs:eventsourcing:eventsourcing-testing')
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testImplementation 'org.springframework.security:spring-security-test'
     }

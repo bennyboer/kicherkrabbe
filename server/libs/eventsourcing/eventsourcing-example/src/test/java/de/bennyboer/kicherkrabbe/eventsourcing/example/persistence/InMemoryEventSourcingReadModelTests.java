@@ -1,6 +1,6 @@
 package de.bennyboer.kicherkrabbe.eventsourcing.example.persistence;
 
-import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.InMemoryEventSourcingReadModelRepo;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.inmemory.InMemoryEventSourcingReadModelRepo;
 import reactor.core.publisher.Mono;
 
 public class InMemoryEventSourcingReadModelTests extends EventSourcingReadModelTests {

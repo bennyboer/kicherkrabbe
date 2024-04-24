@@ -8,7 +8,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.EventSourcingRepo;
-import de.bennyboer.kicherkrabbe.eventsourcing.persistence.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.testing.time.TestClock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
