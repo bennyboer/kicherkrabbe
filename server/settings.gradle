@@ -2,16 +2,42 @@ rootProject.name = 'server'
 
 include('app')
 
+///////////////
+// LIBRARIES //
+///////////////
+
+// Core libraries
 include('libs:commons')
+include('libs:testing')
+
+// Event Sourcing
 include('libs:eventsourcing:eventsourcing-core')
 include('libs:eventsourcing:eventsourcing-example')
 include('libs:eventsourcing:eventsourcing-testing')
-include('libs:testing')
+
+// Messaging
 include('libs:messaging:messaging-core')
 include('libs:messaging:messaging-example')
 include('libs:messaging:messaging-testing')
 
-include('modules:auth')
+// Auth
+include('libs:auth:auth-core')
+include('libs:auth:auth-example')
+
+
+/////////////
+// MODULES //
+/////////////
+
+// Credentials
+include('modules:credentials:credentials-core')
+include('modules:credentials:credentials-example')
+
+// Users
 include('modules:users')
+
+// Patterns
 include('modules:patterns')
+
+// Fabrics
 include('modules:fabrics')

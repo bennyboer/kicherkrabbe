@@ -4,7 +4,11 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.EventSourci
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.index.ReactiveIndexOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import reactor.core.publisher.Mono;
+
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
 
 public abstract class MongoEventSourcingReadModelRepo<ID, T, S> implements EventSourcingReadModelRepo<ID, T> {
 
@@ -35,9 +39,10 @@ public abstract class MongoEventSourcingReadModelRepo<ID, T, S> implements Event
 
     @Override
     public Mono<Void> remove(ID id) {
-        Criteria criteria = Criteria.where("_id").is(stringifyId(id));
+        Criteria criteria = where("_id").is(stringifyId(id));
+        Query query = query(criteria);
 
-        return template.remove(criteria, collectionName)
+        return template.remove(query, collectionName)
                 .then();
     }
 
