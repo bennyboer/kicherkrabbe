@@ -1,46 +1,46 @@
-package de.bennyboer.kicherkrabbe.credentials.adapters.messaging;
+package de.bennyboer.kicherkrabbe.users.adapters.messaging;
 
-import de.bennyboer.kicherkrabbe.credentials.CredentialsModule;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListener;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListenerFactory;
+import de.bennyboer.kicherkrabbe.users.UsersModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class CredentialsMessaging {
+public class UsersMessaging {
 
     @Bean
-    public EventListener onCredentialsCreatedUpdateLookupMsgListener(
+    public EventListener onUserCreatedUpdateLookupMsgListener(
             EventListenerFactory factory,
-            CredentialsModule module
+            UsersModule module
     ) {
         return factory.createEventListenerForEvent(
-                "credentials-created-update-lookup",
-                AggregateType.of("CREDENTIALS"),
+                "user-created-update-lookup",
+                AggregateType.of("USER"),
                 EventName.of("CREATED"),
                 (metadata, version, payload) -> {
-                    String credentialsId = metadata.getAggregateId().getValue();
+                    String userId = metadata.getAggregateId().getValue();
 
-                    return module.updateCredentialsInLookup(credentialsId);
+                    return module.updateUserInLookup(userId);
                 }
         );
     }
 
     @Bean
-    public EventListener onCredentialsDeletedUpdateLookupMsgListener(
+    public EventListener onUserDeletedUpdateLookupMsgListener(
             EventListenerFactory factory,
-            CredentialsModule module
+            UsersModule module
     ) {
         return factory.createEventListenerForEvent(
-                "credentials-deleted-update-lookup",
-                AggregateType.of("CREDENTIALS"),
+                "user-deleted-update-lookup",
+                AggregateType.of("USER"),
                 EventName.of("DELETED"),
                 (metadata, version, payload) -> {
-                    String credentialsId = metadata.getAggregateId().getValue();
+                    String userId = metadata.getAggregateId().getValue();
 
-                    return module.removeCredentialsFromLookup(credentialsId);
+                    return module.removeUserFromLookup(userId);
                 }
         );
     }

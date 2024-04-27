@@ -46,13 +46,20 @@ public class CredentialsModuleTest {
         PasswordEncoder.getInstance().enableTestProfile();
     }
 
-    public void createCredentials(String name, String password, String userId) {
+    public String createCredentials(String name, String password, String userId) {
         String credentialsId = module.createCredentials(name, password, userId).block();
         module.updateCredentialsInLookup(credentialsId).block();
+
+        return credentialsId;
     }
 
     public CredentialsModule.UseCredentialsResult useCredentials(String name, String password) {
         return module.useCredentials(name, password).block();
+    }
+
+    public void deleteCredentials(String credentialsId) {
+        module.deleteCredentials(credentialsId).block();
+        module.removeCredentialsFromLookup(credentialsId).block();
     }
 
 }

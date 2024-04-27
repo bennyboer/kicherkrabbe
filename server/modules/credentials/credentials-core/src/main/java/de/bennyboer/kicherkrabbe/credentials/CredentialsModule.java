@@ -30,6 +30,7 @@ public class CredentialsModule {
             String password,
             String userId
     ) {
+        // TODO Pass agent and check permissions
         return assertNameNotAlreadyTaken(Name.of(name))
                 .then(credentialsService.create(
                         Name.of(name),
@@ -42,9 +43,16 @@ public class CredentialsModule {
 
     @Transactional
     public Mono<UseCredentialsResult> useCredentials(String name, String password) {
+        // TODO Pass agent and check permissions
         return tryToUseCredentialsAndReturnCredentials(Name.of(name), Password.of(password))
                 .flatMap(credentials -> generateAccessTokenForCredentialsUser(credentials.getUserId()))
                 .map(token -> UseCredentialsResult.of(token.getValue()));
+    }
+
+    @Transactional
+    public Mono<Void> deleteCredentials(String credentialsId) {
+        // TODO Pass agent and check permissions
+        return credentialsService.delete(CredentialsId.of(credentialsId), Agent.system()).then();
     }
 
     public Mono<Void> updateCredentialsInLookup(String credentialsId) {
@@ -53,6 +61,10 @@ public class CredentialsModule {
                         credentials.getId(),
                         credentials.getName()
                 )));
+    }
+
+    public Mono<Void> removeCredentialsFromLookup(String credentialsId) {
+        return credentialsLookupRepo.remove(CredentialsId.of(credentialsId));
     }
 
     private Mono<CredentialsId> findCredentialsByName(Name name) {
