@@ -23,18 +23,20 @@ public class CredentialsHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> authHttpRouting(CredentialsHttpHandler handler) {
         return route()
-                .nest(path("/auth"), () -> route()
-                        .nest(path("/credentials"), () -> route()
-                                .POST("/use", handler::useCredentials)
+                .nest(path("/api"), () -> route()
+                        .nest(path("/auth"), () -> route()
+                                .nest(path("/credentials"), () -> route()
+                                        .POST("/use", handler::useCredentials)
+                                        .build())
                                 .build())
-                        .build())
-                .build();
+                        .build()
+                ).build();
     }
 
     @Bean
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> authAuthorizeExchangeSpecCustomizer() {
         return exchanges -> exchanges
-                .pathMatchers(POST, "/auth/credentials/use").permitAll();
+                .pathMatchers(POST, "/api/auth/credentials/use").permitAll();
     }
 
 }

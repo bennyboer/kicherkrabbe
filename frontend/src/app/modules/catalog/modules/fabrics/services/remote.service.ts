@@ -1132,6 +1132,21 @@ export class RemoteFabricsService {
         ],
       }),
     }),
+    Fabric.of({
+      id: 'winterbaer',
+      name: 'Winterbär',
+      image: {
+        url: '/assets/images/fabrics/winterbaer.jpg',
+      },
+      colors: new Set<Color>([WHITE, BEIGE]),
+      themes: new Set<Theme>([ANIMALS, WINTER]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
   ];
 
   getFabrics(): Observable<Fabric[]> {

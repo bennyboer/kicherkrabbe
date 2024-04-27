@@ -26,7 +26,7 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
 
         // when: "using the credentials"
         var exchange = client.post()
-                .uri("/auth/credentials/use")
+                .uri("/api/auth/credentials/use")
                 .bodyValue(request)
                 .exchange();
 
@@ -55,7 +55,7 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
 
         // when: "using the credentials"
         var exchange = client.post()
-                .uri("/auth/credentials/use")
+                .uri("/api/auth/credentials/use")
                 .bodyValue(request)
                 .exchange();
 
@@ -81,7 +81,7 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
 
         // when: "using the credentials"
         var exchange = client.post()
-                .uri("/auth/credentials/use")
+                .uri("/api/auth/credentials/use")
                 .bodyValue(request)
                 .exchange();
 
