@@ -1,10 +1,10 @@
 package de.bennyboer.kicherkrabbe.eventsourcing.event.publish.messaging;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.EventSerializer;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventWithMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.EventPublisher;
-import de.bennyboer.kicherkrabbe.eventsourcing.serialization.EventSerializer;
 import de.bennyboer.kicherkrabbe.messaging.RoutingKey;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutboxEntry;

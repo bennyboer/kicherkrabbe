@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.credentials.internal;
 import de.bennyboer.kicherkrabbe.credentials.internal.commands.CreateCmd;
 import de.bennyboer.kicherkrabbe.credentials.internal.commands.DeleteCmd;
 import de.bennyboer.kicherkrabbe.credentials.internal.commands.UseCmd;
+import de.bennyboer.kicherkrabbe.credentials.internal.errors.InvalidCredentialsUsedOrUserLockedError;
 import de.bennyboer.kicherkrabbe.credentials.internal.password.Password;
 import de.bennyboer.kicherkrabbe.eventsourcing.EventSourcingService;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
@@ -51,7 +52,15 @@ public class CredentialsService extends AggregateService<Credentials, Credential
     }
 
     public Mono<Version> use(CredentialsId id, Name name, Password password, Agent agent) {
-        return dispatchCommandToLatest(id, agent, UseCmd.of(name, password, clock));
+        return dispatchCommandToLatest(id, agent, UseCmd.of(name, password, clock))
+                .flatMap(version -> get(id, version))
+                .flatMap(credentials -> {
+                    if (credentials.hasFailedAttempts()) {
+                        return Mono.error(new InvalidCredentialsUsedOrUserLockedError());
+                    }
+
+                    return Mono.just(credentials.getVersion());
+                });
     }
 
     public Mono<Version> delete(CredentialsId credentialsId, Agent agent) {

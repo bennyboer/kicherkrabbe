@@ -1,6 +1,5 @@
-package de.bennyboer.kicherkrabbe.eventsourcing.serialization;
+package de.bennyboer.kicherkrabbe.eventsourcing;
 
-import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 

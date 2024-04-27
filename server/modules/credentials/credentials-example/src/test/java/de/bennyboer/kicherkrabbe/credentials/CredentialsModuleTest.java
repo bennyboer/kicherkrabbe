@@ -1,6 +1,8 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
 import de.bennyboer.kicherkrabbe.auth.password.PasswordEncoder;
+import de.bennyboer.kicherkrabbe.auth.tokens.Token;
+import de.bennyboer.kicherkrabbe.auth.tokens.TokenGenerator;
 import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.inmemory.InMemoryCredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.credentials.internal.CredentialsService;
@@ -8,6 +10,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublish
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.testing.time.TestClock;
 import org.junit.jupiter.api.BeforeEach;
+import reactor.core.publisher.Mono;
 
 public class CredentialsModuleTest {
 
@@ -27,7 +30,16 @@ public class CredentialsModuleTest {
 
     private final CredentialsModuleConfig config = new CredentialsModuleConfig();
 
-    private final CredentialsModule module = config.credentialsModule(credentialsService, credentialsLookupRepo);
+    private final TokenGenerator tokenGenerator =
+            content -> Mono.just(Token.of("token-for-%s".formatted(content.getOwner()
+                    .getId()
+                    .getValue())));
+
+    private final CredentialsModule module = config.credentialsModule(
+            credentialsService,
+            credentialsLookupRepo,
+            tokenGenerator
+    );
 
     @BeforeEach
     void setup() {

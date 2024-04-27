@@ -1,11 +1,9 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
+import de.bennyboer.kicherkrabbe.auth.tokens.*;
 import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookup;
 import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookupRepo;
-import de.bennyboer.kicherkrabbe.credentials.internal.CredentialsId;
-import de.bennyboer.kicherkrabbe.credentials.internal.CredentialsService;
-import de.bennyboer.kicherkrabbe.credentials.internal.Name;
-import de.bennyboer.kicherkrabbe.credentials.internal.UserId;
+import de.bennyboer.kicherkrabbe.credentials.internal.*;
 import de.bennyboer.kicherkrabbe.credentials.internal.password.Password;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import lombok.AllArgsConstructor;
@@ -24,6 +22,8 @@ public class CredentialsModule {
 
     private final CredentialsLookupRepo credentialsLookupRepo;
 
+    private final TokenGenerator tokenGenerator;
+
     @Transactional
     public Mono<String> createCredentials(
             String name,
@@ -40,14 +40,9 @@ public class CredentialsModule {
 
     @Transactional
     public Mono<UseCredentialsResult> useCredentials(String name, String password) {
-        return findCredentialsByName(Name.of(name))
-                .flatMap(credentialsId -> credentialsService.use(
-                        credentialsId,
-                        Name.of(name),
-                        Password.of(password),
-                        Agent.anonymous()
-                ).then())
-                .then(Mono.fromCallable(() -> UseCredentialsResult.of("token"))); // TODO Use proper token generation
+        return tryToUseCredentialsAndReturnCredentials(Name.of(name), Password.of(password))
+                .flatMap(credentials -> generateAccessTokenForCredentialsUser(credentials.getUserId()))
+                .map(token -> UseCredentialsResult.of(token.getValue()));
     }
 
     public Mono<Void> updateCredentialsInLookup(String credentialsId) {
@@ -60,6 +55,24 @@ public class CredentialsModule {
 
     private Mono<CredentialsId> findCredentialsByName(Name name) {
         return credentialsLookupRepo.findCredentialsIdByName(name);
+    }
+
+    private Mono<Credentials> tryToUseCredentialsAndReturnCredentials(Name name, Password password) {
+        return findCredentialsByName(name)
+                .delayUntil(credentialsId -> credentialsService.use(
+                        credentialsId,
+                        name,
+                        password,
+                        Agent.anonymous()
+                ))
+                .flatMap(credentialsService::get);
+    }
+
+    private Mono<Token> generateAccessTokenForCredentialsUser(UserId userId) {
+        var owner = Owner.of(OwnerId.of(userId.getValue()));
+        var payload = TokenPayload.of(owner);
+
+        return tokenGenerator.generate(payload);
     }
 
     @Value

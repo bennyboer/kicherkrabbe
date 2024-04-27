@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
 import de.bennyboer.kicherkrabbe.auth.SecurityConfig;
+import de.bennyboer.kicherkrabbe.auth.tokens.TokenGenerator;
 import de.bennyboer.kicherkrabbe.credentials.adapters.messaging.CredentialsMessaging;
 import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.mongo.MongoCredentialsLookupRepo;
@@ -59,9 +60,10 @@ public class CredentialsModuleConfig {
     @Bean
     public CredentialsModule credentialsModule(
             CredentialsService credentialsService,
-            CredentialsLookupRepo credentialsLookupRepo
+            CredentialsLookupRepo credentialsLookupRepo,
+            TokenGenerator tokenGenerator
     ) {
-        return new CredentialsModule(credentialsService, credentialsLookupRepo);
+        return new CredentialsModule(credentialsService, credentialsLookupRepo, tokenGenerator);
     }
 
 }

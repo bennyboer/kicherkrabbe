@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.eventsourcing.example;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.EventSerializer;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
@@ -7,7 +8,6 @@ import de.bennyboer.kicherkrabbe.eventsourcing.example.events.*;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.mongo.MongoEvent;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.mongo.MongoEventSourcingRepo;
-import de.bennyboer.kicherkrabbe.eventsourcing.serialization.EventSerializer;
 import de.bennyboer.kicherkrabbe.testing.persistence.MongoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ public class MongoRepoSampleAggregateTests extends SampleAggregateTests {
                                 "description", e.getDescription()
                         ));
 
-                        e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt));
+                        e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
 
                         yield result;
                     }
@@ -67,7 +67,7 @@ public class MongoRepoSampleAggregateTests extends SampleAggregateTests {
                                 "description", e.getDescription()
                         ));
 
-                        e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt));
+                        e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
 
                         yield result;
                     }
@@ -84,7 +84,9 @@ public class MongoRepoSampleAggregateTests extends SampleAggregateTests {
                     if (eventVersion.equals(CreatedEvent.VERSION)) {
                         return CreatedEvent.of(title, description);
                     } else {
-                        Instant deletedAt = (Instant) payload.get("deletedAt");
+                        Instant deletedAt = payload.containsKey("deletedAt")
+                                ? Instant.parse((String) payload.get("deletedAt"))
+                                : null;
                         return CreatedEvent2.of(title, description, deletedAt);
                     }
                 } else if (name.equals(DescriptionUpdatedEvent.NAME)) {
@@ -96,7 +98,9 @@ public class MongoRepoSampleAggregateTests extends SampleAggregateTests {
                 } else if (name.equals(SnapshottedEvent.NAME)) {
                     String title = (String) payload.get("title");
                     String description = (String) payload.get("description");
-                    Instant deletedAt = (Instant) payload.get("deletedAt");
+                    Instant deletedAt = payload.containsKey("deletedAt")
+                            ? Instant.parse((String) payload.get("deletedAt"))
+                            : null;
 
                     return SnapshottedEvent.of(title, description, deletedAt);
                 } else if (name.equals(DeletedEvent.NAME)) {

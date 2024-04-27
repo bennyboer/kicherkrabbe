@@ -147,6 +147,10 @@ public class Credentials implements Aggregate {
         return hasTooManyFailedAttempts() && hasBeenUsedRecently(clock);
     }
 
+    public boolean hasFailedAttempts() {
+        return failedUsageAttempts > 0;
+    }
+
     private boolean hasBeenUsedRecently(Clock clock) {
         return getLastUsedAt()
                 .map(lastUsedAt -> !clock.instant().isAfter(lastUsedAt.plus(30, MINUTES)))

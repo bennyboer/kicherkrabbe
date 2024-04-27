@@ -1,8 +1,10 @@
 subprojects {
     dependencies {
         implementation project(':libs:commons')
+        implementation project(':libs:persistence:persistence-core')
         implementation project(':libs:eventsourcing:eventsourcing-core')
         implementation project(':libs:messaging:messaging-core')
+        implementation project(':libs:auth:auth-core')
 
         testImplementation project(':libs:testing')
         testImplementation project(':libs:messaging:messaging-testing')

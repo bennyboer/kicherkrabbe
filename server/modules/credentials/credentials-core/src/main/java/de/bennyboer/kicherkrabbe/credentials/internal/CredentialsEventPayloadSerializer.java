@@ -2,10 +2,10 @@ package de.bennyboer.kicherkrabbe.credentials.internal;
 
 import de.bennyboer.kicherkrabbe.credentials.internal.events.*;
 import de.bennyboer.kicherkrabbe.credentials.internal.password.EncodedPassword;
+import de.bennyboer.kicherkrabbe.eventsourcing.EventSerializer;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
-import de.bennyboer.kicherkrabbe.eventsourcing.serialization.EventSerializer;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -29,16 +29,16 @@ public class CredentialsEventPayloadSerializer implements EventSerializer {
                         "failedUsageAttempts", e.getFailedUsageAttempts()
                 ));
 
-                e.getLastUsedAt().ifPresent(lastUsedAt -> result.put("lastUsedAt", lastUsedAt));
-                e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt));
+                e.getLastUsedAt().ifPresent(lastUsedAt -> result.put("lastUsedAt", lastUsedAt.toString()));
+                e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
 
                 yield result;
             }
             case UsageSucceededEvent e -> Map.of(
-                    "date", e.getDate()
+                    "date", e.getDate().toString()
             );
             case UsageFailedEvent e -> Map.of(
-                    "date", e.getDate()
+                    "date", e.getDate().toString()
             );
             case DeletedEvent ignored -> Map.of();
             default -> throw new IllegalStateException("Unexpected event: " + event);
@@ -58,11 +58,11 @@ public class CredentialsEventPayloadSerializer implements EventSerializer {
                     EncodedPassword.of((String) payload.get("encodedPassword")),
                     UserId.of((String) payload.get("userId")),
                     (int) payload.get("failedUsageAttempts"),
-                    payload.containsKey("lastUsedAt") ? (Instant) payload.get("lastUsedAt") : null,
-                    payload.containsKey("deletedAt") ? (Instant) payload.get("deletedAt") : null
+                    payload.containsKey("lastUsedAt") ? Instant.parse((String) payload.get("lastUsedAt")) : null,
+                    payload.containsKey("deletedAt") ? Instant.parse((String) payload.get("deletedAt")) : null
             );
-            case "USAGE_SUCCEEDED" -> UsageSucceededEvent.of((Instant) payload.get("date"));
-            case "USAGE_FAILED" -> UsageFailedEvent.of((Instant) payload.get("date"));
+            case "USAGE_SUCCEEDED" -> UsageSucceededEvent.of(Instant.parse((String) payload.get("date")));
+            case "USAGE_FAILED" -> UsageFailedEvent.of(Instant.parse((String) payload.get("date")));
             case "DELETED" -> DeletedEvent.of();
             default -> throw new IllegalStateException("Unexpected event name: " + name);
         };

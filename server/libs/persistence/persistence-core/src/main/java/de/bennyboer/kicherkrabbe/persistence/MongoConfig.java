@@ -1,4 +1,4 @@
-package de.bennyboer.kicherkrabbe.server;
+package de.bennyboer.kicherkrabbe.persistence;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;

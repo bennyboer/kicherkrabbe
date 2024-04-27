@@ -22,9 +22,4 @@ public class CredentialsHttpHandler {
                 .switchIfEmpty(ServerResponse.status(UNAUTHORIZED).build());
     }
 
-    public Mono<ServerResponse> test(ServerRequest request) {
-        return module.createCredentials("Test", "Password", "USER_ID")
-                .then(ServerResponse.ok().build());
-    }
-
 }

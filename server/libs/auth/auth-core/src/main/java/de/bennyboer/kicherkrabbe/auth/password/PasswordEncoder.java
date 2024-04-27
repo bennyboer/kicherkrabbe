@@ -13,7 +13,7 @@ public class PasswordEncoder {
     }
 
     private PasswordEncoder() {
-        encoder = new Argon2PasswordEncoder(16, 32, 1, 60000, 10);
+        encoder = new Argon2PasswordEncoder(16, 32, 1, 16384, 2);
     }
 
     public static PasswordEncoder getInstance() {
@@ -25,7 +25,7 @@ public class PasswordEncoder {
      * It enables a test profile with a faster encoder.
      */
     public void enableTestProfile() {
-        encoder = new Argon2PasswordEncoder(16, 32, 1, 15000, 2);
+        encoder = new Argon2PasswordEncoder(16, 32, 1, 4096, 2);
     }
 
     public String encode(CharSequence password) {

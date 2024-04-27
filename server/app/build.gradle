@@ -1,7 +1,7 @@
 dependencies {
     implementation project(':libs:auth:auth-core')
 
-    implementation project(':modules:credentials')
+    implementation project(':modules:credentials:credentials-core')
 
     testImplementation project(':libs:testing')
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

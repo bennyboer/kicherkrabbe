@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.credentials.internal;
 
 import de.bennyboer.kicherkrabbe.auth.password.PasswordEncoder;
+import de.bennyboer.kicherkrabbe.credentials.internal.errors.InvalidCredentialsUsedOrUserLockedError;
 import de.bennyboer.kicherkrabbe.credentials.internal.events.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.credentials.internal.password.EncodedPassword;
 import de.bennyboer.kicherkrabbe.credentials.internal.password.Password;
@@ -126,6 +127,27 @@ public class CredentialsServiceTest {
     }
 
     @Test
+    void shouldRaiseErrorWhenUsingIncorrectCredentials() {
+        // given: a set of credentials
+        var credentialsId = credentialsService.create(
+                Name.of("TestUser"),
+                Password.of("TestPassword"),
+                UserId.of("USER_ID"),
+                system()
+        ).block().getId();
+
+        // when: using the credentials with the wrong password; then: an error is raised
+        assertThatThrownBy(() -> {
+            credentialsService.use(
+                    credentialsId,
+                    Name.of("TestUser"),
+                    Password.of("WrongPassword"),
+                    anonymous()
+            ).block();
+        }).matches(e -> e.getCause() instanceof InvalidCredentialsUsedOrUserLockedError);
+    }
+
+    @Test
     void shouldCapFailedUsageAttemptsAt999() {
         // given: a set of credentials
         var credentialsId = credentialsService.create(
@@ -137,12 +159,16 @@ public class CredentialsServiceTest {
 
         // when: using the credentials with a wrong password 1000 times
         for (int i = 0; i < 1000; i++) {
-            credentialsService.use(
-                    credentialsId,
-                    Name.of("TestUser"),
-                    Password.of("WrongPassword"),
-                    anonymous()
-            ).block();
+            try {
+                credentialsService.use(
+                        credentialsId,
+                        Name.of("TestUser"),
+                        Password.of("WrongPassword"),
+                        anonymous()
+                ).block();
+            } catch (Exception e) {
+                // ignore
+            }
         }
 
         // then: the credentials are locked
@@ -165,12 +191,16 @@ public class CredentialsServiceTest {
 
         // when: using the credentials with a wrong password 5 times
         for (int i = 0; i < 5; i++) {
-            credentialsService.use(
-                    credentialsId,
-                    Name.of("TestUser"),
-                    Password.of("WrongPassword"),
-                    anonymous()
-            ).block();
+            try {
+                credentialsService.use(
+                        credentialsId,
+                        Name.of("TestUser"),
+                        Password.of("WrongPassword"),
+                        anonymous()
+                ).block();
+            } catch (Exception e) {
+                // ignore
+            }
         }
 
         // then: the credentials are not locked
@@ -210,12 +240,16 @@ public class CredentialsServiceTest {
 
         // when: using the credentials with a wrong password 6 times
         for (int i = 0; i < 6; i++) {
-            credentialsService.use(
-                    credentialsId,
-                    Name.of("TestUser"),
-                    Password.of("WrongPassword"),
-                    anonymous()
-            ).block();
+            try {
+                credentialsService.use(
+                        credentialsId,
+                        Name.of("TestUser"),
+                        Password.of("WrongPassword"),
+                        anonymous()
+                ).block();
+            } catch (Exception e) {
+                // ignore
+            }
         }
 
         // then: the credentials are locked
@@ -228,16 +262,18 @@ public class CredentialsServiceTest {
         // and: the failed usage attempts are 6
         assertThat(credentials.getFailedUsageAttempts()).isEqualTo(6);
 
-        // when: using the credentials with the correct password
+        // when: using the credentials with the correct password; then: an error is still raised
         clock.setNow(Instant.parse("2024-03-14T12:45:00Z"));
-        credentialsService.use(
-                credentialsId,
-                Name.of("TestUser"),
-                Password.of("TestPassword"),
-                anonymous()
-        ).block();
+        assertThatThrownBy(() -> {
+            credentialsService.use(
+                    credentialsId,
+                    Name.of("TestUser"),
+                    Password.of("TestPassword"),
+                    anonymous()
+            ).block();
+        }).matches(e -> e.getCause() instanceof InvalidCredentialsUsedOrUserLockedError);
 
-        // then: the credentials are still locked
+        // and: the credentials are still locked
         credentials = credentialsService.get(credentialsId).block();
         assertThat(credentials.isLocked(clock)).isTrue();
 

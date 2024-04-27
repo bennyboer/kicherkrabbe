@@ -22,7 +22,6 @@ public class CredentialsMessaging {
                 EventName.of("CREATED"),
                 (metadata, version, payload) -> {
                     String credentialsId = metadata.getAggregateId().getValue();
-                    System.out.println("credentialsId = " + credentialsId);
 
                     return module.updateCredentialsInLookup(credentialsId);
                 }

@@ -24,6 +24,9 @@ include('libs:messaging:messaging-testing')
 include('libs:auth:auth-core')
 include('libs:auth:auth-example')
 
+// Persistence
+include('libs:persistence:persistence-core')
+
 
 /////////////
 // MODULES //

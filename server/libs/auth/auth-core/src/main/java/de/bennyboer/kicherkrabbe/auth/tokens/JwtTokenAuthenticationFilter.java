@@ -13,6 +13,7 @@ import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
 
 @AllArgsConstructor
@@ -36,6 +37,7 @@ public class JwtTokenAuthenticationFilter implements WebFilter {
             WebFilterChain chain
     ) {
         return verifier.verify(Token.of(token))
+                .onErrorResume(e -> Mono.fromRunnable(() -> exchange.getResponse().setStatusCode(UNAUTHORIZED)))
                 .flatMap(payload -> chain.filter(exchange)
                         .contextWrite(ReactiveSecurityContextHolder.withAuthentication(toAuthentication(
                                 token,
