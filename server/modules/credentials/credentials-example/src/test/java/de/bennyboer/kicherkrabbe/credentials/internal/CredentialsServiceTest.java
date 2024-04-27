@@ -1,10 +1,8 @@
 package de.bennyboer.kicherkrabbe.credentials.internal;
 
 import de.bennyboer.kicherkrabbe.auth.password.PasswordEncoder;
-import de.bennyboer.kicherkrabbe.credentials.internal.errors.InvalidCredentialsUsedOrUserLockedError;
-import de.bennyboer.kicherkrabbe.credentials.internal.events.SnapshottedEvent;
-import de.bennyboer.kicherkrabbe.credentials.internal.password.EncodedPassword;
-import de.bennyboer.kicherkrabbe.credentials.internal.password.Password;
+import de.bennyboer.kicherkrabbe.credentials.internal.snapshot.SnapshottedEvent;
+import de.bennyboer.kicherkrabbe.credentials.internal.use.InvalidCredentialsUsedOrUserLockedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
@@ -361,7 +359,7 @@ public class CredentialsServiceTest {
 
         assertThat(events).hasSize(1);
         var event = events.getFirst();
-        assertThat(event.getEvent().isSnapshot()).isTrue();
+        assertThat(event.getMetadata().isSnapshot()).isTrue();
 
         // and: the event does not contain the password or name
         SnapshottedEvent e = (SnapshottedEvent) event.getEvent();

@@ -1,6 +1,6 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
-import de.bennyboer.kicherkrabbe.credentials.internal.errors.InvalidCredentialsUsedOrUserLockedError;
+import de.bennyboer.kicherkrabbe.credentials.internal.use.InvalidCredentialsUsedOrUserLockedError;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,5 +29,5 @@ public class UseCredentialsTest extends CredentialsModuleTest {
         assertThatThrownBy(() -> useCredentials("TestName", "WrongPassword"))
                 .matches(e -> e.getCause() instanceof InvalidCredentialsUsedOrUserLockedError);
     }
-
+    
 }

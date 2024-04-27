@@ -1,10 +1,9 @@
 package de.bennyboer.kicherkrabbe.credentials.internal;
 
-import de.bennyboer.kicherkrabbe.credentials.internal.commands.CreateCmd;
-import de.bennyboer.kicherkrabbe.credentials.internal.commands.DeleteCmd;
-import de.bennyboer.kicherkrabbe.credentials.internal.commands.UseCmd;
-import de.bennyboer.kicherkrabbe.credentials.internal.errors.InvalidCredentialsUsedOrUserLockedError;
-import de.bennyboer.kicherkrabbe.credentials.internal.password.Password;
+import de.bennyboer.kicherkrabbe.credentials.internal.create.CreateCmd;
+import de.bennyboer.kicherkrabbe.credentials.internal.delete.DeleteCmd;
+import de.bennyboer.kicherkrabbe.credentials.internal.use.InvalidCredentialsUsedOrUserLockedError;
+import de.bennyboer.kicherkrabbe.credentials.internal.use.UseCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.EventSourcingService;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
@@ -34,16 +33,6 @@ public class CredentialsService extends AggregateService<Credentials, Credential
         this.clock = clock;
     }
 
-    @Override
-    protected AggregateId toAggregateId(CredentialsId credentialsId) {
-        return AggregateId.of(credentialsId.getValue());
-    }
-
-    @Override
-    protected boolean isRemoved(Credentials aggregate) {
-        return aggregate.isDeleted();
-    }
-
     public Mono<AggregateIdAndVersion<CredentialsId>> create(Name name, Password password, UserId userId, Agent agent) {
         CredentialsId id = CredentialsId.create();
 
@@ -66,6 +55,16 @@ public class CredentialsService extends AggregateService<Credentials, Credential
     public Mono<Version> delete(CredentialsId credentialsId, Agent agent) {
         return dispatchCommandToLatest(credentialsId, agent, DeleteCmd.of())
                 .flatMap(version -> collapseEvents(credentialsId, version, agent));
+    }
+
+    @Override
+    protected AggregateId toAggregateId(CredentialsId credentialsId) {
+        return AggregateId.of(credentialsId.getValue());
+    }
+
+    @Override
+    protected boolean isRemoved(Credentials aggregate) {
+        return aggregate.isDeleted();
     }
 
 }

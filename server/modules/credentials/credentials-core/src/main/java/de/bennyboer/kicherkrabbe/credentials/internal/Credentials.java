@@ -1,12 +1,14 @@
 package de.bennyboer.kicherkrabbe.credentials.internal;
 
 import de.bennyboer.kicherkrabbe.auth.password.PasswordEncoder;
-import de.bennyboer.kicherkrabbe.credentials.internal.commands.CreateCmd;
-import de.bennyboer.kicherkrabbe.credentials.internal.commands.DeleteCmd;
-import de.bennyboer.kicherkrabbe.credentials.internal.commands.UseCmd;
-import de.bennyboer.kicherkrabbe.credentials.internal.events.*;
-import de.bennyboer.kicherkrabbe.credentials.internal.password.EncodedPassword;
-import de.bennyboer.kicherkrabbe.credentials.internal.password.Password;
+import de.bennyboer.kicherkrabbe.credentials.internal.create.CreateCmd;
+import de.bennyboer.kicherkrabbe.credentials.internal.delete.DeleteCmd;
+import de.bennyboer.kicherkrabbe.credentials.internal.delete.DeletedEvent;
+import de.bennyboer.kicherkrabbe.credentials.internal.snapshot.SnapshottedEvent;
+import de.bennyboer.kicherkrabbe.credentials.internal.use.UsageFailedEvent;
+import de.bennyboer.kicherkrabbe.credentials.internal.use.UsageSucceededEvent;
+import de.bennyboer.kicherkrabbe.credentials.internal.use.UseCmd;
+import de.bennyboer.kicherkrabbe.credentials.internal.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;

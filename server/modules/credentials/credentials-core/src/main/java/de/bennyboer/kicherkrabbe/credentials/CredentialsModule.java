@@ -4,7 +4,7 @@ import de.bennyboer.kicherkrabbe.auth.tokens.*;
 import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookup;
 import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.credentials.internal.*;
-import de.bennyboer.kicherkrabbe.credentials.internal.password.Password;
+import de.bennyboer.kicherkrabbe.credentials.internal.create.NameAlreadyTakenError;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -30,12 +30,14 @@ public class CredentialsModule {
             String password,
             String userId
     ) {
-        return credentialsService.create(
-                Name.of(name),
-                Password.of(password),
-                UserId.of(userId),
-                Agent.system()
-        ).map(result -> result.getId().getValue());
+        return assertNameNotAlreadyTaken(Name.of(name))
+                .then(credentialsService.create(
+                        Name.of(name),
+                        Password.of(password),
+                        UserId.of(userId),
+                        Agent.system()
+                ))
+                .map(result -> result.getId().getValue());
     }
 
     @Transactional
@@ -73,6 +75,11 @@ public class CredentialsModule {
         var payload = TokenPayload.of(owner);
 
         return tokenGenerator.generate(payload);
+    }
+
+    private Mono<Void> assertNameNotAlreadyTaken(Name name) {
+        return findCredentialsByName(name)
+                .flatMap(credentialsId -> Mono.error(new NameAlreadyTakenError(name.getValue())));
     }
 
     @Value

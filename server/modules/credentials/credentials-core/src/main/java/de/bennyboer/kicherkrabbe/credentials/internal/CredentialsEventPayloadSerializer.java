@@ -1,7 +1,10 @@
 package de.bennyboer.kicherkrabbe.credentials.internal;
 
-import de.bennyboer.kicherkrabbe.credentials.internal.events.*;
-import de.bennyboer.kicherkrabbe.credentials.internal.password.EncodedPassword;
+import de.bennyboer.kicherkrabbe.credentials.internal.create.CreatedEvent;
+import de.bennyboer.kicherkrabbe.credentials.internal.delete.DeletedEvent;
+import de.bennyboer.kicherkrabbe.credentials.internal.snapshot.SnapshottedEvent;
+import de.bennyboer.kicherkrabbe.credentials.internal.use.UsageFailedEvent;
+import de.bennyboer.kicherkrabbe.credentials.internal.use.UsageSucceededEvent;
 import de.bennyboer.kicherkrabbe.eventsourcing.EventSerializer;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;

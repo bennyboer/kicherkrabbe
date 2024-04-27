@@ -37,7 +37,8 @@ include('modules:credentials:credentials-core')
 include('modules:credentials:credentials-example')
 
 // Users
-include('modules:users')
+include('modules:users:users-core')
+include('modules:users:users-example')
 
 // Patterns
 include('modules:patterns')
