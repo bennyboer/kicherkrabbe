@@ -53,6 +53,11 @@ export const BROWN = Color.of({
   name: 'Braun',
   hex: '#8B4513',
 });
+export const YELLOW = Color.of({
+  id: 'yellow',
+  name: 'Gelb',
+  hex: '#FFFF00',
+});
 export const PINK = Color.of({
   id: 'pink',
   name: 'Rosa',
@@ -85,4 +90,5 @@ export const COLORS = [
   GREY,
   BROWN,
   BLACK,
+  YELLOW,
 ];

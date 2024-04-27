@@ -31,6 +31,7 @@ import {
   TypeAvailability,
   WHITE,
   WINTER,
+  YELLOW,
 } from '../model';
 
 @Injectable()
@@ -1019,6 +1020,111 @@ export class RemoteFabricsService {
       },
       colors: new Set<Color>([WHITE]),
       themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'blumen-6',
+      name: 'Blumen 6',
+      image: {
+        url: '/assets/images/fabrics/blumen_6.jpg',
+      },
+      colors: new Set<Color>([WHITE, RED, PINK]),
+      themes: new Set<Theme>([FLORAL]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'faulbaer',
+      name: 'Faulbär',
+      image: {
+        url: '/assets/images/fabrics/faulbaer.jpg',
+      },
+      colors: new Set<Color>([WHITE, BROWN]),
+      themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'hoernchenkuh',
+      name: 'Hörnchenkuh',
+      image: {
+        url: '/assets/images/fabrics/hoernchenkuh.jpg',
+      },
+      colors: new Set<Color>([WHITE, BROWN, BLUE]),
+      themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'honigbaer',
+      name: 'Honigbär',
+      image: {
+        url: '/assets/images/fabrics/honigbaer.jpg',
+      },
+      colors: new Set<Color>([WHITE, BROWN, ORANGE]),
+      themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'mini-biene',
+      name: 'Mini Biene',
+      image: {
+        url: '/assets/images/fabrics/mini_biene.jpg',
+      },
+      colors: new Set<Color>([WHITE, BROWN, YELLOW]),
+      themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'schaf',
+      name: 'Schaf',
+      image: {
+        url: '/assets/images/fabrics/schaf.jpg',
+      },
+      colors: new Set<Color>([WHITE, BEIGE]),
+      themes: new Set<Theme>([ANIMALS]),
+      availability: Availability.of({
+        types: [
+          TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
+          TypeAvailability.of({ type: JERSEY, inStock: false }),
+        ],
+      }),
+    }),
+    Fabric.of({
+      id: 'sommervoegelchen',
+      name: 'Sommervögelchen',
+      image: {
+        url: '/assets/images/fabrics/sommervoegelchen.jpg',
+      },
+      colors: new Set<Color>([WHITE, BROWN, ORANGE]),
+      themes: new Set<Theme>([ANIMALS, SUMMER]),
       availability: Availability.of({
         types: [
           TypeAvailability.of({ type: FRENCH_TERRY, inStock: false }),
