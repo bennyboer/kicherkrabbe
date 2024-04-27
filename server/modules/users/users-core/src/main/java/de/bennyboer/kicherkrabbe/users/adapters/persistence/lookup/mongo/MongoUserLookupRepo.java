@@ -43,6 +43,11 @@ public class MongoUserLookupRepo extends MongoEventSourcingReadModelRepo<UserId,
     }
 
     @Override
+    public Mono<Long> count() {
+        return template.count(query(new Criteria()), collectionName);
+    }
+
+    @Override
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         IndexDefinition mailIndex = new Index().on("mail", ASC);
 

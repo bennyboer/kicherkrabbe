@@ -22,4 +22,9 @@ public class InMemoryUserLookupRepo extends InMemoryEventSourcingReadModelRepo<U
                 .next();
     }
 
+    @Override
+    public Mono<Long> count() {
+        return getAll().count();
+    }
+
 }

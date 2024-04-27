@@ -16,27 +16,25 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class CredentialsHttpConfig {
 
     @Bean
-    public CredentialsHttpHandler authHttpHandler(CredentialsModule module) {
+    public CredentialsHttpHandler credentialsHttpHandler(CredentialsModule module) {
         return new CredentialsHttpHandler(module);
     }
 
     @Bean
-    public RouterFunction<ServerResponse> authHttpRouting(CredentialsHttpHandler handler) {
+    public RouterFunction<ServerResponse> credentialsHttpRouting(CredentialsHttpHandler handler) {
         return route()
                 .nest(path("/api"), () -> route()
-                        .nest(path("/auth"), () -> route()
-                                .nest(path("/credentials"), () -> route()
-                                        .POST("/use", handler::useCredentials)
-                                        .build())
+                        .nest(path("/credentials"), () -> route()
+                                .POST("/use", handler::useCredentials)
                                 .build())
                         .build()
                 ).build();
     }
 
     @Bean
-    public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> authAuthorizeExchangeSpecCustomizer() {
+    public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> credentialsAuthorizeExchangeSpecCustomizer() {
         return exchanges -> exchanges
-                .pathMatchers(POST, "/api/auth/credentials/use").permitAll();
+                .pathMatchers(POST, "/api/credentials/use").permitAll();
     }
 
 }

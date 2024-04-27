@@ -46,7 +46,7 @@ public class CredentialsModuleConfig {
     @Bean
     public CredentialsService credentialsService(
             @Qualifier("credentialsEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
-            MessagingEventPublisher eventPublisher,
+            @Qualifier("credentialsEventPublisher") MessagingEventPublisher eventPublisher,
             Optional<Clock> clock
     ) {
         return new CredentialsService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));

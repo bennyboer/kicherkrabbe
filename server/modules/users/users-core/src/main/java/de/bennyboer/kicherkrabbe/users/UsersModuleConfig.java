@@ -10,11 +10,13 @@ import de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup.UserLookupRep
 import de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup.mongo.MongoUserLookupRepo;
 import de.bennyboer.kicherkrabbe.users.internal.UserEventPayloadSerializer;
 import de.bennyboer.kicherkrabbe.users.internal.UsersService;
+import de.bennyboer.kicherkrabbe.users.ports.http.UsersHttpConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.transaction.ReactiveTransactionManager;
 
 import java.time.Clock;
 import java.util.Optional;
@@ -22,7 +24,8 @@ import java.util.Optional;
 @Configuration
 @Import({
         SecurityConfig.class,
-        UsersMessaging.class
+        UsersMessaging.class,
+        UsersHttpConfig.class
 })
 public class UsersModuleConfig {
 
@@ -32,7 +35,7 @@ public class UsersModuleConfig {
     }
 
     @Bean("usersEventPublisher")
-    public MessagingEventPublisher credentialsEventPublisher(MessagingOutbox outbox, Optional<Clock> clock) {
+    public MessagingEventPublisher usersEventPublisher(MessagingOutbox outbox, Optional<Clock> clock) {
         return new MessagingEventPublisher(
                 outbox,
                 new UserEventPayloadSerializer(),
@@ -43,7 +46,7 @@ public class UsersModuleConfig {
     @Bean
     public UsersService usersService(
             @Qualifier("usersEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
-            MessagingEventPublisher eventPublisher
+            @Qualifier("usersEventPublisher") MessagingEventPublisher eventPublisher
     ) {
         return new UsersService(eventSourcingRepo, eventPublisher);
     }
@@ -56,9 +59,10 @@ public class UsersModuleConfig {
     @Bean
     public UsersModule usersModule(
             UsersService usersService,
-            UserLookupRepo userLookupRepo
+            UserLookupRepo userLookupRepo,
+            ReactiveTransactionManager transactionManager
     ) {
-        return new UsersModule(usersService, userLookupRepo);
+        return new UsersModule(usersService, userLookupRepo, transactionManager);
     }
 
 }

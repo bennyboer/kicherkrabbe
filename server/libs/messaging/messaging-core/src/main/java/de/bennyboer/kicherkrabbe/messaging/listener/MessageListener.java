@@ -75,7 +75,7 @@ public class MessageListener {
 
     private Mono<Void> handleDelivery(AcknowledgableDelivery delivery) {
         TransactionalOperator transactionalOperator = TransactionalOperator.create(transactionManager);
-        IncomingMessageId incomingMessageId = IncomingMessageId.of(delivery.getProperties().getMessageId());
+        IncomingMessageId incomingMessageId = IncomingMessageId.of(name + delivery.getProperties().getMessageId());
 
         String body = new String(delivery.getBody(), UTF_8);
 

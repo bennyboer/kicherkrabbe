@@ -9,4 +9,6 @@ public interface UserLookupRepo extends EventSourcingReadModelRepo<UserId, UserL
 
     Mono<UserLookup> findByMail(Mail mail);
 
+    Mono<Long> count();
+
 }

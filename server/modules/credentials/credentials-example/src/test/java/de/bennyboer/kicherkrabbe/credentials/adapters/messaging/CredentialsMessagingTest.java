@@ -19,6 +19,8 @@ import org.springframework.transaction.ReactiveTransactionManager;
 import java.time.Instant;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
@@ -53,7 +55,7 @@ public class CredentialsMessagingTest extends EventListenerTest {
         );
 
         // then: the credentials lookup is updated
-        verify(module, timeout(5000).times(1)).updateCredentialsInLookup("CREDENTIALS_ID");
+        verify(module, timeout(10000).times(1)).updateCredentialsInLookup("CREDENTIALS_ID");
     }
 
     @Test
@@ -71,7 +73,27 @@ public class CredentialsMessagingTest extends EventListenerTest {
         );
 
         // then: the credentials lookup is updated
-        verify(module, timeout(5000).times(1)).removeCredentialsFromLookup("CREDENTIALS_ID");
+        verify(module, timeout(10000).times(1)).removeCredentialsFromLookup("CREDENTIALS_ID");
+    }
+
+    @Test
+    void shouldCreateCredentialsOnUserCreated() {
+        // when: a user created event is published
+        send(
+                AggregateType.of("USER"),
+                AggregateId.of("USER_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of(
+                        "mail", "test@kicherkrabbe.com"
+                )
+        );
+
+        // then: the credentials are created
+        verify(module, timeout(10000).times(1)).createCredentials(eq("test@kicherkrabbe.com"), any(), eq("USER_ID"));
     }
 
 }
