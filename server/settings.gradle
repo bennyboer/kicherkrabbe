@@ -27,6 +27,10 @@ include('libs:auth:auth-example')
 // Persistence
 include('libs:persistence:persistence-core')
 
+// Permissions
+include('libs:permissions:permissions-core')
+include('libs:permissions:permissions-example')
+
 
 /////////////
 // MODULES //

@@ -1,0 +1,6 @@
+subprojects {
+    dependencies {
+        implementation project(':libs:commons')
+        implementation project(':libs:persistence:persistence-core')
+    }
+}

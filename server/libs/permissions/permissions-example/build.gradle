@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(':libs:permissions:permissions-core')
+
+    testImplementation project(':libs:testing')
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
