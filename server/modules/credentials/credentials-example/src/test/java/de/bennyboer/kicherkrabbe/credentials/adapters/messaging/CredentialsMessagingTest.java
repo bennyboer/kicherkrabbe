@@ -96,4 +96,22 @@ public class CredentialsMessagingTest extends EventListenerTest {
         verify(module, timeout(10000).times(1)).createCredentials(eq("test@kicherkrabbe.com"), any(), eq("USER_ID"));
     }
 
+    @Test
+    void shouldDeleteCredentialsOnUserDeleted() {
+        // when: a user deleted event is published
+        send(
+                AggregateType.of("USER"),
+                AggregateId.of("USER_ID"),
+                Version.of(1),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the credentials are deleted by the user ID
+        verify(module, timeout(10000).times(1)).deleteCredentialsByUserId("USER_ID");
+    }
+
 }

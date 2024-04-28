@@ -17,4 +17,6 @@ public class MongoCredentialsLookup {
 
     String name;
 
+    String userId;
+
 }

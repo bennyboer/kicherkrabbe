@@ -9,6 +9,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
@@ -55,11 +56,20 @@ public class CredentialsModule {
         return credentialsService.delete(CredentialsId.of(credentialsId), Agent.system()).then();
     }
 
+    @Transactional
+    public Flux<String> deleteCredentialsByUserId(String userId) {
+        // TODO check permissions
+        return findCredentialsByUserId(UserId.of(userId))
+                .delayUntil(credentialsId -> credentialsService.delete(credentialsId, Agent.system()))
+                .map(CredentialsId::getValue);
+    }
+
     public Mono<Void> updateCredentialsInLookup(String credentialsId) {
         return credentialsService.get(CredentialsId.of(credentialsId))
                 .flatMap(credentials -> credentialsLookupRepo.update(CredentialsLookup.of(
                         credentials.getId(),
-                        credentials.getName()
+                        credentials.getName(),
+                        credentials.getUserId()
                 )));
     }
 
@@ -69,6 +79,10 @@ public class CredentialsModule {
 
     private Mono<CredentialsId> findCredentialsByName(Name name) {
         return credentialsLookupRepo.findCredentialsIdByName(name);
+    }
+
+    private Flux<CredentialsId> findCredentialsByUserId(UserId userId) {
+        return credentialsLookupRepo.findCredentialsIdByUserId(userId);
     }
 
     private Mono<Credentials> tryToUseCredentialsAndReturnCredentials(Name name, Password password) {

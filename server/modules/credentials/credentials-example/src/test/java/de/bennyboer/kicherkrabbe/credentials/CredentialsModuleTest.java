@@ -12,6 +12,8 @@ import de.bennyboer.kicherkrabbe.testing.time.TestClock;
 import org.junit.jupiter.api.BeforeEach;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 public class CredentialsModuleTest {
 
     protected final TestClock clock = new TestClock();
@@ -60,6 +62,14 @@ public class CredentialsModuleTest {
     public void deleteCredentials(String credentialsId) {
         module.deleteCredentials(credentialsId).block();
         module.removeCredentialsFromLookup(credentialsId).block();
+    }
+
+    public void deleteCredentialsByUserId(String userId) {
+        List<String> deletedCredentialIds = module.deleteCredentialsByUserId(userId).collectList().block();
+
+        for (String credentialsId : deletedCredentialIds) {
+            module.removeCredentialsFromLookup(credentialsId).block();
+        }
     }
 
 }

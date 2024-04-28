@@ -72,4 +72,21 @@ public class CredentialsMessaging {
         );
     }
 
+    @Bean
+    public EventListener onUserDeletedDeleteCredentialsMsgListener(
+            EventListenerFactory factory,
+            CredentialsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "user-deleted-delete-credentials",
+                AggregateType.of("USER"),
+                EventName.of("DELETED"),
+                (metadata, version, payload) -> {
+                    String userId = metadata.getAggregateId().getValue();
+
+                    return module.deleteCredentialsByUserId(userId).then();
+                }
+        );
+    }
+
 }
