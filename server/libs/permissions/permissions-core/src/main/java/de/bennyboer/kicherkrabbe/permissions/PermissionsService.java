@@ -35,11 +35,26 @@ public class PermissionsService {
                 .flatMap(addedPermission -> eventPublisher.publish(added(addedPermission)));
     }
 
+    public Mono<Void> addPermissions(Permission... permissions) {
+        return addPermissions(Set.of(permissions));
+    }
+
     public Mono<Void> addPermissions(Set<Permission> permissions) {
         return permissionsRepo.insert(permissions)
                 .collect(Collectors.toSet())
                 .filter(addedPermissions -> !addedPermissions.isEmpty())
                 .flatMap(addedPermissions -> eventPublisher.publish(added(addedPermissions)));
+    }
+
+    public Mono<Void> assertHasPermission(Permission permission) {
+        return hasPermission(permission)
+                .flatMap(hasPermission -> {
+                    if (!hasPermission) {
+                        return Mono.error(new MissingPermissionError(permission));
+                    }
+
+                    return Mono.empty();
+                });
     }
 
     public Mono<Boolean> hasPermission(Permission permission) {

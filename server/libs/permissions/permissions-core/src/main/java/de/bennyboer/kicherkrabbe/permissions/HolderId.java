@@ -11,6 +11,10 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor(access = PRIVATE)
 public class HolderId {
 
+    private static final String SYSTEM_GROUP = "SYSTEM";
+
+    private static final String ANONYMOUS_GROUP = "ANONYMOUS";
+
     String value;
 
     public static HolderId of(String value) {
@@ -18,6 +22,14 @@ public class HolderId {
         check(!value.isBlank(), "Holder ID must not be blank");
 
         return new HolderId(value);
+    }
+
+    public static HolderId system() {
+        return new HolderId(SYSTEM_GROUP);
+    }
+
+    public static HolderId anonymous() {
+        return new HolderId(ANONYMOUS_GROUP);
     }
 
     @Override

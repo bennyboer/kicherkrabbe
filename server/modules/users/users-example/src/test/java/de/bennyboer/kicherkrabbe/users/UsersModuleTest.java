@@ -2,15 +2,21 @@ package de.bennyboer.kicherkrabbe.users;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventWithMetadata;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.permissions.*;
+import de.bennyboer.kicherkrabbe.permissions.persistence.PermissionsRepo;
+import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
 import de.bennyboer.kicherkrabbe.testing.persistence.MockReactiveTransactionManager;
 import de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup.inmemory.InMemoryUserLookupRepo;
-import de.bennyboer.kicherkrabbe.users.UsersService;
+import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.transaction.ReactiveTransactionManager;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Optional;
 
 public class UsersModuleTest {
 
@@ -27,15 +33,27 @@ public class UsersModuleTest {
 
     private final ReactiveTransactionManager transactionManager = new MockReactiveTransactionManager();
 
-    private final UsersModule module = config.usersModule(usersService, usersLookupRepo, transactionManager);
+    private final PermissionsRepo permissionsRepo = new InMemoryPermissionsRepo();
+
+    private final PermissionsService permissionsService = new PermissionsService(
+            permissionsRepo,
+            ignored -> Mono.empty()
+    );
+
+    private final UsersModule module = config.usersModule(
+            usersService,
+            usersLookupRepo,
+            permissionsService,
+            transactionManager
+    );
 
     @BeforeEach
     public void setUp() {
-        module.init();
+        module.initialize().block();
     }
 
-    public String createUser(String firstName, String lastName, String mail) {
-        String userId = module.createUser(firstName, lastName, mail).block();
+    public String createUser(String firstName, String lastName, String mail, Agent agent) {
+        String userId = module.createUser(firstName, lastName, mail, agent).block();
         updateUserInLookup(userId);
 
         return userId;
@@ -65,6 +83,24 @@ public class UsersModuleTest {
 
     public List<EventWithMetadata> findEventsByName(EventName eventName) {
         return eventPublisher.findEventsByName(eventName);
+    }
+
+    public void userHasPermission(UserId allowedUserId, Action action) {
+        userHasPermission(allowedUserId, action, null);
+    }
+
+    public void userHasPermission(UserId allowedUserId, Action action, @Nullable UserId targetUserId) {
+        ResourceType resourceType = ResourceType.of("USER");
+
+        Permission.Builder permissionBuilder = Permission.builder()
+                .holder(Holder.user(HolderId.of(allowedUserId.getValue())))
+                .isAllowedTo(action);
+
+        Permission permission = Optional.ofNullable(targetUserId)
+                .map(tUId -> permissionBuilder.on(Resource.of(resourceType, ResourceId.of(tUId.getValue()))))
+                .orElseGet(() -> permissionBuilder.onType(resourceType));
+
+        permissionsService.addPermission(permission).block();
     }
 
 }

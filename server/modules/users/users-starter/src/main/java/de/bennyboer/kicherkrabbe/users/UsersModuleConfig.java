@@ -5,6 +5,9 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.messaging.Messaging
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.mongo.MongoEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
+import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
+import de.bennyboer.kicherkrabbe.permissions.persistence.PermissionsRepo;
+import de.bennyboer.kicherkrabbe.permissions.persistence.mongo.MongoPermissionsRepo;
 import de.bennyboer.kicherkrabbe.users.adapters.messaging.UsersMessaging;
 import de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup.UserLookupRepo;
 import de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup.mongo.MongoUserLookupRepo;
@@ -15,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.transaction.ReactiveTransactionManager;
+import reactor.core.publisher.Mono;
 
 import java.time.Clock;
 import java.util.Optional;
@@ -54,13 +58,24 @@ public class UsersModuleConfig {
         return new MongoUserLookupRepo(template);
     }
 
+    @Bean("usersPermissionsRepo")
+    public PermissionsRepo usersPermissionsRepo(ReactiveMongoTemplate template) {
+        return new MongoPermissionsRepo("users_permissions", template);
+    }
+
+    @Bean("usersPermissionsService")
+    public PermissionsService usersPermissionsService(@Qualifier("usersPermissionsRepo") PermissionsRepo permissionsRepo) {
+        return new PermissionsService(permissionsRepo, ignored -> Mono.empty());
+    }
+
     @Bean
     public UsersModule usersModule(
             UsersService usersService,
             UserLookupRepo userLookupRepo,
+            PermissionsService permissionsService,
             ReactiveTransactionManager transactionManager
     ) {
-        return new UsersModule(usersService, userLookupRepo, transactionManager);
+        return new UsersModule(usersService, userLookupRepo, permissionsService, transactionManager);
     }
 
 }
