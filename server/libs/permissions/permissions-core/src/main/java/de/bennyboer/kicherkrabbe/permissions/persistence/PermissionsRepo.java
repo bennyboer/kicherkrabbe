@@ -5,6 +5,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Data-Access interface for permissions.
@@ -14,7 +15,11 @@ public interface PermissionsRepo {
 
     Mono<Permission> insert(Permission permission);
 
-    Flux<Permission> insertAll(Collection<Permission> permissions);
+    default Flux<Permission> insert(Permission... permissions) {
+        return insert(Set.of(permissions));
+    }
+
+    Flux<Permission> insert(Collection<Permission> permissions);
 
     Mono<Boolean> hasPermission(Permission permission);
 

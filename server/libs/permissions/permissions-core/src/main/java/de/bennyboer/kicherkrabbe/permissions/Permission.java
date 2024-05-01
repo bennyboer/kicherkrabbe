@@ -3,8 +3,6 @@ package de.bennyboer.kicherkrabbe.permissions;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
-import java.time.Instant;
-
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -16,46 +14,35 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor(access = PRIVATE)
 public class Permission {
 
-    PermissionId id;
-
     Holder holder;
 
     Action action;
 
     Resource resource;
 
-    Instant createdAt;
-
     public static Permission of(
-            PermissionId id,
             Holder holder,
             Action action,
-            Resource resource,
-            Instant createdAt
+            Resource resource
     ) {
-        notNull(id, "Id must be given");
         notNull(holder, "Holder must be given");
         notNull(action, "Action must be given");
         notNull(resource, "Resource must be given");
-        notNull(createdAt, "Creation date must be given");
 
         return new Permission(
-                id,
                 holder,
                 action,
-                resource,
-                createdAt
+                resource
         );
     }
 
     @Override
     public String toString() {
         return String.format(
-                "Permission(holder=%s, action=%s, resource=%s, createdAt=%s)",
+                "Permission(holder=%s, action=%s, resource=%s)",
                 holder,
                 action,
-                resource,
-                createdAt
+                resource
         );
     }
 
@@ -90,21 +77,17 @@ public class Permission {
 
         public Permission onType(ResourceType resourceType) {
             return Permission.of(
-                    PermissionId.create(),
                     holder,
                     action,
-                    Resource.ofType(resourceType),
-                    Instant.now()
+                    Resource.ofType(resourceType)
             );
         }
 
         public Permission on(Resource resource) {
             return Permission.of(
-                    PermissionId.create(),
                     holder,
                     action,
-                    resource,
-                    Instant.now()
+                    resource
             );
         }
 

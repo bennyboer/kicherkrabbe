@@ -39,8 +39,8 @@ public class CacheablePermissionsRepo implements PermissionsRepo {
     }
 
     @Override
-    public Flux<Permission> insertAll(Collection<Permission> permissions) {
-        return delegate.insertAll(permissions);
+    public Flux<Permission> insert(Collection<Permission> permissions) {
+        return delegate.insert(permissions);
     }
 
     @Override

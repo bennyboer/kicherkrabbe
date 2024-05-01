@@ -6,6 +6,8 @@ import lombok.Value;
 
 import java.util.Set;
 
+import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
+import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static de.bennyboer.kicherkrabbe.permissions.events.PermissionEventType.ADDED;
 import static de.bennyboer.kicherkrabbe.permissions.events.PermissionEventType.REMOVED;
 import static lombok.AccessLevel.PRIVATE;
@@ -23,6 +25,9 @@ public class PermissionEvent {
     }
 
     public static PermissionEvent added(Set<Permission> permissions) {
+        notNull(permissions, "Permissions must be given");
+        check(!permissions.isEmpty(), "Permissions must not be empty");
+
         return new PermissionEvent(ADDED, permissions);
     }
 
@@ -31,6 +36,9 @@ public class PermissionEvent {
     }
 
     public static PermissionEvent removed(Set<Permission> permissions) {
+        notNull(permissions, "Permissions must be given");
+        check(!permissions.isEmpty(), "Permissions must not be empty");
+
         return new PermissionEvent(REMOVED, permissions);
     }
 

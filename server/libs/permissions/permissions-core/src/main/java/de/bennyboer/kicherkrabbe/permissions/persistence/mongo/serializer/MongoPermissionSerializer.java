@@ -5,28 +5,28 @@ import de.bennyboer.kicherkrabbe.permissions.Permission;
 import de.bennyboer.kicherkrabbe.permissions.PermissionId;
 import de.bennyboer.kicherkrabbe.permissions.persistence.mongo.MongoPermission;
 
+import java.time.Instant;
+
 public class MongoPermissionSerializer {
 
-    public static MongoPermission serialize(Permission permission) {
+    public static MongoPermission serialize(PermissionId permissionId, Permission permission, Instant createdAt) {
         var result = new MongoPermission();
 
-        result.id = permission.getId().getValue();
+        result.id = permissionId.getValue();
         result.resource = MongoResourceSerializer.serialize(permission.getResource());
         result.holder = MongoHolderSerializer.serialize(permission.getHolder());
         result.action = permission.getAction().getName();
-        result.createdAt = permission.getCreatedAt();
+        result.createdAt = createdAt;
 
         return result;
     }
 
     public static Permission deserialize(MongoPermission permission) {
-        var id = PermissionId.of(permission.id);
         var resource = MongoResourceSerializer.deserialize(permission.resource);
         var holder = MongoHolderSerializer.deserialize(permission.holder);
         var action = Action.of(permission.action);
-        var createdAt = permission.createdAt;
 
-        return Permission.of(id, holder, action, resource, createdAt);
+        return Permission.of(holder, action, resource);
     }
 
 }

@@ -89,7 +89,8 @@ public abstract class PermissionsServiceTest {
         addPermission(permission);
 
         // then: the permission is still present only once
-        assertThat(findPermissionsByHolder(holder)).containsExactly(permission);
+        assertThat(findPermissionsByHolder(holder))
+                .containsExactly(permission);
     }
 
     @Test
@@ -166,6 +167,78 @@ public abstract class PermissionsServiceTest {
 
         // and: an event is published
         assertThat(seenEvents).contains(PermissionEvent.added(permissions));
+    }
+
+    @Test
+    void shouldNotFailOnAddingMultiplePermissionsWithOneDuplicate() {
+        var holder1 = Holder.user(HolderId.of("USER_ID_1"));
+        var holder2 = Holder.user(HolderId.of("USER_ID_2"));
+
+        var resource1 = Resource.of(ResourceType.of("RESOURCE_TYPE_1"), ResourceId.of("RESOURCE_ID_1"));
+        var resource2 = Resource.of(ResourceType.of("RESOURCE_TYPE_2"), ResourceId.of("RESOURCE_ID_2"));
+
+        // given: a set of permissions to add
+        Set<Permission> permissions = Set.of(
+                Permission.builder()
+                        .holder(holder1)
+                        .isAllowedTo(testAction)
+                        .on(resource1),
+                Permission.builder()
+                        .holder(holder1)
+                        .isAllowedTo(testAction)
+                        .on(resource2),
+                Permission.builder()
+                        .holder(holder2)
+                        .isAllowedTo(testAction)
+                        .on(resource2)
+        );
+
+        // and: the first permission is already added
+        addPermission(Permission.builder()
+                .holder(holder1)
+                .isAllowedTo(testAction)
+                .on(resource1));
+        seenEvents.clear();
+
+        // when: adding the permissions
+        addPermissions(permissions);
+
+        // then: there are only three permissions recorded at total
+        assertThat(findPermissionsByHolder(holder1)).hasSize(2);
+        assertThat(findPermissionsByHolder(holder2)).hasSize(1);
+
+        // and: an event is published for the two new permissions only
+        assertThat(seenEvents).hasSize(1);
+        assertThat(seenEvents).contains(PermissionEvent.added(Set.of(
+                Permission.builder()
+                        .holder(holder1)
+                        .isAllowedTo(testAction)
+                        .on(resource2),
+                Permission.builder()
+                        .holder(holder2)
+                        .isAllowedTo(testAction)
+                        .on(resource2)
+        )));
+
+        // then: holder 1 has permissions to perform the test action on resource 1 and 2
+        assertThat(hasPermission(Permission.builder()
+                .holder(holder1)
+                .isAllowedTo(testAction)
+                .on(resource1))).isTrue();
+        assertThat(hasPermission(Permission.builder()
+                .holder(holder1)
+                .isAllowedTo(testAction)
+                .on(resource2))).isTrue();
+
+        // and: holder 2 has permissions to perform the test action on resource 2 but not on resource 1
+        assertThat(hasPermission(Permission.builder()
+                .holder(holder2)
+                .isAllowedTo(testAction)
+                .on(resource2))).isTrue();
+        assertThat(hasPermission(Permission.builder()
+                .holder(holder2)
+                .isAllowedTo(testAction)
+                .on(resource1))).isFalse();
     }
 
     @Test
@@ -343,7 +416,7 @@ public abstract class PermissionsServiceTest {
         var resource3 = Resource.of(ResourceType.of("RESOURCE_TYPE_1"), ResourceId.of("RESOURCE_ID_3"));
 
         // given: some permissions
-        Set<Permission> permissions = Set.of(
+        var permissions = Set.of(
                 Permission.builder()
                         .holder(holder1)
                         .isAllowedTo(testAction)

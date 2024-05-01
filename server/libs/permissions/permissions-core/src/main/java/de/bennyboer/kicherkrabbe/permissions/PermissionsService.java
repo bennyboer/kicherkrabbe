@@ -36,8 +36,9 @@ public class PermissionsService {
     }
 
     public Mono<Void> addPermissions(Set<Permission> permissions) {
-        return permissionsRepo.insertAll(permissions)
+        return permissionsRepo.insert(permissions)
                 .collect(Collectors.toSet())
+                .filter(addedPermissions -> !addedPermissions.isEmpty())
                 .flatMap(addedPermissions -> eventPublisher.publish(added(addedPermissions)));
     }
 
@@ -73,18 +74,21 @@ public class PermissionsService {
     public Mono<Void> removePermissionsByHolder(Holder holder) {
         return permissionsRepo.removeByHolder(holder)
                 .collect(Collectors.toSet())
+                .filter(permissions -> !permissions.isEmpty())
                 .flatMap(permissions -> eventPublisher.publish(removed(permissions)));
     }
 
     public Mono<Void> removePermissionsByResource(Resource resource) {
         return permissionsRepo.removeByResource(resource)
                 .collect(Collectors.toSet())
+                .filter(permissions -> !permissions.isEmpty())
                 .flatMap(permissions -> eventPublisher.publish(removed(permissions)));
     }
 
     public Mono<Void> removePermissionsByHolderAndResource(Holder holder, Resource resource) {
         return permissionsRepo.removeByHolderAndResource(holder, resource)
                 .collect(Collectors.toSet())
+                .filter(permissions -> !permissions.isEmpty())
                 .flatMap(permissions -> eventPublisher.publish(removed(permissions)));
     }
 

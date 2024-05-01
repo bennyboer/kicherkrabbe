@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.permissions;
 
 import de.bennyboer.kicherkrabbe.permissions.persistence.PermissionsRepo;
+import de.bennyboer.kicherkrabbe.permissions.persistence.mongo.MongoPermission;
 import de.bennyboer.kicherkrabbe.permissions.persistence.mongo.MongoPermissionsRepo;
 import de.bennyboer.kicherkrabbe.testing.persistence.MongoTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,10 @@ public class MongoRepoPermissionsServiceTest extends PermissionsServiceTest {
 
     @BeforeEach
     public void setUp() {
-        template.dropCollection("test_permissions").block();
+        template.remove(MongoPermission.class)
+                .inCollection("test_permissions")
+                .all()
+                .block();
     }
 
 }

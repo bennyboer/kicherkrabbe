@@ -27,7 +27,7 @@ public class InMemoryPermissionsRepo implements PermissionsRepo {
     }
 
     @Override
-    public Flux<Permission> insertAll(Collection<Permission> permissions) {
+    public Flux<Permission> insert(Collection<Permission> permissions) {
         return Flux.fromIterable(permissions)
                 .flatMap(this::insert);
     }
