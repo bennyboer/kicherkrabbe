@@ -1,13 +1,13 @@
-package de.bennyboer.kicherkrabbe.credentials.internal;
+package de.bennyboer.kicherkrabbe.credentials;
 
 import de.bennyboer.kicherkrabbe.auth.password.PasswordEncoder;
-import de.bennyboer.kicherkrabbe.credentials.internal.snapshot.SnapshottedEvent;
-import de.bennyboer.kicherkrabbe.credentials.internal.use.InvalidCredentialsUsedOrUserLockedError;
+import de.bennyboer.kicherkrabbe.credentials.snapshot.SnapshottedEvent;
+import de.bennyboer.kicherkrabbe.credentials.use.InvalidCredentialsUsedOrUserLockedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
-import de.bennyboer.kicherkrabbe.eventsourcing.persistence.EventSourcingRepo;
-import de.bennyboer.kicherkrabbe.eventsourcing.persistence.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.testing.time.TestClock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

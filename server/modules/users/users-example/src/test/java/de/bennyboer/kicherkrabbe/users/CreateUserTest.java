@@ -1,6 +1,6 @@
 package de.bennyboer.kicherkrabbe.users;
 
-import de.bennyboer.kicherkrabbe.users.internal.create.MailAlreadyInUseError;
+import de.bennyboer.kicherkrabbe.users.create.MailAlreadyInUseError;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

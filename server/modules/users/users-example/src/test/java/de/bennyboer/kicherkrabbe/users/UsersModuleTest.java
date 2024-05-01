@@ -3,10 +3,10 @@ package de.bennyboer.kicherkrabbe.users;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventWithMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
-import de.bennyboer.kicherkrabbe.eventsourcing.persistence.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.testing.persistence.MockReactiveTransactionManager;
 import de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup.inmemory.InMemoryUserLookupRepo;
-import de.bennyboer.kicherkrabbe.users.internal.UsersService;
+import de.bennyboer.kicherkrabbe.users.UsersService;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.transaction.ReactiveTransactionManager;
 

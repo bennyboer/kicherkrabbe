@@ -1,8 +1,8 @@
 package de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup;
 
-import de.bennyboer.kicherkrabbe.users.internal.FullName;
-import de.bennyboer.kicherkrabbe.users.internal.Mail;
-import de.bennyboer.kicherkrabbe.users.internal.UserId;
+import de.bennyboer.kicherkrabbe.users.FullName;
+import de.bennyboer.kicherkrabbe.users.Mail;
+import de.bennyboer.kicherkrabbe.users.UserId;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 

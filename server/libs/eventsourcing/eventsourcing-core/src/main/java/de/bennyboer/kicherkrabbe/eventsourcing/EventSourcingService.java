@@ -10,7 +10,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.EventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.patch.EventPatcher;
 import de.bennyboer.kicherkrabbe.eventsourcing.patch.Patch;
-import de.bennyboer.kicherkrabbe.eventsourcing.persistence.EventSourcingRepo;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

@@ -1,8 +1,8 @@
 package de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup;
 
-import de.bennyboer.kicherkrabbe.credentials.internal.CredentialsId;
-import de.bennyboer.kicherkrabbe.credentials.internal.Name;
-import de.bennyboer.kicherkrabbe.credentials.internal.UserId;
+import de.bennyboer.kicherkrabbe.credentials.CredentialsId;
+import de.bennyboer.kicherkrabbe.credentials.Name;
+import de.bennyboer.kicherkrabbe.credentials.UserId;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 

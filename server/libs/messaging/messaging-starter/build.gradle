@@ -1,0 +1,6 @@
+dependencies {
+    api project(':libs:messaging:messaging-core')
+
+    implementation project(':libs:persistence:persistence-starter')
+    implementation 'io.projectreactor.rabbitmq:reactor-rabbitmq:1.5.6'
+}

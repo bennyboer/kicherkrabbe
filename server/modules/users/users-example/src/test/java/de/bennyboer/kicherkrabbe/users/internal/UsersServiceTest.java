@@ -1,12 +1,12 @@
-package de.bennyboer.kicherkrabbe.users.internal;
+package de.bennyboer.kicherkrabbe.users;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
-import de.bennyboer.kicherkrabbe.eventsourcing.persistence.EventSourcingRepo;
-import de.bennyboer.kicherkrabbe.eventsourcing.persistence.inmemory.InMemoryEventSourcingRepo;
-import de.bennyboer.kicherkrabbe.users.internal.snapshot.SnapshottedEvent;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.users.snapshot.SnapshottedEvent;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

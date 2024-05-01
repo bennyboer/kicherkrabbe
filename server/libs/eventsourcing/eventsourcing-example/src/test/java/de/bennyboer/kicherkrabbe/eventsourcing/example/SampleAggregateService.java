@@ -11,7 +11,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.example.commands.DeleteCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.example.commands.UpdateDescriptionCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.example.commands.UpdateTitleCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.example.patches.CreatedEventPatch1;
-import de.bennyboer.kicherkrabbe.eventsourcing.persistence.EventSourcingRepo;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import reactor.core.publisher.Mono;
 
 import java.util.List;

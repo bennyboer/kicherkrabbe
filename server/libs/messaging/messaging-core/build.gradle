@@ -1,6 +1,0 @@
-dependencies {
-    implementation project(':libs:commons')
-    implementation project(':libs:persistence:persistence-core')
-
-    implementation 'io.projectreactor.rabbitmq:reactor-rabbitmq:1.5.6'
-}

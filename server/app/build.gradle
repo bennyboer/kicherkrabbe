@@ -1,8 +1,12 @@
-dependencies {
-    implementation project(':libs:auth:auth-core')
+plugins {
+    id 'java'
+}
 
-    implementation project(':modules:credentials:credentials-core')
-    implementation project(':modules:users:users-core')
+dependencies {
+    implementation project(':libs:auth:auth-starter')
+
+    implementation project(':modules:credentials:credentials-starter')
+    implementation project(':modules:users:users-starter')
 
     testImplementation project(':libs:testing')
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

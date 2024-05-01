@@ -55,7 +55,7 @@ public class CredentialsMessagingTest extends EventListenerTest {
         );
 
         // then: the credentials lookup is updated
-        verify(module, timeout(10000).times(1)).updateCredentialsInLookup("CREDENTIALS_ID");
+        verify(module, timeout(5000).times(1)).updateCredentialsInLookup(eq("CREDENTIALS_ID"));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class CredentialsMessagingTest extends EventListenerTest {
         );
 
         // then: the credentials lookup is updated
-        verify(module, timeout(10000).times(1)).removeCredentialsFromLookup("CREDENTIALS_ID");
+        verify(module, timeout(5000).times(1)).removeCredentialsFromLookup(eq("CREDENTIALS_ID"));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class CredentialsMessagingTest extends EventListenerTest {
         );
 
         // then: the credentials are created
-        verify(module, timeout(10000).times(1)).createCredentials(eq("test@kicherkrabbe.com"), any(), eq("USER_ID"));
+        verify(module, timeout(5000).times(1)).createCredentials(eq("test@kicherkrabbe.com"), any(), eq("USER_ID"));
     }
 
     @Test
@@ -111,7 +111,7 @@ public class CredentialsMessagingTest extends EventListenerTest {
         );
 
         // then: the credentials are deleted by the user ID
-        verify(module, timeout(10000).times(1)).deleteCredentialsByUserId("USER_ID");
+        verify(module, timeout(5000).times(1)).deleteCredentialsByUserId(eq("USER_ID"));
     }
 
 }

@@ -1,5 +1,5 @@
 dependencies {
-    implementation project(':libs:messaging:messaging-core')
+    implementation project(':libs:messaging:messaging-starter')
 
     testImplementation project(':libs:testing')
     testImplementation project(':libs:messaging:messaging-testing')

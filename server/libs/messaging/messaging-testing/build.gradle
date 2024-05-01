@@ -1,6 +1,6 @@
 dependencies {
     implementation project(':libs:testing')
-    implementation project(':libs:messaging:messaging-core')
+    implementation project(':libs:messaging:messaging-starter')
 
     implementation 'org.springframework.boot:spring-boot-starter-test'
     implementation "org.testcontainers:rabbitmq"

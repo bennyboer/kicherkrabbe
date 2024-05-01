@@ -12,23 +12,27 @@ include('libs:testing')
 
 // Event Sourcing
 include('libs:eventsourcing:eventsourcing-core')
+include('libs:eventsourcing:eventsourcing-starter')
 include('libs:eventsourcing:eventsourcing-example')
 include('libs:eventsourcing:eventsourcing-testing')
 
 // Messaging
 include('libs:messaging:messaging-core')
+include('libs:messaging:messaging-starter')
 include('libs:messaging:messaging-example')
 include('libs:messaging:messaging-testing')
 
 // Auth
 include('libs:auth:auth-core')
+include('libs:auth:auth-starter')
 include('libs:auth:auth-example')
 
 // Persistence
-include('libs:persistence:persistence-core')
+include('libs:persistence:persistence-starter')
 
 // Permissions
 include('libs:permissions:permissions-core')
+include('libs:permissions:permissions-starter')
 include('libs:permissions:permissions-example')
 
 
@@ -38,10 +42,12 @@ include('libs:permissions:permissions-example')
 
 // Credentials
 include('modules:credentials:credentials-core')
+include('modules:credentials:credentials-starter')
 include('modules:credentials:credentials-example')
 
 // Users
 include('modules:users:users-core')
+include('modules:users:users-starter')
 include('modules:users:users-example')
 
 // Patterns

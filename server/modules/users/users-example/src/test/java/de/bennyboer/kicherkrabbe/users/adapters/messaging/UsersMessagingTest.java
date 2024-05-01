@@ -53,7 +53,7 @@ public class UsersMessagingTest extends EventListenerTest {
         );
 
         // then: the users lookup is updated
-        verify(module, timeout(10000).times(1)).updateUserInLookup("USER_ID");
+        verify(module, timeout(5000).times(1)).updateUserInLookup("USER_ID");
     }
 
     @Test
@@ -71,7 +71,7 @@ public class UsersMessagingTest extends EventListenerTest {
         );
 
         // then: the users lookup is updated
-        verify(module, timeout(10000).times(1)).removeUserFromLookup("USER_ID");
+        verify(module, timeout(5000).times(1)).removeUserFromLookup("USER_ID");
     }
 
 }

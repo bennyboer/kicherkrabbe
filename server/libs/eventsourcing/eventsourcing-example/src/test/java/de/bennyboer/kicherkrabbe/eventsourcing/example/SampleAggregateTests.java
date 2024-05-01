@@ -10,7 +10,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.example.events.CreatedEvent;
 import de.bennyboer.kicherkrabbe.eventsourcing.example.events.CreatedEvent2;
-import de.bennyboer.kicherkrabbe.eventsourcing.persistence.EventSourcingRepo;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;

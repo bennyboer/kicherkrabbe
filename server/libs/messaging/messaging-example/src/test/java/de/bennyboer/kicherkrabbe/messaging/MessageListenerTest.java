@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
 import de.bennyboer.kicherkrabbe.messaging.testing.BaseMessagingTest;
-import de.bennyboer.kicherkrabbe.messaging.testing.MessagingTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.ReactiveTransactionManager;
@@ -13,7 +12,6 @@ import reactor.test.StepVerifier;
 import java.time.Duration;
 import java.util.Map;
 
-@MessagingTest
 public class MessageListenerTest extends BaseMessagingTest {
 
     @Autowired

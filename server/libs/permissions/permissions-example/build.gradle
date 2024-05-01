@@ -1,5 +1,5 @@
 dependencies {
-    implementation project(':libs:permissions:permissions-core')
+    implementation project(':libs:permissions:permissions-starter')
 
     testImplementation project(':libs:testing')
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

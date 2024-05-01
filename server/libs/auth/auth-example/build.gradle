@@ -1,5 +1,5 @@
 dependencies {
-    implementation project(':libs:auth:auth-core')
+    implementation project(':libs:auth:auth-starter')
 
     testImplementation project(':libs:testing')
 

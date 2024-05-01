@@ -1,6 +1,6 @@
 package de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup;
 
-import de.bennyboer.kicherkrabbe.users.internal.*;
+import de.bennyboer.kicherkrabbe.users.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

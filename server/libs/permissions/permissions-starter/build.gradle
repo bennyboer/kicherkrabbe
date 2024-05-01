@@ -1,0 +1,5 @@
+dependencies {
+    api project(':libs:permissions:permissions-core')
+
+    implementation project(':libs:persistence:persistence-starter')
+}

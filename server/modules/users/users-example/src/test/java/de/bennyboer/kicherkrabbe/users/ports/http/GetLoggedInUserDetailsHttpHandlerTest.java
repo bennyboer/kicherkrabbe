@@ -1,7 +1,7 @@
 package de.bennyboer.kicherkrabbe.users.ports.http;
 
 import de.bennyboer.kicherkrabbe.users.UserDetails;
-import de.bennyboer.kicherkrabbe.users.internal.*;
+import de.bennyboer.kicherkrabbe.users.*;
 import de.bennyboer.kicherkrabbe.users.ports.http.responses.UserDetailsResponse;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;

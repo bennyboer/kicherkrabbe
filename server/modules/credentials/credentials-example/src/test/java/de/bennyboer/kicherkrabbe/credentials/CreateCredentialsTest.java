@@ -1,6 +1,6 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
-import de.bennyboer.kicherkrabbe.credentials.internal.create.NameAlreadyTakenError;
+import de.bennyboer.kicherkrabbe.credentials.create.NameAlreadyTakenError;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,5 +1,6 @@
 dependencies {
-    implementation project(':libs:eventsourcing:eventsourcing-core')
+    implementation project(':libs:eventsourcing:eventsourcing-starter')
+    implementation project(':libs:messaging:messaging-starter')
     implementation project(':libs:messaging:messaging-testing')
 
     implementation 'org.springframework.boot:spring-boot-starter-test'
