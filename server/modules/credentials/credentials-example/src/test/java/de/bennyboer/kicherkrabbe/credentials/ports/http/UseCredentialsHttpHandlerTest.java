@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.credentials.ports.http;
 import de.bennyboer.kicherkrabbe.credentials.CredentialsModule;
 import de.bennyboer.kicherkrabbe.credentials.ports.http.requests.UseCredentialsRequest;
 import de.bennyboer.kicherkrabbe.credentials.ports.http.responses.UseCredentialsResponse;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +22,8 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
         // and: the auth module is configured to return a successful response
         when(module.useCredentials(
                 request.name,
-                request.password
+                request.password,
+                Agent.anonymous()
         )).thenReturn(Mono.just(CredentialsModule.UseCredentialsResult.of("Token")));
 
         // when: "using the credentials"
@@ -50,7 +52,8 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
         // and: the auth module is configured to return an empty result
         when(module.useCredentials(
                 request.name,
-                request.password
+                request.password,
+                Agent.anonymous()
         )).thenReturn(Mono.empty());
 
         // when: "using the credentials"
@@ -76,7 +79,8 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
         // and: the auth module is configured to return an error
         when(module.useCredentials(
                 request.name,
-                request.password
+                request.password,
+                Agent.anonymous()
         )).thenReturn(Mono.error(Exception::new));
 
         // when: "using the credentials"

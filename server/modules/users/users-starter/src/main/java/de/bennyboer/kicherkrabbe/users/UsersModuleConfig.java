@@ -64,7 +64,9 @@ public class UsersModuleConfig {
     }
 
     @Bean("usersPermissionsService")
-    public PermissionsService usersPermissionsService(@Qualifier("usersPermissionsRepo") PermissionsRepo permissionsRepo) {
+    public PermissionsService usersPermissionsService(
+            @Qualifier("usersPermissionsRepo") PermissionsRepo permissionsRepo
+    ) {
         return new PermissionsService(permissionsRepo, ignored -> Mono.empty());
     }
 
@@ -72,7 +74,7 @@ public class UsersModuleConfig {
     public UsersModule usersModule(
             UsersService usersService,
             UserLookupRepo userLookupRepo,
-            PermissionsService permissionsService,
+            @Qualifier("usersPermissionsService") PermissionsService permissionsService,
             ReactiveTransactionManager transactionManager
     ) {
         return new UsersModule(usersService, userLookupRepo, permissionsService, transactionManager);

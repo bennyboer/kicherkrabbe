@@ -44,10 +44,12 @@ public class CredentialsMessagingTest extends EventListenerTest {
 
     @BeforeEach
     void setup() {
-        when(module.updateCredentialsInLookup(eq("CREDENTIALS_ID"))).thenReturn(Mono.empty());
-        when(module.removeCredentialsFromLookup(eq("CREDENTIALS_ID"))).thenReturn(Mono.empty());
-        when(module.createCredentials(any(), any(), any())).thenReturn(Mono.empty());
-        when(module.deleteCredentialsByUserId(eq("USER_ID"))).thenReturn(Flux.empty());
+        when(module.updateCredentialsInLookup(any())).thenReturn(Mono.empty());
+        when(module.addPermissions(any(), any())).thenReturn(Mono.empty());
+        when(module.removeCredentialsFromLookup(any())).thenReturn(Mono.empty());
+        when(module.removePermissionsOnCredentials(any())).thenReturn(Mono.empty());
+        when(module.createCredentials(any(), any(), any(), any())).thenReturn(Mono.empty());
+        when(module.deleteCredentialsByUserId(any(), any())).thenReturn(Flux.empty());
     }
 
     @Test
@@ -69,6 +71,26 @@ public class CredentialsMessagingTest extends EventListenerTest {
     }
 
     @Test
+    void shouldAddPermissionsOnCredentialsCreated() {
+        // when: a credentials created event is published
+        send(
+                AggregateType.of("CREDENTIALS"),
+                AggregateId.of("CREDENTIALS_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of(
+                        "userId", "USER_ID"
+                )
+        );
+
+        // then: the permissions are added
+        verify(module, timeout(5000).times(1)).addPermissions(eq("CREDENTIALS_ID"), eq("USER_ID"));
+    }
+
+    @Test
     void shouldUpdateCredentialsLookupOnCredentialsDeleted() {
         // when: a credentials deleted event is published
         send(
@@ -84,6 +106,24 @@ public class CredentialsMessagingTest extends EventListenerTest {
 
         // then: the credentials lookup is updated
         verify(module, timeout(5000).times(1)).removeCredentialsFromLookup(eq("CREDENTIALS_ID"));
+    }
+
+    @Test
+    void shouldRemovePermissionsLookupOnCredentialsDeleted() {
+        // when: a credentials deleted event is published
+        send(
+                AggregateType.of("CREDENTIALS"),
+                AggregateId.of("CREDENTIALS_ID"),
+                Version.of(1),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the credentials lookup is updated
+        verify(module, timeout(5000).times(1)).removePermissionsOnCredentials(eq("CREDENTIALS_ID"));
     }
 
     @Test
@@ -103,7 +143,12 @@ public class CredentialsMessagingTest extends EventListenerTest {
         );
 
         // then: the credentials are created
-        verify(module, timeout(5000).times(1)).createCredentials(eq("test@kicherkrabbe.com"), any(), eq("USER_ID"));
+        verify(module, timeout(5000).times(1)).createCredentials(
+                eq("test@kicherkrabbe.com"),
+                any(),
+                eq("USER_ID"),
+                any()
+        );
     }
 
     @Test
@@ -121,7 +166,7 @@ public class CredentialsMessagingTest extends EventListenerTest {
         );
 
         // then: the credentials are deleted by the user ID
-        verify(module, timeout(5000).times(1)).deleteCredentialsByUserId(eq("USER_ID"));
+        verify(module, timeout(5000).times(1)).deleteCredentialsByUserId(eq("USER_ID"), any());
     }
 
 }

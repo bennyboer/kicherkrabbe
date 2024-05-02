@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListener;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListenerFactory;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,24 @@ public class CredentialsMessaging {
     }
 
     @Bean
+    public EventListener onCredentialsCreatedAddPermissionsMsgListener(
+            EventListenerFactory factory,
+            CredentialsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "credentials-created-add-permissions",
+                AggregateType.of("CREDENTIALS"),
+                EventName.of("CREATED"),
+                (metadata, version, payload) -> {
+                    String credentialsId = metadata.getAggregateId().getValue();
+                    String userId = payload.get("userId").toString();
+
+                    return module.addPermissions(credentialsId, userId);
+                }
+        );
+    }
+
+    @Bean
     public EventListener onCredentialsDeletedUpdateLookupMsgListener(
             EventListenerFactory factory,
             CredentialsModule module
@@ -45,6 +64,23 @@ public class CredentialsMessaging {
                     String credentialsId = metadata.getAggregateId().getValue();
 
                     return module.removeCredentialsFromLookup(credentialsId);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onCredentialsDeletedRemovePermissionsMsgListener(
+            EventListenerFactory factory,
+            CredentialsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "credentials-deleted-remove-permissions",
+                AggregateType.of("CREDENTIALS"),
+                EventName.of("DELETED"),
+                (metadata, version, payload) -> {
+                    String credentialsId = metadata.getAggregateId().getValue();
+
+                    return module.removePermissionsOnCredentials(credentialsId);
                 }
         );
     }
@@ -67,7 +103,7 @@ public class CredentialsMessaging {
                         log.info("Default users credentials are to be created with password '{}'", initialPassword);
                     }
 
-                    return module.createCredentials(mail, initialPassword, userId).then();
+                    return module.createCredentials(mail, initialPassword, userId, Agent.system()).then();
                 }
         );
     }
@@ -84,7 +120,7 @@ public class CredentialsMessaging {
                 (metadata, version, payload) -> {
                     String userId = metadata.getAggregateId().getValue();
 
-                    return module.deleteCredentialsByUserId(userId).then();
+                    return module.deleteCredentialsByUserId(userId, Agent.system()).then();
                 }
         );
     }
