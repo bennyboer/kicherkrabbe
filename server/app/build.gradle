@@ -8,7 +8,7 @@ dependencies {
     implementation project(':modules:credentials:credentials-starter')
     implementation project(':modules:users:users-starter')
 
-    testImplementation project(':libs:testing')
+    testImplementation project(':libs:persistence:persistence-testing')
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }

@@ -2,7 +2,7 @@ package de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup;
 
 import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.mongo.MongoCredentialsLookup;
 import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.mongo.MongoCredentialsLookupRepo;
-import de.bennyboer.kicherkrabbe.testing.persistence.MongoTest;
+import de.bennyboer.kicherkrabbe.persistence.MongoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;

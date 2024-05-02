@@ -4,7 +4,7 @@ import de.bennyboer.kicherkrabbe.messaging.inbox.IncomingMessage;
 import de.bennyboer.kicherkrabbe.messaging.inbox.IncomingMessageId;
 import de.bennyboer.kicherkrabbe.messaging.inbox.persistence.mongo.MongoIncomingMessage;
 import de.bennyboer.kicherkrabbe.messaging.inbox.persistence.mongo.MongoMessagingInboxRepo;
-import de.bennyboer.kicherkrabbe.testing.persistence.MongoTest;
+import de.bennyboer.kicherkrabbe.persistence.MongoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;

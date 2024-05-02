@@ -12,6 +12,7 @@ import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.io.IOException;
 import java.time.Clock;
@@ -55,7 +56,8 @@ public abstract class BaseMessagingTest {
 
         outbox.insert(entry)
                 .as(transactionalOperator::transactional)
-                .block();
+                .subscribeOn(Schedulers.boundedElastic())
+                .subscribe();
     }
 
     public Flux<Map<String, Object>> receive(String exchange, String routingKey) {

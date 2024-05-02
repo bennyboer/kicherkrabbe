@@ -5,7 +5,7 @@ import de.bennyboer.kicherkrabbe.messaging.outbox.persistence.inmemory.InMemoryM
 import de.bennyboer.kicherkrabbe.messaging.outbox.publisher.LoggingMessagingOutboxEntryPublisher;
 import de.bennyboer.kicherkrabbe.messaging.target.ExchangeTarget;
 import de.bennyboer.kicherkrabbe.messaging.target.MessageTarget;
-import de.bennyboer.kicherkrabbe.testing.persistence.MockReactiveTransactionManager;
+import de.bennyboer.kicherkrabbe.persistence.MockReactiveTransactionManager;
 import de.bennyboer.kicherkrabbe.testing.time.TestClock;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.ReactiveTransactionManager;

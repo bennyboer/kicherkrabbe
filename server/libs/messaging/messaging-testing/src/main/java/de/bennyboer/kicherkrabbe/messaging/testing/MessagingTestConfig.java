@@ -6,7 +6,7 @@ import de.bennyboer.kicherkrabbe.messaging.inbox.persistence.MessagingInboxRepo;
 import de.bennyboer.kicherkrabbe.messaging.inbox.persistence.inmemory.InMemoryMessagingInboxRepo;
 import de.bennyboer.kicherkrabbe.messaging.outbox.persistence.MessagingOutboxRepo;
 import de.bennyboer.kicherkrabbe.messaging.outbox.persistence.inmemory.InMemoryMessagingOutboxRepo;
-import de.bennyboer.kicherkrabbe.testing.persistence.MockReactiveTransactionManager;
+import de.bennyboer.kicherkrabbe.persistence.MockReactiveTransactionManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

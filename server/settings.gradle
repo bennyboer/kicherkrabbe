@@ -29,6 +29,7 @@ include('libs:auth:auth-example')
 
 // Persistence
 include('libs:persistence:persistence-starter')
+include('libs:persistence:persistence-testing')
 
 // Permissions
 include('libs:permissions:permissions-core')

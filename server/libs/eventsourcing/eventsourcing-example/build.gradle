@@ -1,7 +1,6 @@
 dependencies {
     implementation project(':libs:eventsourcing:eventsourcing-starter')
 
-    testImplementation project(':libs:testing')
-
+    testImplementation project(':libs:persistence:persistence-testing')
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

@@ -8,7 +8,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.example.events.*;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.mongo.MongoEvent;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.mongo.MongoEventSourcingRepo;
-import de.bennyboer.kicherkrabbe.testing.persistence.MongoTest;
+import de.bennyboer.kicherkrabbe.persistence.MongoTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;

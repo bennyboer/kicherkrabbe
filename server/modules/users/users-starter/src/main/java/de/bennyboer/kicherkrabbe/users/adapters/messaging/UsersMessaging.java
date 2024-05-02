@@ -23,7 +23,26 @@ public class UsersMessaging {
                 (metadata, version, payload) -> {
                     String userId = metadata.getAggregateId().getValue();
 
+                    System.out.println("Updating lookup for new user " + userId);
                     return module.updateUserInLookup(userId);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onUserCreatedAddPermissionsMsgListener(
+            EventListenerFactory factory,
+            UsersModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "user-created-add-permissions",
+                AggregateType.of("USER"),
+                EventName.of("CREATED"),
+                (metadata, version, payload) -> {
+                    String userId = metadata.getAggregateId().getValue();
+
+                    System.out.println("Adding permissions for new user " + userId);
+                    return module.addPermissionsForNewUser(userId);
                 }
         );
     }
@@ -41,6 +60,23 @@ public class UsersMessaging {
                     String userId = metadata.getAggregateId().getValue();
 
                     return module.removeUserFromLookup(userId);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onUserDeletedRemovePermissionsMsgListener(
+            EventListenerFactory factory,
+            UsersModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "user-deleted-remove-permissions",
+                AggregateType.of("USER"),
+                EventName.of("DELETED"),
+                (metadata, version, payload) -> {
+                    String userId = metadata.getAggregateId().getValue();
+
+                    return module.removePermissionsOnUser(userId);
                 }
         );
     }

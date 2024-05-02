@@ -8,7 +8,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMem
 import de.bennyboer.kicherkrabbe.permissions.*;
 import de.bennyboer.kicherkrabbe.permissions.persistence.PermissionsRepo;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
-import de.bennyboer.kicherkrabbe.testing.persistence.MockReactiveTransactionManager;
+import de.bennyboer.kicherkrabbe.persistence.MockReactiveTransactionManager;
 import de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup.inmemory.InMemoryUserLookupRepo;
 import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,31 +54,27 @@ public class UsersModuleTest {
 
     public String createUser(String firstName, String lastName, String mail, Agent agent) {
         String userId = module.createUser(firstName, lastName, mail, agent).block();
+
         updateUserInLookup(userId);
+        addPermissionsForNewUser(userId);
 
         return userId;
     }
 
-    public void deleteUser(String userId) {
-        module.deleteUser(userId).block();
+    public void deleteUser(String userId, Agent agent) {
+        module.deleteUser(userId, agent).block();
+
         removeUserInLookup(userId);
+        removePermissionsOnUser(userId);
     }
 
-    public void renameUser(String userId, String firstName, String lastName) {
-        module.renameUser(userId, firstName, lastName).block();
+    public void renameUser(String userId, String firstName, String lastName, Agent agent) {
+        module.renameUser(userId, firstName, lastName, agent).block();
         updateUserInLookup(userId);
     }
 
     public UserDetails getUserDetails(String userId) {
         return module.getUserDetails(userId).block();
-    }
-
-    public void updateUserInLookup(String userId) {
-        module.updateUserInLookup(userId).block();
-    }
-
-    public void removeUserInLookup(String userId) {
-        module.removeUserFromLookup(userId).block();
     }
 
     public List<EventWithMetadata> findEventsByName(EventName eventName) {
@@ -101,6 +97,22 @@ public class UsersModuleTest {
                 .orElseGet(() -> permissionBuilder.onType(resourceType));
 
         permissionsService.addPermission(permission).block();
+    }
+
+    private void updateUserInLookup(String userId) {
+        module.updateUserInLookup(userId).block();
+    }
+
+    private void removeUserInLookup(String userId) {
+        module.removeUserFromLookup(userId).block();
+    }
+
+    private void addPermissionsForNewUser(String userId) {
+        module.addPermissionsForNewUser(userId).block();
+    }
+
+    private void removePermissionsOnUser(String userId) {
+        module.removePermissionsOnUser(userId).block();
     }
 
 }

@@ -1,12 +1,12 @@
 package de.bennyboer.kicherkrabbe.server;
 
-import de.bennyboer.kicherkrabbe.testing.persistence.MongoTestSupport;
+import de.bennyboer.kicherkrabbe.persistence.MongoTestConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.context.annotation.Import;
 
 @SpringBootTest
-@ContextConfiguration(initializers = {MongoTestSupport.Initializer.class})
+@Import(MongoTestConfig.class)
 class ServerApplicationTests {
 
     @Test

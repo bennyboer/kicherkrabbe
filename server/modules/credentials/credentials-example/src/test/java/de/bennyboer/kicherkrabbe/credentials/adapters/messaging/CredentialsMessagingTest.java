@@ -10,19 +10,21 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.testing.EventListenerTest;
 import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.ReactiveTransactionManager;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @Import(CredentialsMessaging.class)
 public class CredentialsMessagingTest extends EventListenerTest {
@@ -40,6 +42,14 @@ public class CredentialsMessagingTest extends EventListenerTest {
         super(factory, outbox, transactionManager, objectMapper);
     }
 
+    @BeforeEach
+    void setup() {
+        when(module.updateCredentialsInLookup(eq("CREDENTIALS_ID"))).thenReturn(Mono.empty());
+        when(module.removeCredentialsFromLookup(eq("CREDENTIALS_ID"))).thenReturn(Mono.empty());
+        when(module.createCredentials(any(), any(), any())).thenReturn(Mono.empty());
+        when(module.deleteCredentialsByUserId(eq("USER_ID"))).thenReturn(Flux.empty());
+    }
+
     @Test
     void shouldUpdateCredentialsLookupOnCredentialsCreated() {
         // when: a credentials created event is published
@@ -55,7 +65,7 @@ public class CredentialsMessagingTest extends EventListenerTest {
         );
 
         // then: the credentials lookup is updated
-        verify(module, timeout(10000).times(1)).updateCredentialsInLookup(eq("CREDENTIALS_ID"));
+        verify(module, timeout(5000).times(1)).updateCredentialsInLookup(eq("CREDENTIALS_ID"));
     }
 
     @Test
@@ -73,7 +83,7 @@ public class CredentialsMessagingTest extends EventListenerTest {
         );
 
         // then: the credentials lookup is updated
-        verify(module, timeout(10000).times(1)).removeCredentialsFromLookup(eq("CREDENTIALS_ID"));
+        verify(module, timeout(5000).times(1)).removeCredentialsFromLookup(eq("CREDENTIALS_ID"));
     }
 
     @Test
@@ -93,7 +103,7 @@ public class CredentialsMessagingTest extends EventListenerTest {
         );
 
         // then: the credentials are created
-        verify(module, timeout(10000).times(1)).createCredentials(eq("test@kicherkrabbe.com"), any(), eq("USER_ID"));
+        verify(module, timeout(5000).times(1)).createCredentials(eq("test@kicherkrabbe.com"), any(), eq("USER_ID"));
     }
 
     @Test
@@ -111,7 +121,7 @@ public class CredentialsMessagingTest extends EventListenerTest {
         );
 
         // then: the credentials are deleted by the user ID
-        verify(module, timeout(10000).times(1)).deleteCredentialsByUserId(eq("USER_ID"));
+        verify(module, timeout(5000).times(1)).deleteCredentialsByUserId(eq("USER_ID"));
     }
 
 }

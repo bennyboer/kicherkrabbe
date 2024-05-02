@@ -16,7 +16,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.Optional;
 
-import static de.bennyboer.kicherkrabbe.users.Actions.CREATE;
+import static de.bennyboer.kicherkrabbe.users.Actions.*;
 
 @AllArgsConstructor
 public class UsersModule {
@@ -59,24 +59,25 @@ public class UsersModule {
     }
 
     @Transactional
-    public Mono<Void> deleteUser(String userId) {
-        // TODO Check permissions
-        return usersService.delete(UserId.of(userId), Agent.system()).then();
+    public Mono<Void> deleteUser(String userId, Agent agent) {
+        var id = UserId.of(userId);
+
+        return assertAgentIsAllowedTo(agent, DELETE, id)
+                .then(usersService.delete(id, agent))
+                .then();
     }
 
     @Transactional
-    public Mono<Void> renameUser(String userId, String firstName, String lastName) {
+    public Mono<Void> renameUser(String userId, String firstName, String lastName, Agent agent) {
+        var id = UserId.of(userId);
         var name = FullName.of(
                 FirstName.of(firstName),
                 LastName.of(lastName)
         );
 
-        // TODO Check permissions
-        return usersService.rename(
-                UserId.of(userId),
-                name,
-                Agent.system()
-        ).then();
+        return assertAgentIsAllowedTo(agent, RENAME, id)
+                .then(usersService.rename(id, name, agent))
+                .then();
     }
 
     public Mono<UserDetails> getUserDetails(String userId) {
@@ -93,6 +94,28 @@ public class UsersModule {
 
     public Mono<Void> removeUserFromLookup(String userId) {
         return userLookupRepo.remove(UserId.of(userId));
+    }
+
+    public Mono<Void> addPermissionsForNewUser(String userId) {
+        var holder = Holder.user(HolderId.of(userId));
+        var userResource = Resource.of(ResourceType.of("USER"), ResourceId.of(userId));
+
+        return permissionsService.addPermissions(
+                Permission.builder()
+                        .holder(holder)
+                        .isAllowedTo(RENAME)
+                        .on(userResource),
+                Permission.builder()
+                        .holder(holder)
+                        .isAllowedTo(DELETE)
+                        .on(userResource)
+        );
+    }
+
+    public Mono<Void> removePermissionsOnUser(String userId) {
+        var userResource = Resource.of(ResourceType.of("USER"), ResourceId.of(userId));
+
+        return permissionsService.removePermissionsByResource(userResource);
     }
 
     private Mono<Void> assertThatMailNotAlreadyInUse(Mail mail) {

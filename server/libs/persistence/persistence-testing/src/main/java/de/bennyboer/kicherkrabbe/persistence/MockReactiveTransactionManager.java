@@ -1,4 +1,4 @@
-package de.bennyboer.kicherkrabbe.testing.persistence;
+package de.bennyboer.kicherkrabbe.persistence;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;

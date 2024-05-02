@@ -8,8 +8,10 @@ subprojects {
         implementation project(':libs:auth:auth-starter')
 
         testImplementation project(':libs:testing')
+        testImplementation project(':libs:persistence:persistence-testing')
         testImplementation project(':libs:messaging:messaging-testing')
         testImplementation project(':libs:eventsourcing:eventsourcing-testing')
+
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testImplementation 'org.springframework.security:spring-security-test'
     }

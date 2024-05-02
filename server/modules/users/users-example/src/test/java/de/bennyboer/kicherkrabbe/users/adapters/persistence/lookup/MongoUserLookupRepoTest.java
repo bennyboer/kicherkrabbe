@@ -1,6 +1,6 @@
 package de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup;
 
-import de.bennyboer.kicherkrabbe.testing.persistence.MongoTest;
+import de.bennyboer.kicherkrabbe.persistence.MongoTest;
 import de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup.mongo.MongoUserLookup;
 import de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup.mongo.MongoUserLookupRepo;
 import org.junit.jupiter.api.BeforeEach;
