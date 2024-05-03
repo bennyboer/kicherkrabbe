@@ -1,5 +1,7 @@
 package de.bennyboer.kicherkrabbe.users.ports.http;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.users.UsersModule;
 import de.bennyboer.kicherkrabbe.users.ports.http.responses.UserDetailsResponse;
 import lombok.AllArgsConstructor;
@@ -19,7 +21,7 @@ public class UsersHttpHandler {
                 .map(Principal::getName);
 
         return userId$
-                .flatMap(module::getUserDetails)
+                .flatMap(userId -> module.getUserDetails(userId, Agent.user(AgentId.of(userId))))
                 .map(details -> {
                     var result = new UserDetailsResponse();
 

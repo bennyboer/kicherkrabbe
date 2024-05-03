@@ -1,6 +1,11 @@
 rootProject.name = 'server'
 
+///////////////
+// APPS //
+///////////////
+
 include('app')
+
 
 ///////////////
 // LIBRARIES //
@@ -51,8 +56,10 @@ include('modules:users:users-core')
 include('modules:users:users-starter')
 include('modules:users:users-example')
 
+// Fabrics
+include('modules:fabrics:fabrics-core')
+include('modules:fabrics:fabrics-starter')
+include('modules:fabrics:fabrics-example')
+
 // Patterns
 include('modules:patterns')
-
-// Fabrics
-include('modules:fabrics')

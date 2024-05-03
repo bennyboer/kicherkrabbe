@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.users.ports.http;
 
-import de.bennyboer.kicherkrabbe.users.UserDetails;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.users.*;
 import de.bennyboer.kicherkrabbe.users.ports.http.responses.UserDetailsResponse;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,10 @@ public class GetLoggedInUserDetailsHttpHandlerTest extends HttpHandlerTest {
                 Mail.of("max.mustermann@kicherkrabbe.com")
         );
 
-        when(module.getUserDetails(eq("USER_ID"))).thenReturn(Mono.just(userDetails));
+        when(module.getUserDetails(
+                eq("USER_ID"),
+                eq(Agent.user(AgentId.of("USER_ID")))
+        )).thenReturn(Mono.just(userDetails));
 
         // given: "a valid token for the logged in user"
         var token = generateTokenForUser("USER_ID");

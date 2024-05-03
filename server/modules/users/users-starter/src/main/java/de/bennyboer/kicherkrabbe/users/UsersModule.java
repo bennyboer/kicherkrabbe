@@ -80,9 +80,11 @@ public class UsersModule {
                 .then();
     }
 
-    public Mono<UserDetails> getUserDetails(String userId) {
-        // TODO Check permissions
-        return usersService.get(UserId.of(userId))
+    public Mono<UserDetails> getUserDetails(String userId, Agent agent) {
+        var id = UserId.of(userId);
+
+        return assertAgentIsAllowedTo(agent, READ, id)
+                .then(usersService.get(id))
                 .map(user -> UserDetails.of(user.getId(), user.getName(), user.getMail()));
     }
 
@@ -100,15 +102,29 @@ public class UsersModule {
         var holder = Holder.user(HolderId.of(userId));
         var userResource = Resource.of(ResourceType.of("USER"), ResourceId.of(userId));
 
+        var readAsUser = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(READ)
+                .on(userResource);
+        var renameAsUser = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(RENAME)
+                .on(userResource);
+        var deleteAsUser = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(DELETE)
+                .on(userResource);
+
+        var readAsSystem = Permission.builder()
+                .holder(Holder.group(HolderId.system()))
+                .isAllowedTo(READ)
+                .on(userResource);
+
         return permissionsService.addPermissions(
-                Permission.builder()
-                        .holder(holder)
-                        .isAllowedTo(RENAME)
-                        .on(userResource),
-                Permission.builder()
-                        .holder(holder)
-                        .isAllowedTo(DELETE)
-                        .on(userResource)
+                readAsUser,
+                renameAsUser,
+                deleteAsUser,
+                readAsSystem
         );
     }
 

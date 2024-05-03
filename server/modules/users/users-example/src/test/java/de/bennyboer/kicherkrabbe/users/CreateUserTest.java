@@ -18,7 +18,7 @@ public class CreateUserTest extends UsersModuleTest {
         String userId = createUser("John", "Doe", "john.doe@kicherkrabbe.com", Agent.system());
 
         // then: the user details can be fetched
-        UserDetails userDetails = getUserDetails(userId);
+        UserDetails userDetails = getUserDetails(userId, Agent.user(AgentId.of(userId)));
 
         // and: the user details are correct
         assertThat(userDetails.getUserId().getValue()).isEqualTo(userId);
@@ -41,7 +41,7 @@ public class CreateUserTest extends UsersModuleTest {
         );
 
         // then: the user details can be fetched
-        UserDetails userDetails = getUserDetails(userId);
+        UserDetails userDetails = getUserDetails(userId, Agent.system());
         assertThat(userDetails.getUserId().getValue()).isEqualTo(userId);
     }
 
@@ -73,6 +73,55 @@ public class CreateUserTest extends UsersModuleTest {
         assertThatThrownBy(() -> createUser("Jane", "Doe", "john.doe@kicherkrabbe.com", Agent.system()))
                 .matches(e -> e.getCause() instanceof MailAlreadyInUseError
                         && e.getCause().getMessage().equals("Mail already in use: john.doe@kicherkrabbe.com"));
+    }
+
+    @Test
+    void shouldNotBeAbleToReadUserDetailsAsAnonymousUser() {
+        // given: a user
+        String userId = createUser(
+                "John",
+                "Doe",
+                "john.doe@kicherkrabbe.com",
+                Agent.system()
+        );
+
+        // when: trying to read the user details as anonymous user; then: an error is raised
+        assertThatThrownBy(() -> getUserDetails(userId, Agent.anonymous()))
+                .matches(e -> e.getCause() instanceof MissingPermissionError);
+    }
+
+    @Test
+    void shouldBeAbleToReadUserDetailsAsSystem() {
+        // given: a user
+        String userId = createUser(
+                "John",
+                "Doe",
+                "john.doe@kicherkrabbe.com",
+                Agent.system()
+        );
+
+        // when: reading the user details as system;
+        UserDetails userDetails = getUserDetails(userId, Agent.system());
+
+        // then: the user details are returned
+        assertThat(userDetails.getUserId().getValue()).isEqualTo(userId);
+    }
+
+    @Test
+    void shouldBeAbleToReadUserDetailsAsTheUserItself() {
+        // given: a user
+        String userId = createUser(
+                "John",
+                "Doe",
+                "john.doe@kicherkrabbe.com",
+                Agent.system()
+        );
+
+        // when: reading the user details as system;
+        UserDetails userDetails = getUserDetails(userId, Agent.user(AgentId.of(userId)));
+
+        // then: the user details are returned
+        assertThat(userDetails.getUserId().getValue()).isEqualTo(userId);
     }
 
 }

@@ -19,7 +19,7 @@ public class RenameUserTest extends UsersModuleTest {
         renameUser(userId, "Jane", "Doe", Agent.user(AgentId.of(userId)));
 
         // then: the user details are correct
-        UserDetails userDetails = getUserDetails(userId);
+        UserDetails userDetails = getUserDetails(userId, Agent.system());
         assertThat(userDetails.getName().getFirstName().getValue()).isEqualTo("Jane");
         assertThat(userDetails.getName().getLastName().getValue()).isEqualTo("Doe");
     }

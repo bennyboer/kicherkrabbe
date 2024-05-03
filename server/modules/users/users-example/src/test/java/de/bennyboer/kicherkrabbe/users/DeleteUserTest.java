@@ -5,7 +5,6 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class DeleteUserTest extends UsersModuleTest {
@@ -18,9 +17,9 @@ public class DeleteUserTest extends UsersModuleTest {
         // when: the user is deleted
         deleteUser(userId, Agent.user(AgentId.of(userId)));
 
-        // then: the user details cannot be fetched
-        UserDetails userDetails = getUserDetails(userId);
-        assertThat(userDetails).isNull();
+        // then: the user details cannot be fetched as there are no permissions anymore
+        assertThatThrownBy(() -> getUserDetails(userId, Agent.user(AgentId.of(userId))))
+                .matches(e -> e.getCause() instanceof MissingPermissionError);
     }
 
     @Test

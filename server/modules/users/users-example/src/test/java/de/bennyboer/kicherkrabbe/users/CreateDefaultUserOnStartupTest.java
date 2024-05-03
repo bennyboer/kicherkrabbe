@@ -2,6 +2,7 @@ package de.bennyboer.kicherkrabbe.users;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventWithMetadata;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -21,8 +22,11 @@ public class CreateDefaultUserOnStartupTest extends UsersModuleTest {
         EventWithMetadata userCreatedEvent = userCreatedEvents.get(0);
         String userId = userCreatedEvent.getMetadata().getAggregateId().getValue();
 
+        // when: the permissions have been added
+        addPermissionsForNewUser(userId);
+
         // and: the user details are correct
-        UserDetails userDetails = getUserDetails(userId);
+        UserDetails userDetails = getUserDetails(userId, Agent.system());
         assertThat(userDetails.getUserId().getValue()).isEqualTo(userId);
         assertThat(userDetails.getName().getFirstName().getValue()).isEqualTo("Default");
         assertThat(userDetails.getName().getLastName().getValue()).isEqualTo("User");

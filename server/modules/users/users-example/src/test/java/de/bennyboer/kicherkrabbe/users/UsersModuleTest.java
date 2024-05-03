@@ -73,8 +73,8 @@ public class UsersModuleTest {
         updateUserInLookup(userId);
     }
 
-    public UserDetails getUserDetails(String userId) {
-        return module.getUserDetails(userId).block();
+    public UserDetails getUserDetails(String userId, Agent agent) {
+        return module.getUserDetails(userId, agent).block();
     }
 
     public List<EventWithMetadata> findEventsByName(EventName eventName) {
@@ -107,7 +107,7 @@ public class UsersModuleTest {
         module.removeUserFromLookup(userId).block();
     }
 
-    private void addPermissionsForNewUser(String userId) {
+    public void addPermissionsForNewUser(String userId) {
         module.addPermissionsForNewUser(userId).block();
     }
 
