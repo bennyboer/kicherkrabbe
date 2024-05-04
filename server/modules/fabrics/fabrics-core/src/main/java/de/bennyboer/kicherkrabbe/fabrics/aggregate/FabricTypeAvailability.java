@@ -1,6 +1,6 @@
 package de.bennyboer.kicherkrabbe.fabrics.aggregate;
 
-import de.bennyboer.kicherkrabbe.fabrics.types.FabricType;
+import de.bennyboer.kicherkrabbe.fabrics.types.FabricTypeId;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
@@ -11,14 +11,14 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor(access = PRIVATE)
 public class FabricTypeAvailability {
 
-    FabricType type;
+    FabricTypeId typeId;
 
     boolean inStock;
 
-    public static FabricTypeAvailability of(FabricType type, boolean inStock) {
-        notNull(type, "Fabric type must be given");
+    public static FabricTypeAvailability of(FabricTypeId typeId, boolean inStock) {
+        notNull(typeId, "Fabric type ID must be given");
 
-        return new FabricTypeAvailability(type, inStock);
+        return new FabricTypeAvailability(typeId, inStock);
     }
 
 }
