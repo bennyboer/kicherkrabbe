@@ -16,7 +16,7 @@ public class RenameUserTest extends UsersModuleTest {
         String userId = createUser("John", "Doe", "john.doe@kicherkrabbe.com", Agent.system());
 
         // when: the user is renamed by itself
-        renameUser(userId, "Jane", "Doe", Agent.user(AgentId.of(userId)));
+        renameUser(userId, 0L, "Jane", "Doe", Agent.user(AgentId.of(userId)));
 
         // then: the user details are correct
         UserDetails userDetails = getUserDetails(userId, Agent.system());
@@ -30,7 +30,7 @@ public class RenameUserTest extends UsersModuleTest {
         String userId = createUser("John", "Doe", "john.doe@kicherkrabbe.com", Agent.system());
 
         // when: the user is renamed by another user; then: an exception is thrown
-        assertThatThrownBy(() -> renameUser(userId, "Jane", "Doe", Agent.user(AgentId.of("ANOTHER_USER_ID"))))
+        assertThatThrownBy(() -> renameUser(userId, 0L, "Jane", "Doe", Agent.user(AgentId.of("ANOTHER_USER_ID"))))
                 .matches(e -> e.getCause() instanceof MissingPermissionError);
     }
 
@@ -40,7 +40,7 @@ public class RenameUserTest extends UsersModuleTest {
         String userId = createUser("John", "Doe", "john.doe@kicherkrabbe.com", Agent.system());
 
         // when: the user is renamed by the system; then: an exception is thrown
-        assertThatThrownBy(() -> renameUser(userId, "Jane", "Doe", Agent.system()))
+        assertThatThrownBy(() -> renameUser(userId, 0L, "Jane", "Doe", Agent.system()))
                 .matches(e -> e.getCause() instanceof MissingPermissionError);
     }
 
@@ -50,7 +50,7 @@ public class RenameUserTest extends UsersModuleTest {
         String userId = createUser("John", "Doe", "john.doe@kicherkrabbe.com", Agent.system());
 
         // when: the user is renamed by an anonymous agent; then: an exception is thrown
-        assertThatThrownBy(() -> renameUser(userId, "Jane", "Doe", Agent.anonymous()))
+        assertThatThrownBy(() -> renameUser(userId, 0L, "Jane", "Doe", Agent.anonymous()))
                 .matches(e -> e.getCause() instanceof MissingPermissionError);
     }
 

@@ -15,7 +15,7 @@ public class DeleteUserTest extends UsersModuleTest {
         String userId = createUser("John", "Doe", "john.doe@kicherkrabbe.com", Agent.system());
 
         // when: the user is deleted
-        deleteUser(userId, Agent.user(AgentId.of(userId)));
+        deleteUser(userId, 0L, Agent.user(AgentId.of(userId)));
 
         // then: the user details cannot be fetched as there are no permissions anymore
         assertThatThrownBy(() -> getUserDetails(userId, Agent.user(AgentId.of(userId))))
@@ -28,7 +28,7 @@ public class DeleteUserTest extends UsersModuleTest {
         String userId = createUser("John", "Doe", "john.doe@kicherkrabbe.com", Agent.system());
 
         // when: the user is deleted
-        deleteUser(userId, Agent.user(AgentId.of(userId)));
+        deleteUser(userId, 0L, Agent.user(AgentId.of(userId)));
 
         // then: another user with the same mail can be created
         createUser("Jane", "Doe", "john.doe@kicherkrabbe.com", Agent.system());
@@ -40,7 +40,7 @@ public class DeleteUserTest extends UsersModuleTest {
         String userId = createUser("John", "Doe", "john.doe@kicherkrabbe.com", Agent.system());
 
         // when: the user is deleted by another user; then: an exception is thrown
-        assertThatThrownBy(() -> deleteUser(userId, Agent.user(AgentId.of("ANOTHER_USER_ID"))))
+        assertThatThrownBy(() -> deleteUser(userId, 0L, Agent.user(AgentId.of("ANOTHER_USER_ID"))))
                 .matches(e -> e.getCause() instanceof MissingPermissionError);
     }
 
@@ -50,7 +50,7 @@ public class DeleteUserTest extends UsersModuleTest {
         String userId = createUser("John", "Doe", "john.doe@kicherkrabbe.com", Agent.system());
 
         // when: the user is deleted by the system; then: an exception is thrown
-        assertThatThrownBy(() -> deleteUser(userId, Agent.system()))
+        assertThatThrownBy(() -> deleteUser(userId, 0L, Agent.system()))
                 .matches(e -> e.getCause() instanceof MissingPermissionError);
     }
 
@@ -60,7 +60,7 @@ public class DeleteUserTest extends UsersModuleTest {
         String userId = createUser("John", "Doe", "john.doe@kicherkrabbe.com", Agent.system());
 
         // when: the user is deleted by an anonymous user; then: an exception is thrown
-        assertThatThrownBy(() -> deleteUser(userId, Agent.anonymous()))
+        assertThatThrownBy(() -> deleteUser(userId, 0L, Agent.anonymous()))
                 .matches(e -> e.getCause() instanceof MissingPermissionError);
     }
 

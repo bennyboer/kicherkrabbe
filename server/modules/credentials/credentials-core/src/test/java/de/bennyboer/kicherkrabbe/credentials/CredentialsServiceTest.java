@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.credentials.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.credentials.use.InvalidCredentialsUsedOrUserLockedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
@@ -38,20 +39,21 @@ public class CredentialsServiceTest {
     @Test
     void shouldCreateCredentials() {
         // when: creating credentials
-        var result = credentialsService.create(
+        var credentialsId = create(
                 Name.of("TestUser"),
                 Password.of("TestPassword"),
                 UserId.of("USER_ID"),
                 system()
-        ).block();
+        );
 
-        // then: the result contains the credentials ID and initial version
-        assertThat(result.getId()).isNotNull();
-        assertThat(result.getVersion()).isEqualTo(Version.zero());
+        // then: the result contains the credentials ID
+        assertThat(credentialsId).isNotNull();
 
         // and: the credentials can be retrieved
-        var credentials = credentialsService.get(result.getId()).block();
+        var credentials = get(credentialsId);
         assertThat(credentials).isNotNull();
+        assertThat(credentials.getId()).isEqualTo(credentialsId);
+        assertThat(credentials.getVersion()).isEqualTo(Version.zero());
 
         // and: the name and user ID are set
         assertThat(credentials.getName()).isEqualTo(Name.of("TestUser"));
@@ -79,12 +81,12 @@ public class CredentialsServiceTest {
     @Test
     void shouldNotAcceptPasswordBelowMinimumLength() {
         assertThatThrownBy(() -> {
-            credentialsService.create(
+            create(
                     Name.of("TestUser"),
                     Password.of("1234567"),
                     UserId.of("USER_ID"),
                     system()
-            ).block();
+            );
         })
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Password must be at least 8 characters long");
@@ -95,26 +97,26 @@ public class CredentialsServiceTest {
         clock.setNow(Instant.parse("2024-03-14T12:30:00Z"));
 
         // given: a set of credentials
-        var credentialsId = credentialsService.create(
+        var credentialsId = create(
                 Name.of("TestUser"),
                 Password.of("TestPassword"),
                 UserId.of("USER_ID"),
                 system()
-        ).block().getId();
+        );
 
         // when: using the credentials
-        var version = credentialsService.use(
+        var version = use(
                 credentialsId,
                 Name.of("TestUser"),
                 Password.of("TestPassword"),
                 anonymous()
-        ).block();
+        );
 
         // then: the version is incremented
         assertThat(version).isEqualTo(Version.of(1));
 
         // and: the credentials are not locked
-        var credentials = credentialsService.get(credentialsId).block();
+        var credentials = get(credentialsId);
         assertThat(credentials.isLocked(clock)).isFalse();
 
         // and: the last used timestamp is set
@@ -127,50 +129,50 @@ public class CredentialsServiceTest {
     @Test
     void shouldRaiseErrorWhenUsingIncorrectCredentials() {
         // given: a set of credentials
-        var credentialsId = credentialsService.create(
+        var credentialsId = create(
                 Name.of("TestUser"),
                 Password.of("TestPassword"),
                 UserId.of("USER_ID"),
                 system()
-        ).block().getId();
+        );
 
         // when: using the credentials with the wrong password; then: an error is raised
         assertThatThrownBy(() -> {
-            credentialsService.use(
+            use(
                     credentialsId,
                     Name.of("TestUser"),
                     Password.of("WrongPassword"),
                     anonymous()
-            ).block();
+            );
         }).matches(e -> e.getCause() instanceof InvalidCredentialsUsedOrUserLockedError);
     }
 
     @Test
     void shouldCapFailedUsageAttemptsAt999() {
         // given: a set of credentials
-        var credentialsId = credentialsService.create(
+        var credentialsId = create(
                 Name.of("TestUser"),
                 Password.of("TestPassword"),
                 UserId.of("USER_ID"),
                 system()
-        ).block().getId();
+        );
 
         // when: using the credentials with a wrong password 1000 times
         for (int i = 0; i < 1000; i++) {
             try {
-                credentialsService.use(
+                use(
                         credentialsId,
                         Name.of("TestUser"),
                         Password.of("WrongPassword"),
                         anonymous()
-                ).block();
+                );
             } catch (Exception e) {
                 // ignore
             }
         }
 
         // then: the credentials are locked
-        var credentials = credentialsService.get(credentialsId).block();
+        var credentials = get(credentialsId);
         assertThat(credentials.isLocked(clock)).isTrue();
 
         // and: the failed usage attempts are capped at 999
@@ -180,44 +182,44 @@ public class CredentialsServiceTest {
     @Test
     void shouldAllowUsageWhenNotHavingTooManyFailedAttempts() {
         // given: a set of credentials
-        var credentialsId = credentialsService.create(
+        var credentialsId = create(
                 Name.of("TestUser"),
                 Password.of("TestPassword"),
                 UserId.of("USER_ID"),
                 system()
-        ).block().getId();
+        );
 
         // when: using the credentials with a wrong password 5 times
         for (int i = 0; i < 5; i++) {
             try {
-                credentialsService.use(
+                use(
                         credentialsId,
                         Name.of("TestUser"),
                         Password.of("WrongPassword"),
                         anonymous()
-                ).block();
+                );
             } catch (Exception e) {
                 // ignore
             }
         }
 
         // then: the credentials are not locked
-        var credentials = credentialsService.get(credentialsId).block();
+        var credentials = get(credentialsId);
         assertThat(credentials.isLocked(clock)).isFalse();
 
         // and: the failed usage attempts are 5
         assertThat(credentials.getFailedUsageAttempts()).isEqualTo(5);
 
         // when: using the credentials with the correct password
-        credentialsService.use(
+        use(
                 credentialsId,
                 Name.of("TestUser"),
                 Password.of("TestPassword"),
                 anonymous()
-        ).block();
+        );
 
         // then: the failed usage attempts are reset
-        credentials = credentialsService.get(credentialsId).block();
+        credentials = get(credentialsId);
         assertThat(credentials.getFailedUsageAttempts()).isEqualTo(0);
 
         // and: the credentials are not locked
@@ -229,29 +231,29 @@ public class CredentialsServiceTest {
         clock.setNow(Instant.parse("2024-03-14T12:30:00Z"));
 
         // given: a set of credentials
-        var credentialsId = credentialsService.create(
+        var credentialsId = create(
                 Name.of("TestUser"),
                 Password.of("TestPassword"),
                 UserId.of("USER_ID"),
                 system()
-        ).block().getId();
+        );
 
         // when: using the credentials with a wrong password 6 times
         for (int i = 0; i < 6; i++) {
             try {
-                credentialsService.use(
+                use(
                         credentialsId,
                         Name.of("TestUser"),
                         Password.of("WrongPassword"),
                         anonymous()
-                ).block();
+                );
             } catch (Exception e) {
                 // ignore
             }
         }
 
         // then: the credentials are locked
-        var credentials = credentialsService.get(credentialsId).block();
+        var credentials = get(credentialsId);
         assertThat(credentials.isLocked(clock)).isTrue();
 
         // and: the last used timestamp is set
@@ -263,16 +265,16 @@ public class CredentialsServiceTest {
         // when: using the credentials with the correct password; then: an error is still raised
         clock.setNow(Instant.parse("2024-03-14T12:45:00Z"));
         assertThatThrownBy(() -> {
-            credentialsService.use(
+            use(
                     credentialsId,
                     Name.of("TestUser"),
                     Password.of("TestPassword"),
                     anonymous()
-            ).block();
+            );
         }).matches(e -> e.getCause() instanceof InvalidCredentialsUsedOrUserLockedError);
 
         // and: the credentials are still locked
-        credentials = credentialsService.get(credentialsId).block();
+        credentials = get(credentialsId);
         assertThat(credentials.isLocked(clock)).isTrue();
 
         // and: the last used timestamp is set
@@ -283,15 +285,15 @@ public class CredentialsServiceTest {
 
         // when: using the credentials with the correct password after half an hour
         clock.setNow(Instant.parse("2024-03-14T13:15:01Z"));
-        credentialsService.use(
+        use(
                 credentialsId,
                 Name.of("TestUser"),
                 Password.of("TestPassword"),
                 anonymous()
-        ).block();
+        );
 
         // then: the credentials are not locked
-        credentials = credentialsService.get(credentialsId).block();
+        credentials = get(credentialsId);
         assertThat(credentials.isLocked(clock)).isFalse();
 
         // and: the last used timestamp is set
@@ -304,28 +306,28 @@ public class CredentialsServiceTest {
     @Test
     void shouldRaiseErrorWhenUsingDeletedCredentials() {
         // given: a set of credentials
-        var credentialsId = credentialsService.create(
+        var credentialsId = create(
                 Name.of("TestUser"),
                 Password.of("TestPassword"),
                 UserId.of("USER_ID"),
                 system()
-        ).block().getId();
+        );
 
         // when: deleting the credentials
-        credentialsService.delete(credentialsId, system()).block();
+        delete(credentialsId, Version.zero(), system());
 
         // then: the credentials are deleted
-        var credentials = credentialsService.get(credentialsId).block();
+        var credentials = get(credentialsId);
         assertThat(credentials).isNull();
 
         // when: using the credentials
         assertThatThrownBy(() -> {
-            credentialsService.use(
+            use(
                     credentialsId,
                     Name.of("TestUser"),
                     Password.of("TestPassword"),
                     anonymous()
-            ).block();
+            );
         })
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot apply command to deleted aggregate");
@@ -334,18 +336,18 @@ public class CredentialsServiceTest {
     @Test
     void shouldCollapseEventsOnDeleteAndDeletePassword() {
         // given: a set of credentials
-        var credentialsId = credentialsService.create(
+        var credentialsId = create(
                 Name.of("TestUser"),
                 Password.of("TestPassword"),
                 UserId.of("USER_ID"),
                 system()
-        ).block().getId();
+        );
 
         // when: deleting the credentials
-        credentialsService.delete(credentialsId, system()).block();
+        delete(credentialsId, Version.zero(), system());
 
         // then: the credentials are deleted
-        var credentials = credentialsService.get(credentialsId).block();
+        var credentials = get(credentialsId);
         assertThat(credentials).isNull();
 
         // and: there is only a single event in the repository
@@ -365,6 +367,82 @@ public class CredentialsServiceTest {
         SnapshottedEvent e = (SnapshottedEvent) event.getEvent();
         assertThat(e.getName()).isEqualTo(Name.of("ANONYMIZED"));
         assertThat(e.getEncodedPassword()).isEqualTo(EncodedPassword.of("ANONYMIZED"));
+    }
+
+    @Test
+    void shouldNotDeleteCredentialsGivenAnOutdatedVersion() {
+        // given: a set of credentials
+        var credentialsId = create(
+                Name.of("TestUser"),
+                Password.of("TestPassword"),
+                UserId.of("USER_ID"),
+                system()
+        );
+
+        // and: the credentials are used
+        use(
+                credentialsId,
+                Name.of("TestUser"),
+                Password.of("TestPassword"),
+                anonymous()
+        );
+
+        // when: deleting the credentials with an outdated version
+        assertThatThrownBy(() -> {
+            delete(credentialsId, Version.zero(), system());
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void shouldSnapshotEvery100Events() {
+        // given: a set of credentials
+        var credentialsId = create(
+                Name.of("TestUser"),
+                Password.of("TestPassword"),
+                UserId.of("USER_ID"),
+                system()
+        );
+
+        // when: the credentials are used 200 times
+        for (int i = 0; i < 200; i++) {
+            use(
+                    credentialsId,
+                    Name.of("TestUser"),
+                    Password.of("TestPassword"),
+                    anonymous()
+            );
+        }
+
+        // then: the credentials are updated
+        var credentials = get(credentialsId);
+        assertThat(credentials.getVersion()).isEqualTo(Version.of(202));
+
+        // and: there are exactly 2 snapshot events in the repository
+        var events = repo.findEventsByAggregateIdAndType(
+                AggregateId.of(credentialsId.getValue()),
+                Credentials.TYPE,
+                Version.zero()
+        ).collectList().block();
+        var snapshotEvents = events.stream().filter(e -> e.getMetadata().isSnapshot()).toList();
+        assertThat(snapshotEvents).hasSize(2);
+        assertThat(snapshotEvents.getFirst().getMetadata().getAggregateVersion()).isEqualTo(Version.of(100));
+        assertThat(snapshotEvents.getLast().getMetadata().getAggregateVersion()).isEqualTo(Version.of(200));
+    }
+
+    private Credentials get(CredentialsId id) {
+        return credentialsService.get(id).block();
+    }
+
+    private Version use(CredentialsId id, Name name, Password password, Agent agent) {
+        return credentialsService.use(id, name, password, agent).block();
+    }
+
+    private CredentialsId create(Name name, Password password, UserId userId, Agent agent) {
+        return credentialsService.create(name, password, userId, agent).block().getId();
+    }
+
+    private Version delete(CredentialsId credentialsId, Version version, Agent agent) {
+        return credentialsService.delete(credentialsId, version, agent).block();
     }
 
 }

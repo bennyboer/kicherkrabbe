@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.users;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.permissions.*;
 import de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup.UserLookup;
@@ -59,16 +60,16 @@ public class UsersModule {
     }
 
     @Transactional
-    public Mono<Void> deleteUser(String userId, Agent agent) {
+    public Mono<Void> deleteUser(String userId, long version, Agent agent) {
         var id = UserId.of(userId);
 
         return assertAgentIsAllowedTo(agent, DELETE, id)
-                .then(usersService.delete(id, agent))
+                .then(usersService.delete(id, Version.of(version), agent))
                 .then();
     }
 
     @Transactional
-    public Mono<Void> renameUser(String userId, String firstName, String lastName, Agent agent) {
+    public Mono<Void> renameUser(String userId, long version, String firstName, String lastName, Agent agent) {
         var id = UserId.of(userId);
         var name = FullName.of(
                 FirstName.of(firstName),
@@ -76,7 +77,7 @@ public class UsersModule {
         );
 
         return assertAgentIsAllowedTo(agent, RENAME, id)
-                .then(usersService.rename(id, name, agent))
+                .then(usersService.rename(id, Version.of(version), name, agent))
                 .then();
     }
 

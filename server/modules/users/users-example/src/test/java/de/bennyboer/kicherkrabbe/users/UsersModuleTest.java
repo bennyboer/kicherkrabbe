@@ -61,15 +61,15 @@ public class UsersModuleTest {
         return userId;
     }
 
-    public void deleteUser(String userId, Agent agent) {
-        module.deleteUser(userId, agent).block();
+    public void deleteUser(String userId, long version, Agent agent) {
+        module.deleteUser(userId, version, agent).block();
 
         removeUserInLookup(userId);
         removePermissionsOnUser(userId);
     }
 
-    public void renameUser(String userId, String firstName, String lastName, Agent agent) {
-        module.renameUser(userId, firstName, lastName, agent).block();
+    public void renameUser(String userId, long version, String firstName, String lastName, Agent agent) {
+        module.renameUser(userId, version, firstName, lastName, agent).block();
         updateUserInLookup(userId);
     }
 

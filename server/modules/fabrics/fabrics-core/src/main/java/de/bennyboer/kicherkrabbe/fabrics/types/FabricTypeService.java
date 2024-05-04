@@ -34,12 +34,12 @@ public class FabricTypeService extends AggregateService<FabricType, FabricTypeId
                 .map(version -> AggregateIdAndVersion.of(id, version));
     }
 
-    public Mono<Version> update(FabricTypeId id, FabricTypeName name, Agent agent) {
-        return dispatchCommandToLatest(id, agent, UpdateCmd.of(name));
+    public Mono<Version> update(FabricTypeId id, Version version, FabricTypeName name, Agent agent) {
+        return dispatchCommand(id, version, agent, UpdateCmd.of(name));
     }
 
-    public Mono<Version> delete(FabricTypeId id, Agent agent) {
-        return dispatchCommandToLatest(id, agent, DeleteCmd.of());
+    public Mono<Version> delete(FabricTypeId id, Version version, Agent agent) {
+        return dispatchCommand(id, version, agent, DeleteCmd.of());
     }
 
     @Override

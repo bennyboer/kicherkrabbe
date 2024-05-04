@@ -52,9 +52,14 @@ public class CredentialsService extends AggregateService<Credentials, Credential
                 });
     }
 
+    public Mono<Version> delete(CredentialsId credentialsId, Version version, Agent agent) {
+        return dispatchCommand(credentialsId, version, agent, DeleteCmd.of())
+                .flatMap(v -> collapseEvents(credentialsId, v, agent));
+    }
+
     public Mono<Version> delete(CredentialsId credentialsId, Agent agent) {
         return dispatchCommandToLatest(credentialsId, agent, DeleteCmd.of())
-                .flatMap(version -> collapseEvents(credentialsId, version, agent));
+                .flatMap(v -> collapseEvents(credentialsId, v, agent));
     }
 
     @Override

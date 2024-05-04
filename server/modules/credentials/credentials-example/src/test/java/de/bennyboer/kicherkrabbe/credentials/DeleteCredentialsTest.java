@@ -16,7 +16,7 @@ public class DeleteCredentialsTest extends CredentialsModuleTest {
         String credentialsId = createCredentials("TestName", "TestPassword", "USER_ID", Agent.system());
 
         // when: deleting the credentials
-        deleteCredentials(credentialsId, Agent.system());
+        deleteCredentials(credentialsId, 0L, Agent.system());
 
         // then: the credentials cannot be used anymore
         var result = useCredentials("TestName", "TestPassword", Agent.anonymous());
@@ -29,7 +29,7 @@ public class DeleteCredentialsTest extends CredentialsModuleTest {
         String credentialsId = createCredentials("TestName", "TestPassword", "USER_ID", Agent.system());
 
         // when: deleting the credentials as anonymous user; then an error is raised
-        assertThatThrownBy(() -> deleteCredentials(credentialsId, Agent.anonymous()))
+        assertThatThrownBy(() -> deleteCredentials(credentialsId, 0L, Agent.anonymous()))
                 .matches(e -> e.getCause() instanceof MissingPermissionError);
     }
 
@@ -39,7 +39,7 @@ public class DeleteCredentialsTest extends CredentialsModuleTest {
         String credentialsId = createCredentials("TestName", "TestPassword", "USER_ID", Agent.system());
 
         // when: deleting the credentials as user; then an error is raised
-        assertThatThrownBy(() -> deleteCredentials(credentialsId, Agent.user(AgentId.of("USER_ID"))))
+        assertThatThrownBy(() -> deleteCredentials(credentialsId, 0L, Agent.user(AgentId.of("USER_ID"))))
                 .matches(e -> e.getCause() instanceof MissingPermissionError);
     }
 
@@ -49,7 +49,7 @@ public class DeleteCredentialsTest extends CredentialsModuleTest {
         String credentialsId = createCredentials("TestName", "TestPassword", "USER_ID", Agent.system());
 
         // when: deleting the credentials
-        deleteCredentials(credentialsId, Agent.system());
+        deleteCredentials(credentialsId, 0L, Agent.system());
 
         // then: the credentials can be created again
         createCredentials("TestName", "TestPassword", "USER_ID", Agent.system());

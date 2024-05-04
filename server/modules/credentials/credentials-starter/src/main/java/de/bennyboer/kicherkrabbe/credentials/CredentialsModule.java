@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.auth.tokens.*;
 import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookup;
 import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.credentials.create.NameAlreadyTakenError;
+import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.permissions.*;
 import jakarta.annotation.Nullable;
@@ -70,17 +71,17 @@ public class CredentialsModule {
     }
 
     @Transactional
-    public Mono<Void> deleteCredentials(String credentialsId, Agent agent) {
+    public Mono<Void> deleteCredentials(String credentialsId, long version, Agent agent) {
         var id = CredentialsId.of(credentialsId);
 
         return assertAgentIsAllowedTo(agent, DELETE, id)
-                .then(credentialsService.delete(CredentialsId.of(credentialsId), Agent.system()))
+                .then(credentialsService.delete(CredentialsId.of(credentialsId), Version.of(version), Agent.system()))
                 .then();
     }
 
     @Transactional
     public Flux<String> deleteCredentialsByUserId(String userId, Agent agent) {
-        return findCredentialsByUserId(UserId.of(userId))
+        return findCredentialsIdByUserId(UserId.of(userId))
                 .delayUntil(credentialsId -> assertAgentIsAllowedTo(agent, DELETE, credentialsId)
                         .then(credentialsService.delete(credentialsId, Agent.system())))
                 .map(CredentialsId::getValue);
@@ -132,16 +133,18 @@ public class CredentialsModule {
         return permissionsService.removePermissionsByResource(credentialsResource);
     }
 
-    private Mono<CredentialsId> findCredentialsByName(Name name) {
-        return credentialsLookupRepo.findCredentialsIdByName(name);
+    private Mono<CredentialsId> findCredentialsIdByName(Name name) {
+        return credentialsLookupRepo.findCredentialsByName(name)
+                .map(CredentialsLookup::getId);
     }
 
-    private Flux<CredentialsId> findCredentialsByUserId(UserId userId) {
-        return credentialsLookupRepo.findCredentialsIdByUserId(userId);
+    private Flux<CredentialsId> findCredentialsIdByUserId(UserId userId) {
+        return credentialsLookupRepo.findCredentialsByUserId(userId)
+                .map(CredentialsLookup::getId);
     }
 
     private Mono<Credentials> tryToUseCredentialsAndReturnCredentials(Name name, Password password, Agent agent) {
-        return findCredentialsByName(name)
+        return findCredentialsIdByName(name)
                 .delayUntil(credentialsId -> assertAgentIsAllowedTo(agent, USE, credentialsId)
                         .then(credentialsService.use(
                                 credentialsId,
@@ -160,7 +163,7 @@ public class CredentialsModule {
     }
 
     private Mono<Void> assertNameNotAlreadyTaken(Name name) {
-        return findCredentialsByName(name)
+        return findCredentialsIdByName(name)
                 .flatMap(credentialsId -> Mono.error(new NameAlreadyTakenError(name.getValue())));
     }
 

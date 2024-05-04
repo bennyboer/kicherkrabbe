@@ -1,4 +1,4 @@
-package de.bennyboer.kicherkrabbe.fabrics;
+package de.bennyboer.kicherkrabbe.fabrics.aggregate;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;

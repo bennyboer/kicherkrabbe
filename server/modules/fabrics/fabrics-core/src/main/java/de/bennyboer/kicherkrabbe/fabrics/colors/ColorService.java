@@ -34,12 +34,20 @@ public class ColorService extends AggregateService<Color, ColorId> {
                 .map(version -> AggregateIdAndVersion.of(id, version));
     }
 
-    public Mono<Version> update(ColorId id, ColorName name, int red, int green, int blue, Agent agent) {
-        return dispatchCommandToLatest(id, agent, UpdateCmd.of(name, red, green, blue));
+    public Mono<Version> update(
+            ColorId id,
+            Version version,
+            ColorName name,
+            int red,
+            int green,
+            int blue,
+            Agent agent
+    ) {
+        return dispatchCommand(id, version, agent, UpdateCmd.of(name, red, green, blue));
     }
 
-    public Mono<Version> delete(ColorId id, Agent agent) {
-        return dispatchCommandToLatest(id, agent, DeleteCmd.of());
+    public Mono<Version> delete(ColorId id, Version version, Agent agent) {
+        return dispatchCommand(id, version, agent, DeleteCmd.of());
     }
 
     @Override

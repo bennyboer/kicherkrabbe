@@ -1,10 +1,10 @@
 package de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.mongo;
 
-import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookup;
-import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.credentials.CredentialsId;
 import de.bennyboer.kicherkrabbe.credentials.Name;
 import de.bennyboer.kicherkrabbe.credentials.UserId;
+import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookup;
+import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.MongoEventSourcingReadModelRepo;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.index.Index;
@@ -30,21 +30,19 @@ public class MongoCredentialsLookupRepo
     }
 
     @Override
-    public Mono<CredentialsId> findCredentialsIdByName(Name name) {
+    public Mono<CredentialsLookup> findCredentialsByName(Name name) {
         Criteria criteria = Criteria.where("name").is(name.getValue());
 
         return template.findOne(query(criteria), MongoCredentialsLookup.class, collectionName)
-                .flatMap(serializer::deserialize)
-                .map(CredentialsLookup::getId);
+                .flatMap(serializer::deserialize);
     }
 
     @Override
-    public Flux<CredentialsId> findCredentialsIdByUserId(UserId userId) {
+    public Flux<CredentialsLookup> findCredentialsByUserId(UserId userId) {
         Criteria criteria = Criteria.where("userId").is(userId.getValue());
 
         return template.find(query(criteria), MongoCredentialsLookup.class, collectionName)
-                .flatMap(serializer::deserialize)
-                .map(CredentialsLookup::getId);
+                .flatMap(serializer::deserialize);
     }
 
     @Override

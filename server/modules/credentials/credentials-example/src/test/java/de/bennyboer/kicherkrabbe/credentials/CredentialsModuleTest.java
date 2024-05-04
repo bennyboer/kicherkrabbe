@@ -73,8 +73,8 @@ public class CredentialsModuleTest {
         return module.useCredentials(name, password, agent).block();
     }
 
-    public void deleteCredentials(String credentialsId, Agent agent) {
-        module.deleteCredentials(credentialsId, agent).block();
+    public void deleteCredentials(String credentialsId, long version, Agent agent) {
+        module.deleteCredentials(credentialsId, version, agent).block();
 
         module.removeCredentialsFromLookup(credentialsId).block();
         module.removePermissionsOnCredentials(credentialsId).block();

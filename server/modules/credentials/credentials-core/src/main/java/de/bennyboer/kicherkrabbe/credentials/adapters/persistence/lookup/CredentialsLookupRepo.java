@@ -9,8 +9,8 @@ import reactor.core.publisher.Mono;
 
 public interface CredentialsLookupRepo extends EventSourcingReadModelRepo<CredentialsId, CredentialsLookup> {
 
-    Mono<CredentialsId> findCredentialsIdByName(Name name);
+    Mono<CredentialsLookup> findCredentialsByName(Name name);
 
-    Flux<CredentialsId> findCredentialsIdByUserId(UserId userId);
+    Flux<CredentialsLookup> findCredentialsByUserId(UserId userId);
 
 }

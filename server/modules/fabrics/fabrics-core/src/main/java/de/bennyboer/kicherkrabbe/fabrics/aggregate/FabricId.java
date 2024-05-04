@@ -1,10 +1,11 @@
-package de.bennyboer.kicherkrabbe.fabrics;
+package de.bennyboer.kicherkrabbe.fabrics.aggregate;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
+import static java.util.UUID.randomUUID;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
@@ -18,6 +19,10 @@ public class FabricId {
         check(!value.isBlank(), "Fabric ID must not be blank");
 
         return new FabricId(value);
+    }
+
+    public static FabricId create() {
+        return new FabricId(randomUUID().toString());
     }
 
     @Override

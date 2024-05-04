@@ -34,13 +34,13 @@ public class UsersService extends AggregateService<User, UserId> {
                 .map(version -> AggregateIdAndVersion.of(id, version));
     }
 
-    public Mono<Version> rename(UserId userId, FullName name, Agent agent) {
-        return dispatchCommandToLatest(userId, agent, RenameCmd.of(name));
+    public Mono<Version> rename(UserId userId, Version version, FullName name, Agent agent) {
+        return dispatchCommand(userId, version, agent, RenameCmd.of(name));
     }
 
-    public Mono<Version> delete(UserId userId, Agent agent) {
-        return dispatchCommandToLatest(userId, agent, DeleteCmd.of())
-                .flatMap(version -> collapseEvents(userId, version, agent));
+    public Mono<Version> delete(UserId userId, Version version, Agent agent) {
+        return dispatchCommand(userId, version, agent, DeleteCmd.of())
+                .flatMap(v -> collapseEvents(userId, v, agent));
     }
 
     @Override

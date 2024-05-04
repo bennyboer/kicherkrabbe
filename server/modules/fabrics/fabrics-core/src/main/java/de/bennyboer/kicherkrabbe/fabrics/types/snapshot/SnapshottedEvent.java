@@ -50,6 +50,11 @@ public class SnapshottedEvent implements Event {
         return VERSION;
     }
 
+    @Override
+    public boolean isSnapshot() {
+        return true;
+    }
+
     public Optional<Instant> getDeletedAt() {
         return Optional.ofNullable(deletedAt);
     }

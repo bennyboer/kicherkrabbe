@@ -34,12 +34,12 @@ public class ThemeService extends AggregateService<Theme, ThemeId> {
                 .map(version -> AggregateIdAndVersion.of(id, version));
     }
 
-    public Mono<Version> update(ThemeId id, ThemeName name, Agent agent) {
-        return dispatchCommandToLatest(id, agent, UpdateCmd.of(name));
+    public Mono<Version> update(ThemeId id, Version version, ThemeName name, Agent agent) {
+        return dispatchCommand(id, version, agent, UpdateCmd.of(name));
     }
 
-    public Mono<Version> delete(ThemeId id, Agent agent) {
-        return dispatchCommandToLatest(id, agent, DeleteCmd.of());
+    public Mono<Version> delete(ThemeId id, Version version, Agent agent) {
+        return dispatchCommand(id, version, agent, DeleteCmd.of());
     }
 
     @Override
