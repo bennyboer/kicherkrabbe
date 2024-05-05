@@ -1,0 +1,3 @@
+dependencies {
+    api project(':modules:fabric-types:fabric-types-core')
+}

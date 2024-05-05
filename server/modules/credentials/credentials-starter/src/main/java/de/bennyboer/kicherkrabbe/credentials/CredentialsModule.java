@@ -1,8 +1,8 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
 import de.bennyboer.kicherkrabbe.auth.tokens.*;
-import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookup;
-import de.bennyboer.kicherkrabbe.credentials.adapters.persistence.lookup.CredentialsLookupRepo;
+import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.CredentialsLookup;
+import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.credentials.create.NameAlreadyTakenError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;

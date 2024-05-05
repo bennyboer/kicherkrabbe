@@ -61,5 +61,20 @@ include('modules:fabrics:fabrics-core')
 include('modules:fabrics:fabrics-starter')
 include('modules:fabrics:fabrics-example')
 
+// Topics
+include('modules:topics:topics-core')
+include('modules:topics:topics-starter')
+include('modules:topics:topics-example')
+
+// Colors
+include('modules:colors:colors-core')
+include('modules:colors:colors-starter')
+include('modules:colors:colors-example')
+
+// Fabric Types
+include('modules:fabric-types:fabric-types-core')
+include('modules:fabric-types:fabric-types-starter')
+include('modules:fabric-types:fabric-types-example')
+
 // Patterns
 include('modules:patterns')

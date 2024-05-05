@@ -9,7 +9,7 @@ import de.bennyboer.kicherkrabbe.permissions.*;
 import de.bennyboer.kicherkrabbe.permissions.persistence.PermissionsRepo;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
 import de.bennyboer.kicherkrabbe.persistence.MockReactiveTransactionManager;
-import de.bennyboer.kicherkrabbe.users.adapters.persistence.lookup.inmemory.InMemoryUserLookupRepo;
+import de.bennyboer.kicherkrabbe.users.persistence.lookup.inmemory.InMemoryUserLookupRepo;
 import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.transaction.ReactiveTransactionManager;
