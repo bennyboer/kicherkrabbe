@@ -75,6 +75,3 @@ include('modules:colors:colors-example')
 include('modules:fabric-types:fabric-types-core')
 include('modules:fabric-types:fabric-types-starter')
 include('modules:fabric-types:fabric-types-example')
-
-// Patterns
-include('modules:patterns')

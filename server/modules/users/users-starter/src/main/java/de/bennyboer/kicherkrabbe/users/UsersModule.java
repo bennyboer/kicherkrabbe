@@ -3,7 +3,7 @@ package de.bennyboer.kicherkrabbe.users;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.permissions.*;
-import de.bennyboer.kicherkrabbe.users.persistence.lookup.UserLookup;
+import de.bennyboer.kicherkrabbe.users.persistence.lookup.LookupUser;
 import de.bennyboer.kicherkrabbe.users.persistence.lookup.UserLookupRepo;
 import de.bennyboer.kicherkrabbe.users.create.MailAlreadyInUseError;
 import jakarta.annotation.Nullable;
@@ -91,7 +91,7 @@ public class UsersModule {
 
     public Mono<Void> updateUserInLookup(String userId) {
         return usersService.get(UserId.of(userId))
-                .map(user -> UserLookup.of(user.getId(), user.getName(), user.getMail()))
+                .map(user -> LookupUser.of(user.getId(), user.getName(), user.getMail()))
                 .flatMap(userLookupRepo::update);
     }
 

@@ -33,11 +33,17 @@ export class RemotePatternsService {
           id: 'basic',
           name: 'Basic',
           sizes: [
-            SizeRange.of({ from: 56, to: 62, price: Money.euro(2000) }),
-            SizeRange.of({ from: 68, to: 74, price: Money.euro(2200) }),
-            SizeRange.of({ from: 80, to: 86, price: Money.euro(2400) }),
-            SizeRange.of({ from: 92, to: 104, price: Money.euro(2600) }),
+            SizeRange.of({ from: 56, to: 62, price: Money.euro(1800) }),
+            SizeRange.of({ from: 68, to: 74, price: Money.euro(2000) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(2200) }),
+            SizeRange.of({ from: 92, to: 104, price: Money.euro(2400) }),
           ],
+        }),
+      ],
+      extras: [
+        PatternExtra.of({
+          name: 'Lange Ärmel',
+          price: Money.euro(200),
         }),
       ],
       attribution: 'RosaRosa',
@@ -160,6 +166,9 @@ export class RemotePatternsService {
         Image.of({
           url: '/assets/images/patterns/dreieckstuch/B.jpg',
         }),
+        Image.of({
+          url: '/assets/images/patterns/dreieckstuch/C.jpg',
+        }),
       ],
       variants: [
         PatternVariant.of({
@@ -182,12 +191,24 @@ export class RemotePatternsService {
       ],
       extras: [
         PatternExtra.of({
-          name: 'Lederlabel (Kunstleder)',
-          price: Money.euro(200),
+          name: 'Satin Schleife',
+          price: Money.euro(100),
         }),
         PatternExtra.of({
           name: 'gestickter Name',
           price: Money.euro(200),
+        }),
+        PatternExtra.of({
+          name: 'Applikationsstickerei',
+          price: Money.euro(500),
+        }),
+        PatternExtra.of({
+          name: 'Lederlabel',
+          price: Money.euro(200),
+        }),
+        PatternExtra.of({
+          name: 'Label',
+          price: Money.euro(100),
         }),
       ],
     }),
@@ -383,8 +404,8 @@ export class RemotePatternsService {
       attribution: 'Jo Mina',
     }),
     Pattern.of({
-      id: 'pumphose-penny',
-      name: 'Pumphose Penny',
+      id: 'pumphose',
+      name: 'Pumphose',
       categories: new Set([PANTS]),
       previewImage: Image.of({
         url: '/assets/images/patterns/pumphose-penny/preview.jpg',
@@ -417,7 +438,6 @@ export class RemotePatternsService {
           price: Money.euro(200),
         }),
       ],
-      attribution: 'Libminna',
     }),
     Pattern.of({
       id: 'sommerkleid-yuna',
@@ -703,6 +723,9 @@ export class RemotePatternsService {
         Image.of({
           url: '/assets/images/patterns/sommer-romper/C.jpg',
         }),
+        Image.of({
+          url: '/assets/images/patterns/sommer-romper/D.jpg',
+        }),
       ],
       variants: [
         PatternVariant.of({
@@ -756,6 +779,9 @@ export class RemotePatternsService {
         Image.of({
           url: '/assets/images/patterns/sommer-kleid/C.jpg',
         }),
+        Image.of({
+          url: '/assets/images/patterns/sommer-kleid/D.jpg',
+        }),
       ],
       variants: [
         PatternVariant.of({
@@ -795,6 +821,103 @@ export class RemotePatternsService {
       ],
       originalPatternName: 'Baby Festival Combo',
       attribution: 'Tadah Patterns',
+    }),
+    Pattern.of({
+      id: 'rueschentuch',
+      name: 'Rüschentuch',
+      categories: new Set([ACCESSORY]),
+      previewImage: Image.of({
+        url: '/assets/images/patterns/rueschentuch/preview.jpg',
+      }),
+      images: [
+        Image.of({
+          url: '/assets/images/patterns/rueschentuch/A.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/rueschentuch/B.jpg',
+        }),
+      ],
+      variants: [
+        PatternVariant.of({
+          id: 'normal',
+          name: 'Normal',
+          sizes: [
+            SizeRange.of({
+              from: 0,
+              to: 2,
+              unit: 'Jahre',
+              price: Money.euro(1000),
+            }),
+            SizeRange.of({ from: 2, unit: 'Jahre', price: Money.euro(1100) }),
+          ],
+        }),
+      ],
+      extras: [
+        PatternExtra.of({
+          name: 'Satin Schleife',
+          price: Money.euro(100),
+        }),
+        PatternExtra.of({
+          name: 'gestickter Name',
+          price: Money.euro(200),
+        }),
+        PatternExtra.of({
+          name: 'Applikationsstickerei',
+          price: Money.euro(500),
+        }),
+        PatternExtra.of({
+          name: 'Lederlabel',
+          price: Money.euro(200),
+        }),
+        PatternExtra.of({
+          name: 'Label',
+          price: Money.euro(100),
+        }),
+      ],
+    }),
+    Pattern.of({
+      id: 'oversized-shirt',
+      name: 'Oversized Shirt',
+      categories: new Set([TOP]),
+      previewImage: Image.of({
+        url: '/assets/images/patterns/oversized-shirt/preview.jpg',
+      }),
+      images: [
+        Image.of({
+          url: '/assets/images/patterns/oversized-shirt/A.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/oversized-shirt/B.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/oversized-shirt/C.jpg',
+        }),
+      ],
+      variants: [
+        PatternVariant.of({
+          id: 'normal',
+          name: 'Normal',
+          sizes: [
+            SizeRange.of({ from: 62, to: 68, price: Money.euro(1800) }),
+            SizeRange.of({ from: 74, to: 80, price: Money.euro(2000) }),
+            SizeRange.of({ from: 86, to: 92, price: Money.euro(2200) }),
+            SizeRange.of({ from: 98, to: 104, price: Money.euro(2400) }),
+            SizeRange.of({ from: 110, to: 116, price: Money.euro(2600) }),
+          ],
+        }),
+      ],
+      extras: [
+        PatternExtra.of({
+          name: 'Lange Ärmel',
+          price: Money.euro(200),
+        }),
+        PatternExtra.of({
+          name: 'Bauchtasche',
+          price: Money.euro(200),
+        }),
+      ],
+      attribution: 'Michelkids',
+      originalPatternName: 'Simply Shirt',
     }),
   ];
 

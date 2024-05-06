@@ -11,7 +11,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class CredentialsLookup {
+public class LookupCredentials {
 
     CredentialsId id;
 
@@ -19,12 +19,12 @@ public class CredentialsLookup {
 
     UserId userId;
 
-    public static CredentialsLookup of(CredentialsId id, Name name, UserId userId) {
+    public static LookupCredentials of(CredentialsId id, Name name, UserId userId) {
         notNull(id, "Credentials ID must be given");
         notNull(name, "Name must be given");
         notNull(userId, "User ID must be given");
 
-        return new CredentialsLookup(id, name, userId);
+        return new LookupCredentials(id, name, userId);
     }
 
 }

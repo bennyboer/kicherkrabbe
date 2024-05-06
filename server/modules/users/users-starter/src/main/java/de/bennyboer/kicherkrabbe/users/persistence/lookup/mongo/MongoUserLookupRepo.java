@@ -3,7 +3,7 @@ package de.bennyboer.kicherkrabbe.users.persistence.lookup.mongo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.MongoEventSourcingReadModelRepo;
 import de.bennyboer.kicherkrabbe.users.Mail;
 import de.bennyboer.kicherkrabbe.users.UserId;
-import de.bennyboer.kicherkrabbe.users.persistence.lookup.UserLookup;
+import de.bennyboer.kicherkrabbe.users.persistence.lookup.LookupUser;
 import de.bennyboer.kicherkrabbe.users.persistence.lookup.UserLookupRepo;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.index.Index;
@@ -17,7 +17,7 @@ import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
-public class MongoUserLookupRepo extends MongoEventSourcingReadModelRepo<UserId, UserLookup, MongoUserLookup>
+public class MongoUserLookupRepo extends MongoEventSourcingReadModelRepo<UserId, LookupUser, MongoLookupUser>
         implements UserLookupRepo {
 
     public MongoUserLookupRepo(ReactiveMongoTemplate template) {
@@ -25,7 +25,7 @@ public class MongoUserLookupRepo extends MongoEventSourcingReadModelRepo<UserId,
     }
 
     public MongoUserLookupRepo(String collectionName, ReactiveMongoTemplate template) {
-        super(collectionName, template, new MongoUserLookupSerializer());
+        super(collectionName, template, new MongoLookupUserSerializer());
     }
 
     @Override
@@ -34,12 +34,12 @@ public class MongoUserLookupRepo extends MongoEventSourcingReadModelRepo<UserId,
     }
 
     @Override
-    public Mono<UserLookup> findByMail(Mail mail) {
+    public Mono<LookupUser> findByMail(Mail mail) {
         Criteria criteria = where("mail").is(mail.getValue());
         Query query = query(criteria);
 
-        return template.findOne(query, MongoUserLookup.class, collectionName)
-                .flatMap(serializer::deserialize);
+        return template.findOne(query, MongoLookupUser.class, collectionName)
+                .map(serializer::deserialize);
     }
 
     @Override

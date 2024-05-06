@@ -1,9 +1,10 @@
-package de.bennyboer.kicherkrabbe.fabrictypes;
+package de.bennyboer.kicherkrabbe.fabrictypes.persistence;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.EventSerializer;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
+import de.bennyboer.kicherkrabbe.fabrictypes.FabricTypeName;
 import de.bennyboer.kicherkrabbe.fabrictypes.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.fabrictypes.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.fabrictypes.snapshot.SnapshottedEvent;

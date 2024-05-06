@@ -1,7 +1,7 @@
 package de.bennyboer.kicherkrabbe.users.persistence.lookup;
 
 import de.bennyboer.kicherkrabbe.persistence.MongoTest;
-import de.bennyboer.kicherkrabbe.users.persistence.lookup.mongo.MongoUserLookup;
+import de.bennyboer.kicherkrabbe.users.persistence.lookup.mongo.MongoLookupUser;
 import de.bennyboer.kicherkrabbe.users.persistence.lookup.mongo.MongoUserLookupRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class MongoUserLookupRepoTest extends UserLookupRepoTest {
 
     @BeforeEach
     public void clear() {
-        template.remove(MongoUserLookup.class)
+        template.remove(MongoLookupUser.class)
                 .inCollection("users_lookup")
                 .all()
                 .block();

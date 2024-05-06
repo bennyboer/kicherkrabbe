@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.fabrictypes;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.messaging.MessagingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.mongo.MongoEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.fabrictypes.persistence.FabricTypeEventPayloadSerializer;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

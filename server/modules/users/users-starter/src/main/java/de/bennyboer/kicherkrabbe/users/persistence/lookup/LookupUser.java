@@ -11,7 +11,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class UserLookup {
+public class LookupUser {
 
     UserId userId;
 
@@ -19,12 +19,12 @@ public class UserLookup {
 
     Mail mail;
 
-    public static UserLookup of(UserId userId, FullName name, Mail mail) {
+    public static LookupUser of(UserId userId, FullName name, Mail mail) {
         notNull(userId, "User ID must be given");
         notNull(name, "Name must be given");
         notNull(mail, "Mail must be given");
 
-        return new UserLookup(userId, name, mail);
+        return new LookupUser(userId, name, mail);
     }
 
 }

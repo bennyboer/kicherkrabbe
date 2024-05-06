@@ -32,9 +32,7 @@ public abstract class MongoEventSourcingReadModelRepo<ID, T, S> implements Event
 
     @Override
     public Mono<Void> update(T readModel) {
-        return serializer.serialize(readModel)
-                .flatMap(serialized -> template.save(serialized, collectionName))
-                .then();
+        return template.save(serializer.serialize(readModel), collectionName).then();
     }
 
     @Override

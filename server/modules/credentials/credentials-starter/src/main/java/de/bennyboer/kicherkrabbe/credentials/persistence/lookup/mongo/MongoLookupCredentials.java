@@ -1,4 +1,4 @@
-package de.bennyboer.kicherkrabbe.users.persistence.lookup.mongo;
+package de.bennyboer.kicherkrabbe.credentials.persistence.lookup.mongo;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -10,15 +10,13 @@ import static lombok.AccessLevel.PUBLIC;
 @ToString
 @EqualsAndHashCode
 @FieldDefaults(level = PUBLIC)
-public class MongoUserLookup {
+public class MongoLookupCredentials {
 
     @MongoId
+    String id;
+
+    String name;
+
     String userId;
-
-    String firstName;
-
-    String lastName;
-
-    String mail;
 
 }

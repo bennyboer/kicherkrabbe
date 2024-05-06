@@ -1,5 +1,6 @@
-package de.bennyboer.kicherkrabbe.colors;
+package de.bennyboer.kicherkrabbe.colors.persistence;
 
+import de.bennyboer.kicherkrabbe.colors.ColorName;
 import de.bennyboer.kicherkrabbe.eventsourcing.EventSerializer;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;

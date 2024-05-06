@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
+import de.bennyboer.kicherkrabbe.credentials.persistence.CredentialsEventPayloadSerializer;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.messaging.MessagingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.mongo.MongoEventSourcingRepo;

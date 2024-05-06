@@ -1,7 +1,7 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
 import de.bennyboer.kicherkrabbe.auth.tokens.*;
-import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.CredentialsLookup;
+import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.LookupCredentials;
 import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.credentials.create.NameAlreadyTakenError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
@@ -89,7 +89,7 @@ public class CredentialsModule {
 
     public Mono<Void> updateCredentialsInLookup(String credentialsId) {
         return credentialsService.get(CredentialsId.of(credentialsId))
-                .flatMap(credentials -> credentialsLookupRepo.update(CredentialsLookup.of(
+                .flatMap(credentials -> credentialsLookupRepo.update(LookupCredentials.of(
                         credentials.getId(),
                         credentials.getName(),
                         credentials.getUserId()
@@ -135,12 +135,12 @@ public class CredentialsModule {
 
     private Mono<CredentialsId> findCredentialsIdByName(Name name) {
         return credentialsLookupRepo.findCredentialsByName(name)
-                .map(CredentialsLookup::getId);
+                .map(LookupCredentials::getId);
     }
 
     private Flux<CredentialsId> findCredentialsIdByUserId(UserId userId) {
         return credentialsLookupRepo.findCredentialsByUserId(userId)
-                .map(CredentialsLookup::getId);
+                .map(LookupCredentials::getId);
     }
 
     private Mono<Credentials> tryToUseCredentialsAndReturnCredentials(Name name, Password password, Agent agent) {

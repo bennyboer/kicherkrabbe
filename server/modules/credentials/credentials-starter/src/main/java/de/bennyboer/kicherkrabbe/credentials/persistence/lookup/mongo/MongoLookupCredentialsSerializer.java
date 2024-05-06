@@ -1,33 +1,32 @@
 package de.bennyboer.kicherkrabbe.credentials.persistence.lookup.mongo;
 
-import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.CredentialsLookup;
 import de.bennyboer.kicherkrabbe.credentials.CredentialsId;
 import de.bennyboer.kicherkrabbe.credentials.Name;
 import de.bennyboer.kicherkrabbe.credentials.UserId;
+import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.LookupCredentials;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.ReadModelSerializer;
-import reactor.core.publisher.Mono;
 
-public class MongoCredentialsLookupSerializer implements
-        ReadModelSerializer<CredentialsLookup, MongoCredentialsLookup> {
+public class MongoLookupCredentialsSerializer
+        implements ReadModelSerializer<LookupCredentials, MongoLookupCredentials> {
 
     @Override
-    public Mono<MongoCredentialsLookup> serialize(CredentialsLookup readModel) {
-        var result = new MongoCredentialsLookup();
+    public MongoLookupCredentials serialize(LookupCredentials readModel) {
+        var result = new MongoLookupCredentials();
 
         result.id = readModel.getId().getValue();
         result.name = readModel.getName().getValue();
         result.userId = readModel.getUserId().getValue();
 
-        return Mono.just(result);
+        return result;
     }
 
     @Override
-    public Mono<CredentialsLookup> deserialize(MongoCredentialsLookup serialized) {
-        return Mono.just(CredentialsLookup.of(
+    public LookupCredentials deserialize(MongoLookupCredentials serialized) {
+        return LookupCredentials.of(
                 CredentialsId.of(serialized.id),
                 Name.of(serialized.name),
                 UserId.of(serialized.userId)
-        ));
+        );
     }
 
 }

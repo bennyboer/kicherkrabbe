@@ -20,7 +20,7 @@ public abstract class UserLookupRepoTest {
     @Test
     void shouldUpdateUserInLookup() {
         // given: a user to update in the lookup
-        var userLookup = UserLookup.of(
+        var userLookup = LookupUser.of(
                 UserId.of("USER_ID"),
                 FullName.of(
                         FirstName.of("Max"),
@@ -40,7 +40,7 @@ public abstract class UserLookupRepoTest {
     @Test
     void shouldRemoveUserFromLookup() {
         // given: a user in the lookup
-        var userLookup = UserLookup.of(
+        var userLookup = LookupUser.of(
                 UserId.of("USER_ID"),
                 FullName.of(
                         FirstName.of("Max"),
@@ -67,7 +67,7 @@ public abstract class UserLookupRepoTest {
         assertThat(count).isEqualTo(0);
 
         // when: adding a user in the lookup
-        var userLookup1 = UserLookup.of(
+        var userLookup1 = LookupUser.of(
                 UserId.of("USER_ID_1"),
                 FullName.of(
                         FirstName.of("Max"),
@@ -82,7 +82,7 @@ public abstract class UserLookupRepoTest {
         assertThat(count).isEqualTo(1);
 
         // when: adding another user in the lookup
-        var userLookup2 = UserLookup.of(
+        var userLookup2 = LookupUser.of(
                 UserId.of("USER_ID_2"),
                 FullName.of(
                         FirstName.of("John"),
@@ -97,15 +97,15 @@ public abstract class UserLookupRepoTest {
         assertThat(count).isEqualTo(2);
     }
 
-    private void update(UserLookup userLookup) {
-        repo.update(userLookup).block();
+    private void update(LookupUser lookupUser) {
+        repo.update(lookupUser).block();
     }
 
     private void remove(UserId userId) {
         repo.remove(userId).block();
     }
 
-    private UserLookup findByMail(Mail mail) {
+    private LookupUser findByMail(Mail mail) {
         return repo.findByMail(mail).block();
     }
 

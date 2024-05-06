@@ -1,9 +1,13 @@
-package de.bennyboer.kicherkrabbe.users;
+package de.bennyboer.kicherkrabbe.users.persistence;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.EventSerializer;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
+import de.bennyboer.kicherkrabbe.users.FirstName;
+import de.bennyboer.kicherkrabbe.users.FullName;
+import de.bennyboer.kicherkrabbe.users.LastName;
+import de.bennyboer.kicherkrabbe.users.Mail;
 import de.bennyboer.kicherkrabbe.users.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.users.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.users.rename.RenamedEvent;

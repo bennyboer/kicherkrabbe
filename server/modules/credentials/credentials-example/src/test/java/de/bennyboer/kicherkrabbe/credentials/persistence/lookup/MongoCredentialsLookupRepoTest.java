@@ -1,6 +1,6 @@
 package de.bennyboer.kicherkrabbe.credentials.persistence.lookup;
 
-import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.mongo.MongoCredentialsLookup;
+import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.mongo.MongoLookupCredentials;
 import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.mongo.MongoCredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.persistence.MongoTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ public class MongoCredentialsLookupRepoTest extends CredentialsLookupRepoTest {
 
     @BeforeEach
     public void clear() {
-        template.remove(MongoCredentialsLookup.class)
+        template.remove(MongoLookupCredentials.class)
                 .inCollection("credentials_lookup")
                 .all()
                 .block();

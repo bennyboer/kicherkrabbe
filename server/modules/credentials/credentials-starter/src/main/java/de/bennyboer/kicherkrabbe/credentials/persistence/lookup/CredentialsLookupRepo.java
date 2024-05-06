@@ -7,10 +7,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.EventSourci
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface CredentialsLookupRepo extends EventSourcingReadModelRepo<CredentialsId, CredentialsLookup> {
+public interface CredentialsLookupRepo extends EventSourcingReadModelRepo<CredentialsId, LookupCredentials> {
 
-    Mono<CredentialsLookup> findCredentialsByName(Name name);
+    Mono<LookupCredentials> findCredentialsByName(Name name);
 
-    Flux<CredentialsLookup> findCredentialsByUserId(UserId userId);
+    Flux<LookupCredentials> findCredentialsByUserId(UserId userId);
 
 }

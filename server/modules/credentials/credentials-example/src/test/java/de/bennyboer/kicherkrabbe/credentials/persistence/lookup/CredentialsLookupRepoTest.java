@@ -24,7 +24,7 @@ public abstract class CredentialsLookupRepoTest {
     @Test
     void shouldBeAbleToFindCredentialsByName() {
         // given: a lookup to save
-        var lookup = CredentialsLookup.of(
+        var lookup = LookupCredentials.of(
                 CredentialsId.create(),
                 Name.of("Some name"),
                 UserId.of("USER_ID_1")
@@ -38,7 +38,7 @@ public abstract class CredentialsLookupRepoTest {
         assertThat(credentials).isEqualTo(lookup);
 
         // when: saving another lookup with another ID
-        var anotherLookup = CredentialsLookup.of(
+        var anotherLookup = LookupCredentials.of(
                 CredentialsId.create(),
                 Name.of("Some other name"),
                 UserId.of("USER_ID_2")
@@ -54,7 +54,7 @@ public abstract class CredentialsLookupRepoTest {
         assertThat(foundAnotherCredentials).isEqualTo(anotherLookup);
 
         // when: updating the first lookup since the name changed
-        var updatedLookup = CredentialsLookup.of(
+        var updatedLookup = LookupCredentials.of(
                 lookup.getId(),
                 Name.of("Some new name"),
                 UserId.of("USER_ID_1")
@@ -73,7 +73,7 @@ public abstract class CredentialsLookupRepoTest {
     @Test
     void shouldRemoveCredentials() {
         // given: a lookup to save
-        var lookup = CredentialsLookup.of(
+        var lookup = LookupCredentials.of(
                 CredentialsId.create(),
                 Name.of("Some name"),
                 UserId.of("USER_ID")
@@ -97,7 +97,7 @@ public abstract class CredentialsLookupRepoTest {
     @Test
     void shouldFindCredentialsByUserId() {
         // given: a lookup
-        var lookup = CredentialsLookup.of(
+        var lookup = LookupCredentials.of(
                 CredentialsId.create(),
                 Name.of("Some name"),
                 UserId.of("USER_ID")
@@ -110,7 +110,7 @@ public abstract class CredentialsLookupRepoTest {
         assertThat(credentials.getFirst().getId()).isEqualTo(lookup.getId());
 
         // when: saving another lookup with the same user ID
-        var anotherLookup = CredentialsLookup.of(
+        var anotherLookup = LookupCredentials.of(
                 CredentialsId.create(),
                 Name.of("Some other name"),
                 UserId.of("USER_ID")
@@ -120,10 +120,10 @@ public abstract class CredentialsLookupRepoTest {
         // then: there are two credentials with the same user ID
         credentials = findCredentialsByUserId(lookup.getUserId());
         assertThat(credentials.size()).isEqualTo(2);
-        assertThat(credentials.stream().map(CredentialsLookup::getId)).contains(lookup.getId(), anotherLookup.getId());
+        assertThat(credentials.stream().map(LookupCredentials::getId)).contains(lookup.getId(), anotherLookup.getId());
 
         // when: saving another lookup with another user ID
-        var yetAnotherLookup = CredentialsLookup.of(
+        var yetAnotherLookup = LookupCredentials.of(
                 CredentialsId.create(),
                 Name.of("Some other name"),
                 UserId.of("ANOTHER_USER_ID")
@@ -148,15 +148,15 @@ public abstract class CredentialsLookupRepoTest {
         assertThat(credentials.size()).isEqualTo(0);
     }
 
-    private void update(CredentialsLookup lookup) {
+    private void update(LookupCredentials lookup) {
         repo.update(lookup).block();
     }
 
-    private CredentialsLookup findCredentialsByName(Name name) {
+    private LookupCredentials findCredentialsByName(Name name) {
         return repo.findCredentialsByName(name).block();
     }
 
-    private List<CredentialsLookup> findCredentialsByUserId(UserId userId) {
+    private List<LookupCredentials> findCredentialsByUserId(UserId userId) {
         return repo.findCredentialsByUserId(userId).collectList().block();
     }
 

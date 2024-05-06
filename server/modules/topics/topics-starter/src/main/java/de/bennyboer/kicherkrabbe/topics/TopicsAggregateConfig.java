@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.messaging.Messaging
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.mongo.MongoEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
+import de.bennyboer.kicherkrabbe.topics.persistence.TopicEventPayloadSerializer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

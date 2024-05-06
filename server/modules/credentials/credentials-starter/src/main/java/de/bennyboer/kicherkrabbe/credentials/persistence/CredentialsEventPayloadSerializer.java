@@ -1,5 +1,8 @@
-package de.bennyboer.kicherkrabbe.credentials;
+package de.bennyboer.kicherkrabbe.credentials.persistence;
 
+import de.bennyboer.kicherkrabbe.credentials.EncodedPassword;
+import de.bennyboer.kicherkrabbe.credentials.Name;
+import de.bennyboer.kicherkrabbe.credentials.UserId;
 import de.bennyboer.kicherkrabbe.credentials.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.credentials.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.credentials.snapshot.SnapshottedEvent;
