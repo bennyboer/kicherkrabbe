@@ -1,13 +1,13 @@
 package de.bennyboer.kicherkrabbe.topics;
 
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
+import de.bennyboer.kicherkrabbe.permissions.events.PermissionsEventPublisher;
 import de.bennyboer.kicherkrabbe.permissions.persistence.PermissionsRepo;
 import de.bennyboer.kicherkrabbe.permissions.persistence.mongo.MongoPermissionsRepo;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import reactor.core.publisher.Mono;
 
 @Configuration
 public class TopicsPermissionsConfig {
@@ -19,9 +19,10 @@ public class TopicsPermissionsConfig {
 
     @Bean("topicsPermissionsService")
     public PermissionsService topicsPermissionsService(
-            @Qualifier("topicsPermissionsRepo") PermissionsRepo permissionsRepo
+            @Qualifier("topicsPermissionsRepo") PermissionsRepo permissionsRepo,
+            PermissionsEventPublisher eventPublisher
     ) {
-        return new PermissionsService(permissionsRepo, event -> Mono.empty());
+        return new PermissionsService(permissionsRepo, eventPublisher);
     }
 
 }

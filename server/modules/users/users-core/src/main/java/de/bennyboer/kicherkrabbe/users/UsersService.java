@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateIdAndVersion;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateService;
+import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.EventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
@@ -41,6 +42,11 @@ public class UsersService extends AggregateService<User, UserId> {
     public Mono<Version> delete(UserId userId, Version version, Agent agent) {
         return dispatchCommand(userId, version, agent, DeleteCmd.of())
                 .flatMap(v -> collapseEvents(userId, v, agent));
+    }
+
+    @Override
+    protected AggregateType getAggregateType() {
+        return User.TYPE;
     }
 
     @Override

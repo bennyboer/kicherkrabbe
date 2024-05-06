@@ -43,7 +43,7 @@ public class ColorsMessagingTest extends EventListenerTest {
 
     @BeforeEach
     void setup() {
-        when(module.allowUserToCreateAndReadColors(any())).thenReturn(Mono.empty());
+        when(module.allowUserToCreateColors(any())).thenReturn(Mono.empty());
         when(module.removePermissionsForUser(any())).thenReturn(Mono.empty());
         when(module.updateColorInLookup(any())).thenReturn(Mono.empty());
         when(module.removeColorFromLookup(any())).thenReturn(Mono.empty());
@@ -52,7 +52,7 @@ public class ColorsMessagingTest extends EventListenerTest {
     }
 
     @Test
-    void shouldAllowUserToCreateAndReadColors() {
+    void shouldAllowUserToCreateColors() {
         // when: a user created event is published
         send(
                 AggregateType.of("USER"),
@@ -66,7 +66,7 @@ public class ColorsMessagingTest extends EventListenerTest {
         );
 
         // then: the user is allowed to create colors
-        verify(module, timeout(5000).times(1)).allowUserToCreateAndReadColors(eq("USER_ID"));
+        verify(module, timeout(5000).times(1)).allowUserToCreateColors(eq("USER_ID"));
     }
 
     @Test

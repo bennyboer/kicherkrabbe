@@ -25,6 +25,7 @@ public class ColorsHttpConfig {
         return nest(
                 path("/api/colors"),
                 route(GET("/"), handler::getColors)
+                        .andRoute(GET("/accessible-changes"), handler::trackAccessibleChanges)
                         .andRoute(POST("/create"), handler::createColor)
                         .andNest(
                                 path("/{colorId}"),

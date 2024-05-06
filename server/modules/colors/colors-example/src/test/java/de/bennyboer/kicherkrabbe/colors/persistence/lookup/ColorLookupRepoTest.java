@@ -6,7 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,7 +39,7 @@ public abstract class ColorLookupRepoTest {
         update(color);
 
         // then: the color is updated
-        var colors = find();
+        var colors = find(Set.of(color.getId()));
         assertThat(colors).containsExactly(color);
     }
 
@@ -67,7 +69,7 @@ public abstract class ColorLookupRepoTest {
         remove(color1.getId());
 
         // then: the color is removed
-        var colors = find();
+        var colors = find(Set.of(color1.getId(), color2.getId()));
         assertThat(colors).containsExactly(color2);
     }
 
@@ -94,7 +96,7 @@ public abstract class ColorLookupRepoTest {
         update(color2);
 
         // when: finding colors
-        var colors = find();
+        var colors = find(Set.of(color1.getId(), color2.getId()));
 
         // then: the colors are found sorted by creation date
         assertThat(colors).containsExactly(color2, color1);
@@ -132,25 +134,26 @@ public abstract class ColorLookupRepoTest {
         update(color3);
 
         // when: finding colors by search term
-        var colors = find("ee");
+        var colorIds = Set.of(color1.getId(), color2.getId(), color3.getId());
+        var colors = find(colorIds, "ee");
 
         // then: the colors are found by search term
         assertThat(colors).containsExactly(color2);
 
         // when: finding colors by another search term
-        colors = find("bl");
+        colors = find(colorIds, "bl");
 
         // then: the colors are found by another search term
         assertThat(colors).containsExactly(color3);
 
         // when: finding colors by another search term
-        colors = find("    ");
+        colors = find(colorIds, "    ");
 
         // then: the colors are found by another search term
         assertThat(colors).containsExactly(color2, color3, color1);
 
         // when: finding colors by another search term
-        colors = find("blblblbll");
+        colors = find(colorIds, "blblblbll");
 
         // then: the colors are found by another search term
         assertThat(colors).isEmpty();
@@ -188,25 +191,26 @@ public abstract class ColorLookupRepoTest {
         update(color3);
 
         // when: finding colors with paging
-        var colors = find(1, 1);
+        var colorIds = Set.of(color1.getId(), color2.getId(), color3.getId());
+        var colors = find(colorIds, 1, 1);
 
         // then: the colors are found with paging
         assertThat(colors).containsExactly(color2);
 
         // when: finding colors with paging
-        colors = find(2, 1);
+        colors = find(colorIds, 2, 1);
 
         // then: the colors are found with paging
         assertThat(colors).containsExactly(color1);
 
         // when: finding colors with paging
-        colors = find(3, 1);
+        colors = find(colorIds, 3, 1);
 
         // then: the colors are found with paging
         assertThat(colors).isEmpty();
 
         // when: finding colors with paging
-        colors = find(0, 2);
+        colors = find(colorIds, 0, 2);
 
         // then: the colors are found with paging
         assertThat(colors).containsExactly(color3, color2);
@@ -244,22 +248,26 @@ public abstract class ColorLookupRepoTest {
         update(color3);
 
         // when: finding colors with search term and paging
-        var colors = find("bl", 0, 1);
+        var colorIds = Set.of(color1.getId(), color2.getId(), color3.getId());
+        var page = findPage(colorIds, "bl", 0, 1);
 
         // then: the colors are found with search term and paging
-        assertThat(colors).containsExactly(color3);
+        assertThat(page.getResults()).containsExactly(color3);
+        assertThat(page.getTotal()).isEqualTo(2);
 
         // when: finding colors with search term and paging
-        colors = find("ee", 1, 1);
+        page = findPage(colorIds, "ee", 1, 1);
 
         // then: the colors are found with search term and paging
-        assertThat(colors).isEmpty();
+        assertThat(page.getResults()).isEmpty();
+        assertThat(page.getTotal()).isEqualTo(1);
 
         // when: finding colors with search term and paging
-        colors = find("bl", 0, 5);
+        page = findPage(colorIds, "bl", 0, 5);
 
         // then: the colors are found with search term and paging
-        assertThat(colors).containsExactly(color3, color1);
+        assertThat(page.getResults()).containsExactly(color3, color1);
+        assertThat(page.getTotal()).isEqualTo(2);
     }
 
     private void update(LookupColor color) {
@@ -270,20 +278,24 @@ public abstract class ColorLookupRepoTest {
         repo.remove(colorId).block();
     }
 
-    private List<LookupColor> find() {
-        return find("", 0, Integer.MAX_VALUE);
+    private List<LookupColor> find(Collection<ColorId> colorIds) {
+        return find(colorIds, "", 0, Integer.MAX_VALUE);
     }
 
-    private List<LookupColor> find(String searchTerm) {
-        return find(searchTerm, 0, Integer.MAX_VALUE);
+    private List<LookupColor> find(Collection<ColorId> colorIds, String searchTerm) {
+        return find(colorIds, searchTerm, 0, Integer.MAX_VALUE);
     }
 
-    private List<LookupColor> find(long skip, long limit) {
-        return find("", skip, limit);
+    private List<LookupColor> find(Collection<ColorId> colorIds, long skip, long limit) {
+        return find(colorIds, "", skip, limit);
     }
 
-    private List<LookupColor> find(String searchTerm, long skip, long limit) {
-        return repo.find(searchTerm, skip, limit).collectList().block();
+    private List<LookupColor> find(Collection<ColorId> colorIds, String searchTerm, long skip, long limit) {
+        return repo.find(colorIds, searchTerm, skip, limit).block().getResults();
+    }
+
+    private LookupColorPage findPage(Collection<ColorId> colorIds, String searchTerm, long skip, long limit) {
+        return repo.find(colorIds, searchTerm, skip, limit).block();
     }
 
 }

@@ -25,17 +25,29 @@ public class ColorsModule {
 
     private final ColorLookupRepo colorLookupRepo;
 
-    public Flux<ColorDetails> getColors(String searchTerm, long skip, long limit, Agent agent) {
-        return assertAgentIsAllowedTo(agent, READ)
-                .thenMany(colorLookupRepo.find(searchTerm, skip, limit))
-                .map(lookupColor -> ColorDetails.of(
-                        lookupColor.getId(),
-                        lookupColor.getName(),
-                        lookupColor.getRed(),
-                        lookupColor.getGreen(),
-                        lookupColor.getBlue(),
-                        lookupColor.getCreatedAt()
+    private final AccessibleColorsTracker accessibleColorsTracker;
+
+    public Mono<ColorsPage> getColors(String searchTerm, long skip, long limit, Agent agent) {
+        return getAccessibleColorIds(agent)
+                .collectList()
+                .flatMap(colorIds -> colorLookupRepo.find(colorIds, searchTerm, skip, limit))
+                .map(result -> ColorsPage.of(
+                        result.getSkip(),
+                        result.getLimit(),
+                        result.getTotal(),
+                        result.getResults().stream().map(color -> ColorDetails.of(
+                                color.getId(),
+                                color.getName(),
+                                color.getRed(),
+                                color.getGreen(),
+                                color.getBlue(),
+                                color.getCreatedAt()
+                        )).toList()
                 ));
+    }
+
+    public Flux<String> trackAccessibleColorsChanges(Agent agent) {
+        return accessibleColorsTracker.trackChanges(agent);
     }
 
     @Transactional
@@ -72,22 +84,15 @@ public class ColorsModule {
                 .map(Version::getValue);
     }
 
-    public Mono<Void> allowUserToCreateAndReadColors(String userId) {
+    public Mono<Void> allowUserToCreateColors(String userId) {
         Holder userHolder = Holder.user(HolderId.of(userId));
 
         var createPermission = Permission.builder()
                 .holder(userHolder)
                 .isAllowedTo(CREATE)
                 .onType(getResourceType());
-        var readPermission = Permission.builder()
-                .holder(userHolder)
-                .isAllowedTo(READ)
-                .onType(getResourceType());
 
-        return permissionsService.addPermissions(
-                createPermission,
-                readPermission
-        );
+        return permissionsService.addPermission(createPermission);
     }
 
     public Mono<Void> removePermissionsForUser(String userId) {
@@ -97,7 +102,7 @@ public class ColorsModule {
     }
 
     public Mono<Void> updateColorInLookup(String colorId) {
-        return colorService.get(ColorId.of(colorId))
+        return colorService.getOrThrow(ColorId.of(colorId))
                 .flatMap(color -> colorLookupRepo.update(LookupColor.of(
                         color.getId(),
                         color.getName(),
@@ -140,6 +145,17 @@ public class ColorsModule {
         Resource resource = Resource.of(getResourceType(), ResourceId.of(colorId));
 
         return permissionsService.removePermissionsByResource(resource);
+    }
+
+    private Flux<ColorId> getAccessibleColorIds(Agent agent) {
+        Holder holder = toHolder(agent);
+        ResourceType resourceType = getResourceType();
+
+        return permissionsService.findPermissionsByHolderAndResourceType(holder, resourceType)
+                .mapNotNull(permission -> permission.getResource()
+                        .getId()
+                        .map(id -> ColorId.of(id.getValue()))
+                        .orElse(null));
     }
 
     private Mono<Void> assertAgentIsAllowedTo(Agent agent, Action action) {

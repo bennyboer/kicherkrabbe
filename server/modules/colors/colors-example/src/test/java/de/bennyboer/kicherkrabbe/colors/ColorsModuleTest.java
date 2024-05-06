@@ -8,6 +8,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublish
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -31,11 +32,12 @@ public class ColorsModuleTest {
     private final ColorsModule module = config.colorsModule(
             colorService,
             permissionsService,
-            colorLookupRepo
+            colorLookupRepo,
+            agent -> Flux.empty()
     );
 
     public void allowUserToCreateAndReadColors(String userId) {
-        module.allowUserToCreateAndReadColors(userId).block();
+        module.allowUserToCreateColors(userId).block();
     }
 
     public String createColor(String name, int red, int green, int blue, Agent agent) {
@@ -71,7 +73,7 @@ public class ColorsModuleTest {
     }
 
     public List<ColorDetails> getColors(String searchTerm, long skip, long limit, Agent agent) {
-        return module.getColors(searchTerm, skip, limit, agent).collectList().block();
+        return module.getColors(searchTerm, skip, limit, agent).block().getResults();
     }
 
 }

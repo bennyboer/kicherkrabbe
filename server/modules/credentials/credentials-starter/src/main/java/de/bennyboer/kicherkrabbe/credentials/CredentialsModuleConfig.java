@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.transaction.ReactiveTransactionManager;
 
 @Configuration
 @Import({
@@ -33,9 +34,16 @@ public class CredentialsModuleConfig {
             CredentialsService credentialsService,
             CredentialsLookupRepo credentialsLookupRepo,
             @Qualifier("credentialsPermissionsService") PermissionsService permissionsService,
-            TokenGenerator tokenGenerator
+            TokenGenerator tokenGenerator,
+            ReactiveTransactionManager transactionManager
     ) {
-        return new CredentialsModule(credentialsService, credentialsLookupRepo, permissionsService, tokenGenerator);
+        return new CredentialsModule(
+                credentialsService,
+                credentialsLookupRepo,
+                permissionsService,
+                tokenGenerator,
+                transactionManager
+        );
     }
 
 }

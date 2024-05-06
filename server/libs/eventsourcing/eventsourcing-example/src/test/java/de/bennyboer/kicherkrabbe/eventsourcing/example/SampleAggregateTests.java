@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.eventsourcing.example;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.AggregateNotFoundError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventWithMetadata;
@@ -19,6 +20,7 @@ import java.time.Instant;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class SampleAggregateTests {
@@ -100,6 +102,21 @@ public abstract class SampleAggregateTests {
 
         // and: the version is 1
         assertThat(version).isEqualTo(Version.of(1));
+    }
+
+    @Test
+    void shouldRaiseErrorIfAggregateIsNotFound() {
+        // when: an aggregate is not found; then an exception is thrown
+        assertThatThrownBy(() -> eventSourcingService.getOrThrow("UNKNOWN_ID").block())
+                .matches(e -> e.getCause() instanceof AggregateNotFoundError
+                        && e.getCause().getMessage()
+                        .equals("Aggregate not found with type 'SAMPLE' and ID 'UNKNOWN_ID'"));
+
+        // when: an aggregate is not found with version; then an exception is thrown
+        assertThatThrownBy(() -> eventSourcingService.getOrThrow("UNKNOWN_ID", Version.zero()).block())
+                .matches(e -> e.getCause() instanceof AggregateNotFoundError
+                        && e.getCause().getMessage()
+                        .equals("Aggregate not found with type 'SAMPLE' and ID 'UNKNOWN_ID'"));
     }
 
     @Test

@@ -41,7 +41,6 @@ public class UsersMessaging {
                 (metadata, version, payload) -> {
                     String userId = metadata.getAggregateId().getValue();
 
-                    System.out.println("Adding permissions for new user " + userId);
                     return module.addPermissionsForNewUser(userId);
                 }
         );

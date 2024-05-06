@@ -18,6 +18,7 @@ import java.util.function.Function;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
+import static java.util.UUID.randomUUID;
 import static lombok.AccessLevel.PRIVATE;
 import static reactor.rabbitmq.BindingSpecification.queueBinding;
 import static reactor.rabbitmq.ExchangeSpecification.exchange;
@@ -49,6 +50,14 @@ public class MessageListenerFactory {
         );
     }
 
+    public Flux<Delivery> createTransientListener(
+            ExchangeTarget exchange,
+            RoutingKey routingKey,
+            String listenerName
+    ) {
+        return listenTransient(exchange, routingKey, listenerName);
+    }
+
     private Flux<AcknowledgableDelivery> listen(
             ExchangeTarget exchange,
             RoutingKey routingKey,
@@ -56,6 +65,31 @@ public class MessageListenerFactory {
     ) {
         return setupQueuesAndBindings(exchange, routingKey, listenerName)
                 .flatMapMany(queues -> receiver.consumeManualAck(queues.getNormal()));
+    }
+
+    private Flux<Delivery> listenTransient(
+            ExchangeTarget exchange,
+            RoutingKey routingKey,
+            String listenerName
+    ) {
+        String queueName = "%s-%s-%s-%s".formatted(
+                exchange.getName(),
+                routingKey.asString(),
+                listenerName,
+                randomUUID()
+        );
+
+        return declareExchangeIfNotExists(exchange)
+                .then(sender.declareQueue(queue(queueName)
+                        .durable(false)
+                        .autoDelete(true)
+                        .exclusive(true)))
+                .then(sender.bind(queueBinding(
+                        exchange.getName(),
+                        routingKey.asString(),
+                        queueName
+                )))
+                .flatMapMany(declaredQueue -> receiver.consumeAutoAck(queueName));
     }
 
     public Mono<MessageListenerQueues> setupQueuesAndBindings(

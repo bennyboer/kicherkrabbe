@@ -1,9 +1,9 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
 import de.bennyboer.kicherkrabbe.auth.tokens.*;
-import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.LookupCredentials;
-import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.credentials.create.NameAlreadyTakenError;
+import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.CredentialsLookupRepo;
+import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.LookupCredentials;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.permissions.*;
@@ -11,7 +11,9 @@ import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -34,6 +36,8 @@ public class CredentialsModule {
 
     private final TokenGenerator tokenGenerator;
 
+    private final ReactiveTransactionManager transactionManager;
+
     @PostConstruct
     public void init() {
         initialize()
@@ -42,7 +46,10 @@ public class CredentialsModule {
     }
 
     public Mono<Void> initialize() {
-        return createGroupPermissions();
+        TransactionalOperator transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        return createGroupPermissions()
+                .as(transactionalOperator::transactional);
     }
 
     @Transactional
@@ -88,7 +95,7 @@ public class CredentialsModule {
     }
 
     public Mono<Void> updateCredentialsInLookup(String credentialsId) {
-        return credentialsService.get(CredentialsId.of(credentialsId))
+        return credentialsService.getOrThrow(CredentialsId.of(credentialsId))
                 .flatMap(credentials -> credentialsLookupRepo.update(LookupCredentials.of(
                         credentials.getId(),
                         credentials.getName(),
@@ -152,7 +159,7 @@ public class CredentialsModule {
                                 password,
                                 Agent.anonymous()
                         )))
-                .flatMap(credentialsService::get);
+                .flatMap(credentialsService::getOrThrow);
     }
 
     private Mono<Token> generateAccessTokenForCredentialsUser(UserId userId) {

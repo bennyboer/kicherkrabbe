@@ -12,18 +12,18 @@ import org.springframework.context.annotation.Configuration;
 public class ColorsMessaging {
 
     @Bean
-    public EventListener onUserCreatedAddPermissionToCreateAndReadColorsMsgListener(
+    public EventListener onUserCreatedAddPermissionToCreateColorsMsgListener(
             EventListenerFactory factory,
             ColorsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-created-add-permission-to-create-and-read-colors",
+                "user-created-add-permission-to-create-colors",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
                 (metadata, version, payload) -> {
                     String userId = metadata.getAggregateId().getValue();
 
-                    return module.allowUserToCreateAndReadColors(userId);
+                    return module.allowUserToCreateColors(userId);
                 }
         );
     }

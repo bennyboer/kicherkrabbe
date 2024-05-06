@@ -3,9 +3,9 @@ package de.bennyboer.kicherkrabbe.users;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.permissions.*;
+import de.bennyboer.kicherkrabbe.users.create.MailAlreadyInUseError;
 import de.bennyboer.kicherkrabbe.users.persistence.lookup.LookupUser;
 import de.bennyboer.kicherkrabbe.users.persistence.lookup.UserLookupRepo;
-import de.bennyboer.kicherkrabbe.users.create.MailAlreadyInUseError;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
@@ -38,8 +38,11 @@ public class UsersModule {
     }
 
     public Mono<Void> initialize() {
+        TransactionalOperator transactionalOperator = TransactionalOperator.create(transactionManager);
+
         return createGroupPermissions()
-                .then(createDefaultUserIfNoneExists());
+                .then(createDefaultUserIfNoneExists())
+                .as(transactionalOperator::transactional);
     }
 
     @Transactional
@@ -85,12 +88,12 @@ public class UsersModule {
         var id = UserId.of(userId);
 
         return assertAgentIsAllowedTo(agent, READ, id)
-                .then(usersService.get(id))
+                .then(usersService.getOrThrow(id))
                 .map(user -> UserDetails.of(user.getId(), user.getName(), user.getMail()));
     }
 
     public Mono<Void> updateUserInLookup(String userId) {
-        return usersService.get(UserId.of(userId))
+        return usersService.getOrThrow(UserId.of(userId))
                 .map(user -> LookupUser.of(user.getId(), user.getName(), user.getMail()))
                 .flatMap(userLookupRepo::update);
     }
@@ -141,13 +144,10 @@ public class UsersModule {
     }
 
     private Mono<Void> createDefaultUserIfNoneExists() {
-        TransactionalOperator transactionalOperator = TransactionalOperator.create(transactionManager);
-
         // TODO Configure default user via configuration file
         return userLookupRepo.count()
                 .filter(count -> count == 0)
                 .flatMap(count -> createUser("Default", "User", "default@kicherkrabbe.com", Agent.system()))
-                .as(transactionalOperator::transactional)
                 .then();
     }
 

@@ -1,16 +1,17 @@
 package de.bennyboer.kicherkrabbe.colors;
 
+import de.bennyboer.kicherkrabbe.colors.create.CreateCmd;
+import de.bennyboer.kicherkrabbe.colors.delete.DeleteCmd;
+import de.bennyboer.kicherkrabbe.colors.update.UpdateCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.EventSourcingService;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateIdAndVersion;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateService;
+import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.EventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
-import de.bennyboer.kicherkrabbe.colors.create.CreateCmd;
-import de.bennyboer.kicherkrabbe.colors.delete.DeleteCmd;
-import de.bennyboer.kicherkrabbe.colors.update.UpdateCmd;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -48,6 +49,11 @@ public class ColorService extends AggregateService<Color, ColorId> {
 
     public Mono<Version> delete(ColorId id, Version version, Agent agent) {
         return dispatchCommand(id, version, agent, DeleteCmd.of());
+    }
+
+    @Override
+    protected AggregateType getAggregateType() {
+        return Color.TYPE;
     }
 
     @Override

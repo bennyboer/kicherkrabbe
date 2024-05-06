@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.EventSourcingService;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateService;
+import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.EventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.example.commands.CreateCmd;
@@ -42,6 +43,11 @@ public class SampleAggregateService extends AggregateService<SampleAggregate, St
 
     public Mono<Version> delete(String id, Version version, Agent agent) {
         return dispatchCommand(id, version, agent, DeleteCmd.of());
+    }
+
+    @Override
+    protected AggregateType getAggregateType() {
+        return SampleAggregate.TYPE;
     }
 
     @Override

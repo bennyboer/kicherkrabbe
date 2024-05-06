@@ -9,6 +9,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateIdAndVersion;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateService;
+import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.EventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
@@ -60,6 +61,11 @@ public class CredentialsService extends AggregateService<Credentials, Credential
     public Mono<Version> delete(CredentialsId credentialsId, Agent agent) {
         return dispatchCommandToLatest(credentialsId, agent, DeleteCmd.of())
                 .flatMap(v -> collapseEvents(credentialsId, v, agent));
+    }
+
+    @Override
+    protected AggregateType getAggregateType() {
+        return Credentials.TYPE;
     }
 
     @Override

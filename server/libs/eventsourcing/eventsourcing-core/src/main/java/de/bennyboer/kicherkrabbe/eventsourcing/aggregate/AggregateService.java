@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.eventsourcing.aggregate;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.AggregateNotFoundError;
 import de.bennyboer.kicherkrabbe.eventsourcing.EventSourcingService;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
@@ -17,14 +18,26 @@ public abstract class AggregateService<A extends Aggregate, ID> {
                 .filter(this::isNotRemoved);
     }
 
+    public Mono<A> getOrThrow(ID id) {
+        return get(id)
+                .switchIfEmpty(Mono.error(new AggregateNotFoundError(getAggregateType(), toAggregateId(id))));
+    }
+
     public Mono<A> get(ID id, Version version) {
         return eventSourcingService.aggregate(toAggregateId(id), version)
                 .filter(this::isNotRemoved);
     }
 
+    public Mono<A> getOrThrow(ID id, Version version) {
+        return get(id, version)
+                .switchIfEmpty(Mono.error(new AggregateNotFoundError(getAggregateType(), toAggregateId(id))));
+    }
+
     public Mono<Version> collapseEvents(ID id, Version version, Agent agent) {
         return eventSourcingService.collapseEvents(toAggregateId(id), version, agent);
     }
+
+    protected abstract AggregateType getAggregateType();
 
     protected abstract AggregateId toAggregateId(ID id);
 

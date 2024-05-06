@@ -11,8 +11,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMem
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.PermissionsRepo;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
+import de.bennyboer.kicherkrabbe.persistence.MockReactiveTransactionManager;
 import de.bennyboer.kicherkrabbe.testing.time.TestClock;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -47,11 +49,14 @@ public class CredentialsModuleTest {
             event -> Mono.empty()
     );
 
+    private final ReactiveTransactionManager transactionManager = new MockReactiveTransactionManager();
+
     private final CredentialsModule module = config.credentialsModule(
             credentialsService,
             credentialsLookupRepo,
             permissionsService,
-            tokenGenerator
+            tokenGenerator,
+            transactionManager
     );
 
     @BeforeEach
