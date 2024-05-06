@@ -12,18 +12,18 @@ import org.springframework.context.annotation.Configuration;
 public class ColorsMessaging {
 
     @Bean
-    public EventListener onUserCreatedAddPermissionToCreateColorsMsgListener(
+    public EventListener onUserCreatedAddPermissionToCreateAndReadColorsMsgListener(
             EventListenerFactory factory,
             ColorsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-created-add-permission-to-create-colors",
+                "user-created-add-permission-to-create-and-read-colors",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
                 (metadata, version, payload) -> {
                     String userId = metadata.getAggregateId().getValue();
 
-                    return module.allowUserToCreateColors(userId);
+                    return module.allowUserToCreateAndReadColors(userId);
                 }
         );
     }
@@ -63,6 +63,23 @@ public class ColorsMessaging {
     }
 
     @Bean
+    public EventListener onColorUpdatedUpdateLookupMsgListener(
+            EventListenerFactory factory,
+            ColorsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "color-updated-update-lookup",
+                AggregateType.of("COLOR"),
+                EventName.of("UPDATED"),
+                (metadata, version, payload) -> {
+                    String colorId = metadata.getAggregateId().getValue();
+
+                    return module.updateColorInLookup(colorId);
+                }
+        );
+    }
+
+    @Bean
     public EventListener onColorDeletedRemoveFromLookupMsgListener(
             EventListenerFactory factory,
             ColorsModule module
@@ -75,6 +92,41 @@ public class ColorsMessaging {
                     String colorId = metadata.getAggregateId().getValue();
 
                     return module.removeColorFromLookup(colorId);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onColorCreatedAllowCreatorToManageColorMsgListener(
+            EventListenerFactory factory,
+            ColorsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "color-created-allow-creator-to-manage-color",
+                AggregateType.of("COLOR"),
+                EventName.of("CREATED"),
+                (metadata, version, payload) -> {
+                    String colorId = metadata.getAggregateId().getValue();
+                    String userId = metadata.getAgent().getId().getValue();
+
+                    return module.allowCreatorToManageColor(colorId, userId);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onColorDeletedRemovePermissionsForColorMsgListener(
+            EventListenerFactory factory,
+            ColorsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "color-deleted-remove-permissions-for-color",
+                AggregateType.of("COLOR"),
+                EventName.of("DELETED"),
+                (metadata, version, payload) -> {
+                    String colorId = metadata.getAggregateId().getValue();
+
+                    return module.removePermissionsForColor(colorId);
                 }
         );
     }
