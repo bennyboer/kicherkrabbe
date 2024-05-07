@@ -5,8 +5,6 @@ import de.bennyboer.kicherkrabbe.messaging.RoutingKey;
 import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
 import de.bennyboer.kicherkrabbe.messaging.target.ExchangeTarget;
 import de.bennyboer.kicherkrabbe.permissions.*;
-import de.bennyboer.kicherkrabbe.permissions.events.PermissionEvent;
-import de.bennyboer.kicherkrabbe.permissions.events.PermissionEventType;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

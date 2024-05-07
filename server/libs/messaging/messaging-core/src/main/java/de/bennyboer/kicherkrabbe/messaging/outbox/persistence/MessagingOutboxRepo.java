@@ -45,5 +45,7 @@ public interface MessagingOutboxRepo {
     Mono<Void> removeAcknowledgedEntriesOlderThan(Instant date);
 
     Flux<MessagingOutboxEntry> findFailedEntriesOlderThan(Instant date);
+    
+    Flux<MessagingOutboxEntry> watchInserts();
 
 }

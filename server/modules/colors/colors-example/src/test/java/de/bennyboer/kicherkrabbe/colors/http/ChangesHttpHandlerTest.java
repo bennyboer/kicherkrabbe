@@ -1,14 +1,20 @@
 package de.bennyboer.kicherkrabbe.colors.http;
 
+import de.bennyboer.kicherkrabbe.changes.ResourceChange;
+import de.bennyboer.kicherkrabbe.changes.ResourceId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
+import java.util.Set;
+
+import static de.bennyboer.kicherkrabbe.changes.ResourceChangeType.PERMISSIONS_ADDED;
+import static de.bennyboer.kicherkrabbe.changes.ResourceChangeType.PERMISSIONS_REMOVED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class AccessibleChangesHttpHandlerTest extends HttpHandlerTest {
+public class ChangesHttpHandlerTest extends HttpHandlerTest {
 
     @Test
     void shouldSuccessfullyGetAccessibleColorChanges() {
@@ -16,13 +22,16 @@ public class AccessibleChangesHttpHandlerTest extends HttpHandlerTest {
         var token = createTokenForUser("USER_ID");
 
         // and: the module is configured to return a successful response
-        when(module.trackAccessibleColorsChanges(
+        when(module.getColorChanges(
                 Agent.user(AgentId.of("USER_ID"))
-        )).thenReturn(Flux.just("ADDED", "REMOVED"));
+        )).thenReturn(Flux.just(
+                ResourceChange.of(PERMISSIONS_ADDED, Set.of(ResourceId.of("COLOR_ID"))),
+                ResourceChange.of(PERMISSIONS_REMOVED, Set.of(ResourceId.of("COLOR_ID")))
+        ));
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/colors/accessible-changes")
+                .uri("/api/colors/changes")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -33,7 +42,10 @@ public class AccessibleChangesHttpHandlerTest extends HttpHandlerTest {
         var events = exchange.expectBodyList(String.class)
                 .returnResult()
                 .getResponseBody();
-        assertThat(events).containsExactly("ADDED", "REMOVED");
+        assertThat(events).containsExactly(
+                "{\"type\":\"PERMISSIONS_ADDED\",\"affected\":[\"COLOR_ID\"]}",
+                "{\"type\":\"PERMISSIONS_REMOVED\",\"affected\":[\"COLOR_ID\"]}"
+        );
     }
 
     @Test

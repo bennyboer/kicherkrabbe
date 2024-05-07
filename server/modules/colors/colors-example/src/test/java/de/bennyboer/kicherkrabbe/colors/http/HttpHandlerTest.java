@@ -15,7 +15,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @WebFluxTest
 @ContextConfiguration(classes = {
         ColorsHttpConfig.class,
-        SecurityConfig.class
+        SecurityConfig.class,
+        HttpTestConfig.class
 })
 public class HttpHandlerTest {
 

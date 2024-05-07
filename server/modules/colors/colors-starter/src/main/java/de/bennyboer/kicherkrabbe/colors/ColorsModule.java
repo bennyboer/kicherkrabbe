@@ -1,5 +1,8 @@
 package de.bennyboer.kicherkrabbe.colors;
 
+import de.bennyboer.kicherkrabbe.changes.ReceiverId;
+import de.bennyboer.kicherkrabbe.changes.ResourceChange;
+import de.bennyboer.kicherkrabbe.changes.ResourceChangesTracker;
 import de.bennyboer.kicherkrabbe.colors.persistence.lookup.ColorLookupRepo;
 import de.bennyboer.kicherkrabbe.colors.persistence.lookup.LookupColor;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
@@ -15,6 +18,7 @@ import reactor.core.publisher.Mono;
 import java.util.Optional;
 
 import static de.bennyboer.kicherkrabbe.colors.Actions.*;
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @AllArgsConstructor
 public class ColorsModule {
@@ -25,7 +29,7 @@ public class ColorsModule {
 
     private final ColorLookupRepo colorLookupRepo;
 
-    private final AccessibleColorsTracker accessibleColorsTracker;
+    private final ResourceChangesTracker changesTracker;
 
     public Mono<ColorsPage> getColors(String searchTerm, long skip, long limit, Agent agent) {
         return getAccessibleColorIds(agent)
@@ -46,11 +50,13 @@ public class ColorsModule {
                 ));
     }
 
-    public Flux<String> trackAccessibleColorsChanges(Agent agent) {
-        return accessibleColorsTracker.trackChanges(agent);
+    public Flux<ResourceChange> getColorChanges(Agent agent) {
+        var receiverId = ReceiverId.of(agent.getId().getValue());
+
+        return changesTracker.getChanges(receiverId);
     }
 
-    @Transactional
+    @Transactional(propagation = MANDATORY)
     public Mono<String> createColor(String name, int red, int green, int blue, Agent agent) {
         return assertAgentIsAllowedTo(agent, CREATE)
                 .then(colorService.create(ColorName.of(name), red, green, blue, agent))
@@ -58,7 +64,7 @@ public class ColorsModule {
                 .map(ColorId::getValue);
     }
 
-    @Transactional
+    @Transactional(propagation = MANDATORY)
     public Mono<Long> updateColor(
             String colorId,
             long version,
@@ -75,7 +81,7 @@ public class ColorsModule {
                 .map(Version::getValue);
     }
 
-    @Transactional
+    @Transactional(propagation = MANDATORY)
     public Mono<Long> deleteColor(String colorId, long version, Agent agent) {
         var id = ColorId.of(colorId);
 

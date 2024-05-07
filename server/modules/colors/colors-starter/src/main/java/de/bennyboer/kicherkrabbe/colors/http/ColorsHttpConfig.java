@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -16,8 +17,8 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class ColorsHttpConfig {
 
     @Bean
-    public ColorsHttpHandler colorsHttpHandler(ColorsModule module) {
-        return new ColorsHttpHandler(module);
+    public ColorsHttpHandler colorsHttpHandler(ColorsModule module, ReactiveTransactionManager transactionManager) {
+        return new ColorsHttpHandler(module, transactionManager);
     }
 
     @Bean
@@ -25,7 +26,7 @@ public class ColorsHttpConfig {
         return nest(
                 path("/api/colors"),
                 route(GET("/"), handler::getColors)
-                        .andRoute(GET("/accessible-changes"), handler::trackAccessibleChanges)
+                        .andRoute(GET("/changes"), handler::getColorChanges)
                         .andRoute(POST("/create"), handler::createColor)
                         .andNest(
                                 path("/{colorId}"),

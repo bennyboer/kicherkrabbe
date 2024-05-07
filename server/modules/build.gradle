@@ -5,6 +5,7 @@ subprojects {
         implementation project(':libs:eventsourcing:eventsourcing-starter')
         implementation project(':libs:messaging:messaging-starter')
         implementation project(':libs:permissions:permissions-starter')
+        implementation project(':libs:changes:changes-starter')
         implementation project(':libs:auth:auth-starter')
 
         testImplementation project(':libs:testing')

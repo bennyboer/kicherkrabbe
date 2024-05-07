@@ -20,8 +20,8 @@ public class ColorsMessaging {
                 "user-created-add-permission-to-create-colors",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
-                (metadata, version, payload) -> {
-                    String userId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String userId = event.getMetadata().getAggregateId().getValue();
 
                     return module.allowUserToCreateColors(userId);
                 }
@@ -37,8 +37,8 @@ public class ColorsMessaging {
                 "user-deleted-remove-permissions",
                 AggregateType.of("USER"),
                 EventName.of("DELETED"),
-                (metadata, version, payload) -> {
-                    String userId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String userId = event.getMetadata().getAggregateId().getValue();
 
                     return module.removePermissionsForUser(userId);
                 }
@@ -54,8 +54,8 @@ public class ColorsMessaging {
                 "color-created-update-lookup",
                 AggregateType.of("COLOR"),
                 EventName.of("CREATED"),
-                (metadata, version, payload) -> {
-                    String colorId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String colorId = event.getMetadata().getAggregateId().getValue();
 
                     return module.updateColorInLookup(colorId);
                 }
@@ -71,8 +71,8 @@ public class ColorsMessaging {
                 "color-updated-update-lookup",
                 AggregateType.of("COLOR"),
                 EventName.of("UPDATED"),
-                (metadata, version, payload) -> {
-                    String colorId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String colorId = event.getMetadata().getAggregateId().getValue();
 
                     return module.updateColorInLookup(colorId);
                 }
@@ -88,8 +88,8 @@ public class ColorsMessaging {
                 "color-deleted-remove-from-lookup",
                 AggregateType.of("COLOR"),
                 EventName.of("DELETED"),
-                (metadata, version, payload) -> {
-                    String colorId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String colorId = event.getMetadata().getAggregateId().getValue();
 
                     return module.removeColorFromLookup(colorId);
                 }
@@ -105,9 +105,9 @@ public class ColorsMessaging {
                 "color-created-allow-creator-to-manage-color",
                 AggregateType.of("COLOR"),
                 EventName.of("CREATED"),
-                (metadata, version, payload) -> {
-                    String colorId = metadata.getAggregateId().getValue();
-                    String userId = metadata.getAgent().getId().getValue();
+                (event) -> {
+                    String colorId = event.getMetadata().getAggregateId().getValue();
+                    String userId = event.getMetadata().getAgent().getId().getValue();
 
                     return module.allowCreatorToManageColor(colorId, userId);
                 }
@@ -123,8 +123,8 @@ public class ColorsMessaging {
                 "color-deleted-remove-permissions-for-color",
                 AggregateType.of("COLOR"),
                 EventName.of("DELETED"),
-                (metadata, version, payload) -> {
-                    String colorId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String colorId = event.getMetadata().getAggregateId().getValue();
 
                     return module.removePermissionsForColor(colorId);
                 }

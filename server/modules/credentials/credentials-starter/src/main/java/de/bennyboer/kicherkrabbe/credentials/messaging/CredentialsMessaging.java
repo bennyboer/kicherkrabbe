@@ -25,8 +25,10 @@ public class CredentialsMessaging {
                 "credentials-created-update-lookup",
                 AggregateType.of("CREDENTIALS"),
                 EventName.of("CREATED"),
-                (metadata, version, payload) -> {
-                    String credentialsId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String credentialsId = event.getMetadata()
+                            .getAggregateId()
+                            .getValue();
 
                     return module.updateCredentialsInLookup(credentialsId);
                 }
@@ -42,9 +44,13 @@ public class CredentialsMessaging {
                 "credentials-created-add-permissions",
                 AggregateType.of("CREDENTIALS"),
                 EventName.of("CREATED"),
-                (metadata, version, payload) -> {
-                    String credentialsId = metadata.getAggregateId().getValue();
-                    String userId = payload.get("userId").toString();
+                (event) -> {
+                    String credentialsId = event.getMetadata()
+                            .getAggregateId()
+                            .getValue();
+                    String userId = event.getEvent()
+                            .get("userId")
+                            .toString();
 
                     return module.addPermissions(credentialsId, userId);
                 }
@@ -60,8 +66,10 @@ public class CredentialsMessaging {
                 "credentials-deleted-update-lookup",
                 AggregateType.of("CREDENTIALS"),
                 EventName.of("DELETED"),
-                (metadata, version, payload) -> {
-                    String credentialsId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String credentialsId = event.getMetadata()
+                            .getAggregateId()
+                            .getValue();
 
                     return module.removeCredentialsFromLookup(credentialsId);
                 }
@@ -77,8 +85,10 @@ public class CredentialsMessaging {
                 "credentials-deleted-remove-permissions",
                 AggregateType.of("CREDENTIALS"),
                 EventName.of("DELETED"),
-                (metadata, version, payload) -> {
-                    String credentialsId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String credentialsId = event.getMetadata()
+                            .getAggregateId()
+                            .getValue();
 
                     return module.removePermissionsOnCredentials(credentialsId);
                 }
@@ -94,9 +104,13 @@ public class CredentialsMessaging {
                 "user-created-create-credentials",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
-                (metadata, version, payload) -> {
-                    String userId = metadata.getAggregateId().getValue();
-                    String mail = payload.get("mail").toString();
+                (event) -> {
+                    String userId = event.getMetadata()
+                            .getAggregateId()
+                            .getValue();
+                    String mail = event.getEvent()
+                            .get("mail")
+                            .toString();
                     String initialPassword = randomUUID().toString();
 
                     if (mail.equals("default@kicherkrabbe.com")) {
@@ -117,8 +131,10 @@ public class CredentialsMessaging {
                 "user-deleted-delete-credentials",
                 AggregateType.of("USER"),
                 EventName.of("DELETED"),
-                (metadata, version, payload) -> {
-                    String userId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String userId = event.getMetadata()
+                            .getAggregateId()
+                            .getValue();
 
                     return module.deleteCredentialsByUserId(userId, Agent.system()).then();
                 }

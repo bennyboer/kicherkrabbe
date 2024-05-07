@@ -18,6 +18,7 @@ import reactor.core.scheduler.Schedulers;
 import java.util.Optional;
 
 import static de.bennyboer.kicherkrabbe.users.Actions.*;
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @AllArgsConstructor
 public class UsersModule {
@@ -45,7 +46,7 @@ public class UsersModule {
                 .as(transactionalOperator::transactional);
     }
 
-    @Transactional
+    @Transactional(propagation = MANDATORY)
     public Mono<String> createUser(String firstName, String lastName, String mail, Agent agent) {
         var name = FullName.of(
                 FirstName.of(firstName),
@@ -62,7 +63,7 @@ public class UsersModule {
                 .map(result -> result.getId().getValue());
     }
 
-    @Transactional
+    @Transactional(propagation = MANDATORY)
     public Mono<Void> deleteUser(String userId, long version, Agent agent) {
         var id = UserId.of(userId);
 
@@ -71,7 +72,7 @@ public class UsersModule {
                 .then();
     }
 
-    @Transactional
+    @Transactional(propagation = MANDATORY)
     public Mono<Void> renameUser(String userId, long version, String firstName, String lastName, Agent agent) {
         var id = UserId.of(userId);
         var name = FullName.of(

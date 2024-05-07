@@ -9,7 +9,6 @@ import lombok.Value;
 import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.rabbitmq.AcknowledgableDelivery;
 import reactor.rabbitmq.Receiver;
 import reactor.rabbitmq.Sender;
 
@@ -41,10 +40,17 @@ public class MessageListenerFactory {
             String listenerName,
             Function<Delivery, Mono<Void>> handler
     ) {
+        /*
+         * Setting up the queues and bindings is done in a blocking manner because the queues must
+         * be ready after all beans are initialized.
+         * Otherwise we have no way of knowing when to start publishing messages.
+         */
+        MessageListenerQueues queues = setupQueuesAndBindings(exchange, routingKey, listenerName).block();
+
         return new MessageListener(
                 transactionManager,
                 inbox,
-                () -> listen(exchange, routingKey, listenerName),
+                () -> receiver.consumeManualAck(queues.getNormal()),
                 listenerName,
                 handler
         );
@@ -56,15 +62,6 @@ public class MessageListenerFactory {
             String listenerName
     ) {
         return listenTransient(exchange, routingKey, listenerName);
-    }
-
-    private Flux<AcknowledgableDelivery> listen(
-            ExchangeTarget exchange,
-            RoutingKey routingKey,
-            String listenerName
-    ) {
-        return setupQueuesAndBindings(exchange, routingKey, listenerName)
-                .flatMapMany(queues -> receiver.consumeManualAck(queues.getNormal()));
     }
 
     private Flux<Delivery> listenTransient(

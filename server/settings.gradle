@@ -41,6 +41,11 @@ include('libs:permissions:permissions-core')
 include('libs:permissions:permissions-starter')
 include('libs:permissions:permissions-example')
 
+// Changes
+include('libs:changes:changes-core')
+include('libs:changes:changes-starter')
+include('libs:changes:changes-example')
+
 
 /////////////
 // MODULES //

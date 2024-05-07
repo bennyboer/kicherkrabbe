@@ -52,4 +52,12 @@ public class MessagingOutboxConfig {
         );
     }
 
+    @Bean(destroyMethod = "destroy")
+    public MessagingOutboxChangeStream messagingOutboxChangeStream(
+            MessagingOutboxRepo repo,
+            MessagingOutbox outbox
+    ) {
+        return new MessagingOutboxChangeStream(repo, outbox);
+    }
+
 }

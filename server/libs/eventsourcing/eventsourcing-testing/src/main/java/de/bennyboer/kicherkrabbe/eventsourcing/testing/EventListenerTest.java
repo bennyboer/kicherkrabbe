@@ -1,13 +1,11 @@
 package de.bennyboer.kicherkrabbe.eventsourcing.testing;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bennyboer.kicherkrabbe.eventsourcing.EventSourcingConfig;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
-import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
 import de.bennyboer.kicherkrabbe.messaging.testing.BaseMessagingTest;
 import org.springframework.context.annotation.Import;
@@ -21,12 +19,10 @@ import java.util.Map;
 public class EventListenerTest extends BaseMessagingTest {
 
     public EventListenerTest(
-            MessageListenerFactory factory,
             MessagingOutbox outbox,
-            ReactiveTransactionManager transactionManager,
-            ObjectMapper objectMapper
+            ReactiveTransactionManager transactionManager
     ) {
-        super(factory, outbox, transactionManager, objectMapper);
+        super(outbox, transactionManager);
     }
 
     public void send(

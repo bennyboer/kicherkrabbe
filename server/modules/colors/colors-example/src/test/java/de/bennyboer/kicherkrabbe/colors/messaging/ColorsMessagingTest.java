@@ -1,6 +1,5 @@
 package de.bennyboer.kicherkrabbe.colors.messaging;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bennyboer.kicherkrabbe.colors.ColorsModule;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
@@ -9,7 +8,6 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.eventsourcing.testing.EventListenerTest;
-import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,12 +31,10 @@ public class ColorsMessagingTest extends EventListenerTest {
 
     @Autowired
     public ColorsMessagingTest(
-            MessageListenerFactory factory,
             MessagingOutbox outbox,
-            ReactiveTransactionManager transactionManager,
-            ObjectMapper objectMapper
+            ReactiveTransactionManager transactionManager
     ) {
-        super(factory, outbox, transactionManager, objectMapper);
+        super(outbox, transactionManager);
     }
 
     @BeforeEach

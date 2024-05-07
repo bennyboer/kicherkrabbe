@@ -24,6 +24,7 @@ import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static de.bennyboer.kicherkrabbe.credentials.Actions.*;
 import static lombok.AccessLevel.PRIVATE;
+import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @AllArgsConstructor
 public class CredentialsModule {
@@ -52,7 +53,7 @@ public class CredentialsModule {
                 .as(transactionalOperator::transactional);
     }
 
-    @Transactional
+    @Transactional(propagation = MANDATORY)
     public Mono<String> createCredentials(
             String name,
             String password,
@@ -70,14 +71,14 @@ public class CredentialsModule {
                 .map(result -> result.getId().getValue());
     }
 
-    @Transactional
+    @Transactional(propagation = MANDATORY)
     public Mono<UseCredentialsResult> useCredentials(String name, String password, Agent agent) {
         return tryToUseCredentialsAndReturnCredentials(Name.of(name), Password.of(password), agent)
                 .flatMap(credentials -> generateAccessTokenForCredentialsUser(credentials.getUserId()))
                 .map(token -> UseCredentialsResult.of(token.getValue()));
     }
 
-    @Transactional
+    @Transactional(propagation = MANDATORY)
     public Mono<Void> deleteCredentials(String credentialsId, long version, Agent agent) {
         var id = CredentialsId.of(credentialsId);
 
@@ -86,7 +87,7 @@ public class CredentialsModule {
                 .then();
     }
 
-    @Transactional
+    @Transactional(propagation = MANDATORY)
     public Flux<String> deleteCredentialsByUserId(String userId, Agent agent) {
         return findCredentialsIdByUserId(UserId.of(userId))
                 .delayUntil(credentialsId -> assertAgentIsAllowedTo(agent, DELETE, credentialsId)

@@ -54,6 +54,9 @@ public class MessagingOutboxTests {
         assertThat(entries.size()).isEqualTo(1);
         assertThat(entries.get(0).getId()).isEqualTo(entry.getId());
 
+        // when: trying to publish the next publishable entries
+        publishNextUnpublishedEntries();
+
         // and: the entry is in the outbox publisher
         var publishedEntries = publisher.getEntries();
         assertThat(publishedEntries.size()).isEqualTo(1);
@@ -70,6 +73,9 @@ public class MessagingOutboxTests {
 
         // when: inserting the entries
         insert(entry1, entry2);
+
+        // and: trying to publish the next publishable entries
+        publishNextUnpublishedEntries();
 
         // then: the entries are in the outbox repo
         var entries = repo.findAll().collectList().block();
@@ -106,6 +112,9 @@ public class MessagingOutboxTests {
 
         // when: the entry is inserted to the outbox
         insertWithTransaction(outboxWithBrokenPublisher, entry);
+
+        // and: trying to publish the entry
+        outboxWithBrokenPublisher.publishNextUnpublishedEntries().block();
 
         // then: the entry is in the outbox repo with retry count 1 and is ready to be published again
         var entries = repo.findAll().collectList().block();
@@ -219,6 +228,9 @@ public class MessagingOutboxTests {
         clock.setNow(Instant.parse("2022-05-17T12:30:00Z"));
         var entry = MessagingOutboxEntry.create(target, routingKey, payload, clock);
         insert(entry);
+
+        // and: the entry is published
+        publishNextUnpublishedEntries();
 
         // then: the entry is acknowledged right away, as it is published
         var entries = repo.findAll().collectList().block();

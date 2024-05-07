@@ -14,7 +14,7 @@ import java.util.Optional;
 public class MessagingInboxConfig {
 
     @Bean
-    @ConditionalOnMissingBean(MessagingInboxRepo.class)
+    @ConditionalOnMissingBean(name = "messagingInboxRepo")
     public MessagingInboxRepo messagingInboxRepo(ReactiveMongoTemplate template) {
         return new MongoMessagingInboxRepo("inbox", template);
     }

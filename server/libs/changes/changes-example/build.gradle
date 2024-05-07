@@ -1,0 +1,5 @@
+dependencies {
+    implementation project(':libs:changes:changes-starter')
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

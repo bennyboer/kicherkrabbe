@@ -38,7 +38,6 @@ public class MessagingOutbox {
     public Mono<Void> insert(Collection<MessagingOutboxEntry> entries) {
         return assertThatWeAreInATransaction()
                 .then(repo.insert(entries))
-                .then(publishNextUnpublishedEntries())
                 .doOnError(e -> log.error("Failed to insert entries into the outbox: {}", entries, e));
     }
 

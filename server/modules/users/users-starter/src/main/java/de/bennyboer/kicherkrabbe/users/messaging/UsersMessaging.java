@@ -20,10 +20,11 @@ public class UsersMessaging {
                 "user-created-update-lookup",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
-                (metadata, version, payload) -> {
-                    String userId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String userId = event.getMetadata()
+                            .getAggregateId()
+                            .getValue();
 
-                    System.out.println("Updating lookup for new user " + userId);
                     return module.updateUserInLookup(userId);
                 }
         );
@@ -38,8 +39,10 @@ public class UsersMessaging {
                 "user-created-add-permissions",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
-                (metadata, version, payload) -> {
-                    String userId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String userId = event.getMetadata()
+                            .getAggregateId()
+                            .getValue();
 
                     return module.addPermissionsForNewUser(userId);
                 }
@@ -55,8 +58,10 @@ public class UsersMessaging {
                 "user-deleted-update-lookup",
                 AggregateType.of("USER"),
                 EventName.of("DELETED"),
-                (metadata, version, payload) -> {
-                    String userId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String userId = event.getMetadata()
+                            .getAggregateId()
+                            .getValue();
 
                     return module.removeUserFromLookup(userId);
                 }
@@ -72,8 +77,10 @@ public class UsersMessaging {
                 "user-deleted-remove-permissions",
                 AggregateType.of("USER"),
                 EventName.of("DELETED"),
-                (metadata, version, payload) -> {
-                    String userId = metadata.getAggregateId().getValue();
+                (event) -> {
+                    String userId = event.getMetadata()
+                            .getAggregateId()
+                            .getValue();
 
                     return module.removePermissionsOnUser(userId);
                 }

@@ -37,6 +37,9 @@ public class MessageListener {
 
     private final Function<Delivery, Mono<Void>> handler;
 
+    @Nullable
+    private Disposable disposable;
+
     public MessageListener(
             ReactiveTransactionManager transactionManager,
             MessagingInbox inbox,
@@ -46,13 +49,10 @@ public class MessageListener {
     ) {
         this.transactionManager = transactionManager;
         this.inbox = inbox;
-        this.deliveries = deliveries;
         this.name = name;
         this.handler = handler;
+        this.deliveries = deliveries;
     }
-
-    @Nullable
-    private Disposable disposable;
 
     @PostConstruct
     public void start() {

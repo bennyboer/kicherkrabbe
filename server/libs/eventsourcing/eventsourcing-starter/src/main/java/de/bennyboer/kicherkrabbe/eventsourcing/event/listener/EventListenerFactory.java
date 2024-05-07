@@ -15,9 +15,8 @@ import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
 import de.bennyboer.kicherkrabbe.messaging.target.ExchangeTarget;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple3;
-import reactor.util.function.Tuples;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -46,6 +45,13 @@ public class EventListenerFactory {
         return createEventListener(name, aggregateType, null, handler);
     }
 
+    public Flux<HandleableEvent> createTransientEventListenerForAllEvents(String name, AggregateType aggregateType) {
+        notNull(name, "Name must be given");
+        notNull(aggregateType, "Aggregate type must be given");
+
+        return createTransientEventListener(name, aggregateType, null);
+    }
+
     public EventListener createEventListenerForEvent(
             String name,
             AggregateType aggregateType,
@@ -58,6 +64,18 @@ public class EventListenerFactory {
         notNull(handler, "Handler must be given");
 
         return createEventListener(name, aggregateType, eventName, handler);
+    }
+
+    public Flux<HandleableEvent> createTransientEventListenerForEvent(
+            String name,
+            AggregateType aggregateType,
+            EventName eventName
+    ) {
+        notNull(name, "Name must be given");
+        notNull(aggregateType, "Aggregate type must be given");
+        notNull(eventName, "Event name must be given");
+
+        return createTransientEventListener(name, aggregateType, eventName);
     }
 
     private EventListener createEventListener(
@@ -79,19 +97,32 @@ public class EventListenerFactory {
                 exchangeTarget,
                 routingKey,
                 name,
-                delivery -> parseMessageToEventWithMetadata(delivery.getBody()).flatMap(tuple -> {
-                    var metadata = tuple.getT1();
-                    var eventVersion = tuple.getT2();
-                    var eventPayload = tuple.getT3();
-
-                    return handler.handle(metadata, eventVersion, eventPayload);
-                })
+                delivery -> parseMessageToEventWithMetadata(delivery.getBody())
+                        .flatMap(handler::handle)
         );
 
         return new EventListener(messageListener);
     }
 
-    private Mono<Tuple3<EventMetadata, Version, Map<String, Object>>> parseMessageToEventWithMetadata(byte[] message) {
+    private Flux<HandleableEvent> createTransientEventListener(
+            String name,
+            AggregateType aggregateType,
+            @Nullable EventName eventName
+    ) {
+        var exchangeTarget = ExchangeTarget.of(aggregateType.getValue().toLowerCase(Locale.ROOT));
+        var routingKey = RoutingKey.ofParts(
+                "events",
+                Optional.ofNullable(eventName)
+                        .map(EventName::getValue)
+                        .map(String::toLowerCase)
+                        .orElse("*")
+        );
+
+        return messageListenerFactory.createTransientListener(exchangeTarget, routingKey, name)
+                .flatMap(delivery -> parseMessageToEventWithMetadata(delivery.getBody()));
+    }
+
+    private Mono<HandleableEvent> parseMessageToEventWithMetadata(byte[] message) {
         return deserializeMessage(message)
                 .map(payload -> {
                     Map<String, Object> metadataPayload = (Map<String, Object>) payload.get("metadata");
@@ -117,7 +148,7 @@ public class EventListenerFactory {
 
                     Map<String, Object> eventPayload = (Map<String, Object>) payload.get("event");
 
-                    return Tuples.of(metadata, eventVersion, eventPayload);
+                    return HandleableEvent.of(metadata, eventName, eventVersion, eventPayload);
                 });
     }
 

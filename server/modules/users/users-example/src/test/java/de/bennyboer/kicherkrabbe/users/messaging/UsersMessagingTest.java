@@ -1,13 +1,11 @@
 package de.bennyboer.kicherkrabbe.users.messaging;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.testing.EventListenerTest;
-import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
 import de.bennyboer.kicherkrabbe.users.UsersModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,12 +30,10 @@ public class UsersMessagingTest extends EventListenerTest {
 
     @Autowired
     public UsersMessagingTest(
-            MessageListenerFactory factory,
             MessagingOutbox outbox,
-            ReactiveTransactionManager transactionManager,
-            ObjectMapper objectMapper
+            ReactiveTransactionManager transactionManager
     ) {
-        super(factory, outbox, transactionManager, objectMapper);
+        super(outbox, transactionManager);
     }
 
     @BeforeEach

@@ -1,18 +1,23 @@
 package de.bennyboer.kicherkrabbe.colors;
 
 import de.bennyboer.kicherkrabbe.auth.SecurityConfig;
+import de.bennyboer.kicherkrabbe.changes.MessagingResourceChangesTracker;
+import de.bennyboer.kicherkrabbe.changes.ResourceChangesTracker;
+import de.bennyboer.kicherkrabbe.changes.ResourceType;
 import de.bennyboer.kicherkrabbe.colors.http.ColorsHttpConfig;
 import de.bennyboer.kicherkrabbe.colors.messaging.ColorsMessaging;
 import de.bennyboer.kicherkrabbe.colors.persistence.lookup.ColorLookupRepo;
 import de.bennyboer.kicherkrabbe.colors.persistence.lookup.mongo.MongoColorLookupRepo;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListenerFactory;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
-import de.bennyboer.kicherkrabbe.permissions.ResourceType;
 import de.bennyboer.kicherkrabbe.permissions.events.PermissionEventListenerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+
+import static de.bennyboer.kicherkrabbe.colors.Actions.READ;
 
 @Configuration
 @Import({
@@ -29,14 +34,19 @@ public class ColorsModuleConfig {
         return new MongoColorLookupRepo(template);
     }
 
-    @Bean
-    public AccessibleColorsTracker accessibleColorsTracker(PermissionEventListenerFactory factory) {
-        var resourceType = ResourceType.of("COLOR");
-
-        return agent -> factory.listen(
-                resourceType,
-                "track-accessible-colors-for-agent-%s".formatted(agent.getId().getValue())
-        ).map(event -> event.getType().name());
+    @Bean("colorChangesTracker")
+    public ResourceChangesTracker colorChangesTracker(
+            EventListenerFactory eventListenerFactory,
+            PermissionEventListenerFactory permissionEventListenerFactory,
+            @Qualifier("colorsPermissionsService") PermissionsService permissionsService
+    ) {
+        return new MessagingResourceChangesTracker(
+                eventListenerFactory,
+                permissionEventListenerFactory,
+                permissionsService,
+                ResourceType.of("COLOR"),
+                READ
+        );
     }
 
     @Bean
@@ -44,9 +54,9 @@ public class ColorsModuleConfig {
             ColorService colorService,
             @Qualifier("colorsPermissionsService") PermissionsService permissionsService,
             ColorLookupRepo colorLookupRepo,
-            AccessibleColorsTracker accessibleColorsTracker
+            @Qualifier("colorChangesTracker") ResourceChangesTracker colorChangesTracker
     ) {
-        return new ColorsModule(colorService, permissionsService, colorLookupRepo, accessibleColorsTracker);
+        return new ColorsModule(colorService, permissionsService, colorLookupRepo, colorChangesTracker);
     }
 
 }

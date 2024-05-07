@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -16,8 +17,11 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class CredentialsHttpConfig {
 
     @Bean
-    public CredentialsHttpHandler credentialsHttpHandler(CredentialsModule module) {
-        return new CredentialsHttpHandler(module);
+    public CredentialsHttpHandler credentialsHttpHandler(
+            CredentialsModule module,
+            ReactiveTransactionManager transactionManager
+    ) {
+        return new CredentialsHttpHandler(module, transactionManager);
     }
 
     @Bean

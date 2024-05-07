@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.messaging.outbox.persistence.MessagingOutboxRep
 import org.springframework.dao.DuplicateKeyException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -16,10 +17,15 @@ public class InMemoryMessagingOutboxRepo implements MessagingOutboxRepo {
 
     private final Map<MessagingOutboxEntryId, MessagingOutboxEntry> entries = new HashMap<>();
 
+    private final Sinks.Many<MessagingOutboxEntry> insertSink = Sinks.many().multicast().directBestEffort();
+
     @Override
     public Mono<Void> save(Collection<MessagingOutboxEntry> entries) {
         return Flux.fromIterable(entries)
-                .doOnNext(entry -> this.entries.put(entry.getId(), entry))
+                .doOnNext(entry -> {
+                    this.entries.put(entry.getId(), entry);
+                    insertSink.tryEmitNext(entry);
+                })
                 .then();
     }
 
@@ -33,7 +39,10 @@ public class InMemoryMessagingOutboxRepo implements MessagingOutboxRepo {
 
                     return Mono.just(entry);
                 })
-                .doOnNext(entry -> this.entries.put(entry.getId(), entry))
+                .doOnNext(entry -> {
+                    this.entries.put(entry.getId(), entry);
+                    insertSink.tryEmitNext(entry);
+                })
                 .then();
     }
 
@@ -80,6 +89,11 @@ public class InMemoryMessagingOutboxRepo implements MessagingOutboxRepo {
     public Flux<MessagingOutboxEntry> findFailedEntriesOlderThan(Instant date) {
         return findAll()
                 .filter(entry -> entry.getFailedAt().map(failedAt -> failedAt.isBefore(date)).orElse(false));
+    }
+
+    @Override
+    public Flux<MessagingOutboxEntry> watchInserts() {
+        return insertSink.asFlux();
     }
 
     public Flux<MessagingOutboxEntry> findAll() {

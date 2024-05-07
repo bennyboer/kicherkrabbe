@@ -1,6 +1,5 @@
 package de.bennyboer.kicherkrabbe.credentials.messaging;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bennyboer.kicherkrabbe.credentials.CredentialsModule;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
@@ -8,7 +7,6 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.testing.EventListenerTest;
-import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,12 +32,10 @@ public class CredentialsMessagingTest extends EventListenerTest {
 
     @Autowired
     public CredentialsMessagingTest(
-            MessageListenerFactory factory,
             MessagingOutbox outbox,
-            ReactiveTransactionManager transactionManager,
-            ObjectMapper objectMapper
+            ReactiveTransactionManager transactionManager
     ) {
-        super(factory, outbox, transactionManager, objectMapper);
+        super(outbox, transactionManager);
     }
 
     @BeforeEach

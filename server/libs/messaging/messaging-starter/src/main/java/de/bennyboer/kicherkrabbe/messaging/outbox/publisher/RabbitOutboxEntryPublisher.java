@@ -34,6 +34,7 @@ public class RabbitOutboxEntryPublisher implements MessagingOutboxEntryPublisher
                 .flatMap(this::toOutboundMessage)
                 .delayUntil(this::declareExchangeIfNotExists)
                 .collectList()
+                .filter(messages -> !messages.isEmpty())
                 .flatMap(messages -> sender.sendWithPublishConfirms(Flux.fromIterable(messages)).then());
     }
 

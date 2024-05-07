@@ -13,6 +13,8 @@ dependencies {
     implementation project(':modules:fabrics:fabrics-starter')
 
     testImplementation project(':libs:persistence:persistence-testing')
+    testImplementation project(':libs:messaging:messaging-testing')
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }

@@ -6,10 +6,14 @@ import de.bennyboer.kicherkrabbe.messaging.outbox.persistence.MessagingOutboxRep
 import de.bennyboer.kicherkrabbe.messaging.outbox.persistence.mongo.transformer.MongoMessagingOutboxEntryTransformer;
 import org.bson.Document;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.ChangeStreamEvent;
+import org.springframework.data.mongodb.core.ChangeStreamOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.index.CompoundIndexDefinition;
 import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.index.ReactiveIndexOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Update;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -97,6 +101,22 @@ public class MongoMessagingOutboxRepo implements MessagingOutboxRepo {
                 .with(Sort.by(Sort.Order.asc("createdAt")));
 
         return template.find(query, MongoMessagingOutboxEntry.class, collection)
+                .map(MongoMessagingOutboxEntryTransformer::toMessagingOutboxEntry);
+    }
+
+    @Override
+    public Flux<MessagingOutboxEntry> watchInserts() {
+        Criteria onlyInsertOperations = Criteria.where("operationType").is("insert");
+        var match = Aggregation.match(onlyInsertOperations);
+        Aggregation aggregation = Aggregation.newAggregation(match);
+
+        var options = ChangeStreamOptions.builder()
+                .filter(aggregation)
+                .build();
+        return template.changeStream(collection, options, MongoMessagingOutboxEntry.class)
+                .onBackpressureLatest()
+                .limitRate(1)
+                .mapNotNull(ChangeStreamEvent::getBody)
                 .map(MongoMessagingOutboxEntryTransformer::toMessagingOutboxEntry);
     }
 
