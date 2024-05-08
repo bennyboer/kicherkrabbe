@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.users;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
@@ -105,8 +106,7 @@ public class UsersServiceTest {
                         LastName.of("Mustermann")
                 ),
                 Agent.system()
-        ))
-                .isInstanceOf(IllegalArgumentException.class);
+        )).matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test
@@ -203,7 +203,7 @@ public class UsersServiceTest {
                 id,
                 Version.zero(),
                 Agent.system()
-        )).isInstanceOf(IllegalArgumentException.class);
+        )).matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test

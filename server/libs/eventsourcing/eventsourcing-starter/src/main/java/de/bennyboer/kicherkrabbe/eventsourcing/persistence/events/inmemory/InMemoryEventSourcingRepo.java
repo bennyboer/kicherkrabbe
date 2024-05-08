@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
@@ -30,32 +31,35 @@ public class InMemoryEventSourcingRepo implements EventSourcingRepo {
     public Mono<EventWithMetadata> insert(EventWithMetadata event) {
         AggregateIdAndType aggregateIdAndType = toAggregateIdAndType(event);
 
-        return Mono.fromRunnable(() -> {
-            var events = eventsLookup.computeIfAbsent(
-                    aggregateIdAndType,
-                    key -> new CopyOnWriteArrayList<>()
-            );
+        return Mono.just(event)
+                .flatMap(e -> {
+                    var events = eventsLookup.computeIfAbsent(
+                            aggregateIdAndType,
+                            key -> new CopyOnWriteArrayList<>()
+                    );
 
-            if (events.isEmpty()) {
-                events.add(event);
-                return;
-            }
+                    if (events.isEmpty()) {
+                        events.add(event);
+                        return Mono.just(e);
+                    }
 
-            var lastEvent = events.get(events.size() - 1);
+                    var lastEvent = events.get(events.size() - 1);
 
-            Version lastVersion = lastEvent.getMetadata().getAggregateVersion();
-            Version newVersion = event.getMetadata().getAggregateVersion();
+                    Version lastVersion = lastEvent.getMetadata().getAggregateVersion();
+                    Version newVersion = event.getMetadata().getAggregateVersion();
 
-            if (!lastVersion.isPreviousTo(newVersion)) {
-                throw new IllegalArgumentException(String.format(
-                        "New version must be the last version + 1. Last version: %s, new version: %s",
-                        lastVersion,
-                        newVersion
-                ));
-            }
+                    if (!lastVersion.isPreviousTo(newVersion)) {
+                        return Mono.error(new AggregateVersionOutdatedError(
+                                event.getMetadata().getAggregateType(),
+                                event.getMetadata().getAggregateId(),
+                                newVersion
+                        ));
+                    }
 
-            events.add(event);
-        }).thenReturn(event);
+                    events.add(e);
+
+                    return Mono.just(e);
+                });
     }
 
     @Override

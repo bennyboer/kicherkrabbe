@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.credentials;
 import de.bennyboer.kicherkrabbe.auth.password.PasswordEncoder;
 import de.bennyboer.kicherkrabbe.credentials.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.credentials.use.InvalidCredentialsUsedOrUserLockedError;
+import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
@@ -390,7 +391,7 @@ public class CredentialsServiceTest {
         // when: deleting the credentials with an outdated version
         assertThatThrownBy(() -> {
             delete(credentialsId, Version.zero(), system());
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test

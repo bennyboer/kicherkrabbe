@@ -64,6 +64,7 @@ public class ColorsHttpHandler {
                             .stream()
                             .map(ResourceId::getValue)
                             .toList();
+                    result.payload = change.getPayload();
 
                     return result;
                 });

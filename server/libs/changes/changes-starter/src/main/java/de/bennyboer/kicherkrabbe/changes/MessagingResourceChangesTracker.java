@@ -8,16 +8,16 @@ import de.bennyboer.kicherkrabbe.permissions.*;
 import de.bennyboer.kicherkrabbe.permissions.events.PermissionEvent;
 import de.bennyboer.kicherkrabbe.permissions.events.PermissionEventListenerFactory;
 import de.bennyboer.kicherkrabbe.permissions.events.PermissionEventType;
-import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static de.bennyboer.kicherkrabbe.changes.ResourceChangeType.PERMISSIONS_ADDED;
 import static de.bennyboer.kicherkrabbe.changes.ResourceChangeType.PERMISSIONS_REMOVED;
 
-@AllArgsConstructor
 public class MessagingResourceChangesTracker implements ResourceChangesTracker {
 
     EventListenerFactory eventListenerFactory;
@@ -30,12 +30,54 @@ public class MessagingResourceChangesTracker implements ResourceChangesTracker {
 
     Action readEventsAction;
 
+    EventResourceChangePayloadTransformer eventResourceChangePayloadTransformer;
+
+    ResourceChangeFilter resourceChangeFilter;
+
+    public MessagingResourceChangesTracker(
+            EventListenerFactory eventListenerFactory,
+            PermissionEventListenerFactory permissionEventListenerFactory,
+            PermissionsService permissionsService,
+            ResourceType resourceType,
+            Action readEventsAction,
+            EventResourceChangePayloadTransformer eventResourceChangePayloadTransformer,
+            ResourceChangeFilter resourceChangeFilter
+    ) {
+        this.eventListenerFactory = eventListenerFactory;
+        this.permissionEventListenerFactory = permissionEventListenerFactory;
+        this.permissionsService = permissionsService;
+        this.resourceType = resourceType;
+        this.readEventsAction = readEventsAction;
+        this.eventResourceChangePayloadTransformer = eventResourceChangePayloadTransformer;
+        this.resourceChangeFilter = resourceChangeFilter;
+    }
+
+    public MessagingResourceChangesTracker(
+            EventListenerFactory eventListenerFactory,
+            PermissionEventListenerFactory permissionEventListenerFactory,
+            PermissionsService permissionsService,
+            ResourceType resourceType,
+            Action readEventsAction,
+            EventResourceChangePayloadTransformer eventResourceChangePayloadTransformer
+    ) {
+        this(
+                eventListenerFactory,
+                permissionEventListenerFactory,
+                permissionsService,
+                resourceType,
+                readEventsAction,
+                eventResourceChangePayloadTransformer,
+                ignored -> true
+        );
+    }
+
     @Override
     public Flux<ResourceChange> getChanges(ReceiverId receiverId) {
         Flux<ResourceChange> permissionChanges$ = getPermissionChanges(receiverId);
         Flux<ResourceChange> eventChanges$ = getEventChanges(receiverId);
 
-        return Flux.merge(permissionChanges$, eventChanges$);
+        return Flux.merge(permissionChanges$, eventChanges$)
+                .filter(resourceChangeFilter::isRelevant);
     }
 
     private Flux<ResourceChange> getEventChanges(ReceiverId receiverId) {
@@ -45,7 +87,15 @@ public class MessagingResourceChangesTracker implements ResourceChangesTracker {
                         listenerName,
                         toAggregateType(resourceType)
                 )
-                .filterWhen(event -> permissionsService.hasPermission(toPermission(event, receiverId)))
+                .filterWhen(event -> {
+                    ReceiverId eventAgentReceiverId = ReceiverId.of(event.getMetadata().getAgent().getId().getValue());
+                    boolean isEventAgentTheReceiver = eventAgentReceiverId.equals(receiverId);
+                    if (isEventAgentTheReceiver) {
+                        return Mono.just(true);
+                    }
+
+                    return permissionsService.hasPermission(toPermission(event, receiverId));
+                })
                 .map(this::toResourceChange);
     }
 
@@ -69,14 +119,15 @@ public class MessagingResourceChangesTracker implements ResourceChangesTracker {
                 .map(id -> ResourceId.of(id.getValue()))
                 .collect(Collectors.toSet());
 
-        return ResourceChange.of(type, affected);
+        return ResourceChange.of(type, affected, Map.of());
     }
 
     private ResourceChange toResourceChange(HandleableEvent event) {
         var type = ResourceChangeType.of(event.getEventName().getValue());
         var affected = Set.of(ResourceId.of(event.getMetadata().getAggregateId().getValue()));
+        Map<String, Object> payload = eventResourceChangePayloadTransformer.toChangePayload(event);
 
-        return ResourceChange.of(type, affected); // TODO Allow to add payload describing the change in more detail
+        return ResourceChange.of(type, affected, payload);
     }
 
     private PermissionEvent filterPermissionsForReceiver(PermissionEvent event, ReceiverId receiverId) {

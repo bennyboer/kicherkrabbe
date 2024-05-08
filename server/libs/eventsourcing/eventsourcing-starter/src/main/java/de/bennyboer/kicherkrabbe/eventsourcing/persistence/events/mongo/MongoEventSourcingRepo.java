@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.mongo;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.EventSerializer;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
@@ -14,6 +15,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.index.CompoundIndexDefinition;
@@ -54,6 +56,11 @@ public class MongoEventSourcingRepo implements EventSourcingRepo {
         MongoEvent mongoEvent = toMongoEvent(event);
 
         return template.insert(mongoEvent, collection)
+                .onErrorMap(DuplicateKeyException.class, e -> new AggregateVersionOutdatedError(
+                        event.getMetadata().getAggregateType(),
+                        event.getMetadata().getAggregateId(),
+                        event.getMetadata().getAggregateVersion()
+                ))
                 .thenReturn(event);
     }
 
@@ -211,7 +218,8 @@ public class MongoEventSourcingRepo implements EventSourcingRepo {
         IndexDefinition versionIndex = new CompoundIndexDefinition(new Document()
                 .append("aggregate._id", 1)
                 .append("aggregate.type", 1)
-                .append("aggregate.version", 1));
+                .append("aggregate.version", 1))
+                .unique();
 
         IndexDefinition snapshotIndex = new CompoundIndexDefinition(new Document()
                 .append("aggregate._id", 1)

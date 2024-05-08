@@ -38,7 +38,7 @@ public class MessagingOutboxChangeStream {
         cleanup();
 
         disposable = repo.watchInserts()
-                .flatMap(ignored -> outbox.publishNextUnpublishedEntries())
+                .concatMap(ignored -> outbox.publishNextUnpublishedEntries())
                 .onErrorResume(e -> {
                     log.error("Error while listening to change stream", e);
                     return Mono.error(e);

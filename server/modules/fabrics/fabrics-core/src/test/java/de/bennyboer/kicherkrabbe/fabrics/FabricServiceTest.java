@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.fabrics;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
@@ -83,7 +84,7 @@ public class FabricServiceTest {
 
         // when: renaming the fabric with an outdated version; then: an error is raised
         assertThatThrownBy(() -> rename(id, Version.zero(), FabricName.of("Fabric 3")))
-                .isInstanceOf(IllegalArgumentException.class);
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test
@@ -121,7 +122,7 @@ public class FabricServiceTest {
 
         // when: deleting the fabric with an outdated version; then: an error is raised
         assertThatThrownBy(() -> delete(id, Version.zero()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test
@@ -160,7 +161,7 @@ public class FabricServiceTest {
 
         // when: publishing the fabric with an outdated version; then: an error is raised
         assertThatThrownBy(() -> publish(id, Version.zero()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test
@@ -201,7 +202,7 @@ public class FabricServiceTest {
 
         // when: unpublishing the fabric with an outdated version; then: an error is raised
         assertThatThrownBy(() -> unpublish(id, Version.zero()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test
@@ -240,7 +241,7 @@ public class FabricServiceTest {
 
         // when: updating the colors with an outdated version; then: an error is raised
         assertThatThrownBy(() -> updateColors(id, Version.zero(), Set.of(ColorId.of("color 2"))))
-                .isInstanceOf(IllegalArgumentException.class);
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test
@@ -279,7 +280,7 @@ public class FabricServiceTest {
 
         // when: updating the image with an outdated version; then: an error is raised
         assertThatThrownBy(() -> updateImage(id, Version.zero(), ImageId.of("image 2")))
-                .isInstanceOf(IllegalArgumentException.class);
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test
@@ -318,7 +319,7 @@ public class FabricServiceTest {
 
         // when: updating the themes with an outdated version; then: an error is raised
         assertThatThrownBy(() -> updateThemes(id, Version.zero(), Set.of(TopicId.of("theme 2"))))
-                .isInstanceOf(IllegalArgumentException.class);
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test
@@ -365,7 +366,7 @@ public class FabricServiceTest {
         assertThatThrownBy(() -> updateAvailability(id, Version.zero(), Set.of(
                 FabricTypeAvailability.of(FabricTypeId.of("fabric-type 2"), true),
                 FabricTypeAvailability.of(FabricTypeId.of("fabric-type 3"), false)
-        ))).isInstanceOf(IllegalArgumentException.class);
+        ))).matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test

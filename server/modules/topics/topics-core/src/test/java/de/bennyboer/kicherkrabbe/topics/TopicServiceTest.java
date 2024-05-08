@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.topics;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
@@ -61,7 +62,7 @@ public class TopicServiceTest {
 
         // when: updating the topic with an outdated version; then: an error is raised
         assertThatThrownBy(() -> update(id, Version.zero(), TopicName.of("Summer")))
-                .isInstanceOf(IllegalArgumentException.class);
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test
@@ -86,7 +87,7 @@ public class TopicServiceTest {
 
         // when: deleting the topic with an outdated version; then: an error is raised
         assertThatThrownBy(() -> delete(id, Version.zero()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test

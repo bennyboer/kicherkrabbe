@@ -17,6 +17,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
+import java.util.Map;
+
 import static de.bennyboer.kicherkrabbe.colors.Actions.READ;
 
 @Configuration
@@ -45,7 +47,17 @@ public class ColorsModuleConfig {
                 permissionEventListenerFactory,
                 permissionsService,
                 ResourceType.of("COLOR"),
-                READ
+                READ,
+                event -> {
+                    var metadata = event.getMetadata();
+
+                    return Map.of(
+                            "aggregateType", metadata.getAggregateType().getValue(),
+                            "aggregateId", metadata.getAggregateId().getValue(),
+                            "aggregateVersion", metadata.getAggregateVersion().getValue(),
+                            "event", event.getEvent()
+                    );
+                }
         );
     }
 

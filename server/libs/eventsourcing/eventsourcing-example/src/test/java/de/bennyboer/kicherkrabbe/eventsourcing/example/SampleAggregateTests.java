@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.eventsourcing.example;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.AggregateNotFoundError;
+import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventWithMetadata;
@@ -137,6 +138,25 @@ public abstract class SampleAggregateTests {
 
         // and: the version is 1
         assertThat(version).isEqualTo(Version.of(1));
+    }
+
+    @Test
+    void shouldNotUpdateDescriptionGivenAnOutdatedVersion() {
+        var id = "SAMPLE_ID";
+
+        // given: an aggregate with a description
+        var initialVersion = eventSourcingService.create(id, "Test title", "Test description", testAgent).block();
+
+        // and: the description is updated
+        eventSourcingService.updateDescription(id, initialVersion, "New description", testAgent).block();
+
+        // when: the description is updated with an outdated version; then: an exception is thrown
+        assertThatThrownBy(() -> eventSourcingService.updateDescription(
+                id,
+                Version.zero(),
+                "Newer description",
+                testAgent
+        ).block()).matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test

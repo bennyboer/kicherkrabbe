@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
+import java.util.Map;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.changes.ResourceChangeType.PERMISSIONS_ADDED;
@@ -25,8 +26,8 @@ public class ChangesHttpHandlerTest extends HttpHandlerTest {
         when(module.getColorChanges(
                 Agent.user(AgentId.of("USER_ID"))
         )).thenReturn(Flux.just(
-                ResourceChange.of(PERMISSIONS_ADDED, Set.of(ResourceId.of("COLOR_ID"))),
-                ResourceChange.of(PERMISSIONS_REMOVED, Set.of(ResourceId.of("COLOR_ID")))
+                ResourceChange.of(PERMISSIONS_ADDED, Set.of(ResourceId.of("COLOR_ID")), Map.of()),
+                ResourceChange.of(PERMISSIONS_REMOVED, Set.of(ResourceId.of("COLOR_ID")), Map.of())
         ));
 
         // when: posting the request
@@ -43,8 +44,8 @@ public class ChangesHttpHandlerTest extends HttpHandlerTest {
                 .returnResult()
                 .getResponseBody();
         assertThat(events).containsExactly(
-                "{\"type\":\"PERMISSIONS_ADDED\",\"affected\":[\"COLOR_ID\"]}",
-                "{\"type\":\"PERMISSIONS_REMOVED\",\"affected\":[\"COLOR_ID\"]}"
+                "{\"type\":\"PERMISSIONS_ADDED\",\"affected\":[\"COLOR_ID\"],\"payload\":{}}",
+                "{\"type\":\"PERMISSIONS_REMOVED\",\"affected\":[\"COLOR_ID\"],\"payload\":{}}"
         );
     }
 
