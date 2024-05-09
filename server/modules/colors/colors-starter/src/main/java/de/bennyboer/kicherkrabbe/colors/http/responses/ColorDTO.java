@@ -15,6 +15,8 @@ public class ColorDTO {
 
     String id;
 
+    long version;
+
     String name;
 
     int red;

@@ -2,6 +2,7 @@ package de.bennyboer.kicherkrabbe.colors.persistence.lookup;
 
 import de.bennyboer.kicherkrabbe.colors.ColorId;
 import de.bennyboer.kicherkrabbe.colors.ColorName;
+import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +29,7 @@ public abstract class ColorLookupRepoTest {
         // given: a color to update
         var color = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("NAME"),
                 255,
                 0,
@@ -48,6 +50,7 @@ public abstract class ColorLookupRepoTest {
         // given: some colors
         var color1 = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("NAME1"),
                 255,
                 0,
@@ -56,6 +59,7 @@ public abstract class ColorLookupRepoTest {
         );
         var color2 = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("NAME2"),
                 0,
                 255,
@@ -78,6 +82,7 @@ public abstract class ColorLookupRepoTest {
         // given: some colors
         var color1 = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("NAME1"),
                 255,
                 0,
@@ -86,6 +91,7 @@ public abstract class ColorLookupRepoTest {
         );
         var color2 = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("NAME2"),
                 0,
                 255,
@@ -107,6 +113,7 @@ public abstract class ColorLookupRepoTest {
         // given: some colors
         var color1 = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("Red"),
                 255,
                 0,
@@ -115,6 +122,7 @@ public abstract class ColorLookupRepoTest {
         );
         var color2 = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("Green"),
                 0,
                 255,
@@ -123,6 +131,7 @@ public abstract class ColorLookupRepoTest {
         );
         var color3 = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("Blue"),
                 0,
                 0,
@@ -164,6 +173,7 @@ public abstract class ColorLookupRepoTest {
         // given: some colors
         var color1 = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("NAME1"),
                 255,
                 0,
@@ -172,6 +182,7 @@ public abstract class ColorLookupRepoTest {
         );
         var color2 = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("NAME2"),
                 0,
                 255,
@@ -180,6 +191,7 @@ public abstract class ColorLookupRepoTest {
         );
         var color3 = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("NAME3"),
                 0,
                 0,
@@ -221,6 +233,7 @@ public abstract class ColorLookupRepoTest {
         // given: some colors
         var color1 = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("Lightblue"),
                 200,
                 200,
@@ -229,6 +242,7 @@ public abstract class ColorLookupRepoTest {
         );
         var color2 = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("Green"),
                 0,
                 255,
@@ -237,6 +251,7 @@ public abstract class ColorLookupRepoTest {
         );
         var color3 = LookupColor.of(
                 ColorId.create(),
+                Version.zero(),
                 ColorName.of("Blue"),
                 0,
                 0,

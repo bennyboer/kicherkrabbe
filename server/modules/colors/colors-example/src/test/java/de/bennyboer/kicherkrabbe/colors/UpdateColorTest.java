@@ -13,7 +13,7 @@ public class UpdateColorTest extends ColorsModuleTest {
     @Test
     void shouldUpdateColor() {
         // given: a color
-        allowUserToCreateAndReadColors("USER_ID");
+        allowUserToCreateColors("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
         var colorId = createColor("Red", 255, 0, 0, agent);
 
@@ -34,7 +34,7 @@ public class UpdateColorTest extends ColorsModuleTest {
     @Test
     void shouldNotUpdateColorIfNotHavingPermission() {
         // given: a color
-        allowUserToCreateAndReadColors("USER_ID");
+        allowUserToCreateColors("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
         var colorId = createColor("Red", 255, 0, 0, agent);
 

@@ -41,6 +41,7 @@ public class ColorsModule {
                         result.getTotal(),
                         result.getResults().stream().map(color -> ColorDetails.of(
                                 color.getId(),
+                                color.getVersion(),
                                 color.getName(),
                                 color.getRed(),
                                 color.getGreen(),
@@ -111,6 +112,7 @@ public class ColorsModule {
         return colorService.getOrThrow(ColorId.of(colorId))
                 .flatMap(color -> colorLookupRepo.update(LookupColor.of(
                         color.getId(),
+                        color.getVersion(),
                         color.getName(),
                         color.getRed(),
                         color.getGreen(),

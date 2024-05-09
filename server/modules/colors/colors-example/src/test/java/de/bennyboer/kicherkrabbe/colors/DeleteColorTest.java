@@ -13,7 +13,7 @@ public class DeleteColorTest extends ColorsModuleTest {
     @Test
     void shouldDeleteColor() {
         // given: a color
-        allowUserToCreateAndReadColors("USER_ID");
+        allowUserToCreateColors("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
         var colorId1 = createColor("Red", 255, 0, 0, agent);
         var colorId2 = createColor("Green", 0, 255, 0, agent);
@@ -31,7 +31,7 @@ public class DeleteColorTest extends ColorsModuleTest {
     @Test
     void shouldNotDeleteColorIfNotHavingPermission() {
         // given: a color
-        allowUserToCreateAndReadColors("USER_ID");
+        allowUserToCreateColors("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
         var colorId = createColor("Red", 255, 0, 0, agent);
 

@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -16,8 +17,11 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class FabricTypesHttpConfig {
 
     @Bean
-    public FabricTypesHttpHandler fabricTypesHttpHandler(FabricTypesModule module) {
-        return new FabricTypesHttpHandler(module);
+    public FabricTypesHttpHandler fabricTypesHttpHandler(
+            FabricTypesModule module,
+            ReactiveTransactionManager transactionManager
+    ) {
+        return new FabricTypesHttpHandler(module, transactionManager);
     }
 
     @Bean
@@ -25,6 +29,7 @@ public class FabricTypesHttpConfig {
         return nest(
                 path("/api/fabric-types"),
                 route(GET("/"), handler::getFabricTypes)
+                        .andRoute(GET("/changes"), handler::getChanges)
                         .andRoute(POST("/create"), handler::createFabricType)
                         .andNest(
                                 path("/{typeId}"),

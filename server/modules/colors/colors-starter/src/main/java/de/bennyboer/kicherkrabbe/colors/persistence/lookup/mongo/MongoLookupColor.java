@@ -17,6 +17,8 @@ public class MongoLookupColor {
     @MongoId
     String id;
 
+    long version;
+
     String name;
 
     int red;

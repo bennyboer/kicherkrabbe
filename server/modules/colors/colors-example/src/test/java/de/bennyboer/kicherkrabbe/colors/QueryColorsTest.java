@@ -11,9 +11,9 @@ public class QueryColorsTest extends ColorsModuleTest {
     @Test
     void shouldGetAllAccessibleColors() {
         // given: some colors for different users
-        allowUserToCreateAndReadColors("USER_ID_1");
+        allowUserToCreateColors("USER_ID_1");
         var agent1 = Agent.user(AgentId.of("USER_ID_1"));
-        allowUserToCreateAndReadColors("USER_ID_2");
+        allowUserToCreateColors("USER_ID_2");
         var agent2 = Agent.user(AgentId.of("USER_ID_2"));
 
         var colorId1 = createColor("Red", 255, 0, 0, agent1);

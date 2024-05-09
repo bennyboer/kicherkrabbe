@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.colors.persistence.lookup.mongo;
 import de.bennyboer.kicherkrabbe.colors.ColorId;
 import de.bennyboer.kicherkrabbe.colors.ColorName;
 import de.bennyboer.kicherkrabbe.colors.persistence.lookup.LookupColor;
+import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.ReadModelSerializer;
 
 public class MongoLookupColorSerializer implements ReadModelSerializer<LookupColor, MongoLookupColor> {
@@ -12,6 +13,7 @@ public class MongoLookupColorSerializer implements ReadModelSerializer<LookupCol
         var result = new MongoLookupColor();
 
         result.id = readModel.getId().getValue();
+        result.version = readModel.getVersion().getValue();
         result.name = readModel.getName().getValue();
         result.red = readModel.getRed();
         result.green = readModel.getGreen();
@@ -24,6 +26,7 @@ public class MongoLookupColorSerializer implements ReadModelSerializer<LookupCol
     @Override
     public LookupColor deserialize(MongoLookupColor serialized) {
         var id = ColorId.of(serialized.id);
+        var version = Version.of(serialized.version);
         var name = ColorName.of(serialized.name);
         var red = serialized.red;
         var green = serialized.green;
@@ -32,6 +35,7 @@ public class MongoLookupColorSerializer implements ReadModelSerializer<LookupCol
 
         return LookupColor.of(
                 id,
+                version,
                 name,
                 red,
                 green,

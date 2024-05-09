@@ -13,7 +13,7 @@ public class CreateColorTest extends ColorsModuleTest {
     @Test
     void shouldCreateColorAsUser() {
         // given: a user is allowed to create colors
-        allowUserToCreateAndReadColors("USER_ID");
+        allowUserToCreateColors("USER_ID");
         Agent agent = Agent.user(AgentId.of("USER_ID"));
 
         // when: the user creates a color
@@ -33,7 +33,7 @@ public class CreateColorTest extends ColorsModuleTest {
     @Test
     void shouldNotBeAbleToCreateColorGivenAnInvalidColor() {
         // given: a user is allowed to create colors
-        allowUserToCreateAndReadColors("USER_ID");
+        allowUserToCreateColors("USER_ID");
         Agent agent = Agent.user(AgentId.of("USER_ID"));
 
         // when: the user creates a color with an invalid color; then: an error is raised
@@ -57,7 +57,7 @@ public class CreateColorTest extends ColorsModuleTest {
     @Test
     void shouldCreateMultipleColors() {
         // given: a user is allowed to create colors
-        allowUserToCreateAndReadColors("USER_ID");
+        allowUserToCreateColors("USER_ID");
         Agent agent = Agent.user(AgentId.of("USER_ID"));
 
         // when: the user creates multiple colors

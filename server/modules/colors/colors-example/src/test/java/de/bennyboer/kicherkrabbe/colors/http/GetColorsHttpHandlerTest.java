@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.colors.ColorId;
 import de.bennyboer.kicherkrabbe.colors.ColorName;
 import de.bennyboer.kicherkrabbe.colors.ColorsPage;
 import de.bennyboer.kicherkrabbe.colors.http.responses.QueryColorsResponse;
+import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ public class GetColorsHttpHandlerTest extends HttpHandlerTest {
                 List.of(
                         ColorDetails.of(
                                 ColorId.of("COLOR_ID_1"),
+                                Version.zero(),
                                 ColorName.of("Red"),
                                 255,
                                 0,
@@ -39,6 +41,7 @@ public class GetColorsHttpHandlerTest extends HttpHandlerTest {
                         ),
                         ColorDetails.of(
                                 ColorId.of("COLOR_ID_2"),
+                                Version.zero(),
                                 ColorName.of("Blue"),
                                 0,
                                 0,
@@ -73,12 +76,14 @@ public class GetColorsHttpHandlerTest extends HttpHandlerTest {
         assertThat(response.colors).hasSize(2);
         var actualColors = response.colors;
         assertThat(actualColors.get(0).id).isEqualTo("COLOR_ID_1");
+        assertThat(actualColors.get(0).version).isEqualTo(0);
         assertThat(actualColors.get(0).name).isEqualTo("Red");
         assertThat(actualColors.get(0).red).isEqualTo(255);
         assertThat(actualColors.get(0).green).isEqualTo(0);
         assertThat(actualColors.get(0).blue).isEqualTo(0);
         assertThat(actualColors.get(0).createdAt).isEqualTo("2024-03-18T11:25:00Z");
         assertThat(actualColors.get(1).id).isEqualTo("COLOR_ID_2");
+        assertThat(actualColors.get(1).version).isEqualTo(0);
         assertThat(actualColors.get(1).name).isEqualTo("Blue");
         assertThat(actualColors.get(1).red).isEqualTo(0);
         assertThat(actualColors.get(1).green).isEqualTo(0);

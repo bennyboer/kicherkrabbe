@@ -36,7 +36,7 @@ public class ColorsModuleTest {
             agent -> Flux.empty()
     );
 
-    public void allowUserToCreateAndReadColors(String userId) {
+    public void allowUserToCreateColors(String userId) {
         module.allowUserToCreateColors(userId).block();
     }
 

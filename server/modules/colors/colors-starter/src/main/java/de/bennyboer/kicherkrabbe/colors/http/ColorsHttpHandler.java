@@ -39,6 +39,7 @@ public class ColorsHttpHandler {
                                 var color = new ColorDTO();
 
                                 color.id = c.getId().getValue();
+                                color.version = c.getVersion().getValue();
                                 color.name = c.getName().getValue();
                                 color.red = c.getRed();
                                 color.green = c.getGreen();
@@ -124,7 +125,8 @@ public class ColorsHttpHandler {
         String colorId = request.pathVariable("colorId");
         long version = request.queryParam("version").map(Long::parseLong).orElseThrow();
 
-        return toAgent(request).flatMap(agent -> module.deleteColor(colorId, version, agent))
+        return toAgent(request)
+                .flatMap(agent -> module.deleteColor(colorId, version, agent))
                 .map(updatedVersion -> {
                     var result = new DeleteColorResponse();
                     result.version = updatedVersion;

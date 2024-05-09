@@ -69,7 +69,7 @@ public class UsersMessaging {
     }
 
     @Bean
-    public EventListener onUserDeletedRemovePermissionsMsgListener(
+    public EventListener onUserDeletedRemoveUserPermissionsMsgListener(
             EventListenerFactory factory,
             UsersModule module
     ) {
