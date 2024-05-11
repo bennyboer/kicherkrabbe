@@ -3,8 +3,10 @@ package de.bennyboer.kicherkrabbe.fabrics.http;
 import de.bennyboer.kicherkrabbe.fabrics.FabricsModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -16,8 +18,8 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class FabricsHttpConfig {
 
     @Bean
-    public FabricsHttpHandler fabricsHttpHandler(FabricsModule module) {
-        return new FabricsHttpHandler(module);
+    public FabricsHttpHandler fabricsHttpHandler(FabricsModule module, ReactiveTransactionManager transactionManager) {
+        return new FabricsHttpHandler(module, transactionManager);
     }
 
     @Bean
@@ -25,6 +27,7 @@ public class FabricsHttpConfig {
         return nest(
                 path("/api/fabrics"),
                 route(GET("/"), handler::getFabrics)
+                        .andRoute(GET("/published"), handler::getPublishedFabrics)
                         .andRoute(POST("/create"), handler::createFabric)
                         .andNest(path("/{fabricId}"), route(GET("/"), handler::getFabric)
                                 .andRoute(POST("/rename"), handler::renameFabric)
@@ -35,7 +38,7 @@ public class FabricsHttpConfig {
                                         path("/update"),
                                         route(POST("/image"), handler::updateFabricImage)
                                                 .andRoute(POST("/colors"), handler::updateFabricColors)
-                                                .andRoute(POST("/themes"), handler::updateFabricThemes)
+                                                .andRoute(POST("/topics"), handler::updateFabricTopics)
                                                 .andRoute(
                                                         POST("/availability"),
                                                         handler::updateFabricAvailability
@@ -46,8 +49,7 @@ public class FabricsHttpConfig {
 
     @Bean
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> fabricsAuthorizeExchangeSpecCustomizer() {
-        return exchanges -> {
-        };
+        return exchanges -> exchanges.pathMatchers(HttpMethod.GET, "/api/fabrics/published").permitAll();
     }
 
 }

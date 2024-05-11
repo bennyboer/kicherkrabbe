@@ -77,4 +77,30 @@ public class CreateTopicHttpHandlerTest extends HttpHandlerTest {
         exchange.expectStatus().isUnauthorized();
     }
 
+    @Test
+    void shouldRespondWithBadRequestOnIllegalRequest() {
+        // given: a request to create a topic with an illegal name
+        var request = new CreateTopicRequest();
+        request.name = " ";
+
+        // and: having a valid token for a user
+        var token = createTokenForUser("USER_ID");
+
+        // and: the module is configured to return an illegal argument exception
+        when(module.createTopic(
+                request.name,
+                Agent.user(AgentId.of("USER_ID"))
+        )).thenReturn(Mono.error(new IllegalArgumentException("Illegal name")));
+
+        // when: posting the request
+        var exchange = client.post()
+                .uri("/api/topics/create")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        // then: the response is bad request
+        exchange.expectStatus().isBadRequest();
+    }
+
 }

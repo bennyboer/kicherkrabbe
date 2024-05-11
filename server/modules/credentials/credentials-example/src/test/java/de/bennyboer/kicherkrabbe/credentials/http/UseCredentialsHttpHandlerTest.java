@@ -14,7 +14,7 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
 
     @Test
     void shouldSuccessfullyUseCredentials() {
-        // given: "a request to use credentials"
+        // given: a request to use credentials
         var request = new UseCredentialsRequest();
         request.name = "Username";
         request.password = "Password";
@@ -26,7 +26,7 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
                 Agent.anonymous()
         )).thenReturn(Mono.just(CredentialsModule.UseCredentialsResult.of("Token")));
 
-        // when: "using the credentials"
+        // when: using the credentials
         var exchange = client.post()
                 .uri("/api/credentials/use")
                 .bodyValue(request)
@@ -44,7 +44,7 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
 
     @Test
     void shouldFailToUseCredentialsOnEmptyResult() {
-        // given: "a request to use credentials
+        // given: a request to use credentials
         var request = new UseCredentialsRequest();
         request.name = "Username";
         request.password = "Password";
@@ -56,7 +56,7 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
                 Agent.anonymous()
         )).thenReturn(Mono.empty());
 
-        // when: "using the credentials"
+        // when: using the credentials
         var exchange = client.post()
                 .uri("/api/credentials/use")
                 .bodyValue(request)
@@ -71,7 +71,7 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
 
     @Test
     void shouldFailToUseCredentialsOnErrorResult() {
-        // given: "a request to use credentials"
+        // given: a request to use credentials
         var request = new UseCredentialsRequest();
         request.name = "Username";
         request.password = "Password";
@@ -83,7 +83,7 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
                 Agent.anonymous()
         )).thenReturn(Mono.error(Exception::new));
 
-        // when: "using the credentials"
+        // when: using the credentials
         var exchange = client.post()
                 .uri("/api/credentials/use")
                 .bodyValue(request)

@@ -89,4 +89,36 @@ public class CreateColorHttpHandlerTest extends HttpHandlerTest {
         exchange.expectStatus().isUnauthorized();
     }
 
+    @Test
+    void shouldRespondWithBadRequestOnInvalidColor() {
+        // given: a request to create a color
+        var request = new CreateColorRequest();
+        request.name = "Red";
+        request.red = 256;
+        request.green = 0;
+        request.blue = 0;
+
+        // and: having a valid token for a user
+        var token = createTokenForUser("USER_ID");
+
+        // and: the module is configured to return an illegal argument exception
+        when(module.createColor(
+                request.name,
+                request.red,
+                request.green,
+                request.blue,
+                Agent.user(AgentId.of("USER_ID"))
+        )).thenReturn(Mono.error(new IllegalArgumentException("Invalid color")));
+
+        // when: posting the request
+        var exchange = client.post()
+                .uri("/api/colors/create")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        // then: the response is bad request
+        exchange.expectStatus().isBadRequest();
+    }
+
 }

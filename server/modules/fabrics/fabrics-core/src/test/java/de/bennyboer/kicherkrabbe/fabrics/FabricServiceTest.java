@@ -7,6 +7,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.fabrics.publish.AlreadyPublishedError;
+import de.bennyboer.kicherkrabbe.fabrics.unpublish.AlreadyUnpublishedError;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -165,6 +167,23 @@ public class FabricServiceTest {
     }
 
     @Test
+    void shouldRaiseErrorIfFabricAlreadyPublished() {
+        // given: a published fabric
+        var id = create(
+                FabricName.of("Fabric"),
+                ImageId.of("image"),
+                Set.of(ColorId.of("color")),
+                Set.of(TopicId.of("theme")),
+                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
+        );
+        publish(id, Version.zero());
+
+        // when: trying to publish the fabric again; then: an error is raised
+        assertThatThrownBy(() -> publish(id, Version.of(1)))
+                .isInstanceOf(AlreadyPublishedError.class);
+    }
+
+    @Test
     void shouldUnpublishFabric() {
         // given: a published fabric
         var id = create(
@@ -201,8 +220,24 @@ public class FabricServiceTest {
         rename(id, version, FabricName.of("Fabric 2"));
 
         // when: unpublishing the fabric with an outdated version; then: an error is raised
-        assertThatThrownBy(() -> unpublish(id, Version.zero()))
+        assertThatThrownBy(() -> unpublish(id, Version.of(1)))
                 .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
+    void shouldNotUnpublishFabricGivenAnAlreadyUnpublishedFabric() {
+        // given: an unpublished fabric
+        var id = create(
+                FabricName.of("Fabric"),
+                ImageId.of("image"),
+                Set.of(ColorId.of("color")),
+                Set.of(TopicId.of("theme")),
+                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
+        );
+
+        // when: trying to unpublish the fabric; then: an error is raised
+        assertThatThrownBy(() -> unpublish(id, Version.zero()))
+                .isInstanceOf(AlreadyUnpublishedError.class);
     }
 
     @Test

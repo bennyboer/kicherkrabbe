@@ -77,4 +77,30 @@ public class CreateFabricTypeHttpHandlerTest extends HttpHandlerTest {
         exchange.expectStatus().isUnauthorized();
     }
 
+    @Test
+    void shouldRespondWithBadRequestOnIllegalRequest() {
+        // given: a request to create a fabric type
+        var request = new CreateFabricTypeRequest();
+        request.name = "";
+
+        // and: having a valid token for a user
+        var token = createTokenForUser("USER_ID");
+
+        // and: the module is configured to return an illegal argument exception
+        when(module.createFabricType(
+                request.name,
+                Agent.user(AgentId.of("USER_ID"))
+        )).thenReturn(Mono.error(new IllegalArgumentException("Name must not be empty")));
+
+        // when: posting the request
+        var exchange = client.post()
+                .uri("/api/fabric-types/create")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        // then: the response is bad request
+        exchange.expectStatus().isBadRequest();
+    }
+
 }

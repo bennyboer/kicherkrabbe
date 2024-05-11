@@ -13,11 +13,13 @@ import de.bennyboer.kicherkrabbe.fabrics.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.fabrics.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.fabrics.delete.DeletedEvent;
+import de.bennyboer.kicherkrabbe.fabrics.publish.AlreadyPublishedError;
 import de.bennyboer.kicherkrabbe.fabrics.publish.PublishCmd;
 import de.bennyboer.kicherkrabbe.fabrics.publish.PublishedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.rename.RenameCmd;
 import de.bennyboer.kicherkrabbe.fabrics.rename.RenamedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.snapshot.SnapshottedEvent;
+import de.bennyboer.kicherkrabbe.fabrics.unpublish.AlreadyUnpublishedError;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.UnpublishCmd;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.UnpublishedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.update.availability.AvailabilityUpdatedEvent;
@@ -106,8 +108,20 @@ public class Fabric implements Aggregate {
                     c.getAvailability()
             ));
             case DeleteCmd ignored -> ApplyCommandResult.of(DeletedEvent.of());
-            case PublishCmd ignored -> ApplyCommandResult.of(PublishedEvent.of());
-            case UnpublishCmd ignored -> ApplyCommandResult.of(UnpublishedEvent.of());
+            case PublishCmd ignored -> {
+                if (isPublished()) {
+                    throw new AlreadyPublishedError();
+                }
+
+                yield ApplyCommandResult.of(PublishedEvent.of());
+            }
+            case UnpublishCmd ignored -> {
+                if (!isPublished()) {
+                    throw new AlreadyUnpublishedError();
+                }
+
+                yield ApplyCommandResult.of(UnpublishedEvent.of());
+            }
             case UpdateImageCmd c -> ApplyCommandResult.of(ImageUpdatedEvent.of(c.getImage()));
             case UpdateColorsCmd c -> ApplyCommandResult.of(ColorsUpdatedEvent.of(c.getColors()));
             case UpdateTopicsCmd c -> ApplyCommandResult.of(TopicsUpdatedEvent.of(c.getTopics()));

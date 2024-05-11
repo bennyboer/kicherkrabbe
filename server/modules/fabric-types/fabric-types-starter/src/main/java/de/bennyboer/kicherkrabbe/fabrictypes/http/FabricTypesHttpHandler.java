@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.fabrictypes.http;
 
 import de.bennyboer.kicherkrabbe.changes.ResourceId;
+import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.fabrictypes.FabricTypesModule;
@@ -12,7 +13,11 @@ import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
 
 @AllArgsConstructor
 public class FabricTypesHttpHandler {
@@ -86,6 +91,11 @@ public class FabricTypesHttpHandler {
                     return result;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
+                        BAD_REQUEST,
+                        e.getMessage(),
+                        e
+                ))
                 .as(transactionalOperator::transactional);
     }
 
@@ -107,6 +117,16 @@ public class FabricTypesHttpHandler {
                     return result;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                        CONFLICT,
+                        e.getMessage(),
+                        e
+                ))
+                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
+                        BAD_REQUEST,
+                        e.getMessage(),
+                        e
+                ))
                 .as(transactionalOperator::transactional);
     }
 
@@ -124,6 +144,11 @@ public class FabricTypesHttpHandler {
                     return result;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                        CONFLICT,
+                        e.getMessage(),
+                        e
+                ))
                 .as(transactionalOperator::transactional);
     }
 
