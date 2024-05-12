@@ -98,6 +98,12 @@ public class CacheablePermissionsRepo implements PermissionsRepo {
                 .doOnNext(cache::invalidate);
     }
 
+    @Override
+    public Flux<Permission> removePermissions(Permission... permissions) {
+        return delegate.removePermissions(permissions)
+                .doOnNext(cache::invalidate);
+    }
+
     @Value
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Builder

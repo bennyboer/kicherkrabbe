@@ -2,7 +2,9 @@ package de.bennyboer.kicherkrabbe.fabrics;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
-import de.bennyboer.kicherkrabbe.fabrics.http.requests.FabricTypeAvailabilityDTO;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.FabricLookupRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.LookupFabric;
 import de.bennyboer.kicherkrabbe.permissions.*;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static de.bennyboer.kicherkrabbe.fabrics.Actions.*;
+import static de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDirectionDTO.ASCENDING;
 import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @AllArgsConstructor
@@ -29,6 +32,24 @@ public class FabricsModule {
     private final PermissionsService permissionsService;
 
     private final FabricLookupRepo fabricLookupRepo;
+
+    public Mono<FabricDetails> getFabric(String fabricId, Agent agent) {
+        var id = FabricId.of(fabricId);
+
+        return assertAgentIsAllowedTo(agent, READ, id)
+                .then(fabricService.getOrThrow(id))
+                .map(fabric -> FabricDetails.of(
+                        fabric.getId(),
+                        fabric.getVersion(),
+                        fabric.getName(),
+                        fabric.getImage(),
+                        fabric.getColors(),
+                        fabric.getTopics(),
+                        fabric.getAvailability(),
+                        fabric.isPublished(),
+                        fabric.getCreatedAt()
+                ));
+    }
 
     public Mono<FabricsPage> getFabrics(String searchTerm, long skip, long limit, Agent agent) {
         return getAccessibleFabricIds(agent)
@@ -50,6 +71,69 @@ public class FabricsModule {
                                         fabric.getAvailability(),
                                         fabric.isPublished(),
                                         fabric.getCreatedAt()
+                                )).toList()
+                ));
+    }
+
+    public Mono<PublishedFabric> getPublishedFabric(String fabricId, Agent agent) {
+        var id = FabricId.of(fabricId);
+
+        return assertAgentIsAllowedTo(agent, READ_PUBLISHED, id)
+                .then(fabricLookupRepo.findPublished(id))
+                .map(fabric -> PublishedFabric.of(
+                        fabric.getId(),
+                        fabric.getName(),
+                        fabric.getImage(),
+                        fabric.getColors(),
+                        fabric.getTopics(),
+                        fabric.getAvailability()
+                ))
+                .onErrorResume(MissingPermissionError.class, e -> Mono.empty());
+    }
+
+    public Mono<PublishedFabricsPage> getPublishedFabrics(
+            String searchTerm,
+            Set<String> colorIds,
+            Set<String> topicIds,
+            FabricsAvailabilityFilterDTO availability,
+            FabricsSortDTO sort,
+            long skip,
+            long limit,
+            Agent ignoredAgent
+    ) {
+        Set<ColorId> colors = colorIds.stream()
+                .map(ColorId::of)
+                .collect(Collectors.toSet());
+        Set<TopicId> topics = topicIds.stream()
+                .map(TopicId::of)
+                .collect(Collectors.toSet());
+        boolean filterAvailability = availability.active;
+        boolean inStock = availability.inStock;
+        boolean sortAscending = sort.direction == ASCENDING;
+
+        return fabricLookupRepo.findPublished(
+                        searchTerm,
+                        colors,
+                        topics,
+                        filterAvailability,
+                        inStock,
+                        sortAscending,
+                        skip,
+                        limit
+                )
+                .map(result -> PublishedFabricsPage.of(
+                        result.getSkip(),
+                        result.getLimit(),
+                        result.getTotal(),
+                        result.getResults()
+                                .stream()
+                                .map(fabric -> PublishedFabric.of(
+                                        fabric.getId(),
+                                        fabric.getName(),
+                                        fabric.getImage(),
+                                        fabric.getColors(),
+                                        fabric.getTopics(),
+                                        fabric.getAvailability()
                                 )).toList()
                 ));
     }
@@ -237,6 +321,10 @@ public class FabricsModule {
                 .holder(holder)
                 .isAllowedTo(READ)
                 .on(resource);
+        var readPublishedPermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(READ_PUBLISHED)
+                .on(resource);
         var renamePermission = Permission.builder()
                 .holder(holder)
                 .isAllowedTo(RENAME)
@@ -272,6 +360,7 @@ public class FabricsModule {
 
         return permissionsService.addPermissions(
                 readPermission,
+                readPublishedPermission,
                 renamePermission,
                 publishPermission,
                 unpublishPermission,
@@ -280,6 +369,46 @@ public class FabricsModule {
                 updateTopicsPermission,
                 updateAvailabilityPermission,
                 deletePermission
+        );
+    }
+
+    public Mono<Void> allowAnonymousAndSystemUsersToReadPublishedFabric(String fabricId) {
+        var resource = Resource.of(getResourceType(), ResourceId.of(fabricId));
+        var systemHolder = Holder.group(HolderId.system());
+        var anonymousHolder = Holder.group(HolderId.anonymous());
+
+        var readPublishedPermission = Permission.builder()
+                .holder(anonymousHolder)
+                .isAllowedTo(READ_PUBLISHED)
+                .on(resource);
+        var readPublishedSystemPermission = Permission.builder()
+                .holder(systemHolder)
+                .isAllowedTo(READ_PUBLISHED)
+                .on(resource);
+
+        return permissionsService.addPermissions(
+                readPublishedPermission,
+                readPublishedSystemPermission
+        );
+    }
+
+    public Mono<Void> disallowAnonymousAndSystemUsersToReadPublishedFabric(String fabricId) {
+        var resource = Resource.of(getResourceType(), ResourceId.of(fabricId));
+        var systemHolder = Holder.group(HolderId.system());
+        var anonymousHolder = Holder.group(HolderId.anonymous());
+
+        var readPublishedPermission = Permission.builder()
+                .holder(anonymousHolder)
+                .isAllowedTo(READ_PUBLISHED)
+                .on(resource);
+        var readPublishedSystemPermission = Permission.builder()
+                .holder(systemHolder)
+                .isAllowedTo(READ_PUBLISHED)
+                .on(resource);
+
+        return permissionsService.removePermissions(
+                readPublishedPermission,
+                readPublishedSystemPermission
         );
     }
 

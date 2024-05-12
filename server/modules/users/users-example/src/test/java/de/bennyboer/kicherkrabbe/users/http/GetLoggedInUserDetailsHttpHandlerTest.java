@@ -3,7 +3,7 @@ package de.bennyboer.kicherkrabbe.users.http;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.users.*;
-import de.bennyboer.kicherkrabbe.users.http.responses.UserDetailsResponse;
+import de.bennyboer.kicherkrabbe.users.http.api.responses.UserDetailsResponse;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 

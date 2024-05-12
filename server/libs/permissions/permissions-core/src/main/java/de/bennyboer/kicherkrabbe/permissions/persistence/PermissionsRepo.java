@@ -75,5 +75,7 @@ public interface PermissionsRepo {
      * Remove a specific permission.
      */
     Mono<Permission> removeByPermission(Permission permission);
+    
+    Flux<Permission> removePermissions(Permission... permissions);
 
 }

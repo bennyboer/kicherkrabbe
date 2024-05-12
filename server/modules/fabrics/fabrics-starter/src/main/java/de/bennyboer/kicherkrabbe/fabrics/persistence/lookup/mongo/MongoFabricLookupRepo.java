@@ -1,7 +1,9 @@
 package de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.mongo;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.MongoEventSourcingReadModelRepo;
+import de.bennyboer.kicherkrabbe.fabrics.ColorId;
 import de.bennyboer.kicherkrabbe.fabrics.FabricId;
+import de.bennyboer.kicherkrabbe.fabrics.TopicId;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.FabricLookupRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.LookupFabric;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.LookupFabricPage;
@@ -10,7 +12,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.index.Index;
+import org.springframework.data.mongodb.core.index.IndexDefinition;
+import org.springframework.data.mongodb.core.index.ReactiveIndexOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import reactor.core.publisher.Mono;
 
 import java.util.Collection;
@@ -21,6 +27,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
 
 public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<FabricId, LookupFabric, MongoLookupFabric>
         implements FabricLookupRepo {
@@ -71,6 +78,92 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
                                 .map(serializer::deserialize)
                                 .toList()
                 ));
+    }
+
+    @Override
+    public Mono<LookupFabric> findPublished(FabricId id) {
+        Criteria criteria = where("_id").is(id.getValue())
+                .and("published").is(true);
+        Query query = query(criteria);
+
+        return template.findOne(query, MongoLookupFabric.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
+    public Mono<LookupFabricPage> findPublished(
+            String searchTerm,
+            Set<ColorId> colors,
+            Set<TopicId> topics,
+            boolean filterAvailability,
+            boolean inStock,
+            boolean ascending,
+            long skip,
+            long limit
+    ) {
+        Set<String> colorIds = colors.stream()
+                .map(ColorId::getValue)
+                .collect(Collectors.toSet());
+        Set<String> topicIds = topics.stream()
+                .map(TopicId::getValue)
+                .collect(Collectors.toSet());
+
+        Criteria criteria = where("published").is(true);
+
+        if (!searchTerm.isBlank()) {
+            String quotedSearchTerm = Pattern.quote(searchTerm);
+            criteria = criteria.and("name").regex(quotedSearchTerm, "i");
+        }
+
+        if (!colors.isEmpty()) {
+            criteria = criteria.and("colorIds").in(colorIds);
+        }
+
+        if (!topics.isEmpty()) {
+            criteria = criteria.and("topicIds").in(topicIds);
+        }
+
+        if (filterAvailability) {
+            criteria = criteria.and("availability.inStock").is(inStock);
+        }
+
+        AggregationOperation match = match(criteria);
+        AggregationOperation sortBy = sort(ascending
+                ? Sort.by(Sort.Order.asc("name"))
+                : Sort.by(Sort.Order.desc("name")));
+        AggregationOperation transformToPage = transformToPage(skip, limit);
+
+        Aggregation aggregation = newAggregation(match, sortBy, transformToPage);
+
+        return template.aggregate(aggregation, collectionName, PipelinePage.class)
+                .next()
+                .map(result -> LookupFabricPage.of(
+                        skip,
+                        limit,
+                        result.getTotal(),
+                        result.getMatches()
+                                .stream()
+                                .map(serializer::deserialize)
+                                .toList()
+                ));
+    }
+
+    @Override
+    protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
+        IndexDefinition createdAtIndex = new Index().on("createdAt", Sort.Direction.ASC);
+        IndexDefinition nameIndex = new Index().on("name", Sort.Direction.ASC);
+        IndexDefinition publishedIndex = new Index().on("published", Sort.Direction.ASC);
+        IndexDefinition colorsIndex = new Index().on("colors", Sort.Direction.ASC);
+        IndexDefinition topicsIndex = new Index().on("topics", Sort.Direction.ASC);
+        IndexDefinition availabilityInStockIndex = new Index().on("availability.inStock", Sort.Direction.ASC);
+
+        return indexOps.ensureIndex(createdAtIndex)
+                .then(indexOps.ensureIndex(nameIndex))
+                .then(indexOps.ensureIndex(publishedIndex))
+                .then(indexOps.ensureIndex(colorsIndex))
+                .then(indexOps.ensureIndex(topicsIndex))
+                .then(indexOps.ensureIndex(availabilityInStockIndex))
+                .then();
     }
 
     private AggregationOperation transformToPage(long skip, long limit) {

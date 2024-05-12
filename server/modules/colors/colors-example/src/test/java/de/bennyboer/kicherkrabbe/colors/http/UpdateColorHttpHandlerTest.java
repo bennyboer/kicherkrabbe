@@ -1,7 +1,7 @@
 package de.bennyboer.kicherkrabbe.colors.http;
 
-import de.bennyboer.kicherkrabbe.colors.http.requests.UpdateColorRequest;
-import de.bennyboer.kicherkrabbe.colors.http.responses.UpdateColorResponse;
+import de.bennyboer.kicherkrabbe.colors.http.api.requests.UpdateColorRequest;
+import de.bennyboer.kicherkrabbe.colors.http.api.responses.UpdateColorResponse;
 import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;

@@ -1,11 +1,15 @@
 package de.bennyboer.kicherkrabbe.fabrics.http;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.AggregateNotFoundError;
 import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.fabrics.FabricsModule;
-import de.bennyboer.kicherkrabbe.fabrics.http.requests.*;
-import de.bennyboer.kicherkrabbe.fabrics.http.responses.*;
+import de.bennyboer.kicherkrabbe.fabrics.*;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricDTO;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.PublishedFabricDTO;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.requests.*;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.*;
 import de.bennyboer.kicherkrabbe.fabrics.publish.AlreadyPublishedError;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.AlreadyUnpublishedError;
 import lombok.AllArgsConstructor;
@@ -16,6 +20,10 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static org.springframework.http.HttpStatus.*;
 
 @AllArgsConstructor
@@ -25,16 +33,90 @@ public class FabricsHttpHandler {
 
     private final ReactiveTransactionManager transactionManager;
 
-    public Mono<ServerResponse> getFabrics(ServerRequest request) {
+    public Mono<ServerResponse> getFabricsTopics(ServerRequest request) {
+        return Mono.empty(); // TODO Get topics used for at least one fabric
+    }
+
+    public Mono<ServerResponse> getFabricsColors(ServerRequest request) {
+        return Mono.empty(); // TODO Get colors used for at least one fabric
+    }
+
+    public Mono<ServerResponse> getChanges(ServerRequest request) {
         return Mono.empty(); // TODO
+    }
+
+    public Mono<ServerResponse> getFabrics(ServerRequest request) {
+        return request.bodyToMono(QueryFabricsRequest.class)
+                .flatMap(req -> toAgent(request).flatMap(agent -> module.getFabrics(
+                        req.searchTerm,
+                        req.skip,
+                        req.limit,
+                        agent
+                )))
+                .map(page -> {
+                    var response = new QueryFabricsResponse();
+                    response.fabrics = toFabricDTOs(page.getResults());
+                    response.total = page.getTotal();
+                    response.skip = page.getSkip();
+                    response.limit = page.getLimit();
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response));
     }
 
     public Mono<ServerResponse> getFabric(ServerRequest request) {
-        return Mono.empty(); // TODO
+        String fabricId = request.pathVariable("fabricId");
+
+        return toAgent(request)
+                .flatMap(agent -> module.getFabric(fabricId, agent))
+                .map(fabric -> {
+                    var response = new QueryFabricResponse();
+                    response.fabric = toFabricDTO(fabric);
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorMap(AggregateNotFoundError.class, e -> new ResponseStatusException(
+                        NOT_FOUND,
+                        e.getMessage(),
+                        e
+                ));
     }
 
     public Mono<ServerResponse> getPublishedFabrics(ServerRequest request) {
-        return Mono.empty(); // TODO
+        return request.bodyToMono(QueryPublishedFabricsRequest.class)
+                .flatMap(req -> toAgent(request).flatMap(agent -> module.getPublishedFabrics(
+                        req.searchTerm,
+                        req.colorIds,
+                        req.topicIds,
+                        req.availability,
+                        req.sort,
+                        req.skip,
+                        req.limit,
+                        agent
+                )))
+                .map(page -> {
+                    var response = new QueryPublishedFabricsResponse();
+                    response.fabrics = toPublishedFabricDTOs(page.getResults());
+                    response.total = page.getTotal();
+                    response.skip = page.getSkip();
+                    response.limit = page.getLimit();
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response));
+    }
+
+    public Mono<ServerResponse> getPublishedFabric(ServerRequest request) {
+        String fabricId = request.pathVariable("fabricId");
+
+        return toAgent(request)
+                .flatMap(agent -> module.getPublishedFabric(fabricId, agent))
+                .map(fabric -> {
+                    var response = new QueryPublishedFabricResponse();
+                    response.fabric = toPublishedFabricDTO(fabric);
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(NOT_FOUND, "Fabric not available")));
     }
 
     public Mono<ServerResponse> createFabric(ServerRequest request) {
@@ -305,6 +387,74 @@ public class FabricsHttpHandler {
         return request.principal()
                 .map(principal -> Agent.user(AgentId.of(principal.getName())))
                 .switchIfEmpty(Mono.just(Agent.anonymous()));
+    }
+
+    private List<FabricDTO> toFabricDTOs(List<FabricDetails> fabrics) {
+        return fabrics.stream()
+                .map(this::toFabricDTO)
+                .toList();
+    }
+
+    private FabricDTO toFabricDTO(FabricDetails fabric) {
+        var result = new FabricDTO();
+
+        result.id = fabric.getId().getValue();
+        result.version = fabric.getVersion().getValue();
+        result.name = fabric.getName().getValue();
+        result.imageId = fabric.getImage().getValue();
+        result.colorIds = toColorIds(fabric.getColors());
+        result.topicIds = toTopicIds(fabric.getTopics());
+        result.availability = toFabricTypeAvailabilityDTOs(fabric.getAvailability());
+        result.published = fabric.isPublished();
+        result.createdAt = fabric.getCreatedAt();
+
+        return result;
+    }
+
+    private List<PublishedFabricDTO> toPublishedFabricDTOs(List<PublishedFabric> fabrics) {
+        return fabrics.stream()
+                .map(this::toPublishedFabricDTO)
+                .toList();
+    }
+
+    private PublishedFabricDTO toPublishedFabricDTO(PublishedFabric fabric) {
+        var result = new PublishedFabricDTO();
+
+        result.id = fabric.getId().getValue();
+        result.name = fabric.getName().getValue();
+        result.imageId = fabric.getImage().getValue();
+        result.colorIds = toColorIds(fabric.getColors());
+        result.topicIds = toTopicIds(fabric.getTopics());
+        result.availability = toFabricTypeAvailabilityDTOs(fabric.getAvailability());
+
+        return result;
+    }
+
+    private Set<String> toTopicIds(Set<TopicId> topicIds) {
+        return topicIds.stream()
+                .map(TopicId::getValue)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<String> toColorIds(Set<ColorId> colorIds) {
+        return colorIds.stream()
+                .map(ColorId::getValue)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<FabricTypeAvailabilityDTO> toFabricTypeAvailabilityDTOs(Set<FabricTypeAvailability> availability) {
+        return availability.stream()
+                .map(this::toFabricTypeAvailabilityDTO)
+                .collect(Collectors.toSet());
+    }
+
+    private FabricTypeAvailabilityDTO toFabricTypeAvailabilityDTO(FabricTypeAvailability availability) {
+        var result = new FabricTypeAvailabilityDTO();
+
+        result.typeId = availability.getTypeId().getValue();
+        result.inStock = availability.isInStock();
+
+        return result;
     }
 
 }

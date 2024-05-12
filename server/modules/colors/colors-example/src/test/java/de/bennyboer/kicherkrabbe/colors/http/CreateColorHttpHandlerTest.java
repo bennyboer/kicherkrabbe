@@ -1,7 +1,7 @@
 package de.bennyboer.kicherkrabbe.colors.http;
 
-import de.bennyboer.kicherkrabbe.colors.http.requests.CreateColorRequest;
-import de.bennyboer.kicherkrabbe.colors.http.responses.CreateColorResponse;
+import de.bennyboer.kicherkrabbe.colors.http.api.requests.CreateColorRequest;
+import de.bennyboer.kicherkrabbe.colors.http.api.responses.CreateColorResponse;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import org.junit.jupiter.api.Test;

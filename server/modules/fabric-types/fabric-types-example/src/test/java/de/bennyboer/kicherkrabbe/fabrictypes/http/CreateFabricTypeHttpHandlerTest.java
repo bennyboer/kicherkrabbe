@@ -2,8 +2,8 @@ package de.bennyboer.kicherkrabbe.fabrictypes.http;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.fabrictypes.http.requests.CreateFabricTypeRequest;
-import de.bennyboer.kicherkrabbe.fabrictypes.http.responses.CreateFabricTypeResponse;
+import de.bennyboer.kicherkrabbe.fabrictypes.http.api.requests.CreateFabricTypeRequest;
+import de.bennyboer.kicherkrabbe.fabrictypes.http.api.responses.CreateFabricTypeResponse;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 

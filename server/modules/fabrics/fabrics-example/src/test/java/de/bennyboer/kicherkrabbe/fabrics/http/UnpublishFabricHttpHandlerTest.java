@@ -6,7 +6,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.fabrics.http.responses.UnpublishFabricResponse;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.UnpublishFabricResponse;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.AlreadyUnpublishedError;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;

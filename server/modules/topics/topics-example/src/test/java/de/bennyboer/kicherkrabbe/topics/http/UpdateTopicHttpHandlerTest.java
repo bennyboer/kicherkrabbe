@@ -6,8 +6,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.topics.http.requests.UpdateTopicRequest;
-import de.bennyboer.kicherkrabbe.topics.http.responses.UpdateTopicResponse;
+import de.bennyboer.kicherkrabbe.topics.http.api.requests.UpdateTopicRequest;
+import de.bennyboer.kicherkrabbe.topics.http.api.responses.UpdateTopicResponse;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 

@@ -2,9 +2,14 @@ package de.bennyboer.kicherkrabbe.colors.http;
 
 import de.bennyboer.kicherkrabbe.changes.ResourceId;
 import de.bennyboer.kicherkrabbe.colors.ColorsModule;
-import de.bennyboer.kicherkrabbe.colors.http.requests.CreateColorRequest;
-import de.bennyboer.kicherkrabbe.colors.http.requests.UpdateColorRequest;
-import de.bennyboer.kicherkrabbe.colors.http.responses.*;
+import de.bennyboer.kicherkrabbe.colors.http.api.ColorChangeDTO;
+import de.bennyboer.kicherkrabbe.colors.http.api.ColorDTO;
+import de.bennyboer.kicherkrabbe.colors.http.api.requests.CreateColorRequest;
+import de.bennyboer.kicherkrabbe.colors.http.api.requests.UpdateColorRequest;
+import de.bennyboer.kicherkrabbe.colors.http.api.responses.CreateColorResponse;
+import de.bennyboer.kicherkrabbe.colors.http.api.responses.DeleteColorResponse;
+import de.bennyboer.kicherkrabbe.colors.http.api.responses.QueryColorsResponse;
+import de.bennyboer.kicherkrabbe.colors.http.api.responses.UpdateColorResponse;
 import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;

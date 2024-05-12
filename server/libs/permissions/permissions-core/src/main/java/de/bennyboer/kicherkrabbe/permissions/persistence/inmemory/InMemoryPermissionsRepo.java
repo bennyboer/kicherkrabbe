@@ -88,6 +88,12 @@ public class InMemoryPermissionsRepo implements PermissionsRepo {
                 .mapNotNull(p -> permissions.remove(p) ? p : null);
     }
 
+    @Override
+    public Flux<Permission> removePermissions(Permission... permissions) {
+        return Flux.fromIterable(Set.of(permissions))
+                .flatMap(this::removeByPermission);
+    }
+
     private Flux<Permission> removeBy(Predicate<Permission> predicate) {
         return Mono.fromCallable(() -> {
             List<Permission> removed = new ArrayList<>();

@@ -4,7 +4,7 @@ import de.bennyboer.kicherkrabbe.colors.ColorDetails;
 import de.bennyboer.kicherkrabbe.colors.ColorId;
 import de.bennyboer.kicherkrabbe.colors.ColorName;
 import de.bennyboer.kicherkrabbe.colors.ColorsPage;
-import de.bennyboer.kicherkrabbe.colors.http.responses.QueryColorsResponse;
+import de.bennyboer.kicherkrabbe.colors.http.api.responses.QueryColorsResponse;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;

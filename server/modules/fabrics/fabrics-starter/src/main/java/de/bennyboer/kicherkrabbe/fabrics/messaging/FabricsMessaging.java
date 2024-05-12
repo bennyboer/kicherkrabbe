@@ -120,4 +120,38 @@ public class FabricsMessaging {
         );
     }
 
+    @Bean
+    public EventListener onFabricPublishedAllowAnonymousAndSystemUsersToReadPublishedFabric(
+            EventListenerFactory factory,
+            FabricsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "fabric-published-allow-anonymous-and-system-users-to-read-published-fabric",
+                AggregateType.of("FABRIC"),
+                EventName.of("PUBLISHED"),
+                (event) -> {
+                    String fabricId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.allowAnonymousAndSystemUsersToReadPublishedFabric(fabricId);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onFabricUnpublishedDisallowAnonymousAndSystemUsersToReadPublishedFabric(
+            EventListenerFactory factory,
+            FabricsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "fabric-unpublished-disallow-anonymous-and-system-users-to-read-published-fabric",
+                AggregateType.of("FABRIC"),
+                EventName.of("UNPUBLISHED"),
+                (event) -> {
+                    String fabricId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.disallowAnonymousAndSystemUsersToReadPublishedFabric(fabricId);
+                }
+        );
+    }
+
 }

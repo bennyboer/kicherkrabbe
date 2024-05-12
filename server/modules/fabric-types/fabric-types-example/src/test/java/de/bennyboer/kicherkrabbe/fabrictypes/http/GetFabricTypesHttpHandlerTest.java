@@ -7,7 +7,7 @@ import de.bennyboer.kicherkrabbe.fabrictypes.FabricTypeDetails;
 import de.bennyboer.kicherkrabbe.fabrictypes.FabricTypeId;
 import de.bennyboer.kicherkrabbe.fabrictypes.FabricTypeName;
 import de.bennyboer.kicherkrabbe.fabrictypes.FabricTypesPage;
-import de.bennyboer.kicherkrabbe.fabrictypes.http.responses.QueryFabricTypesResponse;
+import de.bennyboer.kicherkrabbe.fabrictypes.http.api.responses.QueryFabricTypesResponse;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 

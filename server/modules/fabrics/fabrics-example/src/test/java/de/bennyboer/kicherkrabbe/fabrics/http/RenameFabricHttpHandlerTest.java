@@ -6,8 +6,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.fabrics.http.requests.RenameFabricRequest;
-import de.bennyboer.kicherkrabbe.fabrics.http.responses.RenameFabricResponse;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.requests.RenameFabricRequest;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.RenameFabricResponse;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 

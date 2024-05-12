@@ -20,6 +20,7 @@ import reactor.core.publisher.Mono;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
@@ -223,6 +224,12 @@ public class MongoPermissionsRepo implements PermissionsRepo {
 
         return template.findAndRemove(query(criteria), MongoPermission.class, collectionName)
                 .map(MongoPermissionSerializer::deserialize);
+    }
+
+    @Override
+    public Flux<Permission> removePermissions(Permission... permissions) {
+        return Flux.fromIterable(Set.of(permissions))
+                .flatMap(this::removeByPermission);
     }
 
     private Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {

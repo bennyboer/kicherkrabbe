@@ -1,8 +1,8 @@
 package de.bennyboer.kicherkrabbe.credentials.http;
 
 import de.bennyboer.kicherkrabbe.credentials.CredentialsModule;
-import de.bennyboer.kicherkrabbe.credentials.http.requests.UseCredentialsRequest;
-import de.bennyboer.kicherkrabbe.credentials.http.responses.UseCredentialsResponse;
+import de.bennyboer.kicherkrabbe.credentials.http.api.requests.UseCredentialsRequest;
+import de.bennyboer.kicherkrabbe.credentials.http.api.responses.UseCredentialsResponse;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;

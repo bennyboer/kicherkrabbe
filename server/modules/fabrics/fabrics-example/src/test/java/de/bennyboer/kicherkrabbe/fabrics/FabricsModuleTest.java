@@ -5,7 +5,9 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
-import de.bennyboer.kicherkrabbe.fabrics.http.requests.FabricTypeAvailabilityDTO;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.FabricLookupRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.inmemory.InMemoryFabricLookupRepo;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
@@ -92,12 +94,14 @@ public class FabricsModuleTest {
         module.publishFabric(fabricId, version, agent).block();
 
         module.updateFabricInLookup(fabricId).block();
+        module.allowAnonymousAndSystemUsersToReadPublishedFabric(fabricId).block();
     }
 
     public void unpublishFabric(String fabricId, long version, Agent agent) {
         module.unpublishFabric(fabricId, version, agent).block();
 
         module.updateFabricInLookup(fabricId).block();
+        module.disallowAnonymousAndSystemUsersToReadPublishedFabric(fabricId).block();
     }
 
     public void updateFabricImage(String fabricId, long version, String imageId, Agent agent) {
@@ -129,8 +133,42 @@ public class FabricsModuleTest {
         module.updateFabricInLookup(fabricId).block();
     }
 
+    public FabricDetails getFabric(String fabricId, Agent agent) {
+        return module.getFabric(fabricId, agent).block();
+    }
+
+    public PublishedFabric getPublishedFabric(String fabricId, Agent agent) {
+        return module.getPublishedFabric(fabricId, agent).block();
+    }
+
+    public PublishedFabricsPage getPublishedFabrics(
+            String searchTerm,
+            Set<String> colorIds,
+            Set<String> topicIds,
+            FabricsAvailabilityFilterDTO availability,
+            FabricsSortDTO sort,
+            long skip,
+            long limit,
+            Agent agent
+    ) {
+        return module.getPublishedFabrics(
+                searchTerm,
+                colorIds,
+                topicIds,
+                availability,
+                sort,
+                skip,
+                limit,
+                agent
+        ).block();
+    }
+
     public void allowUserToCreateFabrics(String userId) {
         module.allowUserToCreateFabrics(userId).block();
+    }
+
+    public void allowUserToReadFabric(String userId, String fabricId) {
+        module.allowUserToManageFabric(fabricId, userId).block();
     }
 
 }

@@ -7,7 +7,7 @@ import de.bennyboer.kicherkrabbe.topics.TopicDetails;
 import de.bennyboer.kicherkrabbe.topics.TopicId;
 import de.bennyboer.kicherkrabbe.topics.TopicName;
 import de.bennyboer.kicherkrabbe.topics.TopicsPage;
-import de.bennyboer.kicherkrabbe.topics.http.responses.QueryTopicsResponse;
+import de.bennyboer.kicherkrabbe.topics.http.api.responses.QueryTopicsResponse;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 

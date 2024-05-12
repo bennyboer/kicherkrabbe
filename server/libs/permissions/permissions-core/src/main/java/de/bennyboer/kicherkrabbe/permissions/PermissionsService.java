@@ -81,6 +81,13 @@ public class PermissionsService {
         return permissionsRepo.findPermissionsByHolderAndResourceTypeAndAction(holder, resourceType, action);
     }
 
+    public Mono<Void> removePermissions(Permission... permissions) {
+        return permissionsRepo.removePermissions(permissions)
+                .collect(Collectors.toSet())
+                .filter(removedPermissions -> !removedPermissions.isEmpty())
+                .flatMap(removedPermissions -> eventPublisher.publish(removed(removedPermissions)));
+    }
+
     public Mono<Void> removePermission(Permission permission) {
         return permissionsRepo.removeByPermission(permission)
                 .flatMap(removedPermission -> eventPublisher.publish(removed(removedPermission)));

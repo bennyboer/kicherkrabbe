@@ -2,8 +2,8 @@ package de.bennyboer.kicherkrabbe.topics.http;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.topics.http.requests.CreateTopicRequest;
-import de.bennyboer.kicherkrabbe.topics.http.responses.CreateTopicResponse;
+import de.bennyboer.kicherkrabbe.topics.http.api.requests.CreateTopicRequest;
+import de.bennyboer.kicherkrabbe.topics.http.api.responses.CreateTopicResponse;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 

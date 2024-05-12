@@ -490,6 +490,68 @@ public abstract class PermissionsServiceTest {
     }
 
     @Test
+    void shouldRemovePermissions() {
+        var holder1 = Holder.user(HolderId.of("USER_ID_1"));
+        var holder2 = Holder.user(HolderId.of("USER_ID_2"));
+
+        var resource1 = Resource.of(ResourceType.of("RESOURCE_TYPE_1"), ResourceId.of("RESOURCE_ID_1"));
+        var resource2 = Resource.of(ResourceType.of("RESOURCE_TYPE_2"), ResourceId.of("RESOURCE_ID_2"));
+
+        // given: some permissions
+        Set<Permission> permissions = Set.of(
+                Permission.builder()
+                        .holder(holder1)
+                        .isAllowedTo(testAction)
+                        .on(resource1),
+                Permission.builder()
+                        .holder(holder1)
+                        .isAllowedTo(testAction)
+                        .on(resource2),
+                Permission.builder()
+                        .holder(holder2)
+                        .isAllowedTo(testAction)
+                        .on(resource2)
+        );
+
+        // and: the permissions are added
+        addPermissions(permissions);
+
+        // when: removing two of the permissions
+        removePermissions(
+                Permission.builder()
+                        .holder(holder1)
+                        .isAllowedTo(testAction)
+                        .on(resource1),
+                Permission.builder()
+                        .holder(holder1)
+                        .isAllowedTo(testAction)
+                        .on(resource2)
+        );
+
+        // then: the two permissions are removed
+        assertThat(hasPermission(Permission.builder()
+                .holder(holder1)
+                .isAllowedTo(testAction)
+                .on(resource1))).isFalse();
+        assertThat(hasPermission(Permission.builder()
+                .holder(holder1)
+                .isAllowedTo(testAction)
+                .on(resource2))).isFalse();
+
+        // and: an event is published that the two permissions are removed
+        assertThat(seenEvents).contains(PermissionEvent.removed(Set.of(
+                Permission.builder()
+                        .holder(holder1)
+                        .isAllowedTo(testAction)
+                        .on(resource1),
+                Permission.builder()
+                        .holder(holder1)
+                        .isAllowedTo(testAction)
+                        .on(resource2)
+        )));
+    }
+
+    @Test
     void shouldNotPublishEventWhenPermissionToBeRemovedIsAbsent() {
         // given: a permission to remove
         Permission permission = Permission.builder()
@@ -686,6 +748,10 @@ public abstract class PermissionsServiceTest {
 
     private void removePermission(Permission permission) {
         service.removePermission(permission).block();
+    }
+
+    private void removePermissions(Permission... permissions) {
+        service.removePermissions(permissions).block();
     }
 
     private void removePermissionsByHolder(Holder holder) {

@@ -47,6 +47,8 @@ public class FabricsMessagingTest extends EventListenerTest {
         when(module.allowUserToManageFabric(anyString(), anyString())).thenReturn(Mono.empty());
         when(module.removePermissionsForUser(anyString())).thenReturn(Mono.empty());
         when(module.removePermissionsOnFabric(anyString())).thenReturn(Mono.empty());
+        when(module.allowAnonymousAndSystemUsersToReadPublishedFabric(anyString())).thenReturn(Mono.empty());
+        when(module.disallowAnonymousAndSystemUsersToReadPublishedFabric(anyString())).thenReturn(Mono.empty());
     }
 
     @Test
@@ -175,6 +177,42 @@ public class FabricsMessagingTest extends EventListenerTest {
 
         // then: the permissions on the fabric are removed
         verify(module, timeout(5000).times(1)).removePermissionsOnFabric(eq("FABRIC_ID"));
+    }
+
+    @Test
+    void shouldAllowAnonymousAndSystemUsersToReadPublishedFabricOnFabricPublished() {
+        // when: a fabric published event is published
+        send(
+                AggregateType.of("FABRIC"),
+                AggregateId.of("FABRIC_ID"),
+                Version.of(1),
+                EventName.of("PUBLISHED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the group is allowed to read the published fabric
+        verify(module, timeout(5000).times(1)).allowAnonymousAndSystemUsersToReadPublishedFabric(eq("FABRIC_ID"));
+    }
+
+    @Test
+    void shouldDisallowAnonymousAndSystemUsersToReadPublishedFabricOnFabricUnpublished() {
+        // when: a fabric unpublished event is published
+        send(
+                AggregateType.of("FABRIC"),
+                AggregateId.of("FABRIC_ID"),
+                Version.of(1),
+                EventName.of("UNPUBLISHED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the groups are disallowed to read the published fabric
+        verify(module, timeout(5000).times(1)).disallowAnonymousAndSystemUsersToReadPublishedFabric(eq("FABRIC_ID"));
     }
 
 }
