@@ -124,4 +124,18 @@ public class InMemoryFabricLookupRepo extends InMemoryEventSourcingReadModelRepo
                         .anyMatch(a -> a.getTypeId().equals(fabricTypeId)));
     }
 
+    @Override
+    public Flux<ColorId> findUniqueColors() {
+        return getAll()
+                .flatMap(fabric -> Flux.fromIterable(fabric.getColors()))
+                .distinct();
+    }
+
+    @Override
+    public Flux<TopicId> findUniqueTopics() {
+        return getAll()
+                .flatMap(fabric -> Flux.fromIterable(fabric.getTopics()))
+                .distinct();
+    }
+
 }

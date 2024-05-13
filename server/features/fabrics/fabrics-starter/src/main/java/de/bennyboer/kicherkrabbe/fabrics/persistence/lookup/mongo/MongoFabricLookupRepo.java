@@ -178,6 +178,26 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
     }
 
     @Override
+    public Flux<ColorId> findUniqueColors() {
+        return template.query(MongoLookupFabric.class)
+                .inCollection(collectionName)
+                .distinct("colorIds")
+                .as(String.class)
+                .all()
+                .map(ColorId::of);
+    }
+
+    @Override
+    public Flux<TopicId> findUniqueTopics() {
+        return template.query(MongoLookupFabric.class)
+                .inCollection(collectionName)
+                .distinct("topicIds")
+                .as(String.class)
+                .all()
+                .map(TopicId::of);
+    }
+
+    @Override
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         IndexDefinition createdAtIndex = new Index().on("createdAt", Sort.Direction.ASC);
         IndexDefinition nameIndex = new Index().on("name", Sort.Direction.ASC);
@@ -227,6 +247,13 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
             long total;
 
         }
+
+    }
+
+    @Value
+    private static class PipelineColors {
+
+        List<String> colorIds;
 
     }
 

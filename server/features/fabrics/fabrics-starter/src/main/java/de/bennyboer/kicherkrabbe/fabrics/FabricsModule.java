@@ -33,6 +33,14 @@ public class FabricsModule {
 
     private final FabricLookupRepo fabricLookupRepo;
 
+    public Flux<TopicId> getTopicsUsedInFabrics(Agent ignoredAgent) {
+        return fabricLookupRepo.findUniqueTopics();
+    }
+
+    public Flux<ColorId> getColorsUsedInFabrics(Agent ignoredAgent) {
+        return fabricLookupRepo.findUniqueColors();
+    }
+
     public Mono<FabricDetails> getFabric(String fabricId, Agent agent) {
         var id = FabricId.of(fabricId);
 

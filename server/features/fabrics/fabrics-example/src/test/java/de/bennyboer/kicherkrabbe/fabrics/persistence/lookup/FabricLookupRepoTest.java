@@ -756,6 +756,135 @@ public abstract class FabricLookupRepoTest {
         assertThat(fabrics).isEmpty();
     }
 
+    @Test
+    void shouldFindUniqueColors() {
+        // given: some fabrics with different colors
+        var colorId1 = ColorId.of("COLOR_ID_1");
+        var colorId2 = ColorId.of("COLOR_ID_2");
+        var colorId3 = ColorId.of("COLOR_ID_3");
+
+        var fabric1 = LookupFabric.of(
+                FabricId.create(),
+                Version.zero(),
+                FabricName.of("Fabric 1"),
+                ImageId.of("IMAGE_ID_1"),
+                Set.of(colorId1),
+                Set.of(),
+                Set.of(),
+                true,
+                Instant.parse("2024-03-12T13:00:00.00Z")
+        );
+        var fabric2 = LookupFabric.of(
+                FabricId.create(),
+                Version.zero(),
+                FabricName.of("Fabric 2"),
+                ImageId.of("IMAGE_ID_2"),
+                Set.of(colorId2),
+                Set.of(),
+                Set.of(),
+                true,
+                Instant.parse("2024-03-12T09:30:00.00Z")
+        );
+        var fabric3 = LookupFabric.of(
+                FabricId.create(),
+                Version.zero(),
+                FabricName.of("Fabric 3"),
+                ImageId.of("IMAGE_ID_3"),
+                Set.of(colorId3, colorId2),
+                Set.of(),
+                Set.of(),
+                true,
+                Instant.parse("2024-03-12T11:00:00.00Z")
+        );
+        update(fabric1);
+        update(fabric2);
+        update(fabric3);
+
+        // when: finding unique colors
+        var colors = findUniqueColors();
+
+        // then: the unique colors are found
+        assertThat(colors).containsExactlyInAnyOrder(colorId1, colorId2, colorId3);
+
+        // when: finding unique colors with no fabrics
+        remove(fabric1.getId());
+        remove(fabric2.getId());
+        remove(fabric3.getId());
+        colors = findUniqueColors();
+
+        // then: no unique colors are found
+        assertThat(colors).isEmpty();
+    }
+
+    @Test
+    void shouldFindUniqueTopics() {
+        // given: some fabrics with different topics
+        var topicId1 = TopicId.of("TOPIC_ID_1");
+        var topicId2 = TopicId.of("TOPIC_ID_2");
+        var topicId3 = TopicId.of("TOPIC_ID_3");
+
+        var fabric1 = LookupFabric.of(
+                FabricId.create(),
+                Version.zero(),
+                FabricName.of("Fabric 1"),
+                ImageId.of("IMAGE_ID_1"),
+                Set.of(),
+                Set.of(topicId1),
+                Set.of(),
+                true,
+                Instant.parse("2024-03-12T13:00:00.00Z")
+        );
+        var fabric2 = LookupFabric.of(
+                FabricId.create(),
+                Version.zero(),
+                FabricName.of("Fabric 2"),
+                ImageId.of("IMAGE_ID_2"),
+                Set.of(),
+                Set.of(topicId2),
+                Set.of(),
+                true,
+                Instant.parse("2024-03-12T09:30:00.00Z")
+        );
+        var fabric3 = LookupFabric.of(
+                FabricId.create(),
+                Version.zero(),
+                FabricName.of("Fabric 3"),
+                ImageId.of("IMAGE_ID_3"),
+                Set.of(),
+                Set.of(topicId3, topicId2),
+                Set.of(),
+                true,
+                Instant.parse("2024-03-12T11:00:00.00Z")
+        );
+        update(fabric1);
+        update(fabric2);
+        update(fabric3);
+
+        // when: finding unique topics
+        var topics = findUniqueTopics();
+
+        // then: the unique topics are found
+        assertThat(topics).containsExactlyInAnyOrder(topicId1, topicId2, topicId3);
+
+        // when: finding unique topics with no fabrics
+        remove(fabric1.getId());
+        remove(fabric2.getId());
+        remove(fabric3.getId());
+
+        topics = findUniqueTopics();
+
+        // then: no unique topics are found
+        assertThat(topics).isEmpty();
+    }
+
+    private List<ColorId> findUniqueColors() {
+        return repo.findUniqueColors().collectList().block();
+    }
+
+    private List<TopicId> findUniqueTopics() {
+        return repo.findUniqueTopics().collectList().block();
+    }
+
     private List<LookupFabric> findByColor(ColorId colorId) {
         return repo.findByColor(colorId).collectList().block();
     }

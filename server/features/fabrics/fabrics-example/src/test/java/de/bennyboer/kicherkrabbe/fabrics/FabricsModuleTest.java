@@ -189,6 +189,14 @@ public class FabricsModuleTest {
         }
     }
 
+    public List<TopicId> getTopicsUsedInFabrics(Agent agent) {
+        return module.getTopicsUsedInFabrics(agent).collectList().block();
+    }
+
+    public List<ColorId> getColorsUsedInFabrics(Agent agent) {
+        return module.getColorsUsedInFabrics(agent).collectList().block();
+    }
+
     public void allowUserToCreateFabrics(String userId) {
         module.allowUserToCreateFabrics(userId).block();
     }

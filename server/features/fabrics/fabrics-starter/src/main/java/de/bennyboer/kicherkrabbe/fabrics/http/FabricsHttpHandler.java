@@ -33,16 +33,36 @@ public class FabricsHttpHandler {
 
     private final ReactiveTransactionManager transactionManager;
 
+    public Mono<ServerResponse> getChanges(ServerRequest request) {
+        return Mono.empty(); // TODO
+    }
+
     public Mono<ServerResponse> getFabricsTopics(ServerRequest request) {
-        return Mono.empty(); // TODO Get topics used for at least one fabric
+        return toAgent(request)
+                .flatMapMany(module::getTopicsUsedInFabrics)
+                .collectList()
+                .map(topicIds -> {
+                    var response = new QueryTopicsResponse();
+                    response.topicIds = topicIds.stream()
+                            .map(TopicId::getValue)
+                            .collect(Collectors.toList());
+                    return response;
+                })
+                .flatMap(topics -> ServerResponse.ok().bodyValue(topics));
     }
 
     public Mono<ServerResponse> getFabricsColors(ServerRequest request) {
-        return Mono.empty(); // TODO Get colors used for at least one fabric
-    }
-
-    public Mono<ServerResponse> getChanges(ServerRequest request) {
-        return Mono.empty(); // TODO
+        return toAgent(request)
+                .flatMapMany(module::getColorsUsedInFabrics)
+                .collectList()
+                .map(colorIds -> {
+                    var response = new QueryColorsResponse();
+                    response.colorIds = colorIds.stream()
+                            .map(ColorId::getValue)
+                            .collect(Collectors.toList());
+                    return response;
+                })
+                .flatMap(colors -> ServerResponse.ok().bodyValue(colors));
     }
 
     public Mono<ServerResponse> getFabrics(ServerRequest request) {

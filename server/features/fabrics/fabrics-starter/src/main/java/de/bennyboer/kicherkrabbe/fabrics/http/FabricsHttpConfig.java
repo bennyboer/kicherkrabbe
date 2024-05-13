@@ -58,7 +58,9 @@ public class FabricsHttpConfig {
     @Bean
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> fabricsAuthorizeExchangeSpecCustomizer() {
         return exchanges -> exchanges.pathMatchers(POST, "/api/fabrics/published").permitAll()
-                .pathMatchers(GET, "/api/fabrics/{fabricId}/published").permitAll();
+                .pathMatchers(GET, "/api/fabrics/{fabricId}/published").permitAll()
+                .pathMatchers(GET, "/api/fabrics/topics").permitAll()
+                .pathMatchers(GET, "/api/fabrics/colors").permitAll();
     }
 
 }
