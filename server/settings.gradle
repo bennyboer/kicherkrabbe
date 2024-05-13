@@ -52,31 +52,31 @@ include('libs:changes:changes-example')
 /////////////
 
 // Credentials
-include('modules:credentials:credentials-core')
-include('modules:credentials:credentials-starter')
-include('modules:credentials:credentials-example')
+include('features:credentials:credentials-core')
+include('features:credentials:credentials-starter')
+include('features:credentials:credentials-example')
 
 // Users
-include('modules:users:users-core')
-include('modules:users:users-starter')
-include('modules:users:users-example')
+include('features:users:users-core')
+include('features:users:users-starter')
+include('features:users:users-example')
 
 // Fabrics
-include('modules:fabrics:fabrics-core')
-include('modules:fabrics:fabrics-starter')
-include('modules:fabrics:fabrics-example')
+include('features:fabrics:fabrics-core')
+include('features:fabrics:fabrics-starter')
+include('features:fabrics:fabrics-example')
 
 // Topics
-include('modules:topics:topics-core')
-include('modules:topics:topics-starter')
-include('modules:topics:topics-example')
+include('features:topics:topics-core')
+include('features:topics:topics-starter')
+include('features:topics:topics-example')
 
 // Colors
-include('modules:colors:colors-core')
-include('modules:colors:colors-starter')
-include('modules:colors:colors-example')
+include('features:colors:colors-core')
+include('features:colors:colors-starter')
+include('features:colors:colors-example')
 
 // Fabric Types
-include('modules:fabric-types:fabric-types-core')
-include('modules:fabric-types:fabric-types-starter')
-include('modules:fabric-types:fabric-types-example')
+include('features:fabric-types:fabric-types-core')
+include('features:fabric-types:fabric-types-starter')
+include('features:fabric-types:fabric-types-example')

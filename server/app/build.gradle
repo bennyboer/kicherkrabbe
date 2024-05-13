@@ -5,12 +5,12 @@ plugins {
 dependencies {
     implementation project(':libs:auth:auth-starter')
 
-    implementation project(':modules:credentials:credentials-starter')
-    implementation project(':modules:users:users-starter')
-    implementation project(':modules:topics:topics-starter')
-    implementation project(':modules:colors:colors-starter')
-    implementation project(':modules:fabric-types:fabric-types-starter')
-    implementation project(':modules:fabrics:fabrics-starter')
+    implementation project(':features:credentials:credentials-starter')
+    implementation project(':features:users:users-starter')
+    implementation project(':features:topics:topics-starter')
+    implementation project(':features:colors:colors-starter')
+    implementation project(':features:fabric-types:fabric-types-starter')
+    implementation project(':features:fabrics:fabrics-starter')
 
     testImplementation project(':libs:persistence:persistence-testing')
     testImplementation project(':libs:messaging:messaging-testing')

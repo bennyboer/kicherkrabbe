@@ -1,0 +1,3 @@
+dependencies {
+    implementation project(':features:fabric-types:fabric-types-starter')
+}
