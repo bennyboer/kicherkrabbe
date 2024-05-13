@@ -31,7 +31,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -42,7 +42,7 @@ public class FabricServiceTest {
         assertThat(fabric.getName()).isEqualTo(FabricName.of("Fabric"));
         assertThat(fabric.getImage()).isEqualTo(ImageId.of("image"));
         assertThat(fabric.getColors()).containsExactly(ColorId.of("color"));
-        assertThat(fabric.getTopics()).containsExactly(TopicId.of("theme"));
+        assertThat(fabric.getTopics()).containsExactly(TopicId.of("topic"));
         assertThat(fabric.getAvailability()).containsExactly(FabricTypeAvailability.of(
                 FabricTypeId.of("fabric-type"),
                 true
@@ -57,7 +57,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -77,7 +77,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -96,7 +96,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -115,7 +115,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -134,7 +134,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -154,7 +154,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -173,7 +173,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
         publish(id, Version.zero());
@@ -190,7 +190,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
         publish(id, Version.zero());
@@ -211,7 +211,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
         var version = publish(id, Version.zero());
@@ -231,7 +231,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -247,7 +247,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -267,7 +267,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -286,7 +286,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -306,7 +306,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -325,17 +325,17 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
-        // when: updating the themes
-        var updatedVersion = updateTopics(id, Version.zero(), Set.of(TopicId.of("theme 2"), TopicId.of("theme 3")));
+        // when: updating the topics
+        var updatedVersion = updateTopics(id, Version.zero(), Set.of(TopicId.of("topic 2"), TopicId.of("topic 3")));
 
-        // then: the themes are updated
+        // then: the topics are updated
         var fabric = get(id);
         assertThat(fabric.getVersion()).isEqualTo(updatedVersion);
-        assertThat(fabric.getTopics()).containsExactlyInAnyOrder(TopicId.of("theme 2"), TopicId.of("theme 3"));
+        assertThat(fabric.getTopics()).containsExactlyInAnyOrder(TopicId.of("topic 2"), TopicId.of("topic 3"));
     }
 
     @Test
@@ -345,15 +345,15 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
         // and: the fabric is renamed
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
 
-        // when: updating the themes with an outdated version; then: an error is raised
-        assertThatThrownBy(() -> updateTopics(id, Version.zero(), Set.of(TopicId.of("theme 2"))))
+        // when: updating the topics with an outdated version; then: an error is raised
+        assertThatThrownBy(() -> updateTopics(id, Version.zero(), Set.of(TopicId.of("topic 2"))))
                 .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
@@ -364,7 +364,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -390,7 +390,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -411,12 +411,12 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
         // when: removing the topic
-        var updatedVersion = removeTopic(id, Version.zero(), TopicId.of("theme"));
+        var updatedVersion = removeTopic(id, Version.zero(), TopicId.of("topic"));
 
         // then: the topic is removed
         var fabric = get(id);
@@ -431,7 +431,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -439,7 +439,7 @@ public class FabricServiceTest {
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
 
         // when: removing the topic with an outdated version; then: an error is raised
-        assertThatThrownBy(() -> removeTopic(id, Version.zero(), TopicId.of("theme")))
+        assertThatThrownBy(() -> removeTopic(id, Version.zero(), TopicId.of("topic")))
                 .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
@@ -450,7 +450,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -470,7 +470,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -489,7 +489,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -509,7 +509,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
@@ -528,7 +528,7 @@ public class FabricServiceTest {
                 FabricName.of("Fabric"),
                 ImageId.of("image"),
                 Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("theme")),
+                Set.of(TopicId.of("topic")),
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric"), true))
         );
 
@@ -563,14 +563,14 @@ public class FabricServiceTest {
             FabricName name,
             ImageId imageId,
             Set<ColorId> colors,
-            Set<TopicId> themes,
+            Set<TopicId> topics,
             Set<FabricTypeAvailability> availability
     ) {
         return fabricService.create(
                 name,
                 imageId,
                 colors,
-                themes,
+                topics,
                 availability,
                 Agent.system()
         ).block().getId();

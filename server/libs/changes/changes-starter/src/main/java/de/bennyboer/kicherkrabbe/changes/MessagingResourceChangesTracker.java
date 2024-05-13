@@ -12,6 +12,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -103,7 +104,7 @@ public class MessagingResourceChangesTracker implements ResourceChangesTracker {
         String listenerName = "track-permission-changes-for-receiver-%s".formatted(receiverId.getValue());
 
         return permissionEventListenerFactory.listen(toPermissionsResourceType(resourceType), listenerName)
-                .map(event -> filterPermissionsForReceiver(event, receiverId))
+                .mapNotNull(event -> filterPermissionsForReceiver(event, receiverId).orElse(null))
                 .filter(event -> !event.getPermissions().isEmpty())
                 .map(this::toResourceChange);
     }
@@ -130,7 +131,7 @@ public class MessagingResourceChangesTracker implements ResourceChangesTracker {
         return ResourceChange.of(type, affected, payload);
     }
 
-    private PermissionEvent filterPermissionsForReceiver(PermissionEvent event, ReceiverId receiverId) {
+    private Optional<PermissionEvent> filterPermissionsForReceiver(PermissionEvent event, ReceiverId receiverId) {
         Holder holder = Holder.user(HolderId.of(receiverId.getValue()));
 
         Set<Permission> permissions = event.getPermissions();
@@ -138,10 +139,14 @@ public class MessagingResourceChangesTracker implements ResourceChangesTracker {
                 .filter(permission -> permission.getHolder().equals(holder))
                 .collect(Collectors.toSet());
 
+        if (filteredPermissions.isEmpty()) {
+            return Optional.empty();
+        }
+
         if (event.getType() == PermissionEventType.ADDED) {
-            return PermissionEvent.added(filteredPermissions);
+            return Optional.of(PermissionEvent.added(filteredPermissions));
         } else {
-            return PermissionEvent.removed(filteredPermissions);
+            return Optional.of(PermissionEvent.removed(filteredPermissions));
         }
     }
 

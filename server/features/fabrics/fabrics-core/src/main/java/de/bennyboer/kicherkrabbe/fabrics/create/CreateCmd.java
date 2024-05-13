@@ -28,16 +28,16 @@ public class CreateCmd implements Command {
             FabricName name,
             ImageId image,
             Set<ColorId> colors,
-            Set<TopicId> themes,
+            Set<TopicId> topics,
             Set<FabricTypeAvailability> availability
     ) {
         notNull(name, "Fabric name must be given");
         notNull(image, "Image must be given");
         notNull(colors, "Colors must be given");
-        notNull(themes, "Topics must be given");
+        notNull(topics, "Topics must be given");
         notNull(availability, "Availability must be given");
 
-        return new CreateCmd(name, image, colors, themes, availability);
+        return new CreateCmd(name, image, colors, topics, availability);
     }
 
 }

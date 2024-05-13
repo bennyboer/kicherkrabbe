@@ -11,7 +11,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.transaction.ReactiveTransactionManager;
+import reactor.core.publisher.Mono;
+
+import static org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES;
 
 @Configuration
 @Import({
@@ -20,6 +25,7 @@ import org.springframework.transaction.ReactiveTransactionManager;
         UsersMessaging.class,
         UsersHttpConfig.class,
         SecurityConfig.class,
+        UsersSecurityConfig.class
 })
 public class UsersModuleConfig {
 

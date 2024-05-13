@@ -7,6 +7,9 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.fabrics.*;
 import de.bennyboer.kicherkrabbe.fabrics.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.delete.DeletedEvent;
+import de.bennyboer.kicherkrabbe.fabrics.delete.colors.ColorRemovedEvent;
+import de.bennyboer.kicherkrabbe.fabrics.delete.fabrictype.FabricTypeRemovedEvent;
+import de.bennyboer.kicherkrabbe.fabrics.delete.topics.TopicRemovedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.publish.PublishedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.rename.RenamedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.snapshot.SnapshottedEvent;
@@ -68,6 +71,9 @@ public class FabricEventPayloadSerializer implements EventSerializer {
                     )).toList()
             );
             case DeletedEvent ignored -> Map.of();
+            case ColorRemovedEvent e -> Map.of("colorId", e.getColorId().getValue());
+            case TopicRemovedEvent e -> Map.of("topicId", e.getTopicId().getValue());
+            case FabricTypeRemovedEvent e -> Map.of("typeId", e.getFabricTypeId().getValue());
             default -> throw new IllegalStateException("Unexpected event: " + event);
         };
     }
@@ -109,7 +115,7 @@ public class FabricEventPayloadSerializer implements EventSerializer {
             case "COLORS_UPDATED" -> ColorsUpdatedEvent.of(
                     ((List<String>) payload.get("colors")).stream().map(ColorId::of).collect(Collectors.toSet())
             );
-            case "THEMES_UPDATED" -> TopicsUpdatedEvent.of(
+            case "TOPIC_UPDATED" -> TopicsUpdatedEvent.of(
                     ((List<String>) payload.get("topics")).stream().map(TopicId::of).collect(Collectors.toSet())
             );
             case "AVAILABILITY_UPDATED" -> AvailabilityUpdatedEvent.of(
@@ -121,6 +127,9 @@ public class FabricEventPayloadSerializer implements EventSerializer {
                             .collect(Collectors.toSet())
             );
             case "DELETED" -> DeletedEvent.of();
+            case "COLOR_REMOVED" -> ColorRemovedEvent.of(ColorId.of((String) payload.get("colorId")));
+            case "TOPIC_REMOVED" -> TopicRemovedEvent.of(TopicId.of((String) payload.get("topicId")));
+            case "FABRIC_TYPE_REMOVED" -> FabricTypeRemovedEvent.of(FabricTypeId.of((String) payload.get("typeId")));
             default -> throw new IllegalStateException("Unexpected event name: " + name);
         };
     }
