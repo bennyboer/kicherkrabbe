@@ -1,10 +1,12 @@
 package de.bennyboer.kicherkrabbe.fabrics.http;
 
+import de.bennyboer.kicherkrabbe.changes.ResourceId;
 import de.bennyboer.kicherkrabbe.eventsourcing.AggregateNotFoundError;
 import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.fabrics.*;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricChangeDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.PublishedFabricDTO;
@@ -34,7 +36,24 @@ public class FabricsHttpHandler {
     private final ReactiveTransactionManager transactionManager;
 
     public Mono<ServerResponse> getChanges(ServerRequest request) {
-        return Mono.empty(); // TODO
+        var events$ = toAgent(request)
+                .flatMapMany(module::getFabricChanges)
+                .map(change -> {
+                    var result = new FabricChangeDTO();
+
+                    result.type = change.getType().getValue();
+                    result.affected = change.getAffected()
+                            .stream()
+                            .map(ResourceId::getValue)
+                            .toList();
+                    result.payload = change.getPayload();
+
+                    return result;
+                });
+
+        return ServerResponse.ok()
+                .header("Content-Type", "text/event-stream")
+                .body(events$, FabricChangeDTO.class);
     }
 
     public Mono<ServerResponse> getFabricsTopics(ServerRequest request) {

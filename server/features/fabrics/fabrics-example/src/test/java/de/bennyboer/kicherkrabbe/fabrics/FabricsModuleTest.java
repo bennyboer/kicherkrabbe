@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.fabrics;
 
+import de.bennyboer.kicherkrabbe.changes.ResourceChangesTracker;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
@@ -13,6 +14,7 @@ import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.inmemory.InMemoryFab
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.PermissionsRepo;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -49,7 +51,14 @@ public class FabricsModuleTest {
 
     private final FabricLookupRepo fabricLookupRepo = new InMemoryFabricLookupRepo();
 
-    private final FabricsModule module = config.fabricsModule(fabricService, permissionsService, fabricLookupRepo);
+    private final ResourceChangesTracker changesTracker = receiverId -> Flux.empty();
+
+    private final FabricsModule module = config.fabricsModule(
+            fabricService,
+            permissionsService,
+            fabricLookupRepo,
+            changesTracker
+    );
 
     public List<FabricDetails> getFabrics(Agent agent) {
         return getFabrics("", 0, Integer.MAX_VALUE, agent).getResults();

@@ -1,5 +1,8 @@
 package de.bennyboer.kicherkrabbe.fabrics;
 
+import de.bennyboer.kicherkrabbe.changes.ReceiverId;
+import de.bennyboer.kicherkrabbe.changes.ResourceChange;
+import de.bennyboer.kicherkrabbe.changes.ResourceChangesTracker;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
@@ -32,6 +35,13 @@ public class FabricsModule {
     private final PermissionsService permissionsService;
 
     private final FabricLookupRepo fabricLookupRepo;
+
+    private final ResourceChangesTracker changesTracker;
+
+    public Flux<ResourceChange> getFabricChanges(Agent agent) {
+        ReceiverId receiverId = ReceiverId.of(agent.getId().getValue());
+        return changesTracker.getChanges(receiverId);
+    }
 
     public Flux<TopicId> getTopicsUsedInFabrics(Agent ignoredAgent) {
         return fabricLookupRepo.findUniqueTopics();
