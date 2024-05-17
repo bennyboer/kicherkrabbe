@@ -22,6 +22,19 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
+        // and: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+        markColorAsAvailable("BLACK_ID", "Black", 0, 0, 0);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
+
         // and: the user creates some fabrics
         String fabricId1 = createFabric(
                 "Ice bear party",
@@ -159,7 +172,20 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
 
     @Test
     void shouldFilterBySearchTerm() {
-        // given: some fabrics are published
+        // given: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+        markColorAsAvailable("BLACK_ID", "Black", 0, 0, 0);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
+
+        // and: some fabrics are published
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
@@ -251,7 +277,20 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
 
     @Test
     void shouldFilterByAvailability() {
-        // given: some fabrics are published
+        // given: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+        markColorAsAvailable("BLACK_ID", "Black", 0, 0, 0);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
+
+        // and: some fabrics are published
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
@@ -335,7 +374,20 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
 
     @Test
     void shouldSortAlphabeticallyDescending() {
-        // given: some fabrics are published
+        // given: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+        markColorAsAvailable("BLACK_ID", "Black", 0, 0, 0);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
+
+        // and: some fabrics are published
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
@@ -386,7 +438,19 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
 
     @Test
     void shouldFilterByColors() {
-        // given: some fabrics are published
+        // given: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+        markColorAsAvailable("BLACK_ID", "Black", 0, 0, 0);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
+
+        // and: some fabrics are published
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
@@ -463,7 +527,21 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
 
     @Test
     void shouldFilterByTopic() {
-        // given: some fabrics
+        // given: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+        markTopicAsAvailable("PARTY_ID", "Party");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+        markColorAsAvailable("BLACK_ID", "Black", 0, 0, 0);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
+
+        // and: some fabrics
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
@@ -519,7 +597,20 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
 
     @Test
     void shouldDoPaging() {
-        // given: some fabrics
+        // given: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+        markColorAsAvailable("BLACK_ID", "Black", 0, 0, 0);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
+
+        // and: some fabrics
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 

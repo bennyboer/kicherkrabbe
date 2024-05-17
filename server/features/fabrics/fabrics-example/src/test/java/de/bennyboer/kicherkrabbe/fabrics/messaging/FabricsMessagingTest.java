@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.ReactiveTransactionManager;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
@@ -49,6 +50,21 @@ public class FabricsMessagingTest extends EventListenerTest {
         when(module.removePermissionsOnFabric(anyString())).thenReturn(Mono.empty());
         when(module.allowAnonymousAndSystemUsersToReadPublishedFabric(anyString())).thenReturn(Mono.empty());
         when(module.disallowAnonymousAndSystemUsersToReadPublishedFabric(anyString())).thenReturn(Mono.empty());
+        when(module.removeFabricTypeFromFabrics(anyString(), any())).thenReturn(Flux.empty());
+        when(module.removeTopicFromFabrics(anyString(), any())).thenReturn(Flux.empty());
+        when(module.removeColorFromFabrics(anyString(), any())).thenReturn(Flux.empty());
+        when(module.markTopicAsAvailable(anyString(), anyString())).thenReturn(Mono.empty());
+        when(module.markTopicAsUnavailable(anyString())).thenReturn(Mono.empty());
+        when(module.markColorAsAvailable(
+                anyString(),
+                anyString(),
+                anyInt(),
+                anyInt(),
+                anyInt()
+        )).thenReturn(Mono.empty());
+        when(module.markColorAsUnavailable(anyString())).thenReturn(Mono.empty());
+        when(module.markFabricTypeAsAvailable(anyString(), anyString())).thenReturn(Mono.empty());
+        when(module.markFabricTypeAsUnavailable(anyString())).thenReturn(Mono.empty());
     }
 
     @Test
@@ -267,6 +283,193 @@ public class FabricsMessagingTest extends EventListenerTest {
 
         // then: the color is removed from the fabrics
         verify(module, timeout(5000).times(1)).removeColorFromFabrics(eq("COLOR_ID"), eq(Agent.system()));
+    }
+
+    @Test
+    void shouldMarkTopicAsAvailableOnTopicCreated() {
+        // when: a topic created event is published
+        send(
+                AggregateType.of("TOPIC"),
+                AggregateId.of("TOPIC_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("name", "Topic name")
+        );
+
+        // then: the topic is marked as available
+        verify(module, timeout(5000).times(1)).markTopicAsAvailable(eq("TOPIC_ID"), eq("Topic name"));
+    }
+
+    @Test
+    void shouldMarkTopicAsAvailableOnTopicUpdated() {
+        // when: a topic updated event is published
+        send(
+                AggregateType.of("TOPIC"),
+                AggregateId.of("TOPIC_ID"),
+                Version.of(1),
+                EventName.of("UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("name", "New topic name")
+        );
+
+        // then: the topic is marked as available
+        verify(module, timeout(5000).times(1)).markTopicAsAvailable(eq("TOPIC_ID"), eq("New topic name"));
+    }
+
+    @Test
+    void shouldMarkTopicAsUnavailableOnTopicDeleted() {
+        // when: a topic deleted event is published
+        send(
+                AggregateType.of("TOPIC"),
+                AggregateId.of("TOPIC_ID"),
+                Version.of(1),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the topic is marked as unavailable
+        verify(module, timeout(5000).times(1)).markTopicAsUnavailable(eq("TOPIC_ID"));
+    }
+
+    @Test
+    void shouldMarkColorAsAvailableOnColorCreated() {
+        // when: a color created event is published
+        send(
+                AggregateType.of("COLOR"),
+                AggregateId.of("COLOR_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of(
+                        "name", "Color name",
+                        "red", 255,
+                        "green", 0,
+                        "blue", 0
+                )
+        );
+
+        // then: the color is marked as available
+        verify(module, timeout(5000).times(1)).markColorAsAvailable(
+                eq("COLOR_ID"),
+                eq("Color name"),
+                eq(255),
+                eq(0),
+                eq(0)
+        );
+    }
+
+    @Test
+    void shouldMarkColorAsAvailableOnColorUpdated() {
+        // when: a color updated event is published
+        send(
+                AggregateType.of("COLOR"),
+                AggregateId.of("COLOR_ID"),
+                Version.of(1),
+                EventName.of("UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of(
+                        "name", "New color name",
+                        "red", 0,
+                        "green", 255,
+                        "blue", 0
+                )
+        );
+
+        // then: the color is marked as available
+        verify(module, timeout(5000).times(1)).markColorAsAvailable(
+                eq("COLOR_ID"),
+                eq("New color name"),
+                eq(0),
+                eq(255),
+                eq(0)
+        );
+    }
+
+    @Test
+    void shouldMarkColorAsUnavailableOnColorDeleted() {
+        // when: a color deleted event is published
+        send(
+                AggregateType.of("COLOR"),
+                AggregateId.of("COLOR_ID"),
+                Version.of(1),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the color is marked as unavailable
+        verify(module, timeout(5000).times(1)).markColorAsUnavailable(eq("COLOR_ID"));
+    }
+
+    @Test
+    void shouldMarkFabricTypeAsAvailableOnFabricTypeCreated() {
+        // when: a fabric type created event is published
+        send(
+                AggregateType.of("FABRIC_TYPE"),
+                AggregateId.of("FABRIC_TYPE_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("name", "Fabric type name")
+        );
+
+        // then: the fabric type is marked as available
+        verify(module, timeout(5000).times(1)).markFabricTypeAsAvailable(eq("FABRIC_TYPE_ID"), eq("Fabric type name"));
+    }
+
+    @Test
+    void shouldMarkFabricTypeAsAvailableOnFabricTypeUpdated() {
+        // when: a fabric type updated event is published
+        send(
+                AggregateType.of("FABRIC_TYPE"),
+                AggregateId.of("FABRIC_TYPE_ID"),
+                Version.of(1),
+                EventName.of("UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("name", "New fabric type name")
+        );
+
+        // then: the fabric type is marked as available
+        verify(module, timeout(5000).times(1)).markFabricTypeAsAvailable(
+                eq("FABRIC_TYPE_ID"),
+                eq("New fabric type name")
+        );
+    }
+
+    @Test
+    void shouldMarkFabricTypeAsUnavailableOnFabricTypeDeleted() {
+        // when: a fabric type deleted event is published
+        send(
+                AggregateType.of("FABRIC_TYPE"),
+                AggregateId.of("FABRIC_TYPE_ID"),
+                Version.of(1),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the fabric type is marked as unavailable
+        verify(module, timeout(5000).times(1)).markFabricTypeAsUnavailable(eq("FABRIC_TYPE_ID"));
     }
 
 }

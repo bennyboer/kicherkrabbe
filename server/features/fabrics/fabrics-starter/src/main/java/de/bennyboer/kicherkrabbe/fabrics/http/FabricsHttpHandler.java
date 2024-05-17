@@ -6,12 +6,11 @@ import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.fabrics.*;
-import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricChangeDTO;
-import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricDTO;
-import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
-import de.bennyboer.kicherkrabbe.fabrics.http.api.PublishedFabricDTO;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.*;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.requests.*;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.*;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.Color;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.topics.Topic;
 import de.bennyboer.kicherkrabbe.fabrics.publish.AlreadyPublishedError;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.AlreadyUnpublishedError;
 import lombok.AllArgsConstructor;
@@ -60,11 +59,9 @@ public class FabricsHttpHandler {
         return toAgent(request)
                 .flatMapMany(module::getTopicsUsedInFabrics)
                 .collectList()
-                .map(topicIds -> {
+                .map(topics -> {
                     var response = new QueryTopicsResponse();
-                    response.topicIds = topicIds.stream()
-                            .map(TopicId::getValue)
-                            .collect(Collectors.toList());
+                    response.topics = toTopicDTOs(topics);
                     return response;
                 })
                 .flatMap(topics -> ServerResponse.ok().bodyValue(topics));
@@ -76,9 +73,7 @@ public class FabricsHttpHandler {
                 .collectList()
                 .map(colorIds -> {
                     var response = new QueryColorsResponse();
-                    response.colorIds = colorIds.stream()
-                            .map(ColorId::getValue)
-                            .collect(Collectors.toList());
+                    response.colors = toColorDTOs(colorIds);
                     return response;
                 })
                 .flatMap(colors -> ServerResponse.ok().bodyValue(colors));
@@ -178,6 +173,21 @@ public class FabricsHttpHandler {
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
                 .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
                         BAD_REQUEST,
+                        e.getMessage(),
+                        e
+                ))
+                .onErrorMap(TopicsMissingError.class, e -> new ResponseStatusException(
+                        PRECONDITION_FAILED,
+                        e.getMessage(),
+                        e
+                ))
+                .onErrorMap(ColorsMissingError.class, e -> new ResponseStatusException(
+                        PRECONDITION_FAILED,
+                        e.getMessage(),
+                        e
+                ))
+                .onErrorMap(FabricTypesMissingError.class, e -> new ResponseStatusException(
+                        PRECONDITION_FAILED,
                         e.getMessage(),
                         e
                 ))
@@ -338,6 +348,11 @@ public class FabricsHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorMap(ColorsMissingError.class, e -> new ResponseStatusException(
+                        PRECONDITION_FAILED,
+                        e.getMessage(),
+                        e
+                ))
                 .as(transactionalOperator::transactional);
     }
 
@@ -366,6 +381,11 @@ public class FabricsHttpHandler {
                 ))
                 .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
                         BAD_REQUEST,
+                        e.getMessage(),
+                        e
+                ))
+                .onErrorMap(TopicsMissingError.class, e -> new ResponseStatusException(
+                        PRECONDITION_FAILED,
                         e.getMessage(),
                         e
                 ))
@@ -400,6 +420,11 @@ public class FabricsHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorMap(FabricTypesMissingError.class, e -> new ResponseStatusException(
+                        PRECONDITION_FAILED,
+                        e.getMessage(),
+                        e
+                ))
                 .as(transactionalOperator::transactional);
     }
 
@@ -426,6 +451,39 @@ public class FabricsHttpHandler {
         return request.principal()
                 .map(principal -> Agent.user(AgentId.of(principal.getName())))
                 .switchIfEmpty(Mono.just(Agent.anonymous()));
+    }
+
+    private List<ColorDTO> toColorDTOs(List<Color> colors) {
+        return colors.stream()
+                .map(this::toColorDTO)
+                .toList();
+    }
+
+    private ColorDTO toColorDTO(Color color) {
+        var result = new ColorDTO();
+
+        result.id = color.getId().getValue();
+        result.name = color.getName().getValue();
+        result.red = color.getRed();
+        result.green = color.getGreen();
+        result.blue = color.getBlue();
+
+        return result;
+    }
+
+    private List<TopicDTO> toTopicDTOs(List<Topic> topics) {
+        return topics.stream()
+                .map(this::toTopicDTO)
+                .toList();
+    }
+
+    private TopicDTO toTopicDTO(Topic topic) {
+        var result = new TopicDTO();
+
+        result.id = topic.getId().getValue();
+        result.name = topic.getName().getValue();
+
+        return result;
     }
 
     private List<FabricDTO> toFabricDTOs(List<FabricDetails> fabrics) {

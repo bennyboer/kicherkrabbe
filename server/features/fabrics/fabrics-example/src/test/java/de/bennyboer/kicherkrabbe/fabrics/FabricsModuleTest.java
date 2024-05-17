@@ -9,8 +9,16 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMem
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.Color;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.ColorRepo;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.inmemory.InMemoryColorRepo;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.fabrictypes.FabricTypeRepo;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.fabrictypes.inmemory.InMemoryFabricTypeRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.FabricLookupRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.inmemory.InMemoryFabricLookupRepo;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.topics.Topic;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.topics.TopicRepo;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.topics.inmemory.InMemoryTopicRepo;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.PermissionsRepo;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
@@ -53,11 +61,20 @@ public class FabricsModuleTest {
 
     private final ResourceChangesTracker changesTracker = receiverId -> Flux.empty();
 
+    private final TopicRepo topicRepo = new InMemoryTopicRepo();
+
+    private final ColorRepo colorRepo = new InMemoryColorRepo();
+
+    private final FabricTypeRepo fabricTypeRepo = new InMemoryFabricTypeRepo();
+
     private final FabricsModule module = config.fabricsModule(
             fabricService,
             permissionsService,
             fabricLookupRepo,
-            changesTracker
+            changesTracker,
+            topicRepo,
+            colorRepo,
+            fabricTypeRepo
     );
 
     public List<FabricDetails> getFabrics(Agent agent) {
@@ -198,11 +215,11 @@ public class FabricsModuleTest {
         }
     }
 
-    public List<TopicId> getTopicsUsedInFabrics(Agent agent) {
+    public List<Topic> getTopicsUsedInFabrics(Agent agent) {
         return module.getTopicsUsedInFabrics(agent).collectList().block();
     }
 
-    public List<ColorId> getColorsUsedInFabrics(Agent agent) {
+    public List<Color> getColorsUsedInFabrics(Agent agent) {
         return module.getColorsUsedInFabrics(agent).collectList().block();
     }
 
@@ -212,6 +229,30 @@ public class FabricsModuleTest {
 
     public void allowUserToReadFabric(String userId, String fabricId) {
         module.allowUserToManageFabric(fabricId, userId).block();
+    }
+
+    public void markTopicAsAvailable(String id, String name) {
+        module.markTopicAsAvailable(id, name).block();
+    }
+
+    public void markTopicAsUnavailable(String id) {
+        module.markTopicAsUnavailable(id).block();
+    }
+
+    public void markColorAsAvailable(String id, String name, int red, int green, int blue) {
+        module.markColorAsAvailable(id, name, red, green, blue).block();
+    }
+
+    public void markColorAsUnavailable(String id) {
+        module.markColorAsUnavailable(id).block();
+    }
+
+    public void markFabricTypeAsAvailable(String id, String name) {
+        module.markFabricTypeAsAvailable(id, name).block();
+    }
+
+    public void markFabricTypeAsUnavailable(String id) {
+        module.markFabricTypeAsUnavailable(id).block();
     }
 
 }

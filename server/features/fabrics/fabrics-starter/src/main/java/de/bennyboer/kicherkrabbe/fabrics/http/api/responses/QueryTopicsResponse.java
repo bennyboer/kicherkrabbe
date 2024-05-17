@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.fabrics.http.api.responses;
 
+import de.bennyboer.kicherkrabbe.fabrics.http.api.TopicDTO;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -13,6 +14,6 @@ import static lombok.AccessLevel.PUBLIC;
 @FieldDefaults(level = PUBLIC)
 public class QueryTopicsResponse {
 
-    public List<String> topicIds;
+    public List<TopicDTO> topics;
 
 }

@@ -8,8 +8,17 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.Color;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.ColorName;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.ColorRepo;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.fabrictypes.FabricType;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.fabrictypes.FabricTypeName;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.fabrictypes.FabricTypeRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.FabricLookupRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.LookupFabric;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.topics.Topic;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.topics.TopicName;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.topics.TopicRepo;
 import de.bennyboer.kicherkrabbe.permissions.*;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
@@ -17,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,17 +48,27 @@ public class FabricsModule {
 
     private final ResourceChangesTracker changesTracker;
 
+    private final TopicRepo topicRepo;
+
+    private final ColorRepo colorRepo;
+
+    private final FabricTypeRepo fabricTypeRepo;
+
     public Flux<ResourceChange> getFabricChanges(Agent agent) {
         ReceiverId receiverId = ReceiverId.of(agent.getId().getValue());
         return changesTracker.getChanges(receiverId);
     }
 
-    public Flux<TopicId> getTopicsUsedInFabrics(Agent ignoredAgent) {
-        return fabricLookupRepo.findUniqueTopics();
+    public Flux<Topic> getTopicsUsedInFabrics(Agent ignoredAgent) {
+        return fabricLookupRepo.findUniqueTopics()
+                .collectList()
+                .flatMapMany(topicRepo::findByIds);
     }
 
-    public Flux<ColorId> getColorsUsedInFabrics(Agent ignoredAgent) {
-        return fabricLookupRepo.findUniqueColors();
+    public Flux<Color> getColorsUsedInFabrics(Agent ignoredAgent) {
+        return fabricLookupRepo.findUniqueColors()
+                .collectList()
+                .flatMapMany(colorRepo::findByIds);
     }
 
     public Mono<FabricDetails> getFabric(String fabricId, Agent agent) {
@@ -179,6 +199,9 @@ public class FabricsModule {
         Set<TopicId> topics = topicIds.stream()
                 .map(TopicId::of)
                 .collect(Collectors.toSet());
+        Set<FabricTypeId> fabricTypes = availability.stream()
+                .map(a -> FabricTypeId.of(a.typeId))
+                .collect(Collectors.toSet());
         Set<FabricTypeAvailability> availabilities = availability.stream()
                 .map(a -> FabricTypeAvailability.of(
                         FabricTypeId.of(a.typeId),
@@ -187,6 +210,9 @@ public class FabricsModule {
                 .collect(Collectors.toSet());
 
         return assertAgentIsAllowedTo(agent, CREATE)
+                .then(assertTopicsAvailable(topics))
+                .then(assertColorsAvailable(colors))
+                .then(assertFabricTypesAvailable(fabricTypes))
                 .then(fabricService.create(
                         FabricName.of(name),
                         ImageId.of(imageId),
@@ -251,6 +277,7 @@ public class FabricsModule {
                 .collect(Collectors.toSet());
 
         return assertAgentIsAllowedTo(agent, UPDATE_COLORS, id)
+                .then(assertColorsAvailable(colors))
                 .then(fabricService.updateColors(id, Version.of(version), colors, agent))
                 .map(Version::getValue);
     }
@@ -263,6 +290,7 @@ public class FabricsModule {
                 .collect(Collectors.toSet());
 
         return assertAgentIsAllowedTo(agent, UPDATE_TOPICS, id)
+                .then(assertTopicsAvailable(topics))
                 .then(fabricService.updateTopics(id, Version.of(version), topics, agent))
                 .map(Version::getValue);
     }
@@ -275,6 +303,9 @@ public class FabricsModule {
             Agent agent
     ) {
         var id = FabricId.of(fabricId);
+        var fabricTypes = availability.stream()
+                .map(a -> FabricTypeId.of(a.typeId))
+                .collect(Collectors.toSet());
         var availabilities = availability.stream()
                 .map(a -> FabricTypeAvailability.of(
                         FabricTypeId.of(a.typeId),
@@ -283,6 +314,7 @@ public class FabricsModule {
                 .collect(Collectors.toSet());
 
         return assertAgentIsAllowedTo(agent, UPDATE_AVAILABILITY, id)
+                .then(assertFabricTypesAvailable(fabricTypes))
                 .then(fabricService.updateAvailability(id, Version.of(version), availabilities, agent))
                 .map(Version::getValue);
     }
@@ -464,6 +496,84 @@ public class FabricsModule {
                 readPublishedPermission,
                 readPublishedSystemPermission
         );
+    }
+
+    public Mono<Void> markTopicAsAvailable(String topicId, String name) {
+        var topic = Topic.of(TopicId.of(topicId), TopicName.of(name));
+
+        return topicRepo.save(topic).then();
+    }
+
+    public Mono<Void> markTopicAsUnavailable(String topicId) {
+        return topicRepo.removeById(TopicId.of(topicId));
+    }
+
+    private Mono<Void> assertTopicsAvailable(Set<TopicId> topics) {
+        return topicRepo.findByIds(topics)
+                .map(Topic::getId)
+                .collect(Collectors.toSet())
+                .flatMap(foundIds -> {
+                    if (foundIds.equals(topics)) {
+                        return Mono.empty();
+                    }
+
+                    Set<TopicId> missingTopics = new HashSet<>(topics);
+                    missingTopics.removeAll(foundIds);
+
+                    return Mono.error(new TopicsMissingError(missingTopics));
+                });
+    }
+
+    public Mono<Void> markColorAsAvailable(String colorId, String name, int red, int green, int blue) {
+        var color = Color.of(ColorId.of(colorId), ColorName.of(name), red, green, blue);
+
+        return colorRepo.save(color).then();
+    }
+
+    public Mono<Void> markColorAsUnavailable(String colorId) {
+        return colorRepo.removeById(ColorId.of(colorId));
+    }
+
+    public Mono<Void> assertColorsAvailable(Set<ColorId> colors) {
+        return colorRepo.findByIds(colors)
+                .map(Color::getId)
+                .collect(Collectors.toSet())
+                .flatMap(foundIds -> {
+                    if (foundIds.equals(colors)) {
+                        return Mono.empty();
+                    }
+
+                    Set<ColorId> missingColors = new HashSet<>(colors);
+                    missingColors.removeAll(foundIds);
+
+                    return Mono.error(new ColorsMissingError(missingColors));
+                });
+    }
+
+    public Mono<Void> markFabricTypeAsAvailable(String fabricTypeId, String name) {
+        var fabricType = FabricType.of(FabricTypeId.of(fabricTypeId), FabricTypeName.of(name));
+
+        return fabricTypeRepo.save(fabricType).then();
+    }
+
+    public Mono<Void> markFabricTypeAsUnavailable(String fabricTypeId) {
+        return fabricTypeRepo.removeById(FabricTypeId.of(fabricTypeId));
+    }
+
+    public Mono<Void> assertFabricTypesAvailable(Set<FabricTypeId> fabricTypes) {
+        return fabricTypeRepo.findByIds(fabricTypes)
+                .map(FabricType::getId)
+                .collect(Collectors.toSet())
+                .flatMap(foundIds -> {
+                    if (foundIds.equals(fabricTypes)) {
+                        return Mono.empty();
+                    }
+
+                    Set<FabricTypeId> missingFabricTypes = new HashSet<>(fabricTypes);
+                    missingFabricTypes.removeAll(foundIds);
+
+                    return Mono.error(new FabricTypesMissingError(missingFabricTypes));
+                });
     }
 
     private Flux<FabricId> getAccessibleFabricIds(Agent agent) {

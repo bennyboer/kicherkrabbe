@@ -205,4 +205,169 @@ public class FabricsMessaging {
         );
     }
 
+    @Bean
+    public EventListener onTopicCreatedMarkTopicAsAvailable(
+            EventListenerFactory factory,
+            FabricsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "topic-created-mark-topic-as-available",
+                AggregateType.of("TOPIC"),
+                EventName.of("CREATED"),
+                (event) -> {
+                    String topicId = event.getMetadata().getAggregateId().getValue();
+                    String name = event.getEvent().get("name").toString();
+
+                    return module.markTopicAsAvailable(topicId, name);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onTopicUpdatedMarkTopicAsAvailable(
+            EventListenerFactory factory,
+            FabricsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "topic-updated-mark-topic-as-available",
+                AggregateType.of("TOPIC"),
+                EventName.of("UPDATED"),
+                (event) -> {
+                    String topicId = event.getMetadata().getAggregateId().getValue();
+                    String name = event.getEvent().get("name").toString();
+
+                    return module.markTopicAsAvailable(topicId, name);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onTopicDeletedMarkTopicAsUnavailable(
+            EventListenerFactory factory,
+            FabricsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "topic-deleted-mark-topic-as-unavailable",
+                AggregateType.of("TOPIC"),
+                EventName.of("DELETED"),
+                (event) -> {
+                    String topicId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.markTopicAsUnavailable(topicId);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onColorCreatedMarkColorAsAvailable(
+            EventListenerFactory factory,
+            FabricsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "color-created-mark-color-as-available",
+                AggregateType.of("COLOR"),
+                EventName.of("CREATED"),
+                (event) -> {
+                    String colorId = event.getMetadata().getAggregateId().getValue();
+                    String name = event.getEvent().get("name").toString();
+                    int red = (int) event.getEvent().get("red");
+                    int green = (int) event.getEvent().get("green");
+                    int blue = (int) event.getEvent().get("blue");
+
+                    return module.markColorAsAvailable(colorId, name, red, green, blue);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onColorUpdatedMarkColorAsAvailable(
+            EventListenerFactory factory,
+            FabricsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "color-updated-mark-color-as-available",
+                AggregateType.of("COLOR"),
+                EventName.of("UPDATED"),
+                (event) -> {
+                    String colorId = event.getMetadata().getAggregateId().getValue();
+                    String name = event.getEvent().get("name").toString();
+                    int red = (int) event.getEvent().get("red");
+                    int green = (int) event.getEvent().get("green");
+                    int blue = (int) event.getEvent().get("blue");
+
+                    return module.markColorAsAvailable(colorId, name, red, green, blue);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onColorDeletedMarkColorAsUnavailable(
+            EventListenerFactory factory,
+            FabricsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "color-deleted-mark-color-as-unavailable",
+                AggregateType.of("COLOR"),
+                EventName.of("DELETED"),
+                (event) -> {
+                    String colorId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.markColorAsUnavailable(colorId);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onFabricTypeCreatedMarkFabricTypeAsAvailable(
+            EventListenerFactory factory,
+            FabricsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "fabric-type-created-mark-fabric-type-as-available",
+                AggregateType.of("FABRIC_TYPE"),
+                EventName.of("CREATED"),
+                (event) -> {
+                    String fabricTypeId = event.getMetadata().getAggregateId().getValue();
+                    String name = event.getEvent().get("name").toString();
+
+                    return module.markFabricTypeAsAvailable(fabricTypeId, name);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onFabricTypeUpdatedMarkFabricTypeAsAvailable(
+            EventListenerFactory factory,
+            FabricsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "fabric-type-updated-mark-fabric-type-as-available",
+                AggregateType.of("FABRIC_TYPE"),
+                EventName.of("UPDATED"),
+                (event) -> {
+                    String fabricTypeId = event.getMetadata().getAggregateId().getValue();
+                    String name = event.getEvent().get("name").toString();
+
+                    return module.markFabricTypeAsAvailable(fabricTypeId, name);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onFabricTypeDeletedMarkFabricTypeAsUnavailable(
+            EventListenerFactory factory,
+            FabricsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "fabric-type-deleted-mark-fabric-type-as-unavailable",
+                AggregateType.of("FABRIC_TYPE"),
+                EventName.of("DELETED"),
+                (event) -> {
+                    String fabricTypeId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.markFabricTypeAsUnavailable(fabricTypeId);
+                }
+        );
+    }
+
 }

@@ -6,6 +6,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.fabrics.ColorId;
+import de.bennyboer.kicherkrabbe.fabrics.ColorsMissingError;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.requests.UpdateFabricColorsRequest;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.UpdateFabricImageResponse;
 import org.junit.jupiter.api.Test;
@@ -134,6 +136,35 @@ public class UpdateFabricColorsHttpHandlerTest extends HttpHandlerTest {
 
         // then: the response is bad request
         exchange.expectStatus().isBadRequest();
+    }
+
+    @Test
+    void shouldRespondWithPreconditionFailedOnMissingColorsError() {
+        // given: a valid token for a user
+        var token = createTokenForUser("USER_ID");
+
+        // and: a request to update the colors of a fabric
+        var request = new UpdateFabricColorsRequest();
+        request.version = 3L;
+        request.colorIds = Set.of("COLOR_ID_1", "COLOR_ID_2", "MISSING_COLOR_ID");
+
+        // and: the module is configured to return a missing colors error
+        when(module.updateFabricColors(
+                "FABRIC_ID",
+                3L,
+                Set.of("COLOR_ID_1", "COLOR_ID_2", "MISSING_COLOR_ID"),
+                Agent.user(AgentId.of("USER_ID"))
+        )).thenReturn(Mono.error(new ColorsMissingError(Set.of(ColorId.of("MISSING_COLOR_ID")))));
+
+        // when: posting the request
+        var exchange = client.post()
+                .uri("/api/fabrics/FABRIC_ID/update/colors")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        // then: the response is precondition failed
+        exchange.expectStatus().isEqualTo(412);
     }
 
 }

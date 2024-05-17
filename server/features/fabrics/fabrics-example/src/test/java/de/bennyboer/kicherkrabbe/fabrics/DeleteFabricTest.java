@@ -19,6 +19,21 @@ public class DeleteFabricTest extends FabricsModuleTest {
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
+        // and: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+        markTopicAsAvailable("SUMMER_ID", "Summer");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+        markColorAsAvailable("RED_ID", "Red", 255, 0, 0);
+        markColorAsAvailable("YELLOW_ID", "Yellow", 255, 255, 0);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
+
         // and: the user creates some fabrics
         String fabricId1 = createFabric(
                 "Ice bear party",
@@ -52,6 +67,18 @@ public class DeleteFabricTest extends FabricsModuleTest {
         // given: a user that is allowed to create fabrics
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
 
         // and: the user creates a fabric
         String fabricId = createFabric(

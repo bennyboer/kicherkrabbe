@@ -6,6 +6,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.fabrics.TopicId;
+import de.bennyboer.kicherkrabbe.fabrics.TopicsMissingError;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.requests.UpdateFabricTopicsRequest;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.UpdateFabricImageResponse;
 import org.junit.jupiter.api.Test;
@@ -134,6 +136,35 @@ public class UpdateFabricTopicsHttpHandlerTest extends HttpHandlerTest {
 
         // then: the response is bad request
         exchange.expectStatus().isBadRequest();
+    }
+
+    @Test
+    void shouldRespondWithPreconditionFailedOnMissingTopicsError() {
+        // given: a valid token for a user
+        var token = createTokenForUser("USER_ID");
+
+        // and: a request to update the topics of a fabric
+        var request = new UpdateFabricTopicsRequest();
+        request.version = 3L;
+        request.topicIds = Set.of("TOPIC_ID");
+
+        // and: the module is configured to return a topics missing error
+        when(module.updateFabricTopics(
+                "FABRIC_ID",
+                3L,
+                Set.of("TOPIC_ID"),
+                Agent.user(AgentId.of("USER_ID"))
+        )).thenReturn(Mono.error(new TopicsMissingError(Set.of(TopicId.of("TOPIC_ID")))));
+
+        // when: posting the request
+        var exchange = client.post()
+                .uri("/api/fabrics/FABRIC_ID/update/topics")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        // then: the response is precondition failed
+        exchange.expectStatus().isEqualTo(412);
     }
 
 }

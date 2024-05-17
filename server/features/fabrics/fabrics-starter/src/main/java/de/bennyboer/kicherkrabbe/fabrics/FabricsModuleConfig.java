@@ -7,8 +7,14 @@ import de.bennyboer.kicherkrabbe.changes.ResourceType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListenerFactory;
 import de.bennyboer.kicherkrabbe.fabrics.http.FabricsHttpConfig;
 import de.bennyboer.kicherkrabbe.fabrics.messaging.FabricsMessaging;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.ColorRepo;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.mongo.MongoColorRepo;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.fabrictypes.FabricTypeRepo;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.fabrictypes.mongo.MongoFabricTypeRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.FabricLookupRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.mongo.MongoFabricLookupRepo;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.topics.TopicRepo;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.topics.mongo.MongoTopicRepo;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.events.PermissionEventListenerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,6 +40,21 @@ public class FabricsModuleConfig {
     @Bean
     public FabricLookupRepo fabricLookupRepo(ReactiveMongoTemplate template) {
         return new MongoFabricLookupRepo(template);
+    }
+
+    @Bean
+    public TopicRepo fabricsTopicRepo(ReactiveMongoTemplate template) {
+        return new MongoTopicRepo(template);
+    }
+
+    @Bean
+    public ColorRepo colorRepo(ReactiveMongoTemplate template) {
+        return new MongoColorRepo(template);
+    }
+
+    @Bean
+    public FabricTypeRepo fabricTypeRepo(ReactiveMongoTemplate template) {
+        return new MongoFabricTypeRepo(template);
     }
 
     @Bean("fabricChangesTracker")
@@ -66,13 +87,19 @@ public class FabricsModuleConfig {
             FabricService fabricService,
             @Qualifier("fabricsPermissionsService") PermissionsService permissionsService,
             FabricLookupRepo fabricLookupRepo,
-            @Qualifier("fabricChangesTracker") ResourceChangesTracker fabricChangesTracker
+            @Qualifier("fabricChangesTracker") ResourceChangesTracker fabricChangesTracker,
+            TopicRepo topicRepo,
+            ColorRepo colorRepo,
+            FabricTypeRepo fabricTypeRepo
     ) {
         return new FabricsModule(
                 fabricService,
                 permissionsService,
                 fabricLookupRepo,
-                fabricChangesTracker
+                fabricChangesTracker,
+                topicRepo,
+                colorRepo,
+                fabricTypeRepo
         );
     }
 

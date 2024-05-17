@@ -2,6 +2,8 @@ package de.bennyboer.kicherkrabbe.fabrics;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.Color;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.ColorName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -15,6 +17,20 @@ public class QueryColorsUsedInFabricsTest extends FabricsModuleTest {
         // given: a user is allowed to create fabrics
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+        markTopicAsAvailable("BIRDS_ID", "Birds");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+        markColorAsAvailable("BLACK_ID", "Black", 0, 0, 0);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
 
         // and: the user creates some fabrics
         createFabric(
@@ -39,9 +55,9 @@ public class QueryColorsUsedInFabricsTest extends FabricsModuleTest {
 
         // then: the colors are returned
         assertThat(colors).containsExactlyInAnyOrder(
-                ColorId.of("BLUE_ID"),
-                ColorId.of("WHITE_ID"),
-                ColorId.of("BLACK_ID")
+                Color.of(ColorId.of("BLUE_ID"), ColorName.of("Blue"), 0, 0, 255),
+                Color.of(ColorId.of("WHITE_ID"), ColorName.of("White"), 255, 255, 255),
+                Color.of(ColorId.of("BLACK_ID"), ColorName.of("Black"), 0, 0, 0)
         );
 
         // when: querying the colors used in fabrics with an anonymous agent
@@ -49,9 +65,9 @@ public class QueryColorsUsedInFabricsTest extends FabricsModuleTest {
 
         // then: the colors are returned
         assertThat(colors).containsExactlyInAnyOrder(
-                ColorId.of("BLUE_ID"),
-                ColorId.of("WHITE_ID"),
-                ColorId.of("BLACK_ID")
+                Color.of(ColorId.of("BLUE_ID"), ColorName.of("Blue"), 0, 0, 255),
+                Color.of(ColorId.of("WHITE_ID"), ColorName.of("White"), 255, 255, 255),
+                Color.of(ColorId.of("BLACK_ID"), ColorName.of("Black"), 0, 0, 0)
         );
 
         // when: querying the colors used in fabrics with a system agent
@@ -59,9 +75,9 @@ public class QueryColorsUsedInFabricsTest extends FabricsModuleTest {
 
         // then: the colors are returned
         assertThat(colors).containsExactlyInAnyOrder(
-                ColorId.of("BLUE_ID"),
-                ColorId.of("WHITE_ID"),
-                ColorId.of("BLACK_ID")
+                Color.of(ColorId.of("BLUE_ID"), ColorName.of("Blue"), 0, 0, 255),
+                Color.of(ColorId.of("WHITE_ID"), ColorName.of("White"), 255, 255, 255),
+                Color.of(ColorId.of("BLACK_ID"), ColorName.of("Black"), 0, 0, 0)
         );
     }
 

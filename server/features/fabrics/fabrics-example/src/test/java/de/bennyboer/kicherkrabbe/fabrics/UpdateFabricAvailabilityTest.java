@@ -21,6 +21,19 @@ public class UpdateFabricAvailabilityTest extends FabricsModuleTest {
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
+        // and: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
+        markFabricTypeAsAvailable("SILK_ID", "Silk");
+
         // and: the user creates a fabric
         var jerseyAvailability = new FabricTypeAvailabilityDTO();
         jerseyAvailability.typeId = "JERSEY_ID";
@@ -67,6 +80,93 @@ public class UpdateFabricAvailabilityTest extends FabricsModuleTest {
     }
 
     @Test
+    void shouldNotUpdateFabricAvailabilityWhenFabricTypesAreMissing() {
+        // given: a user is allowed to create fabrics
+        allowUserToCreateFabrics("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
+
+        // and: the user creates a fabric
+        var jerseyAvailability = new FabricTypeAvailabilityDTO();
+        jerseyAvailability.typeId = "JERSEY_ID";
+        jerseyAvailability.inStock = false;
+
+        var cottonAvailability = new FabricTypeAvailabilityDTO();
+        cottonAvailability.typeId = "COTTON_ID";
+        cottonAvailability.inStock = false;
+
+        var silkAvailability = new FabricTypeAvailabilityDTO();
+        silkAvailability.typeId = "SILK_ID";
+        silkAvailability.inStock = false;
+
+        String fabricId = createFabric(
+                "Ice bear party",
+                "ICE_BEAR_IMAGE_ID",
+                Set.of("BLUE_ID", "WHITE_ID"),
+                Set.of("WINTER_ID", "ANIMALS_ID"),
+                Set.of(jerseyAvailability, cottonAvailability),
+                agent
+        );
+
+        // when: the user tries to update the availability of the fabric with a missing fabric type; then: an error
+        // is raised
+        assertThatThrownBy(() -> updateFabricAvailability(
+                fabricId,
+                0L,
+                Set.of(silkAvailability),
+                agent
+        )).matches(e -> e.getCause() instanceof FabricTypesMissingError
+                && ((FabricTypesMissingError) e.getCause()).getMissingFabricTypes()
+                .equals(Set.of(FabricTypeId.of("SILK_ID"))));
+
+        // when: the silk fabric type is marked as available
+        markFabricTypeAsAvailable("SILK_ID", "Silk");
+
+        // and: the user tries to update the availability of the fabric with a missing fabric type
+        updateFabricAvailability(
+                fabricId,
+                0L,
+                Set.of(silkAvailability),
+                agent
+        );
+
+        // then: the fabric has the new availability
+        var fabrics = getFabrics(agent);
+        assertThat(fabrics).hasSize(1);
+        var fabric = fabrics.getFirst();
+        assertThat(fabric.getId()).isEqualTo(FabricId.of(fabricId));
+        assertThat(fabric.getVersion()).isEqualTo(Version.of(1));
+        assertThat(fabric.getAvailability()).containsExactlyInAnyOrder(
+                FabricTypeAvailability.of(FabricTypeId.of("SILK_ID"), false)
+        );
+
+        // when: the silk fabric type is marked as unavailable
+        markFabricTypeAsUnavailable("SILK_ID");
+
+        // and: the user tries to update the availability of the fabric with a missing fabric type; then: an error is
+        // raised
+        assertThatThrownBy(() -> updateFabricAvailability(
+                fabricId,
+                1L,
+                Set.of(silkAvailability),
+                agent
+        )).matches(e -> e.getCause() instanceof FabricTypesMissingError
+                && ((FabricTypesMissingError) e.getCause()).getMissingFabricTypes()
+                .equals(Set.of(FabricTypeId.of("SILK_ID"))));
+    }
+
+    @Test
     void shouldNotUpdateFabricAvailabilityWhenUserIsNotAllowed() {
         // when: a user that is not allowed to update a fabrics availability tries to update the availability; then:
         // an error is raised
@@ -83,6 +183,18 @@ public class UpdateFabricAvailabilityTest extends FabricsModuleTest {
         // given: a user that is allowed to create fabrics
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
 
         // and: the user creates a fabric
         String fabricId = createFabric(
@@ -111,6 +223,18 @@ public class UpdateFabricAvailabilityTest extends FabricsModuleTest {
         // given: a user that is allowed to create fabrics
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markTopicAsAvailable("ANIMALS_ID", "Animals");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        markFabricTypeAsAvailable("COTTON_ID", "Cotton");
 
         // and: the user creates a fabric
         String fabricId = createFabric(
