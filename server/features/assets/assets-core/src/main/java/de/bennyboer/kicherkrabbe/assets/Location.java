@@ -17,16 +17,16 @@ public class Location {
     LocationType type;
 
     @Nullable
-    FilePath filePath;
+    FileName fileName;
 
-    public static Location file(FilePath filePath) {
-        notNull(filePath, "File path must be given");
+    public static Location file(FileName fileName) {
+        notNull(fileName, "File path must be given");
 
-        return new Location(FILE, filePath);
+        return new Location(FILE, fileName);
     }
 
-    public Optional<FilePath> getFilePath() {
-        return Optional.ofNullable(filePath);
+    public Optional<FileName> getFileName() {
+        return Optional.ofNullable(fileName);
     }
 
 }

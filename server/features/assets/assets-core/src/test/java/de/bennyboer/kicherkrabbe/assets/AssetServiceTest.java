@@ -21,7 +21,7 @@ public class AssetServiceTest {
     void shouldCreateAsset() {
         // given: a content type + location to create an asset for
         var contentType = ContentType.of("image/jpeg");
-        var location = Location.file(FilePath.of("path/to/image.jpg"));
+        var location = Location.file(FileName.of("image.jpg"));
 
         // when: creating the asset
         var id = create(contentType, location);
@@ -39,7 +39,7 @@ public class AssetServiceTest {
     void shouldDeleteAsset() {
         // given: an asset
         var contentType = ContentType.of("image/jpeg");
-        var location = Location.file(FilePath.of("path/to/image.jpg"));
+        var location = Location.file(FileName.of("image.jpg"));
         var id = create(contentType, location);
 
         // when: deleting the asset
@@ -54,7 +54,7 @@ public class AssetServiceTest {
     }
 
     private AssetId create(ContentType contentType, Location location) {
-        return assetService.create(contentType, location, Agent.system()).block().getId();
+        return assetService.create(AssetId.create(), contentType, location, Agent.system()).block().getId();
     }
 
     private void delete(AssetId id, Version version) {

@@ -27,9 +27,12 @@ public class AssetService extends AggregateService<Asset, AssetId> {
         ));
     }
 
-    public Mono<AggregateIdAndVersion<AssetId>> create(ContentType contentType, Location location, Agent agent) {
-        var id = AssetId.create();
-
+    public Mono<AggregateIdAndVersion<AssetId>> create(
+            AssetId id,
+            ContentType contentType,
+            Location location,
+            Agent agent
+    ) {
         return dispatchCommandToLatest(id, agent, CreateCmd.of(contentType, location))
                 .map(version -> AggregateIdAndVersion.of(id, version));
     }

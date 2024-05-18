@@ -9,20 +9,20 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class FilePath {
+public class FileName {
 
     String value;
 
-    public static FilePath of(String value) {
-        notNull(value, "File path must be given");
-        check(!value.isBlank(), "File path must not be empty");
+    public static FileName of(String value) {
+        notNull(value, "File name must be given");
+        check(!value.isBlank(), "File name must not be empty");
 
-        return new FilePath(value);
+        return new FileName(value);
     }
 
     @Override
     public String toString() {
-        return "FilePath(%s)".formatted(value);
+        return "FileName(%s)".formatted(value);
     }
 
 }
