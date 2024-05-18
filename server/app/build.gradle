@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation project(':libs:auth:auth-starter')
 
+    implementation project(':features:assets:assets-starter')
     implementation project(':features:credentials:credentials-starter')
     implementation project(':features:users:users-starter')
     implementation project(':features:topics:topics-starter')

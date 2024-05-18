@@ -1,8 +1,8 @@
 rootProject.name = 'server'
 
-///////////////
+//////////
 // APPS //
-///////////////
+//////////
 
 include('app')
 
@@ -47,9 +47,14 @@ include('libs:changes:changes-starter')
 include('libs:changes:changes-example')
 
 
-/////////////
-// MODULES //
-/////////////
+//////////////
+// FEATURES //
+//////////////
+
+// Assets
+include('features:assets:assets-core')
+include('features:assets:assets-starter')
+include('features:assets:assets-example')
 
 // Credentials
 include('features:credentials:credentials-core')
