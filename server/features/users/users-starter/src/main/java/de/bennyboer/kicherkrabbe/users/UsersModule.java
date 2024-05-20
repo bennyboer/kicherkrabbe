@@ -7,8 +7,8 @@ import de.bennyboer.kicherkrabbe.users.create.MailAlreadyInUseError;
 import de.bennyboer.kicherkrabbe.users.persistence.lookup.LookupUser;
 import de.bennyboer.kicherkrabbe.users.persistence.lookup.UserLookupRepo;
 import jakarta.annotation.Nullable;
-import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.reactive.TransactionalOperator;
@@ -20,7 +20,6 @@ import java.util.Optional;
 import static de.bennyboer.kicherkrabbe.users.Actions.*;
 import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
-@AllArgsConstructor
 public class UsersModule {
 
     private final UsersService usersService;
@@ -31,8 +30,27 @@ public class UsersModule {
 
     private final ReactiveTransactionManager transactionManager;
 
-    @PostConstruct
-    public void init() {
+    private boolean isInitialized;
+
+    public UsersModule(
+            UsersService usersService,
+            UserLookupRepo userLookupRepo,
+            PermissionsService permissionsService,
+            ReactiveTransactionManager transactionManager
+    ) {
+        this.usersService = usersService;
+        this.userLookupRepo = userLookupRepo;
+        this.permissionsService = permissionsService;
+        this.transactionManager = transactionManager;
+    }
+
+    @EventListener(ContextRefreshedEvent.class)
+    public void onApplicationEvent(ContextRefreshedEvent ignoredEvent) {
+        if (isInitialized) {
+            return;
+        }
+        isInitialized = true;
+
         initialize()
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();

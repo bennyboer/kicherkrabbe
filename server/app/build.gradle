@@ -12,6 +12,7 @@ dependencies {
     implementation project(':features:colors:colors-starter')
     implementation project(':features:fabric-types:fabric-types-starter')
     implementation project(':features:fabrics:fabrics-starter')
+    implementation project(':features:frontend')
 
     testImplementation project(':libs:persistence:persistence-testing')
     testImplementation project(':libs:messaging:messaging-testing')

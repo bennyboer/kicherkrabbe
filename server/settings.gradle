@@ -71,6 +71,9 @@ include('features:fabrics:fabrics-core')
 include('features:fabrics:fabrics-starter')
 include('features:fabrics:fabrics-example')
 
+// Frontend
+include('features:frontend')
+
 // Topics
 include('features:topics:topics-core')
 include('features:topics:topics-starter')

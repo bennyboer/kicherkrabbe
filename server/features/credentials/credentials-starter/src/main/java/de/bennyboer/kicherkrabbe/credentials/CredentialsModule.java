@@ -8,9 +8,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.permissions.*;
 import jakarta.annotation.Nullable;
-import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.reactive.TransactionalOperator;
@@ -26,7 +27,6 @@ import static de.bennyboer.kicherkrabbe.credentials.Actions.*;
 import static lombok.AccessLevel.PRIVATE;
 import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
-@AllArgsConstructor
 public class CredentialsModule {
 
     private final CredentialsService credentialsService;
@@ -39,8 +39,29 @@ public class CredentialsModule {
 
     private final ReactiveTransactionManager transactionManager;
 
-    @PostConstruct
-    public void init() {
+    private boolean isInitialized;
+
+    public CredentialsModule(
+            CredentialsService credentialsService,
+            CredentialsLookupRepo credentialsLookupRepo,
+            PermissionsService permissionsService,
+            TokenGenerator tokenGenerator,
+            ReactiveTransactionManager transactionManager
+    ) {
+        this.credentialsService = credentialsService;
+        this.credentialsLookupRepo = credentialsLookupRepo;
+        this.permissionsService = permissionsService;
+        this.tokenGenerator = tokenGenerator;
+        this.transactionManager = transactionManager;
+    }
+
+    @EventListener(ContextRefreshedEvent.class)
+    public void onApplicationEvent(ContextRefreshedEvent ignoredEvent) {
+        if (isInitialized) {
+            return;
+        }
+        isInitialized = true;
+
         initialize()
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();

@@ -1,0 +1,5 @@
+processResources {
+    from('../../../frontend/dist/frontend/browser') {
+        into 'public'
+    }
+}

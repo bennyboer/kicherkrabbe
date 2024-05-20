@@ -49,28 +49,17 @@ public class MongoPermissionsRepo implements PermissionsRepo {
 
     @Override
     public Flux<Permission> insert(Collection<Permission> permissions) {
-        List<MongoPermission> mongoPermissions = permissions.stream()
-                .map(p -> MongoPermissionSerializer.serialize(PermissionId.create(), p, Instant.now()))
-                .toList();
-
-        return template.bulkOps(UNORDERED, MongoPermission.class, collectionName)
-                .insert(mongoPermissions)
-                .execute()
-                .onErrorResume(DuplicateKeyException.class, e -> {
-                    log.warn("Tried to insert duplicate permissions. Ignoring.");
-
-                    if (e.getCause() instanceof MongoBulkWriteException bulkWriteException) {
-                        return Mono.just(bulkWriteException.getWriteResult());
-                    }
-
-                    return Mono.empty();
-                })
-                .map(result -> result.getInserts()
-                        .stream()
-                        .map(i -> i.getId().asString().getValue())
-                        .collect(Collectors.toSet()))
-                .flatMapMany(ids -> template.find(query(where("_id").in(ids)), MongoPermission.class, collectionName))
-                .map(MongoPermissionSerializer::deserialize);
+        /*
+        Normally calling bulkInsert would suffice, but strangely the transaction seems to be
+        aborted by mongodb if there is a duplicate permission we want to insert already in the collection.
+        For now we just filter out the permissions that are already in the collection beforehand.
+        That is not ideal because slower, but works for now..
+         */
+        return Flux.fromIterable(permissions)
+                .filterWhen(p -> hasPermission(p).map(has -> !has))
+                .collectList()
+                .filter(list -> !list.isEmpty())
+                .flatMapMany(this::bulkInsert);
     }
 
     @Override
@@ -230,6 +219,32 @@ public class MongoPermissionsRepo implements PermissionsRepo {
     public Flux<Permission> removePermissions(Permission... permissions) {
         return Flux.fromIterable(Set.of(permissions))
                 .flatMap(this::removeByPermission);
+    }
+
+    private Flux<Permission> bulkInsert(Collection<Permission> permissions) {
+        List<MongoPermission> mongoPermissions = permissions.stream()
+                .map(p -> MongoPermissionSerializer.serialize(PermissionId.create(), p, Instant.now()))
+                .toList();
+
+        return template.bulkOps(UNORDERED, MongoPermission.class, collectionName)
+                .insert(mongoPermissions)
+                .execute()
+                .onErrorResume(DuplicateKeyException.class, e -> {
+                    log.warn("Tried to insert duplicate permissions. Ignoring.");
+
+                    if (e.getCause() instanceof MongoBulkWriteException bulkWriteException) {
+                        return Mono.just(bulkWriteException.getWriteResult());
+                    }
+
+                    return Mono.error(e);
+                })
+                .map(result -> result.getInserts()
+                        .stream()
+                        .map(i -> i.getId().asString().getValue())
+                        .collect(Collectors.toSet()))
+                .filter(ids -> !ids.isEmpty())
+                .flatMapMany(ids -> template.find(query(where("_id").in(ids)), MongoPermission.class, collectionName))
+                .map(MongoPermissionSerializer::deserialize);
     }
 
     private Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
