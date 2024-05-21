@@ -44,20 +44,20 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
-          build-root-directory: backend
+          build-root-directory: server
       - name: Download built frontend
         uses: actions/download-artifact@v4
         with:
           name: frontend
           path: frontend/dist
       - name: Build Jar
-        run: ./gradlew :app:shadowJar
-        working-directory: backend
+        run: ./gradlew :app:bootJar
+        working-directory: server
       - name: Upload built Jar
         uses: actions/upload-artifact@v4
         with:
-          name: backend
-          path: backend/app/build/libs
+          name: server
+          path: server/app/build/libs
 
   deploy-backend:
     name: Deploy backend
@@ -67,17 +67,17 @@ jobs:
       - name: Download built backend Jar
         uses: actions/download-artifact@v4
         with:
-          name: backend
-          path: backend/app/build/libs
+          name: server
+          path: server/app/build/libs
       - name: Deploy backend via SSH
         uses: easingthemes/ssh-deploy@main
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SOURCE: "backend/app/build/libs/app.jar"
+          SOURCE: "server/app/build/libs/app.jar"
           ARGS: "-rlgoDzvc -i --delete"
           REMOTE_HOST: ${{ secrets.SSH_REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.SSH_REMOTE_USER }}
           REMOTE_PORT: ${{ secrets.SSH_REMOTE_PORT }}
           TARGET: ${{ secrets.SSH_REMOTE_TARGET }}
           SCRIPT_AFTER: |
-            service kicherkrabbe restart
+            service kicherkrabbe-server restart
