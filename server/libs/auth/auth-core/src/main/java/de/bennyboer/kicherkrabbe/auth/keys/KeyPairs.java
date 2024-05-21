@@ -10,8 +10,12 @@ import java.security.spec.ECGenParameterSpec;
 
 public class KeyPairs {
 
-    public static KeyPair read(String path) {
-        return KeyReader.readKeyPair(path).block();
+    public static KeyPair readFromClassPath(String path) {
+        return KeyReader.readKeyPairFromClassPath(path).block();
+    }
+
+    public static KeyPair readFromFile(String path) {
+        return KeyReader.readKeyPairFromFile(path).block();
     }
 
     public static KeyPair generate() {

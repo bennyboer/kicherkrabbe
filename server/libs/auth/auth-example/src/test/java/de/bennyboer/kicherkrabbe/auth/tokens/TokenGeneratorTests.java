@@ -11,7 +11,7 @@ public class TokenGeneratorTests {
     @Test
     void shouldGenerateToken() {
         // given: a token generator and verifier
-        KeyPair keyPair = KeyPairs.read("/keys/key_pair.pem");
+        KeyPair keyPair = KeyPairs.readFromClassPath("/keys/key_pair.pem");
         TokenGenerator tokenGenerator = TokenGenerators.create(keyPair);
         TokenVerifier tokenVerifier = TokenVerifiers.create(keyPair);
 

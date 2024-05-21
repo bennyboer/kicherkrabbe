@@ -7,6 +7,7 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
@@ -15,10 +16,18 @@ import java.util.Optional;
 
 public class KeyReader {
 
-    public static Mono<KeyPair> readKeyPair(String path) {
+    public static Mono<KeyPair> readKeyPairFromClassPath(String path) {
         Security.addProvider(new BouncyCastleProvider());
 
-        return loadKeyPair(path)
+        return loadKeyPairFromClassPath(path)
+                .flatMap(KeyReader::convertKeyPair)
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    public static Mono<KeyPair> readKeyPairFromFile(String path) {
+        Security.addProvider(new BouncyCastleProvider());
+
+        return loadKeyPairFromFile(path)
                 .flatMap(KeyReader::convertKeyPair)
                 .subscribeOn(Schedulers.boundedElastic());
     }
@@ -35,13 +44,21 @@ public class KeyReader {
         });
     }
 
-    private static Mono<PEMKeyPair> loadKeyPair(String path) {
+    private static Mono<PEMKeyPair> loadKeyPairFromClassPath(String path) {
         return Mono.fromCallable(() -> {
             try (
                     var parser = new PEMParser(new InputStreamReader(
                             Optional.ofNullable(KeyReader.class.getResourceAsStream(path)).orElseThrow()
                     ))
             ) {
+                return (PEMKeyPair) parser.readObject();
+            }
+        });
+    }
+
+    private static Mono<PEMKeyPair> loadKeyPairFromFile(String path) {
+        return Mono.fromCallable(() -> {
+            try (var parser = new PEMParser(new FileReader(path))) {
                 return (PEMKeyPair) parser.readObject();
             }
         });
