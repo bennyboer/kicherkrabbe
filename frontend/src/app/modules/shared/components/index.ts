@@ -19,3 +19,4 @@ export { RadioComponent } from './radio/radio.component';
 export { MobileSwitchComponent } from './mobile-switch/mobile-switch.component';
 export { OverlayContainerComponent } from './overlay-container/overlay-container.component';
 export { OverlayComponent } from './overlay/overlay.component';
+export { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';

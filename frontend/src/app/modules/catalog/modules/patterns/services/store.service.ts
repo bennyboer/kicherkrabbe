@@ -1,8 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { Pattern } from '../model';
-import { Option } from '../../../../../util';
 import { RemotePatternsService } from './remote.service';
+import { someOrNone } from '../../../../../util';
 
 interface State {
   loaded: boolean;
@@ -39,7 +39,7 @@ export class PatternsStoreService implements OnDestroy {
 
   getPatternById(id: string): Observable<Pattern> {
     return this.getState().pipe(
-      map((state) => Option.someOrNone(state.patterns[id])),
+      map((state) => someOrNone(state.patterns[id])),
       filter((pattern) => pattern.isSome()),
       map((pattern) => pattern.orElseThrow()),
     );

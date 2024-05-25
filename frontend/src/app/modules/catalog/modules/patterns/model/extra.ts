@@ -1,16 +1,12 @@
-import { Money, Option } from '../../../../../util';
+import { Money, someOrNone } from '../../../../../util';
 
 export class PatternExtra {
   readonly name: string;
   readonly price: Money;
 
   private constructor(props: { name: string; price: Money }) {
-    this.name = Option.someOrNone(props.name).orElseThrow(
-      'Extra name is required',
-    );
-    this.price = Option.someOrNone(props.price).orElseThrow(
-      'Extra price is required',
-    );
+    this.name = someOrNone(props.name).orElseThrow('Extra name is required');
+    this.price = someOrNone(props.price).orElseThrow('Extra price is required');
   }
 
   static of(props: { name: string; price: Money }): PatternExtra {

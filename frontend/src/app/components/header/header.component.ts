@@ -16,9 +16,9 @@ import {
   takeUntil,
   throttleTime,
 } from 'rxjs';
-import { Option } from '../../util';
+import { none, Option, some } from '../../util';
 import { NavigationEnd, Router } from '@angular/router';
-import { Size } from '../../modules/shared/components/button/button.component';
+import { Size } from '../../modules/shared';
 
 @Component({
   selector: 'app-header',
@@ -27,7 +27,7 @@ import { Size } from '../../modules/shared/components/button/button.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent implements AfterViewInit, OnDestroy {
-  protected headerHeight: Option<number> = Option.none();
+  protected headerHeight: Option<number> = none();
 
   private readonly sticky$: Subject<boolean> = new BehaviorSubject(false);
   private readonly overlayActive$: Subject<boolean> = new BehaviorSubject(
@@ -50,7 +50,7 @@ export class HeaderComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.headerHeight = Option.some(this.elementRef.nativeElement.clientHeight);
+    this.headerHeight = some(this.elementRef.nativeElement.clientHeight);
 
     this.setupScrollListener();
   }

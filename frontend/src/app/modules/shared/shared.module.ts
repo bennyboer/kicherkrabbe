@@ -9,6 +9,7 @@ import {
   CheckboxComponent,
   DropdownComponent,
   FilterSortBarComponent,
+  LoadingSpinnerComponent,
   MobileSwitchComponent,
   OverlayComponent,
   OverlayContainerComponent,
@@ -35,6 +36,7 @@ const COMPONENTS = [
   MobileSwitchComponent,
   OverlayContainerComponent,
   OverlayComponent,
+  LoadingSpinnerComponent,
 ];
 
 const DIRECTIVES = [FlagDirective, UnlessFlagDirective];

@@ -20,7 +20,7 @@ import {
   take,
   takeUntil,
 } from 'rxjs';
-import { Option } from '../../../../util';
+import { Option, someOrNone } from '../../../../util';
 
 export type FilterId = string;
 export type FilterItemId = string;
@@ -91,7 +91,7 @@ export class Filter {
       id: props.id,
       label: props.label,
       items: props.items,
-      selectionMode: Option.someOrNone(props.selectionMode),
+      selectionMode: someOrNone(props.selectionMode),
     });
   }
 
@@ -209,12 +209,12 @@ export class SortEvent {
 export class FilterSortBarComponent implements OnInit, OnDestroy {
   @Input('filters')
   set setFilters(filters: Filter[]) {
-    Option.someOrNone(filters).ifSome((filters) => this.filters$.next(filters));
+    someOrNone(filters).ifSome((filters) => this.filters$.next(filters));
   }
 
   @Input('sortingOptions')
   set setSortingOptions(sortingOptions: SortingOption[]) {
-    Option.someOrNone(sortingOptions).ifSome((sortingOptions) => {
+    someOrNone(sortingOptions).ifSome((sortingOptions) => {
       this.sortingOptions$.next(sortingOptions);
       this.sortBy$.next(sortingOptions[0].id);
     });

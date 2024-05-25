@@ -1,13 +1,39 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { DashboardPage } from './pages';
+import { inject, NgModule } from '@angular/core';
+import { Router, RouterModule, Routes } from '@angular/router';
+import { DashboardPage, LoginPage } from './pages';
+import { AdminAuthService } from './services';
+import { map } from 'rxjs';
 
 const routes: Routes = [
   {
     path: '',
-    component: DashboardPage,
+    canActivate: [
+      () => {
+        const authService = inject(AdminAuthService);
+        const router = inject(Router);
+
+        return authService.isLoggedIn().pipe(
+          map((loggedIn) => {
+            if (!loggedIn) {
+              return router.parseUrl('/admin/login');
+            }
+
+            return true;
+          }),
+        );
+      },
+    ],
+    children: [
+      {
+        path: '',
+        component: DashboardPage,
+      },
+    ],
   },
-  // TODO Login page, etc.
+  {
+    path: 'login',
+    component: LoginPage,
+  },
 ];
 
 @NgModule({

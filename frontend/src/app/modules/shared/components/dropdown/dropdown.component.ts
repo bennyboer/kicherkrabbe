@@ -20,8 +20,17 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
-import { Option, Point, Rect, Size } from '../../../../util';
+import {
+  none,
+  Option,
+  Point,
+  Rect,
+  Size,
+  some,
+  someOrNone,
+} from '../../../../util';
 import { OverlayRef, OverlayService } from '../../services';
+import { Size as ButtonSize } from '../button/button.component';
 
 export type DropdownItemId = string;
 
@@ -51,12 +60,12 @@ export class DropdownComponent implements OnDestroy, OnInit {
 
   @Input('items')
   set setItems(items: DropdownItem[]) {
-    Option.someOrNone(items).ifSome((items) => this.items$.next(items));
+    someOrNone(items).ifSome((items) => this.items$.next(items));
   }
 
   @Input('selected')
   set setSelected(selected: DropdownItemId[]) {
-    Option.someOrNone(selected).ifSome((selected) => {
+    someOrNone(selected).ifSome((selected) => {
       this.selected$.next(new Set(selected));
     });
   }
@@ -66,13 +75,15 @@ export class DropdownComponent implements OnDestroy, OnInit {
     DropdownItemId[]
   >();
 
+  protected readonly ButtonSize = ButtonSize;
+
   private readonly items$: BehaviorSubject<DropdownItem[]> =
     new BehaviorSubject<DropdownItem[]>([]);
   private readonly selected$: BehaviorSubject<Set<DropdownItemId>> =
     new BehaviorSubject<Set<DropdownItemId>>(new Set<DropdownItemId>());
   private readonly destroy$: Subject<void> = new Subject<void>();
   private readonly openedOverlay$: BehaviorSubject<Option<OverlayRef>> =
-    new BehaviorSubject<Option<OverlayRef>>(Option.none());
+    new BehaviorSubject<Option<OverlayRef>>(none());
 
   constructor(
     private readonly elementRef: ElementRef,
@@ -148,12 +159,12 @@ export class DropdownComponent implements OnDestroy, OnInit {
 
     if (isOpened) {
       this.closeOpenedOverlay();
-      this.openedOverlay$.next(Option.none());
+      this.openedOverlay$.next(none());
     } else {
       const rect = this.getElementRect();
 
       this.openedOverlay$.next(
-        Option.some(
+        some(
           this.overlayService.pushOverlay({
             templateRef: this.dropdownTemplateRef,
             parent: this.elementRef.nativeElement as HTMLElement,
@@ -174,7 +185,7 @@ export class DropdownComponent implements OnDestroy, OnInit {
     this.selected$.next(new Set<DropdownItemId>());
   }
 
-  onItemClick(item: DropdownItem, _event: MouseEvent): void {
+  onItemClick(item: DropdownItem): void {
     this.toggleItemSelection(item.id);
   }
 

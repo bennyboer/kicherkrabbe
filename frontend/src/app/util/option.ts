@@ -1,3 +1,8 @@
+export const some = <T>(value: T | null | undefined) => Option.some(value);
+export const someOrNone = <T>(value: T | null | undefined) =>
+  Option.someOrNone(value);
+export const none = <T>() => Option.none<T>();
+
 export class Option<T> {
   private readonly value: T | null;
 
@@ -21,10 +26,10 @@ export class Option<T> {
 
   static someOrNone<T>(value: T | null | undefined): Option<T> {
     if (value === null || value === undefined) {
-      return Option.none<T>();
+      return none<T>();
     }
 
-    return Option.some(value);
+    return some(value);
   }
 
   isSome(): boolean {
@@ -37,15 +42,15 @@ export class Option<T> {
 
   map<U>(mapper: (value: T) => U): Option<U> {
     if (this.isNone()) {
-      return Option.none<U>();
+      return none<U>();
     }
 
-    return Option.someOrNone(mapper(this.orElseThrow()));
+    return someOrNone(mapper(this.orElseThrow()));
   }
 
   flatMap<U>(mapper: (value: T) => Option<U>): Option<U> {
     if (this.isNone()) {
-      return Option.none<U>();
+      return none<U>();
     }
 
     return mapper(this.orElseThrow());
@@ -53,19 +58,27 @@ export class Option<T> {
 
   filter(predicate: (value: T) => boolean): Option<T> {
     if (this.isNone()) {
-      return Option.none<T>();
+      return none<T>();
     }
 
     if (predicate(this.orElseThrow())) {
-      return Option.some(this.orElseThrow());
+      return some(this.orElseThrow());
     }
 
-    return Option.none<T>();
+    return none<T>();
   }
 
   ifSome(consumer: (value: T) => void): void {
     if (this.isSome()) {
       consumer(this.orElseThrow());
+    }
+  }
+
+  ifSomeOrElse(ifSomeFn: (value: T) => void, orElseFn: () => void) {
+    if (this.isSome()) {
+      ifSomeFn(this.orElseThrow());
+    } else {
+      orElseFn();
     }
   }
 
@@ -88,9 +101,7 @@ export class Option<T> {
   orElseThrow(message?: string): T {
     if (this.isNone()) {
       throw new Error(
-        Option.some(message).orElse(
-          'Expected value to be non-null and non-undefined',
-        ),
+        some(message).orElse('Expected value to be non-null and non-undefined'),
       );
     }
 

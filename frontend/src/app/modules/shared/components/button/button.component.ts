@@ -1,17 +1,19 @@
 import {
   booleanAttribute,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
+  EventEmitter,
   HostBinding,
+  HostListener,
   Input,
   OnDestroy,
   OnInit,
   Optional,
+  Output,
   Renderer2,
 } from '@angular/core';
-import { Option } from '../../../../util';
+import { none, Option, some, someOrNone } from '../../../../util';
 import { Subject, takeUntil } from 'rxjs';
 import { ButtonId, ButtonRegistry } from './button-registry';
 
@@ -19,6 +21,7 @@ export enum Size {
   SMALL = 'SMALL',
   NORMAL = 'MEDIUM',
   LARGE = 'LARGE',
+  FIT_CONTENT = 'FIT_CONTENT',
 }
 
 @Component({
@@ -26,6 +29,9 @@ export enum Size {
   templateUrl: './button.component.html',
   styleUrls: ['./button.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[attr.tabindex]': '0',
+  },
 })
 export class ButtonComponent implements OnInit, OnDestroy {
   @HostBinding('class.active')
@@ -36,6 +42,10 @@ export class ButtonComponent implements OnInit, OnDestroy {
   @Input({ transform: booleanAttribute })
   rounded: boolean = true;
 
+  @HostBinding('class.disabled')
+  @Input({ transform: booleanAttribute })
+  disabled: boolean = false;
+
   @Input('size')
   set setSize(size: Size) {
     this.sizeToClass(this.size).ifSome((className) =>
@@ -45,21 +55,25 @@ export class ButtonComponent implements OnInit, OnDestroy {
     this.size = size;
   }
 
+  @Output()
+  click: EventEmitter<MouseEvent | KeyboardEvent> = new EventEmitter<
+    MouseEvent | KeyboardEvent
+  >();
+
   private size: Size = Size.NORMAL;
-  private buttonId: Option<ButtonId> = Option.none();
+  private buttonId: Option<ButtonId> = none();
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(
     @Optional() private readonly buttonRegistry: ButtonRegistry,
     private readonly elementRef: ElementRef,
     private readonly renderer: Renderer2,
-    private readonly cd: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
-    Option.someOrNone(this.buttonRegistry).ifSome((registry) => {
+    someOrNone(this.buttonRegistry).ifSome((registry) => {
       const buttonId = registry.register(this);
-      this.buttonId = Option.some(buttonId);
+      this.buttonId = some(buttonId);
       this.rounded = false;
 
       registry
@@ -110,14 +124,28 @@ export class ButtonComponent implements OnInit, OnDestroy {
     this.renderer.removeClass(this.elementRef.nativeElement, name);
   }
 
+  @HostListener('keydown', ['$event'])
+  onEnter(event: KeyboardEvent): void {
+    if (this.disabled) {
+      return;
+    }
+
+    const isEnter = event.key === 'Enter';
+    if (isEnter) {
+      this.click.emit(event);
+    }
+  }
+
   private sizeToClass(size: Size): Option<string> {
     switch (size) {
       case Size.SMALL:
-        return Option.some('small');
+        return some('small');
       case Size.LARGE:
-        return Option.some('large');
+        return some('large');
+      case Size.FIT_CONTENT:
+        return some('fit-content');
       default:
-        return Option.none();
+        return none();
     }
   }
 }

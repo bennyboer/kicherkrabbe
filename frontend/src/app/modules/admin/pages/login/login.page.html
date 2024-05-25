@@ -1,0 +1,50 @@
+<div class="login-form-container">
+  <h3>Als Administrator anmelden...</h3>
+  <p>Bitte melden Sie sich mit Ihren Zugangsdaten an.</p>
+  <form class="login-form">
+
+    <div>
+      <input #username
+             type="text"
+             id="username"
+             name="username"
+             placeholder="E-Mail Adresse"
+             autofocus
+             required
+             (input)="updateUsername(username.value)">
+    </div>
+
+    <div>
+      <input #password
+             type="password"
+             id="password"
+             name="password"
+             placeholder="Passwort"
+             required
+             (input)="updatePassword(password.value)">
+    </div>
+
+    <div class="actions">
+      <span>
+        <button class="hidden" type="submit" [disabled]="cannotLogin() | async" (click)="login()"></button>
+        <app-button (click)="login()" [disabled]="cannotLogin() | async">
+          @if (isLoading() | async) {
+            <span class="loading-button-text">
+              <app-loading-spinner size="16"></app-loading-spinner>
+              <span>Anmelden...</span>
+            </span>
+          } @else {
+            Anmelden
+          }
+        </app-button>
+      </span>
+    </div>
+
+    @if (isError() | async) {
+      <p class="error-note">
+        Die Anmeldung ist fehlgeschlagen. Bitte überprüfen Sie Ihre Zugangsdaten.
+      </p>
+    }
+
+  </form>
+</div>

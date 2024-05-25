@@ -1,14 +1,12 @@
-import { Option } from './option';
+import { someOrNone } from './option';
 
 export class Currency {
   readonly name: string;
   readonly symbol: string;
 
   private constructor(props: { name: string; symbol: string }) {
-    this.name = Option.someOrNone(props.name).orElseThrow(
-      'Currency name is required',
-    );
-    this.symbol = Option.someOrNone(props.symbol).orElseThrow(
+    this.name = someOrNone(props.name).orElseThrow('Currency name is required');
+    this.symbol = someOrNone(props.symbol).orElseThrow(
       'Currency short form is required',
     );
   }

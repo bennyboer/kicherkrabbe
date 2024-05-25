@@ -1,4 +1,4 @@
-export { Option } from './option';
+export { Option, some, someOrNone, none } from './option';
 export { Money } from './money';
 export { Currency } from './currency';
 export { Image } from './image';

@@ -1,4 +1,4 @@
-import { Money, Option } from '../../../../../util';
+import { Money, none, Option, some, someOrNone } from '../../../../../util';
 import { SizeRange } from './size-range';
 
 export class PatternVariant {
@@ -13,12 +13,10 @@ export class PatternVariant {
     description: Option<string>;
     sizes: SizeRange[];
   }) {
-    this.id = Option.someOrNone(props.id).orElseThrow('Variant ID is required');
-    this.name = Option.someOrNone(props.name).orElseThrow(
-      'Variant name is required',
-    );
+    this.id = someOrNone(props.id).orElseThrow('Variant ID is required');
+    this.name = someOrNone(props.name).orElseThrow('Variant name is required');
     this.description = props.description;
-    this.sizes = Option.someOrNone(props.sizes).orElseThrow(
+    this.sizes = someOrNone(props.sizes).orElseThrow(
       'Variant sizes are required',
     );
   }
@@ -32,7 +30,7 @@ export class PatternVariant {
     return new PatternVariant({
       id: props.id,
       name: props.name,
-      description: Option.someOrNone(props.description),
+      description: someOrNone(props.description),
       sizes: props.sizes,
     });
   }
@@ -63,16 +61,16 @@ export class PatternVariant {
   getLargestSize(): Option<number> {
     const allSizesAreDefined = this.sizes.every((size) => size.to.isSome());
     if (!allSizesAreDefined) {
-      return Option.none();
+      return none();
     }
 
     const sizes = this.sizes.map((size) => size.to.orElse(size.from));
 
     if (sizes.length === 0) {
-      return Option.some(0);
+      return some(0);
     }
 
-    return Option.some(
+    return some(
       sizes.reduce((acc, size) => (size > acc ? size : acc), sizes[0]),
     );
   }

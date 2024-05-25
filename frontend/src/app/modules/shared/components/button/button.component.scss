@@ -6,30 +6,52 @@
   cursor: pointer;
   user-select: none;
   background-color: var(--contrast);
-  padding: 8px;
+  padding: 12px 16px;
   font-size: 16px;
   color: var(--text);
-  transition: background-color 0.2s ease-out;
+  outline: 2px solid transparent;
+  transition: background-color 0.2s ease-out, outline-color 0.1s ease-out;
+
+  &.disabled {
+    pointer-events: none;
+    cursor: default;
+    color: var(--background-low-contrast);
+    background-color: var(--contrast-lower);
+  }
 
   &.rounded {
     border-radius: 12px;
   }
 
   &.small {
-    padding: 4px;
+    padding: 4px 8px;
     font-size: 12px;
   }
 
+  &.fit-content {
+    padding: 0;
+    font-size: inherit;
+  }
+
   &.large {
-    padding: 12px;
+    padding: 16px 20px;
     font-size: 20px;
   }
 
   &:hover, &.active {
-    background-color: var(--background-low-contrast);
+    background-color: var(--contrast-lower);
+  }
+
+  &:focus {
+    outline-color: var(--primary-2);
   }
 
   &:active {
-    background-color: var(--background-mid-contrast);
+    outline-color: var(--primary-2);
+    background-color: var(--contrast-mid);
+  }
+
+  &.in-button-row, &.in-button-column {
+    outline: none;
   }
 }

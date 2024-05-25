@@ -7,7 +7,7 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
-import { Option, Point } from '../../../util';
+import { Option, Point, someOrNone } from '../../../util';
 import { Overlay, OverlayId } from '../models';
 
 interface OverlayLookup {
@@ -66,10 +66,10 @@ export class OverlayService implements OnDestroy {
     minWidth?: number;
   }): OverlayRef {
     const { templateRef, offset, parent } = props;
-    const closeOnBackdropClick = Option.someOrNone(
-      props.closeOnBackdropClick,
-    ).orElse(true);
-    const minWidth = Option.someOrNone(props.minWidth).orElse(0);
+    const closeOnBackdropClick = someOrNone(props.closeOnBackdropClick).orElse(
+      true,
+    );
+    const minWidth = someOrNone(props.minWidth).orElse(0);
 
     const index = this.getNextOverlayIndex();
     const overlay = Overlay.create({
@@ -150,11 +150,11 @@ export class OverlayService implements OnDestroy {
   }
 
   private getOverlayById(id: OverlayId): Option<Overlay> {
-    return Option.someOrNone(this.getCurrentOverlayLookup()[id]);
+    return someOrNone(this.getCurrentOverlayLookup()[id]);
   }
 
   private getOverlayByIndex(index: number): Option<Overlay> {
-    return Option.someOrNone(
+    return someOrNone(
       Object.values(this.getCurrentOverlayLookup()).find(
         (o) => o.index === index,
       ),

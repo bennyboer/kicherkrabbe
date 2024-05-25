@@ -1,4 +1,4 @@
-import { Money, Option } from '../../../../../util';
+import { Money, Option, someOrNone } from '../../../../../util';
 
 export class SizeRange {
   readonly from: number;
@@ -12,12 +12,12 @@ export class SizeRange {
     unit: Option<string>;
     price: Money;
   }) {
-    this.from = Option.someOrNone(props.from).orElseThrow(
+    this.from = someOrNone(props.from).orElseThrow(
       'Size range from is required',
     );
     this.to = props.to;
     this.unit = props.unit;
-    this.price = Option.someOrNone(props.price).orElseThrow(
+    this.price = someOrNone(props.price).orElseThrow(
       'Size range price is required',
     );
   }
@@ -30,8 +30,8 @@ export class SizeRange {
   }): SizeRange {
     return new SizeRange({
       from: props.from,
-      to: Option.someOrNone(props.to),
-      unit: Option.someOrNone(props.unit),
+      to: someOrNone(props.to),
+      unit: someOrNone(props.unit),
       price: props.price,
     });
   }

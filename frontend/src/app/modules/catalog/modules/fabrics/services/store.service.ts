@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { Fabric } from '../model';
 import { RemoteFabricsService } from './remote.service';
-import { Option } from '../../../../../util';
+import { someOrNone } from '../../../../../util';
 
 interface State {
   loaded: boolean;
@@ -35,7 +35,7 @@ export class FabricsStoreService {
 
   getFabricById(id: string): Observable<Fabric> {
     return this.getState().pipe(
-      map((state) => Option.someOrNone(state.fabrics[id])),
+      map((state) => someOrNone(state.fabrics[id])),
       filter((pattern) => pattern.isSome()),
       map((pattern) => pattern.orElseThrow()),
     );

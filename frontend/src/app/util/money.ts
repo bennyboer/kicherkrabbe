@@ -1,13 +1,13 @@
 import { Currency } from './currency';
-import { Option } from './option';
+import { someOrNone } from './option';
 
 export class Money {
   readonly value: number;
   readonly currency: Currency;
 
   private constructor(props: { value: number; currency: Currency }) {
-    this.value = Option.someOrNone(props.value).orElse(0);
-    this.currency = Option.someOrNone(props.currency).orElseThrow(
+    this.value = someOrNone(props.value).orElse(0);
+    this.currency = someOrNone(props.currency).orElseThrow(
       'Currency is required',
     );
   }

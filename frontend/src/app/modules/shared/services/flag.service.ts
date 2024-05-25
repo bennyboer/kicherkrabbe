@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Option } from '../../../util';
+import { someOrNone } from '../../../util';
 import { environment } from '../../../../environments';
 
 export enum Flag {
@@ -19,6 +19,6 @@ export class FlagService {
   }
 
   isActive(flag: Flag): boolean {
-    return Option.someOrNone(this.activeFlags.get(flag)).orElse(false);
+    return someOrNone(this.activeFlags.get(flag)).orElse(false);
   }
 }

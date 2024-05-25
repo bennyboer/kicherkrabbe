@@ -27,9 +27,9 @@
 
     <div class="dropdown-content">
       @if (getItems() | async; as items) {
-        <app-button-column [rounded]="false">
+        <app-button-column [rounded]="false" [size]="ButtonSize.FIT_CONTENT">
           @for (item of items; track item.id) {
-            <app-button (click)="onItemClick(item, $event)">
+            <app-button (click)="onItemClick(item)">
               <div class="dropdown-item">
                 <div class="dropdown-item-prefix">
                   @if (multiple) {

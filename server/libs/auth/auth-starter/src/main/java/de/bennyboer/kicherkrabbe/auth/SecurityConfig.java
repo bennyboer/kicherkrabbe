@@ -4,9 +4,11 @@ import de.bennyboer.kicherkrabbe.auth.keys.KeyPair;
 import de.bennyboer.kicherkrabbe.auth.keys.KeyPairs;
 import de.bennyboer.kicherkrabbe.auth.testing.MockUserDetailsService;
 import de.bennyboer.kicherkrabbe.auth.tokens.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -17,9 +19,11 @@ import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
 
+@Slf4j
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
@@ -67,9 +71,11 @@ public class SecurityConfig {
             ServerHttpSecurity http,
             ReactiveAuthenticationManager reactiveAuthenticationManager,
             TokenVerifier verifier,
-            List<Customizer<ServerHttpSecurity.AuthorizeExchangeSpec>> authorizeExchangeCustomizers
+            List<Customizer<ServerHttpSecurity.AuthorizeExchangeSpec>> authorizeExchangeCustomizers,
+            Environment environment
     ) {
         http
+                .cors(corsSpec -> setupCors(corsSpec, environment))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .authenticationManager(reactiveAuthenticationManager)
@@ -83,6 +89,26 @@ public class SecurityConfig {
                         .anyExchange().authenticated());
 
         return http.build();
+    }
+
+    private void setupCors(ServerHttpSecurity.CorsSpec corsSpec, Environment environment) {
+        boolean isDevProfileActive = environment.matchesProfiles("dev");
+
+        if (isDevProfileActive) {
+            log.warn("CORS is configured to allow access from http://localhost:4200 since the 'dev' profile is active");
+
+            corsSpec.configurationSource(request -> {
+                var corsConfig = new CorsConfiguration();
+
+                corsConfig.addAllowedOrigin("http://localhost:4200");
+                corsConfig.addAllowedMethod("*");
+                corsConfig.addAllowedHeader("*");
+                corsConfig.setAllowCredentials(false);
+                corsConfig.setMaxAge(3600L);
+
+                return corsConfig;
+            });
+        }
     }
 
 }

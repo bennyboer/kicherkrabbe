@@ -4,7 +4,7 @@ import {
   Input,
   TemplateRef,
 } from '@angular/core';
-import { Option } from '../../../../util';
+import { none, Option, someOrNone } from '../../../../util';
 
 export class CardListItem {
   readonly title: string;
@@ -18,12 +18,10 @@ export class CardListItem {
     link: string;
     imageUrl: string;
   }) {
-    this.title = Option.someOrNone(props.title).orElseThrow(
-      'Title is required',
-    );
+    this.title = someOrNone(props.title).orElseThrow('Title is required');
     this.description = props.description;
-    this.link = Option.someOrNone(props.link).orElseThrow('Link is required');
-    this.imageUrl = Option.someOrNone(props.imageUrl).orElseThrow(
+    this.link = someOrNone(props.link).orElseThrow('Link is required');
+    this.imageUrl = someOrNone(props.imageUrl).orElseThrow(
       'Image URL is required',
     );
   }
@@ -36,7 +34,7 @@ export class CardListItem {
   }): CardListItem {
     return new CardListItem({
       title: props.title,
-      description: Option.someOrNone(props.description),
+      description: someOrNone(props.description),
       link: props.link,
       imageUrl: props.imageUrl,
     });
@@ -52,15 +50,15 @@ export class CardListItem {
 export class CardListComponent {
   @Input('items')
   set setItems(items: CardListItem[]) {
-    this.items = Option.someOrNone(items).orElse([]);
+    this.items = someOrNone(items).orElse([]);
   }
 
   @Input('template')
   set setTemplate(template: TemplateRef<any>) {
-    this.template = Option.someOrNone(template);
+    this.template = someOrNone(template);
   }
 
-  protected template: Option<TemplateRef<any>> = Option.none();
+  protected template: Option<TemplateRef<any>> = none();
 
   protected items: CardListItem[] = [];
 }

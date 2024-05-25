@@ -8,7 +8,7 @@ import {
   Output,
 } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { Option } from '../../../../util';
+import { someOrNone } from '../../../../util';
 
 @Component({
   selector: 'app-checkbox',
@@ -19,17 +19,17 @@ import { Option } from '../../../../util';
 export class CheckboxComponent implements OnDestroy {
   @Input()
   set label(value: string) {
-    Option.someOrNone(value).ifSome((l) => this.label$.next(l));
+    someOrNone(value).ifSome((l) => this.label$.next(l));
   }
 
   @Input({ transform: booleanAttribute, alias: 'checked' })
   set checked(value: boolean) {
-    Option.someOrNone(value).ifSome((c) => this.checked$.next(c));
+    someOrNone(value).ifSome((c) => this.checked$.next(c));
   }
 
   @Input()
   set passive(value: boolean) {
-    Option.someOrNone(value).ifSome((p) => this.passive$.next(p));
+    someOrNone(value).ifSome((p) => this.passive$.next(p));
   }
 
   @Output()

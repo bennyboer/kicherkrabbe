@@ -1,6 +1,13 @@
 import { PatternVariant } from './variant';
 import { PatternExtra } from './extra';
-import { Image, Money, Option } from '../../../../../util';
+import {
+  Image,
+  Money,
+  none,
+  Option,
+  some,
+  someOrNone,
+} from '../../../../../util';
 import { Category } from './category';
 
 export class Pattern {
@@ -25,29 +32,25 @@ export class Pattern {
     originalPatternName: Option<string>;
     attribution: Option<string>;
   }) {
-    this.id = Option.someOrNone(props.id).orElseThrow('Pattern ID is required');
-    this.name = Option.someOrNone(props.name).orElseThrow(
-      'Pattern name is required',
-    );
-    this.categories = Option.someOrNone(props.categories).orElse(new Set());
-    this.previewImage = Option.someOrNone(props.previewImage).orElseThrow(
+    this.id = someOrNone(props.id).orElseThrow('Pattern ID is required');
+    this.name = someOrNone(props.name).orElseThrow('Pattern name is required');
+    this.categories = someOrNone(props.categories).orElse(new Set());
+    this.previewImage = someOrNone(props.previewImage).orElseThrow(
       'Pattern preview image is required',
     );
-    this.images = Option.someOrNone(props.images).orElseThrow(
+    this.images = someOrNone(props.images).orElseThrow(
       'Pattern images are required',
     );
-    this.variants = Option.someOrNone(props.variants).orElseThrow(
+    this.variants = someOrNone(props.variants).orElseThrow(
       'Pattern variants are required',
     );
-    this.extras = Option.someOrNone(props.extras).orElseThrow(
+    this.extras = someOrNone(props.extras).orElseThrow(
       'Pattern extras are required',
     );
-    this.originalPatternName = Option.someOrNone(
-      props.originalPatternName,
-    ).orElse(Option.none());
-    this.attribution = Option.someOrNone(props.attribution).orElse(
-      Option.none(),
+    this.originalPatternName = someOrNone(props.originalPatternName).orElse(
+      none(),
     );
+    this.attribution = someOrNone(props.attribution).orElse(none());
   }
 
   static of(props: {
@@ -68,9 +71,9 @@ export class Pattern {
       previewImage: props.previewImage,
       images: props.images,
       variants: props.variants,
-      extras: Option.someOrNone(props.extras).orElse([]),
-      originalPatternName: Option.someOrNone(props.originalPatternName),
-      attribution: Option.someOrNone(props.attribution),
+      extras: someOrNone(props.extras).orElse([]),
+      originalPatternName: someOrNone(props.originalPatternName),
+      attribution: someOrNone(props.attribution),
     });
   }
 
@@ -124,10 +127,10 @@ export class Pattern {
     const sizes = this.variants.map((variant) => variant.getLargestSize());
 
     if (sizes.length === 0) {
-      return Option.none();
+      return none();
     }
 
-    return Option.some(
+    return some(
       sizes
         .flatMap((size) => size.map((s) => [s]).orElse([]))
         .reduce((acc, size) => (size > acc ? size : acc), sizes[0].orElse(0)),
@@ -140,14 +143,14 @@ export class Pattern {
     );
 
     if (units.length === 0) {
-      return Option.none();
+      return none();
     }
 
     const sameUnitForAllSizes = units.every((unit) => unit === units[0]);
     if (sameUnitForAllSizes) {
-      return Option.some(units[0]);
+      return some(units[0]);
     }
 
-    return Option.none();
+    return none();
   }
 }
