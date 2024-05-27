@@ -1,0 +1,16 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: var(--contrast);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}

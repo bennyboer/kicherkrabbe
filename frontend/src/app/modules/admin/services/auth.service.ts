@@ -38,6 +38,10 @@ export class AdminAuthService implements OnDestroy {
     return this.token$.asObservable();
   }
 
+  getCurrentToken(): Option<string> {
+    return this.token$.value;
+  }
+
   isLoggedIn(): Observable<boolean> {
     return this.getToken().pipe(map((token) => token.isSome()));
   }

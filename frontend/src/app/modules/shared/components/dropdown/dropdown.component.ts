@@ -58,6 +58,12 @@ export class DropdownComponent implements OnDestroy, OnInit {
   @Input()
   multiple: boolean = false;
 
+  @Input()
+  useRadioButtonForSingleSelection: boolean = false;
+
+  @Input()
+  showSelectionIndicator: boolean = false;
+
   @Input('items')
   set setItems(items: DropdownItem[]) {
     someOrNone(items).ifSome((items) => this.items$.next(items));

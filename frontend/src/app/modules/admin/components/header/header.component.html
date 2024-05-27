@@ -1,0 +1,23 @@
+<app-button-row [rounded]="false">
+  @if (getDropdownItems() | async; as items) {
+    @if (getSelectedManagementItemLabel() | async; as label) {
+      <app-dropdown #dropdown
+                    [label]="label"
+                    [items]="items"
+                    (selectionChanged)="updateManagementItem($event)">
+        <ng-template let-item>
+          <span>{{ item.label }}</span>
+        </ng-template>
+      </app-dropdown>
+    }
+  }
+</app-button-row>
+
+<app-button-row [rounded]="false">
+  <app-button (click)="logout()">
+    <span class="icon-button">
+      <span>Abmelden</span>
+      <span class="material-icons">logout</span>
+    </span>
+  </app-button>
+</app-button-row>

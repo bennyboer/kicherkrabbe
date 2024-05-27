@@ -43,6 +43,8 @@
                     [label]="filter.label"
                     [items]="filterToDropdownItems(filter.items)"
                     [multiple]="filter.canSelectMultiple()"
+                    [showSelectionIndicator]="true"
+                    [useRadioButtonForSingleSelection]="true"
                     (selectionChanged)="updateFilterDropdownItemsSelection(filter, $event)">
         <ng-template let-item>
           <span>{{ item.label }}</span>
@@ -75,6 +77,8 @@
                       label="Sortieren nach..."
                       [items]="sortingOptionsToDropdownItems(sortingOptions)"
                       [selected]="[selectedSortingOption]"
+                      [showSelectionIndicator]="true"
+                      [useRadioButtonForSingleSelection]="true"
                       (selectionChanged)="updateSortingOptionDropdownItemSelection($event)">
           <ng-template let-item>
             <span>{{ item.label }}</span>
@@ -93,6 +97,8 @@
                       label="Richtung"
                       [items]="sortDirectionToDropdownItems(sortingOption)"
                       [selected]="['ascending']"
+                      [showSelectionIndicator]="true"
+                      [useRadioButtonForSingleSelection]="true"
                       (selectionChanged)="updateSortDirectionDropdownItemSelection($event)">
           <ng-template let-item>
             <span>{{ item.label }}</span>

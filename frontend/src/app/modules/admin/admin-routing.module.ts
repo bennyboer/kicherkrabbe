@@ -3,10 +3,12 @@ import { Router, RouterModule, Routes } from '@angular/router';
 import { DashboardPage, LoginPage } from './pages';
 import { AdminAuthService } from './services';
 import { map } from 'rxjs';
+import { ContainerComponent } from './components';
 
 const routes: Routes = [
   {
     path: '',
+    component: ContainerComponent,
     canActivate: [
       () => {
         const authService = inject(AdminAuthService);
@@ -27,6 +29,11 @@ const routes: Routes = [
       {
         path: '',
         component: DashboardPage,
+      },
+      {
+        path: 'topics',
+        loadChildren: () =>
+          import('./modules/topics/topics.module').then((m) => m.TopicsModule),
       },
     ],
   },

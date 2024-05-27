@@ -1,0 +1,16 @@
+<app-button>Neues Thema</app-button>
+
+@if (getTopics() | async; as topics) {
+  @if (topics.length === 0) {
+    <p>Es gibt noch keine Themen. Versuche eines anzulegen.</p>
+  } @else {
+    <ul class="topics-list">
+      @for (topic of topics; track topic.id) {
+        <li>
+          {{ topic.name }}
+        </li>
+      }
+    </ul>
+  }
+}
+

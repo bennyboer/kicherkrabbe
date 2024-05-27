@@ -4,12 +4,12 @@
       @if (getSelected() | async; as selected) {
         @if (multiple) {
           {{ label }}
-          @if (selected.length > 0) {
+          @if (selected.length > 0 && showSelectionIndicator) {
             <span class="multi-selection-indicator">{{ selected.length }}</span>
           }
         } @else {
           {{ getSelectedLabel(selected) }}
-          @if (selected.length > 0) {
+          @if (selected.length > 0 && showSelectionIndicator) {
             <span class="single-selection-indicator"></span>
           }
         }
@@ -36,7 +36,7 @@
                     <app-checkbox [checked]="isSelected(item.id) | async"
                                   [passive]="true">
                     </app-checkbox>
-                  } @else {
+                  } @else if (useRadioButtonForSingleSelection) {
                     <app-radio [checked]="isSelected(item.id) | async"
                                [passive]="true">
                     </app-radio>
