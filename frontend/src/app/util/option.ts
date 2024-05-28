@@ -98,6 +98,14 @@ export class Option<T> {
     return this.orElseThrow();
   }
 
+  unwrap(): T | null {
+    if (this.isNone()) {
+      return null;
+    }
+
+    return this.orElseThrow();
+  }
+
   orElseThrow(message?: string): T {
     if (this.isNone()) {
       throw new Error(

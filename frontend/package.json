@@ -21,6 +21,7 @@
     "@angular/router": "^17.2.3",
     "material-icons": "^1.13.12",
     "rxjs": "~7.8.0",
+    "sse.js": "^2.4.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
   },

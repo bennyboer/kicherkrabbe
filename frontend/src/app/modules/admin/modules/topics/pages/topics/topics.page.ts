@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { TopicsService } from '../../services';
 import { Topic } from '../../model';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-topics-page',
@@ -9,10 +9,39 @@ import { Observable } from 'rxjs';
   styleUrls: ['./topics.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TopicsPage {
+export class TopicsPage implements OnDestroy {
+  private readonly search$: BehaviorSubject<string> =
+    new BehaviorSubject<string>('');
+
   constructor(private readonly topicsService: TopicsService) {}
 
+  ngOnDestroy(): void {
+    this.search$.complete();
+  }
+
   getTopics(): Observable<Topic[]> {
-    return this.topicsService.getTopics();
+    return combineLatest([this.topicsService.getTopics(), this.search$]).pipe(
+      map(([topics, search]) =>
+        topics.filter((topic) =>
+          topic.name.toLowerCase().includes(search.toLowerCase()),
+        ),
+      ),
+    );
+  }
+
+  isSearching(): Observable<boolean> {
+    return this.search$.pipe(map((search) => search.length > 0));
+  }
+
+  isLoading(): Observable<boolean> {
+    return this.topicsService.isLoading();
+  }
+
+  isFailed(): Observable<boolean> {
+    return this.topicsService.isFailedLoadingTopics();
+  }
+
+  updateSearch(value: string): void {
+    this.search$.next(value.trim());
   }
 }

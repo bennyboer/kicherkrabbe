@@ -1,0 +1,9 @@
+@if (getNotificationToShow() | async; as notification) {
+  <div class="notification"
+       [class.warn]="notification.isWarn()"
+       [class.error]="notification.isError()"
+       [class.success]="notification.isSuccess()"
+       [class.info]="notification.isInfo()">
+    {{ notification.message }}
+  </div>
+}

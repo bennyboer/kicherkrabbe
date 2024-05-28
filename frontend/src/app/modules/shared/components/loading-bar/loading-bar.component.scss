@@ -1,0 +1,37 @@
+:host {
+  width: 100%;
+  height: 4px;
+  display: inline-block;
+  position: relative;
+  background: rgba(var(--text-rgb), 0.15);
+  overflow: hidden;
+  border-radius: 4px;
+  visibility: hidden;
+
+  &:after {
+    content: "";
+    width: 192px;
+    height: 4px;
+    background: var(--text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-sizing: border-box;
+    animation: loading 2s linear infinite;
+  }
+
+  &.visible {
+    visibility: visible;
+  }
+}
+
+@keyframes loading {
+  0% {
+    left: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    left: 100%;
+    transform: translateX(0%);
+  }
+}

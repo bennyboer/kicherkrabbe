@@ -5730,6 +5730,11 @@ sprintf-js@~1.0.2:
   resolved "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz"
   integrity sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==
 
+sse.js@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/sse.js/-/sse.js-2.4.1.tgz#1d0cb4507b814bf27cddaf4407b94945d3df30ac"
+  integrity sha512-0qXPFZCClp+RPWtldNTYUjDWDlStZq1nyRF7at8WDFotHEyCivEBlR7Z5ftcJnt9KpouRg+NdzGFvPTB2gHl8Q==
+
 ssri@^10.0.0:
   version "10.0.5"
   resolved "https://registry.npmjs.org/ssri/-/ssri-10.0.5.tgz"

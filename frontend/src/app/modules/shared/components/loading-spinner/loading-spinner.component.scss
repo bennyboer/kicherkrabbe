@@ -1,7 +1,7 @@
 :host {
   width: var(--size);
   height: var(--size);
-  border: max(calc(var(--size) / 10), 2px) solid #FFF;
+  border: max(calc(var(--size) / 10), 2px) solid var(--text);
   border-bottom-color: transparent;
   border-radius: 50%;
   display: inline-block;

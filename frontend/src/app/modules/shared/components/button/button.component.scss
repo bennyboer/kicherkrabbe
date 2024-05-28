@@ -19,6 +19,16 @@
     background-color: var(--contrast-lower);
   }
 
+  &:not(.disabled) {
+    &.primary {
+      background-color: var(--primary-2-dark);
+    }
+
+    &.warn {
+      background-color: var(--primary-1-dark);
+    }
+  }
+
   &.rounded {
     border-radius: 12px;
   }

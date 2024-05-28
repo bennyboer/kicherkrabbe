@@ -46,6 +46,12 @@ export class ButtonComponent implements OnInit, OnDestroy {
   @Input({ transform: booleanAttribute })
   disabled: boolean = false;
 
+  @Input()
+  set color(color: 'normal' | 'primary' | 'warn') {
+    this.removeClass(color);
+    this.addClass(color);
+  }
+
   @Input('size')
   set setSize(size: Size) {
     this.sizeToClass(this.size).ifSome((className) =>

@@ -20,3 +20,6 @@ export { MobileSwitchComponent } from './mobile-switch/mobile-switch.component';
 export { OverlayContainerComponent } from './overlay-container/overlay-container.component';
 export { OverlayComponent } from './overlay/overlay.component';
 export { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
+export { LoadingBarComponent } from './loading-bar/loading-bar.component';
+export { NoteComponent } from './note/note.component';
+export { NotificationOutletComponent } from './notification-outlet/notification-outlet.component';

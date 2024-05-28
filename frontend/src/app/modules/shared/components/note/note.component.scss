@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  color: white;
+  font-size: 14px;
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin: 8px 0 12px 0;
+
+  &.info {
+    background-color: var(--contrast);
+  }
+
+  &.success {
+    background-color: var(--primary-3);
+    color: black;
+  }
+
+  &.warn {
+    background-color: var(--primary-2-dark);
+  }
+
+  &.error {
+    background-color: var(--primary-1);
+  }
+}

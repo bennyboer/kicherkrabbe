@@ -9,14 +9,17 @@ import {
   CheckboxComponent,
   DropdownComponent,
   FilterSortBarComponent,
+  LoadingBarComponent,
   LoadingSpinnerComponent,
   MobileSwitchComponent,
+  NoteComponent,
+  NotificationOutletComponent,
   OverlayComponent,
   OverlayContainerComponent,
   PriceTagComponent,
   RadioComponent,
 } from './components';
-import { FlagService, OverlayService } from './services';
+import { FlagService, NotificationService, OverlayService } from './services';
 import { FlagDirective, UnlessFlagDirective } from './directives';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -37,6 +40,9 @@ const COMPONENTS = [
   OverlayContainerComponent,
   OverlayComponent,
   LoadingSpinnerComponent,
+  LoadingBarComponent,
+  NoteComponent,
+  NotificationOutletComponent,
 ];
 
 const DIRECTIVES = [FlagDirective, UnlessFlagDirective];
@@ -50,7 +56,7 @@ export class SharedModule {
   static forRoot() {
     return {
       ngModule: SharedModule,
-      providers: [FlagService, OverlayService],
+      providers: [FlagService, OverlayService, NotificationService],
     };
   }
 

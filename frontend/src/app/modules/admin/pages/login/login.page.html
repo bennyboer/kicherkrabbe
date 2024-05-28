@@ -11,6 +11,7 @@
              placeholder="E-Mail Adresse"
              autofocus
              required
+             [disabled]="isLoading() | async"
              (input)="updateUsername(username.value)">
     </div>
 
@@ -21,13 +22,14 @@
              name="password"
              placeholder="Passwort"
              required
+             [disabled]="isLoading() | async"
              (input)="updatePassword(password.value)">
     </div>
 
     <div class="actions">
       <span>
         <button class="hidden" type="submit" [disabled]="cannotLogin() | async" (click)="login()"></button>
-        <app-button (click)="login()" [disabled]="cannotLogin() | async">
+        <app-button (click)="login()" [disabled]="cannotLogin() | async" color="primary">
           @if (isLoading() | async) {
             <span class="loading-button-text">
               <app-loading-spinner size="16"></app-loading-spinner>
@@ -41,9 +43,9 @@
     </div>
 
     @if (isError() | async) {
-      <p class="error-note">
+      <app-note level="error">
         Die Anmeldung ist fehlgeschlagen. Bitte überprüfen Sie Ihre Zugangsdaten.
-      </p>
+      </app-note>
     }
 
   </form>
