@@ -3,17 +3,21 @@ import { HttpClient } from '@angular/common/http';
 import {
   BehaviorSubject,
   combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
   map,
   Observable,
   ReplaySubject,
   Subject,
   takeUntil,
+  tap,
 } from 'rxjs';
 import { Topic } from '../model';
 import { environment } from '../../../../../../environments';
 import { AdminAuthService } from '../../../services';
 import { SSE } from 'sse.js';
-import { Option, someOrNone } from '../../../../../util';
+import { none, Option, some, someOrNone } from '../../../../../util';
 
 interface QueryTopicsResponse {
   skip: number;
@@ -53,23 +57,25 @@ export class TopicsService implements OnDestroy {
   private readonly topics$: Subject<Topic[]> = new ReplaySubject<Topic[]>(1);
   private readonly events$: Subject<TopicChangeDTO> =
     new Subject<TopicChangeDTO>();
+  private readonly subscribedToTopics$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
-  private readonly sse: SSE;
+  private sse: Option<SSE> = none();
+  private topicsSubCounter: number = 0;
 
   constructor(
     private readonly http: HttpClient,
     private readonly authService: AdminAuthService,
   ) {
-    this.reloadTopics();
-
-    const token = this.authService.getCurrentToken().orElseThrow();
-    this.sse = new SSE(`${environment.apiUrl}/topics/changes`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    this.sse.onmessage = (event) => {
-      const change = JSON.parse(event.data);
-      this.events$.next(change);
-    };
+    this.subscribedToTopics$
+      .pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.destroy$))
+      .subscribe((subscribed) => {
+        if (subscribed) {
+          this.makeSureEventStreamIsOpen();
+        } else {
+          this.closeEventStream();
+        }
+      });
 
     this.events$.pipe(takeUntil(this.destroy$)).subscribe((event) => {
       if (event.type === 'CREATED') {
@@ -78,6 +84,13 @@ export class TopicsService implements OnDestroy {
 
       this.reloadTopics();
     });
+
+    const loggedOut$ = this.authService
+      .getToken()
+      .pipe(filter((token) => token.isNone()));
+    loggedOut$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.closeEventStream();
+    });
   }
 
   ngOnDestroy(): void {
@@ -85,11 +98,12 @@ export class TopicsService implements OnDestroy {
     this.failedLoadingTopics$.complete();
     this.topics$.complete();
     this.events$.complete();
+    this.subscribedToTopics$.complete();
 
     this.destroy$.next();
     this.destroy$.complete();
 
-    this.sse.close();
+    this.closeEventStream();
   }
 
   isLoading(): Observable<boolean> {
@@ -103,15 +117,18 @@ export class TopicsService implements OnDestroy {
   }
 
   getTopics(): Observable<Topic[]> {
-    return this.topics$.asObservable();
+    return this.topics$.asObservable().pipe(
+      tap({
+        subscribe: () => this.onTopicsSubscribed(),
+        unsubscribe: () => this.onTopicsUnsubscribed(),
+      }),
+    );
   }
 
   getTopic(id: string): Observable<Option<Topic>> {
-    return this.topics$
-      .asObservable()
-      .pipe(
-        map((topics) => someOrNone(topics.find((topic) => topic.id === id))),
-      );
+    return this.getTopics().pipe(
+      map((topics) => someOrNone(topics.find((topic) => topic.id === id))),
+    );
   }
 
   createTopic(name: string): Observable<void> {
@@ -166,5 +183,47 @@ export class TopicsService implements OnDestroy {
       name: topic.name,
       createdAt: new Date(topic.createdAt),
     });
+  }
+
+  private onTopicsSubscribed(): void {
+    this.topicsSubCounter++;
+    this.onTopicsSubscriptionsChanged();
+  }
+
+  private onTopicsUnsubscribed(): void {
+    this.topicsSubCounter--;
+    this.onTopicsSubscriptionsChanged();
+  }
+
+  private onTopicsSubscriptionsChanged(): void {
+    this.subscribedToTopics$.next(this.topicsSubCounter > 0);
+  }
+
+  private makeSureEventStreamIsOpen(): void {
+    if (this.sse.isNone()) {
+      this.openEventStream();
+    }
+  }
+
+  private openEventStream(): void {
+    const token = this.authService.getCurrentToken().orElseThrow();
+
+    const sse = new SSE(`${environment.apiUrl}/topics/changes`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    sse.onmessage = (event) => {
+      const change = JSON.parse(event.data);
+      this.events$.next(change);
+    };
+    sse.onabort = () => this.closeEventStream();
+    sse.onerror = () => this.closeEventStream();
+
+    this.sse = some(sse);
+    this.reloadTopics();
+  }
+
+  private closeEventStream(): void {
+    this.sse.ifSome((sse) => sse.close());
+    this.sse = none();
   }
 }

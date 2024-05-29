@@ -10,6 +10,7 @@
   font-size: 16px;
   color: var(--text);
   outline: 2px solid transparent;
+  box-sizing: border-box;
   transition: background-color 0.2s ease-out, outline-color 0.1s ease-out;
 
   &.disabled {
@@ -21,11 +22,11 @@
 
   &:not(.disabled) {
     &.primary {
-      background-color: var(--primary-2-dark);
+      background-color: var(--primary-2-sub);
     }
 
     &.warn {
-      background-color: var(--primary-1-dark);
+      background-color: var(--primary-1-sub);
     }
   }
 

@@ -3,6 +3,8 @@
   padding: 20px 30px 80px 30px;
   box-sizing: border-box;
   border-top: 2px solid var(--background-low-contrast);
+  background-color: var(--footer);
+  transition: background-color 0.5s ease-in-out;
 }
 
 .content {

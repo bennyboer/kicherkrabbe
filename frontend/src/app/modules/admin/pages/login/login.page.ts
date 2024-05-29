@@ -8,7 +8,8 @@ import {
   takeUntil,
 } from 'rxjs';
 import { AdminAuthService } from '../../services';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { someOrNone } from '../../../../util';
 
 @Component({
   selector: 'app-login-page',
@@ -30,6 +31,7 @@ export class LoginPage implements OnDestroy {
   constructor(
     private readonly adminAuthService: AdminAuthService,
     private readonly router: Router,
+    private readonly route: ActivatedRoute,
   ) {}
 
   ngOnDestroy(): void {
@@ -78,7 +80,11 @@ export class LoginPage implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.router.navigate(['/admin']);
+          const redirect = someOrNone(
+            this.route.snapshot.queryParams['redirect'],
+          ).orElse('/admin');
+
+          this.router.navigate([redirect]);
         },
         error: () => {
           this.error$.next(true);

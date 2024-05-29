@@ -98,6 +98,10 @@ export class TopicDetailsPage implements OnDestroy {
       .subscribe({
         next: () => {
           this.updatingName$.next(false);
+          this.notificationService.publish({
+            message: `Das Thema „${name}“ wurde umbenannt.`,
+            type: 'success',
+          });
         },
         error: () => {
           this.updatingName$.next(false);

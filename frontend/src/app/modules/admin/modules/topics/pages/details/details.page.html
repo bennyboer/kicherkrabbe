@@ -7,11 +7,19 @@
         Erstellt am: {{ topic.createdAt | date: 'dd.MM.yyyy' }} um {{ topic.createdAt | date: 'HH:mm' }} Uhr
       </span>
 
+      <hr>
+
       <form class="name-form" (submit)="false">
         <div class="form-group">
-          <label for="name">Name:</label>
-          <input #name id="name" name="name" type="text" [value]="topic.name"
-                 (input)="updateTransientName(name.value)"/>
+          <span class="input-label-group">
+            <label for="name">Name</label>
+            <input #name
+                   id="name"
+                   name="name"
+                   type="text"
+                   [value]="topic.name"
+                   (input)="updateTransientName(name.value)"/>
+          </span>
           <app-button (click)="updateName(topic)" [disabled]="cannotUpdateName() | async">Speichern</app-button>
         </div>
 
@@ -28,15 +36,17 @@
         </button>
       </form>
 
+      <hr>
+
       <div class="actions">
         <span>
           <app-button routerLink="..">Zurück zur Übersicht</app-button>
         </span>
         <span>
           @if (isDeleteConfirmation() | async) {
-            <app-button color="warn" (click)="deleteTopic(topic)">Löschung bestätigen</app-button>
+            <app-button color="warn" (click)="deleteTopic(topic)">Wirklich löschen?</app-button>
           } @else {
-            <app-button color="warn" (click)="waitForDeleteConfirmation()">Thema löschen</app-button>
+            <app-button (click)="waitForDeleteConfirmation()">Thema löschen</app-button>
           }
         </span>
       </div>

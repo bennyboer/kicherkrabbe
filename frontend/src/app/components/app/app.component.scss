@@ -1,12 +1,15 @@
 :host {
   display: block;
   position: relative;
+  background-color: var(--background);
+  transition: background-color 0.5s ease-in-out;
 }
 
 main {
   margin: 0 auto;
   width: 1000px;
-  padding: 20px 30px;
+  min-height: 500px;
+  padding: 20px 20px;
   box-sizing: border-box;
 }
 

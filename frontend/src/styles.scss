@@ -19,7 +19,7 @@ body {
 body {
   margin: 0;
   font-family: Lexend, sans-serif;
-  background-color: var(--background);
+  background-color: var(--footer);
   transition: background-color 0.5s ease-in-out;
 }
 
@@ -38,6 +38,7 @@ a {
 }
 
 hr {
+  width: 100%;
   border-color: var(--background-mid-contrast);
   border-width: 0 0 1px 0;
 }
@@ -90,6 +91,7 @@ select {
 
 input[type="text"],
 input[type="password"] {
+  box-sizing: border-box;
   appearance: none;
   background-color: var(--contrast);
   color: var(--text);
