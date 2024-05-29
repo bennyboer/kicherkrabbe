@@ -1,0 +1,52 @@
+:host {
+  display: block;
+}
+
+h3 {
+  text-align: center;
+}
+
+.create-color-form {
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  input {
+    width: 100%;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.hidden {
+  display: none;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.loading-button-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-note {
+  background-color: var(--primary-1);
+  color: white;
+  font-size: 14px;
+  border-radius: 8px;
+  padding: 8px 16px;
+}

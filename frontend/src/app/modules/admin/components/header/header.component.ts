@@ -55,7 +55,15 @@ const FABRIC_TYPES = ManagementItem.of({
   route: 'fabric-types',
 });
 
-const MANAGEMENT_ITEMS = [DASHBOARD, TOPICS, FABRIC_TYPES];
+const COLORS = ManagementItem.of({
+  label: 'Farben',
+  route: 'colors',
+});
+
+const ESSENTIAL_MANAGEMENT_ITEMS = [TOPICS, FABRIC_TYPES, COLORS].sort((a, b) =>
+  a.label.localeCompare(b.label),
+);
+const MANAGEMENT_ITEMS = [DASHBOARD, ...ESSENTIAL_MANAGEMENT_ITEMS];
 
 @Component({
   selector: 'app-admin-header',

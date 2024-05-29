@@ -42,6 +42,11 @@ const routes: Routes = [
             (m) => m.FabricTypesModule,
           ),
       },
+      {
+        path: 'colors',
+        loadChildren: () =>
+          import('./modules/colors/colors.module').then((m) => m.ColorsModule),
+      },
     ],
   },
   {
