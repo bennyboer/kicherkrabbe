@@ -152,7 +152,7 @@ export class TopicsService implements OnDestroy {
     });
   }
 
-  reloadTopics(): void {
+  private reloadTopics(): void {
     this.loadingTopics$.next(true);
     this.http
       .get<QueryTopicsResponse>(`${environment.apiUrl}/topics/`)

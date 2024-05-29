@@ -35,6 +35,13 @@ const routes: Routes = [
         loadChildren: () =>
           import('./modules/topics/topics.module').then((m) => m.TopicsModule),
       },
+      {
+        path: 'fabric-types',
+        loadChildren: () =>
+          import('./modules/fabric-types/fabric-types.module').then(
+            (m) => m.FabricTypesModule,
+          ),
+      },
     ],
   },
   {

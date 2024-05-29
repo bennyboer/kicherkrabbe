@@ -50,7 +50,12 @@ const TOPICS = ManagementItem.of({
   route: 'topics',
 });
 
-const MANAGEMENT_ITEMS = [DASHBOARD, TOPICS];
+const FABRIC_TYPES = ManagementItem.of({
+  label: 'Stoffarten',
+  route: 'fabric-types',
+});
+
+const MANAGEMENT_ITEMS = [DASHBOARD, TOPICS, FABRIC_TYPES];
 
 @Component({
   selector: 'app-admin-header',

@@ -1,0 +1,43 @@
+<div class="action-bar">
+  <input #search type="text" placeholder="Suchen..." (input)="updateSearch(search.value)"/>
+  <app-button routerLink="create">
+    <span class="icon-button">
+      <span class="material-icons">add</span>
+      <span>
+        Neue Stoffart
+      </span>
+    </span>
+  </app-button>
+</div>
+
+<app-loading-bar [visible]="isLoading() | async"></app-loading-bar>
+
+@if (getFabricTypes() | async; as fabricTypes) {
+  @if (fabricTypes.length === 0) {
+    @if (isSearching() | async) {
+      <p>Es gibt keine Stoffarten, die deiner Suche entsprechen.</p>
+    } @else if (isFailed() | async) {
+      <app-note level="error">
+        Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.
+      </app-note>
+    } @else {
+      <p>Es gibt noch keine Stoffarten. Versuche eine anzulegen.</p>
+    }
+  } @else {
+    <ul class="fabric-types-list">
+      @for (fabricType of fabricTypes; track fabricType.id) {
+        <li [routerLink]="[fabricType.id]">
+          <span class="details">
+            <span class="name">
+              {{ fabricType.name }}
+            </span>
+            <span class="created-at">
+              Erstellt am {{ fabricType.createdAt | date: 'dd.MM.yyyy' }} um {{ fabricType.createdAt | date: 'HH:mm' }}
+              Uhr
+            </span>
+          </span>
+        </li>
+      }
+    </ul>
+  }
+}
