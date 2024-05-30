@@ -7,6 +7,8 @@ import {
   ButtonRowComponent,
   CardListComponent,
   CheckboxComponent,
+  ColorBadgeComponent,
+  ColorPickerComponent,
   DropdownComponent,
   FilterSortBarComponent,
   LoadingBarComponent,
@@ -21,8 +23,9 @@ import {
 } from './components';
 import { FlagService, NotificationService, OverlayService } from './services';
 import { FlagDirective, UnlessFlagDirective } from './directives';
-import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { NgxColorsModule } from 'ngx-colors';
+import { RouterLink } from '@angular/router';
 
 const COMPONENTS = [
   PriceTagComponent,
@@ -43,6 +46,8 @@ const COMPONENTS = [
   LoadingBarComponent,
   NoteComponent,
   NotificationOutletComponent,
+  ColorPickerComponent,
+  ColorBadgeComponent,
 ];
 
 const DIRECTIVES = [FlagDirective, UnlessFlagDirective];
@@ -50,7 +55,7 @@ const DIRECTIVES = [FlagDirective, UnlessFlagDirective];
 @NgModule({
   declarations: [...COMPONENTS, ...DIRECTIVES],
   exports: [...COMPONENTS, FlagDirective, UnlessFlagDirective],
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, NgxColorsModule, RouterLink],
 })
 export class SharedModule {
   static forRoot() {

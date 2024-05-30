@@ -9,6 +9,13 @@
 
       <hr>
 
+      <div class="form-group color-group">
+        <app-color-picker [size]="128"
+                          [color]="color.toValue()"
+                          (colorChanged)="updateColor(color, $event)">
+        </app-color-picker>
+      </div>
+
       <form class="name-form" (submit)="false">
         <div class="form-group">
           <span class="input-label-group">

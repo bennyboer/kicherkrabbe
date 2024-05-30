@@ -8,11 +8,13 @@ import { Injectable } from '@angular/core';
 import { AdminAuthService } from './auth.service';
 import { catchError, EMPTY, map, mergeMap, Observable, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { NotificationService } from '../../shared';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(
     private readonly authService: AdminAuthService,
+    private readonly notificationService: NotificationService,
     private readonly router: Router,
   ) {}
 
@@ -37,6 +39,11 @@ export class AuthInterceptor implements HttpInterceptor {
         const isUnauthorized = e?.status === 401;
         if (isUnauthorized) {
           this.authService.logout();
+          this.notificationService.publish({
+            message:
+              'Ihre Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an.',
+            type: 'error',
+          });
           this.router.navigate(['/admin/login'], {
             queryParams: {
               redirect: this.router.url,

@@ -27,6 +27,7 @@
     <ul class="colors-list">
       @for (color of colors; track color.id) {
         <li [routerLink]="[color.id]">
+          <app-color-badge [color]="color.toValue()" [size]="32"></app-color-badge>
           <span class="details">
             <span class="name">
               {{ color.name }}

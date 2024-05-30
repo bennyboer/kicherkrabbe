@@ -23,3 +23,11 @@ export { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.compo
 export { LoadingBarComponent } from './loading-bar/loading-bar.component';
 export { NoteComponent } from './note/note.component';
 export { NotificationOutletComponent } from './notification-outlet/notification-outlet.component';
+export {
+  ColorPickerComponent,
+  ColorPickerColor,
+} from './color-picker/color-picker.component';
+export {
+  ColorBadgeComponent,
+  ColorBadgeColor,
+} from './color-badge/color-badge.component';

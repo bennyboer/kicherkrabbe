@@ -1,7 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
+  filter,
   map,
   Observable,
   Subject,
@@ -11,7 +17,7 @@ import {
 import { none, Option, someOrNone } from '../../../../../../util';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ColorsService } from '../../services';
-import { NotificationService } from '../../../../../shared';
+import { ColorPickerColor, NotificationService } from '../../../../../shared';
 import { Color } from '../../model';
 
 @Component({
@@ -20,12 +26,16 @@ import { Color } from '../../model';
   styleUrls: ['./details.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ColorDetailsPage implements OnDestroy {
+export class ColorDetailsPage implements OnInit, OnDestroy {
   private readonly transientName$: BehaviorSubject<Option<string>> =
     new BehaviorSubject<Option<string>>(none());
   private readonly updatingName$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
   private readonly failedUpdatingName$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
+  private readonly updatingColorValue$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
+  private readonly failedUpdatingColorValue$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
   private readonly waitingForDeleteConfirmation$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
@@ -38,10 +48,27 @@ export class ColorDetailsPage implements OnDestroy {
     private readonly notificationService: NotificationService,
   ) {}
 
+  ngOnInit(): void {
+    this.failedUpdatingColorValue$
+      .pipe(
+        filter((failed) => failed),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(() =>
+        this.notificationService.publish({
+          message:
+            'Ein Fehler ist aufgetreten. Die Farbe konnte nicht aktualisiert werden. Versuche es noch einmal.',
+          type: 'error',
+        }),
+      );
+  }
+
   ngOnDestroy(): void {
     this.transientName$.complete();
     this.updatingName$.complete();
     this.failedUpdatingName$.complete();
+    this.updatingColorValue$.complete();
+    this.failedUpdatingColorValue$.complete();
     this.waitingForDeleteConfirmation$.complete();
 
     this.destroy$.next();
@@ -89,10 +116,7 @@ export class ColorDetailsPage implements OnDestroy {
 
   updateName(color: Color): void {
     const name = this.transientName$.value.orElseThrow('Name is required');
-    const red = 0;
-    const green = 0;
-    const blue = 0;
-    // TODO Add color to form
+    const { red, green, blue } = color;
 
     this.updatingName$.next(true);
     this.failedUpdatingName$.next(false);
@@ -117,6 +141,37 @@ export class ColorDetailsPage implements OnDestroy {
         error: () => {
           this.updatingName$.next(false);
           this.failedUpdatingName$.next(true);
+        },
+      });
+  }
+
+  updateColor(color: Color, colorValue: ColorPickerColor): void {
+    const name = color.name;
+    const { red, green, blue } = colorValue;
+
+    this.updatingColorValue$.next(true);
+    this.failedUpdatingColorValue$.next(false);
+    this.colorsService
+      .updateColor({
+        id: color.id,
+        version: color.version,
+        name,
+        red,
+        green,
+        blue,
+      })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.updatingColorValue$.next(false);
+          this.notificationService.publish({
+            message: `Die Farbe „${name}“ wurde geändert.`,
+            type: 'success',
+          });
+        },
+        error: () => {
+          this.updatingColorValue$.next(false);
+          this.failedUpdatingColorValue$.next(true);
         },
       });
   }

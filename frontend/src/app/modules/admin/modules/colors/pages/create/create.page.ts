@@ -15,8 +15,9 @@ import {
   takeUntil,
 } from 'rxjs';
 import { ColorsService } from '../../services';
-import { NotificationService } from '../../../../../shared';
+import { ColorPickerColor, NotificationService } from '../../../../../shared';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ColorValue } from '../../model';
 
 @Component({
   selector: 'app-create-color-page',
@@ -31,6 +32,12 @@ export class CreateColorPage implements AfterViewInit, OnDestroy {
   private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
     '',
   );
+  private readonly colorValue$: BehaviorSubject<ColorValue> =
+    new BehaviorSubject<ColorValue>({
+      red: 255,
+      green: 0,
+      blue: 0,
+    });
   private readonly creatingColor$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
   private readonly failed$: BehaviorSubject<boolean> =
@@ -50,6 +57,7 @@ export class CreateColorPage implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.name$.complete();
+    this.colorValue$.complete();
     this.creatingColor$.complete();
     this.failed$.complete();
 
@@ -61,12 +69,13 @@ export class CreateColorPage implements AfterViewInit, OnDestroy {
     this.name$.next(value.trim());
   }
 
+  updateColor(color: ColorPickerColor): void {
+    this.colorValue$.next(color);
+  }
+
   createColor(): boolean {
     const name = this.name$.value;
-    const red = 0;
-    const green = 0;
-    const blue = 0;
-    // TODO Add color to form
+    const { red, green, blue } = this.colorValue$.value;
 
     this.creatingColor$.next(true);
     this.failed$.next(false);
@@ -89,6 +98,10 @@ export class CreateColorPage implements AfterViewInit, OnDestroy {
       });
 
     return false;
+  }
+
+  getColorValue(): Observable<ColorValue> {
+    return this.colorValue$.asObservable();
   }
 
   isCreatingColor(): Observable<boolean> {

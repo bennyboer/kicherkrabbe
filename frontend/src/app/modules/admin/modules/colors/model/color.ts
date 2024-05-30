@@ -1,3 +1,9 @@
+export interface ColorValue {
+  red: number;
+  green: number;
+  blue: number;
+}
+
 export class Color {
   readonly id: string;
   readonly version: number;
@@ -43,5 +49,13 @@ export class Color {
       blue: props.blue,
       createdAt: props.createdAt,
     });
+  }
+
+  toValue(): ColorValue {
+    return {
+      red: this.red,
+      green: this.green,
+      blue: this.blue,
+    };
   }
 }

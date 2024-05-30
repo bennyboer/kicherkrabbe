@@ -1,0 +1,19 @@
+:host {
+  display: inline-block;
+  box-sizing: border-box;
+  border: 4px solid rgba(var(--contrast-rgb), 0.4);
+  border-radius: 50%;
+  aspect-ratio: 1;
+  width: var(--size);
+  height: var(--size);
+  background-color: rgb(var(--color));
+  transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      border-color: rgba(var(--contrast-rgb), 0.6);
+    }
+  }
+}

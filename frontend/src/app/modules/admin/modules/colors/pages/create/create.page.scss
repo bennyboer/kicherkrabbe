@@ -25,6 +25,13 @@ h3 {
   gap: 12px;
 }
 
+.color-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
 .hidden {
   display: none;
 }
