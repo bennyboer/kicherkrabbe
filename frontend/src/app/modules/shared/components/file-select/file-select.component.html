@@ -1,0 +1,16 @@
+<div class="file-select-container"
+     (dragover)="onDragOver($event)"
+     (drop)="onDrop($event)"
+     (dragleave)="onDragLeave($event)">
+  <div class="ordinary-content" [class.hidden]="isDroppable() | async">
+    <input #file type="file" class="display-none" [accept]="accept">
+    <app-button (click)="openFilePicker(file)">{{ label }} Auswählen</app-button>
+    <span>oder {{ label }} hier ablegen</span>
+  </div>
+
+  @if (isDroppable() | async) {
+    <div class="droppable-note">
+      <span>{{ label }} kann hier losgelassen werden</span>
+    </div>
+  }
+</div>

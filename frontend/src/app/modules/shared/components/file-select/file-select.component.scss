@@ -1,0 +1,59 @@
+:host {
+  display: inline-block;
+  padding: 20px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+
+  &.droppable {
+    .file-select-container {
+      * {
+        pointer-events: none;
+      }
+    }
+
+    .file-select-container {
+      border-color: var(--text);
+    }
+  }
+}
+
+.file-select-container {
+  border: 2px dashed var(--contrast);
+  background-color: var(--contrast-mid);
+  box-sizing: border-box;
+  border-radius: 12px;
+  padding: 60px;
+  width: 100%;
+  height: 100%;
+  transition: border-color 0.3s ease-in-out;
+  position: relative;
+}
+
+.ordinary-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+
+  &.hidden {
+    visibility: hidden;
+  }
+}
+
+.droppable-note {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.display-none {
+  display: none;
+}

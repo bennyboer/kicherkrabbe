@@ -10,6 +10,7 @@ import {
   ColorBadgeComponent,
   ColorPickerComponent,
   DropdownComponent,
+  FileSelectComponent,
   FilterSortBarComponent,
   LoadingBarComponent,
   LoadingSpinnerComponent,
@@ -48,6 +49,7 @@ const COMPONENTS = [
   NotificationOutletComponent,
   ColorPickerComponent,
   ColorBadgeComponent,
+  FileSelectComponent,
 ];
 
 const DIRECTIVES = [FlagDirective, UnlessFlagDirective];

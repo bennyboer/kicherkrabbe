@@ -60,8 +60,13 @@ const COLORS = ManagementItem.of({
   route: 'colors',
 });
 
-const ESSENTIAL_MANAGEMENT_ITEMS = [TOPICS, FABRIC_TYPES, COLORS].sort((a, b) =>
-  a.label.localeCompare(b.label),
+const FABRICS = ManagementItem.of({
+  label: 'Stoffe',
+  route: 'fabrics',
+});
+
+const ESSENTIAL_MANAGEMENT_ITEMS = [TOPICS, FABRIC_TYPES, COLORS, FABRICS].sort(
+  (a, b) => a.label.localeCompare(b.label),
 );
 const MANAGEMENT_ITEMS = [DASHBOARD, ...ESSENTIAL_MANAGEMENT_ITEMS];
 

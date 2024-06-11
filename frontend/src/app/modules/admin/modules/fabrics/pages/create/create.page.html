@@ -1,0 +1,53 @@
+<h3>Neuen Stoff erstellen</h3>
+
+<form class="create-fabric-form">
+  <hr>
+
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input #name
+           type="text"
+           id="name"
+           name="name"
+           autofocus
+           required
+           [disabled]="isCreatingFabric() | async"
+           (input)="updateName(name.value)">
+  </div>
+
+  <div>
+    @if (getImageId() | async; as imageId) {
+      <img [src]="getImageUrl(imageId)" width="100%" alt="Stoffbild">
+    } @else {
+      <app-image-upload (uploaded)="onImageUploaded($event)"></app-image-upload>
+    }
+  </div>
+
+  <hr>
+
+  <div class="actions">
+    <span>
+      <app-button routerLink="..">Abbrechen</app-button>
+    </span>
+    <span>
+      <app-button [disabled]="cannotCreateFabric() | async" (click)="createFabric()" color="primary">
+        @if (isCreatingFabric() | async) {
+          <span class="loading-button-text">
+            <app-loading-spinner size="16"></app-loading-spinner>
+            <span>Erstellt...</span>
+          </span>
+        } @else {
+          Erstellen
+        }
+      </app-button>
+    </span>
+  </div>
+
+  @if (isFailed() | async) {
+    <app-note level="error">
+      Der Stoff konnte nicht erstellt werden. Bitte versuche es erneut.
+    </app-note>
+  }
+
+  <button type="submit" [disabled]="cannotCreateFabric() | async" class="hidden" (click)="createFabric()"></button>
+</form>

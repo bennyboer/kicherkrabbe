@@ -31,3 +31,4 @@ export {
   ColorBadgeComponent,
   ColorBadgeColor,
 } from './color-badge/color-badge.component';
+export { FileSelectComponent } from './file-select/file-select.component';
