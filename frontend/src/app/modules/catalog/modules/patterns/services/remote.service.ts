@@ -48,44 +48,50 @@ export class RemotePatternsService {
       ],
       attribution: 'RosaRosa',
     }),
-    // Pattern.of({
-    //   id: 'basic-kleid-die-dritte',
-    //   name: 'Basic Kleid die Dritte',
-    //   categories: new Set([DRESS]),
-    //   previewImage: Image.of({
-    //     url: '/assets/images/patterns/basic-kleid-die-dritte/preview.jpg',
-    //   }),
-    //   images: [
-    //     Image.of({
-    //       url: '/assets/images/patterns/basic-kleid-die-dritte/A.jpg',
-    //     }),
-    //     Image.of({
-    //       url: '/assets/images/patterns/basic-kleid-die-dritte/B.jpg',
-    //     }),
-    //     Image.of({
-    //       url: '/assets/images/patterns/basic-kleid-die-dritte/C.jpg',
-    //     }),
-    //   ],
-    //   variants: [
-    //     PatternVariant.of({
-    //       id: 'basic',
-    //       name: 'Basic',
-    //       sizes: [
-    //         SizeRange.of({ from: 80, to: 86, price: Money.euro(3300) }),
-    //         SizeRange.of({ from: 92, to: 98, price: Money.euro(3500) }),
-    //         SizeRange.of({ from: 104, to: 110, price: Money.euro(3700) }),
-    //         SizeRange.of({ from: 116, to: 116, price: Money.euro(3900) }),
-    //       ],
-    //     }),
-    //   ],
-    //   extras: [
-    //     PatternExtra.of({
-    //       name: 'Rollkragen',
-    //       price: Money.euro(500),
-    //     }),
-    //   ],
-    //   attribution: 'kiOo kiOo',
-    // }),
+    Pattern.of({
+      id: 'basic-kleid-die-dritte',
+      name: 'Basic Kleid die Dritte',
+      categories: new Set([DRESS]),
+      previewImage: Image.of({
+        url: '/assets/images/patterns/basic-kleid-die-dritte/preview.jpg',
+      }),
+      images: [
+        Image.of({
+          url: '/assets/images/patterns/basic-kleid-die-dritte/A.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/basic-kleid-die-dritte/B.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/basic-kleid-die-dritte/C.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/basic-kleid-die-dritte/D.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/basic-kleid-die-dritte/E.jpg',
+        }),
+      ],
+      variants: [
+        PatternVariant.of({
+          id: 'basic',
+          name: 'Basic',
+          sizes: [
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(3300) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(3500) }),
+            SizeRange.of({ from: 104, to: 110, price: Money.euro(3700) }),
+            SizeRange.of({ from: 116, to: 116, price: Money.euro(3900) }),
+          ],
+        }),
+      ],
+      extras: [
+        PatternExtra.of({
+          name: 'Rollkragen',
+          price: Money.euro(500),
+        }),
+      ],
+      attribution: 'kiOo kiOo',
+    }),
     Pattern.of({
       id: 'basic-sweater-der-fuenfte',
       name: 'Basic Sweater der Fünfte',
@@ -417,6 +423,12 @@ export class RemotePatternsService {
         Image.of({
           url: '/assets/images/patterns/pumphose-penny/B.jpg',
         }),
+        Image.of({
+          url: '/assets/images/patterns/pumphose-penny/C.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/pumphose-penny/D.jpg',
+        }),
       ],
       variants: [
         PatternVariant.of({
@@ -475,10 +487,10 @@ export class RemotePatternsService {
           id: 'kleid',
           name: 'Kleid',
           sizes: [
-            SizeRange.of({ from: 62, to: 74, price: Money.euro(3000) }),
-            SizeRange.of({ from: 80, to: 86, price: Money.euro(3200) }),
-            SizeRange.of({ from: 92, to: 98, price: Money.euro(3400) }),
-            SizeRange.of({ from: 104, to: 116, price: Money.euro(3600) }),
+            SizeRange.of({ from: 62, to: 74, price: Money.euro(2800) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(3000) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(3200) }),
+            SizeRange.of({ from: 104, to: 116, price: Money.euro(3400) }),
           ],
         }),
       ],
@@ -681,6 +693,9 @@ export class RemotePatternsService {
         }),
         Image.of({
           url: '/assets/images/patterns/strampler/B.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/strampler/C.jpg',
         }),
       ],
       variants: [
@@ -891,6 +906,15 @@ export class RemotePatternsService {
         }),
         Image.of({
           url: '/assets/images/patterns/oversized-shirt/C.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/oversized-shirt/D.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/oversized-shirt/E.jpg',
+        }),
+        Image.of({
+          url: '/assets/images/patterns/oversized-shirt/F.jpg',
         }),
       ],
       variants: [
