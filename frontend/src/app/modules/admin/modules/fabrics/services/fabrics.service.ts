@@ -7,6 +7,7 @@ import {
   filter,
   map,
   Observable,
+  of,
   ReplaySubject,
   Subject,
   takeUntil,
@@ -20,6 +21,8 @@ import { environment } from '../../../../../../environments';
 import {
   ColorId,
   Fabric,
+  FabricId,
+  FabricTopic,
   FabricTypeAvailability,
   ImageId,
   TopicId,
@@ -67,6 +70,15 @@ interface QueryFabricsResponse {
   limit: number;
   total: number;
   fabrics: FabricDTO[];
+}
+
+interface TopicDTO {
+  id: string;
+  name: string;
+}
+
+interface QueryTopicsResponse {
+  topics: TopicDTO[];
 }
 
 @Injectable()
@@ -180,6 +192,26 @@ export class FabricsService implements OnDestroy {
     return this.http.delete<void>(`${environment.apiUrl}/fabrics/${id}/`, {
       params: { version: version.toString() },
     });
+  }
+
+  updateFabricName(
+    id: FabricId,
+    version: number,
+    name: string,
+  ): Observable<void> {
+    return of(null as unknown as void); // TODO
+  }
+
+  getAvailableTopicsForFabrics(): Observable<FabricTopic[]> {
+    return this.http
+      .get<QueryTopicsResponse>(`${environment.apiUrl}/fabrics/topics`)
+      .pipe(
+        map((response) =>
+          response.topics.map((topic) =>
+            FabricTopic.of({ id: topic.id, name: topic.name }),
+          ),
+        ),
+      );
   }
 
   private reloadFabrics(): void {

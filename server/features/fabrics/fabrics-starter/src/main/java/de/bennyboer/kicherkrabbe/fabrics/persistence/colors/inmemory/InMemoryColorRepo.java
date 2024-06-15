@@ -36,4 +36,9 @@ public class InMemoryColorRepo implements ColorRepo {
                 .mapNotNull(lookup::get);
     }
 
+    @Override
+    public Flux<Color> findAll() {
+        return Flux.fromIterable(lookup.values());
+    }
+
 }

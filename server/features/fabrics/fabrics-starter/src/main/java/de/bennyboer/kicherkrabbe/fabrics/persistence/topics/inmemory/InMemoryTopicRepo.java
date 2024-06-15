@@ -36,4 +36,9 @@ public class InMemoryTopicRepo implements TopicRepo {
                 .mapNotNull(lookup::get);
     }
 
+    @Override
+    public Flux<Topic> findAll() {
+        return Flux.fromIterable(lookup.values());
+    }
+
 }

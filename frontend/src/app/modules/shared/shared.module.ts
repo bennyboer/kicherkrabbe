@@ -7,6 +7,8 @@ import {
   ButtonRowComponent,
   CardListComponent,
   CheckboxComponent,
+  ChipComponent,
+  ChipsComponent,
   ColorBadgeComponent,
   ColorPickerComponent,
   DropdownComponent,
@@ -50,6 +52,8 @@ const COMPONENTS = [
   ColorPickerComponent,
   ColorBadgeComponent,
   FileSelectComponent,
+  ChipsComponent,
+  ChipComponent,
 ];
 
 const DIRECTIVES = [FlagDirective, UnlessFlagDirective];

@@ -33,8 +33,10 @@ public class FabricsHttpConfig {
                 route(POST("/"), handler::getFabrics)
                         .andRoute(GET("/changes"), handler::getChanges)
                         .andRoute(POST("/published"), handler::getPublishedFabrics)
-                        .andRoute(GET("/topics"), handler::getFabricsTopics)
-                        .andRoute(GET("/colors"), handler::getFabricsColors)
+                        .andRoute(GET("/topics"), handler::getAvailableTopicsForFabrics)
+                        .andRoute(GET("/topics/used"), handler::getTopicsUsedInFabrics)
+                        .andRoute(GET("/colors"), handler::getAvailableColorsForFabrics)
+                        .andRoute(GET("/colors/used"), handler::getColorsUsedInFabrics)
                         .andRoute(POST("/create"), handler::createFabric)
                         .andNest(path("/{fabricId}"), route(GET("/"), handler::getFabric)
                                 .andRoute(GET("/published"), handler::getPublishedFabric)
@@ -59,8 +61,8 @@ public class FabricsHttpConfig {
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> fabricsAuthorizeExchangeSpecCustomizer() {
         return exchanges -> exchanges.pathMatchers(POST, "/api/fabrics/published").permitAll()
                 .pathMatchers(GET, "/api/fabrics/{fabricId}/published").permitAll()
-                .pathMatchers(GET, "/api/fabrics/topics").permitAll()
-                .pathMatchers(GET, "/api/fabrics/colors").permitAll();
+                .pathMatchers(GET, "/api/fabrics/topics/used").permitAll()
+                .pathMatchers(GET, "/api/fabrics/colors/used").permitAll();
     }
 
 }

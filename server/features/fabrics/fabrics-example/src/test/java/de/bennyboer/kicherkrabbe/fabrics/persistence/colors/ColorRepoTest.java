@@ -98,6 +98,23 @@ public abstract class ColorRepoTest {
         assertThat(found).containsExactlyInAnyOrder(color1, color3);
     }
 
+    @Test
+    void shouldFindAllColors() {
+        // given: some colors
+        var color1 = Color.of(ColorId.of("COLOR_ID_1"), ColorName.of("Color Name 1"), 255, 0, 0);
+        var color2 = Color.of(ColorId.of("COLOR_ID_2"), ColorName.of("Color Name 2"), 0, 255, 0);
+        var color3 = Color.of(ColorId.of("COLOR_ID_3"), ColorName.of("Color Name 3"), 0, 0, 255);
+        save(color1);
+        save(color2);
+        save(color3);
+
+        // when: finding all colors
+        var found = repo.findAll().collectList().block();
+
+        // then: all colors are found
+        assertThat(found).containsExactlyInAnyOrder(color1, color2, color3);
+    }
+
     private void save(Color color) {
         repo.save(color).block();
     }

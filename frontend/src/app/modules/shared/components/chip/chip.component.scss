@@ -1,0 +1,15 @@
+:host {
+  display: inline-block;
+  border-radius: 99999px;
+  border: 2px solid var(--contrast);
+  background-color: var(--contrast);
+  padding: 8px 12px;
+  transition: border-color 0.2s ease-out;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    border-color: var(--primary-2);
+    text-decoration: line-through;
+  }
+}

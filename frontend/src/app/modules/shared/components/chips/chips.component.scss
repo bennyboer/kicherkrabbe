@@ -1,0 +1,59 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 8px;
+  column-gap: 8px;
+}
+
+.add-chips-text-field {
+  width: 200px;
+}
+
+.search-overlay-container {
+  background-color: var(--contrast);
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(var(--shadow-rgba));
+  animation: slide-in 0.2s ease-out;
+  overflow: hidden;
+  min-width: 150px;
+
+  .dropdown-item {
+    width: 100%;
+    white-space: nowrap;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 8px;
+  }
+}
+
+.add-button {
+  padding: 8px;
+  border-radius: 99999px;
+  border: 2px solid var(--contrast);
+  background-color: var(--contrast);
+  cursor: pointer;
+  user-select: none;
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    border-color: var(--primary-2);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-25px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

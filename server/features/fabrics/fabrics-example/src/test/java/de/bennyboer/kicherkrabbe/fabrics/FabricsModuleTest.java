@@ -215,8 +215,16 @@ public class FabricsModuleTest {
         }
     }
 
+    public List<Topic> getAvailableTopicsForFabrics(Agent agent) {
+        return module.getAvailableTopicsForFabrics(agent).collectList().block();
+    }
+
     public List<Topic> getTopicsUsedInFabrics(Agent agent) {
         return module.getTopicsUsedInFabrics(agent).collectList().block();
+    }
+
+    public List<Color> getAvailableColorsForFabrics(Agent agent) {
+        return module.getAvailableColorsForFabrics(agent).collectList().block();
     }
 
     public List<Color> getColorsUsedInFabrics(Agent agent) {

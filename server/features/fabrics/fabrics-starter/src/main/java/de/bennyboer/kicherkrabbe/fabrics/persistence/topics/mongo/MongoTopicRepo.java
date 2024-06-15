@@ -58,4 +58,10 @@ public class MongoTopicRepo implements TopicRepo {
                 .map(MongoTopicTransformer::fromMongo);
     }
 
+    @Override
+    public Flux<Topic> findAll() {
+        return template.findAll(MongoTopic.class, collectionName)
+                .map(MongoTopicTransformer::fromMongo);
+    }
+
 }

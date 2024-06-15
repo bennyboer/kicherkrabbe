@@ -12,7 +12,7 @@ import reactor.core.publisher.Flux;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class QueryTopicsHttpHandlerTest extends HttpHandlerTest {
+public class QueryAvailableTopicsForFabricsHttpHandlerTest extends HttpHandlerTest {
 
     @Test
     void shouldSuccessfullyQueryTopicsAsUser() {
@@ -20,7 +20,7 @@ public class QueryTopicsHttpHandlerTest extends HttpHandlerTest {
         var token = createTokenForUser("USER_ID");
 
         // and: the module is configured to return a successful response
-        when(module.getTopicsUsedInFabrics(Agent.user(AgentId.of("USER_ID")))).thenReturn(Flux.just(
+        when(module.getAvailableTopicsForFabrics(Agent.user(AgentId.of("USER_ID")))).thenReturn(Flux.just(
                 Topic.of(TopicId.of("TOPIC_ID_1"), TopicName.of("TOPIC_NAME_1")),
                 Topic.of(TopicId.of("TOPIC_ID_2"), TopicName.of("TOPIC_NAME_2"))
         ));
@@ -48,32 +48,14 @@ public class QueryTopicsHttpHandlerTest extends HttpHandlerTest {
     }
 
     @Test
-    void shouldAllowUnauthorizedAccess() {
-        // given: the module is configured to return a successful response
-        when(module.getTopicsUsedInFabrics(Agent.anonymous())).thenReturn(Flux.just(
-                Topic.of(TopicId.of("TOPIC_ID_1"), TopicName.of("TOPIC_NAME_1")),
-                Topic.of(TopicId.of("TOPIC_ID_2"), TopicName.of("TOPIC_NAME_2"))
-        ));
-
+    void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.get()
                 .uri("/api/fabrics/topics")
                 .exchange();
 
-        // then: the response is successful
-        exchange.expectStatus().isOk();
-
-        // and: the response contains the topics
-        var response = exchange.expectBody(QueryTopicsResponse.class).returnResult().getResponseBody();
-        assertThat(response.topics).hasSize(2);
-
-        var topic1 = response.topics.get(0);
-        assertThat(topic1.id).isEqualTo("TOPIC_ID_1");
-        assertThat(topic1.name).isEqualTo("TOPIC_NAME_1");
-
-        var topic2 = response.topics.get(1);
-        assertThat(topic2.id).isEqualTo("TOPIC_ID_2");
-        assertThat(topic2.name).isEqualTo("TOPIC_NAME_2");
+        // then: the response is unauthorized
+        exchange.expectStatus().isUnauthorized();
     }
 
     @Test

@@ -59,10 +59,20 @@ public class FabricsModule {
         return changesTracker.getChanges(receiverId);
     }
 
+    public Flux<Topic> getAvailableTopicsForFabrics(Agent agent) {
+        return assertAgentIsAllowedTo(agent, CREATE)
+                .thenMany(topicRepo.findAll());
+    }
+
     public Flux<Topic> getTopicsUsedInFabrics(Agent ignoredAgent) {
         return fabricLookupRepo.findUniqueTopics()
                 .collectList()
                 .flatMapMany(topicRepo::findByIds);
+    }
+
+    public Flux<Color> getAvailableColorsForFabrics(Agent agent) {
+        return assertAgentIsAllowedTo(agent, CREATE)
+                .thenMany(colorRepo.findAll());
     }
 
     public Flux<Color> getColorsUsedInFabrics(Agent ignoredAgent) {

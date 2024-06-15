@@ -55,7 +55,19 @@ public class FabricsHttpHandler {
                 .body(events$, FabricChangeDTO.class);
     }
 
-    public Mono<ServerResponse> getFabricsTopics(ServerRequest request) {
+    public Mono<ServerResponse> getAvailableTopicsForFabrics(ServerRequest request) {
+        return toAgent(request)
+                .flatMapMany(module::getAvailableTopicsForFabrics)
+                .collectList()
+                .map(topics -> {
+                    var response = new QueryTopicsResponse();
+                    response.topics = toTopicDTOs(topics);
+                    return response;
+                })
+                .flatMap(topics -> ServerResponse.ok().bodyValue(topics));
+    }
+
+    public Mono<ServerResponse> getTopicsUsedInFabrics(ServerRequest request) {
         return toAgent(request)
                 .flatMapMany(module::getTopicsUsedInFabrics)
                 .collectList()
@@ -67,7 +79,19 @@ public class FabricsHttpHandler {
                 .flatMap(topics -> ServerResponse.ok().bodyValue(topics));
     }
 
-    public Mono<ServerResponse> getFabricsColors(ServerRequest request) {
+    public Mono<ServerResponse> getAvailableColorsForFabrics(ServerRequest request) {
+        return toAgent(request)
+                .flatMapMany(module::getAvailableColorsForFabrics)
+                .collectList()
+                .map(colorIds -> {
+                    var response = new QueryColorsResponse();
+                    response.colors = toColorDTOs(colorIds);
+                    return response;
+                })
+                .flatMap(colors -> ServerResponse.ok().bodyValue(colors));
+    }
+
+    public Mono<ServerResponse> getColorsUsedInFabrics(ServerRequest request) {
         return toAgent(request)
                 .flatMapMany(module::getColorsUsedInFabrics)
                 .collectList()

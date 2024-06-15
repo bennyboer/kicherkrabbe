@@ -17,9 +17,34 @@
 
   <div>
     @if (getImageId() | async; as imageId) {
-      <img [src]="getImageUrl(imageId)" width="100%" alt="Stoffbild">
+      <div class="image-container">
+        <img [src]="getImageUrl(imageId)" width="100%" alt="Stoffbild">
+      </div>
     } @else {
       <app-image-upload (uploaded)="onImageUploaded($event)"></app-image-upload>
+    }
+  </div>
+
+  <div class="topics-container">
+    <h4>Themen</h4>
+
+    @if (isLoadingAvailableTopics() | async) {
+      <div class="loading-container">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
+    } @else {
+      @if (getAvailableTopics() | async; as topics) {
+        @if (getSelectedTopics() | async; as selectedTopics) {
+          <app-chips [chips]="toChips(selectedTopics)"
+                     [available]="toChips(topics)"
+                     (removed)="onTopicRemoved($event)"
+                     (added)="onTopicAdded($event)">
+            <ng-template let-chip>
+              {{ chip.label }}
+            </ng-template>
+          </app-chips>
+        }
+      }
     }
   </div>
 

@@ -4,6 +4,7 @@ import {
   Component,
   ElementRef,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import {
@@ -16,9 +17,9 @@ import {
   takeUntil,
 } from 'rxjs';
 import { FabricsService } from '../../services';
-import { NotificationService } from '../../../../../shared';
+import { Chip, NotificationService } from '../../../../../shared';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FabricTypeAvailability } from '../../model';
+import { FabricTopic, FabricTypeAvailability } from '../../model';
 import { none, Option, some } from '../../../../../../util';
 import { environment } from '../../../../../../../environments';
 
@@ -28,7 +29,7 @@ import { environment } from '../../../../../../../environments';
   styleUrls: ['./create.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreateFabricPage implements AfterViewInit, OnDestroy {
+export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('name')
   nameInput!: ElementRef;
 
@@ -37,6 +38,12 @@ export class CreateFabricPage implements AfterViewInit, OnDestroy {
   );
   private readonly imageId$: BehaviorSubject<Option<string>> =
     new BehaviorSubject<Option<string>>(none());
+  private readonly selectedTopics$: BehaviorSubject<FabricTopic[]> =
+    new BehaviorSubject<FabricTopic[]>([]);
+  private readonly availableTopics$: BehaviorSubject<FabricTopic[]> =
+    new BehaviorSubject<FabricTopic[]>([]);
+  private readonly loadingAvailableTopics$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
   private readonly creatingFabric$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
   private readonly failed$: BehaviorSubject<boolean> =
@@ -54,9 +61,15 @@ export class CreateFabricPage implements AfterViewInit, OnDestroy {
     this.nameInput.nativeElement.focus();
   }
 
+  ngOnInit(): void {
+    this.reloadAvailableTopics();
+  }
+
   ngOnDestroy(): void {
     this.name$.complete();
     this.imageId$.complete();
+    this.availableTopics$.complete();
+    this.loadingAvailableTopics$.complete();
     this.creatingFabric$.complete();
     this.failed$.complete();
 
@@ -72,7 +85,7 @@ export class CreateFabricPage implements AfterViewInit, OnDestroy {
     const name = this.name$.value;
     const image = this.imageId$.value.orElseThrow('Image ID is missing');
     const colors = new Set<string>();
-    const topics = new Set<string>();
+    const topics = new Set<string>(this.selectedTopics$.value.map((t) => t.id));
     const availability: FabricTypeAvailability[] = [];
 
     this.creatingFabric$.next(true);
@@ -139,5 +152,64 @@ export class CreateFabricPage implements AfterViewInit, OnDestroy {
 
   getImageUrl(imageId: string): string {
     return `${environment.apiUrl}/assets/${imageId}/content`;
+  }
+
+  getAvailableTopics(): Observable<FabricTopic[]> {
+    return this.availableTopics$.asObservable();
+  }
+
+  getSelectedTopics(): Observable<FabricTopic[]> {
+    return this.selectedTopics$.asObservable();
+  }
+
+  isLoadingAvailableTopics(): Observable<boolean> {
+    return this.loadingAvailableTopics$.asObservable();
+  }
+
+  toChips(topics: FabricTopic[]): Chip[] {
+    return topics.map(this.toChip);
+  }
+
+  onTopicRemoved(chip: Chip) {
+    const topics = this.selectedTopics$.value.filter(
+      (topic) => topic.id !== chip.id,
+    );
+    this.selectedTopics$.next(topics);
+  }
+
+  onTopicAdded(chip: Chip) {
+    const topic = this.availableTopics$.value.find((t) => t.id === chip.id);
+    if (topic) {
+      const topics = [...this.selectedTopics$.value, topic];
+      this.selectedTopics$.next(topics);
+    }
+  }
+
+  private toChip(topic: FabricTopic): Chip {
+    return Chip.of({
+      id: topic.id,
+      label: topic.name,
+    });
+  }
+
+  private reloadAvailableTopics(): void {
+    this.loadingAvailableTopics$.next(true);
+    this.fabricsService
+      .getAvailableTopicsForFabrics()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (topics) => {
+          this.availableTopics$.next(topics);
+          this.loadingAvailableTopics$.next(false);
+        },
+        error: () => {
+          this.loadingAvailableTopics$.next(false);
+          this.notificationService.publish({
+            message:
+              'Die verfügbaren Themen konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
+            type: 'error',
+          });
+        },
+      });
   }
 }

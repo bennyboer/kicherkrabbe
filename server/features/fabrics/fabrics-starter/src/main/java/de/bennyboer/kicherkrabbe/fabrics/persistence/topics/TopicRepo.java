@@ -14,4 +14,6 @@ public interface TopicRepo {
 
     Flux<Topic> findByIds(Collection<TopicId> ids);
 
+    Flux<Topic> findAll();
+    
 }

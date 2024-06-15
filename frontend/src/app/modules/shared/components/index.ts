@@ -32,3 +32,5 @@ export {
   ColorBadgeColor,
 } from './color-badge/color-badge.component';
 export { FileSelectComponent } from './file-select/file-select.component';
+export { ChipsComponent, Chip } from './chips/chips.component';
+export { ChipComponent } from './chip/chip.component';

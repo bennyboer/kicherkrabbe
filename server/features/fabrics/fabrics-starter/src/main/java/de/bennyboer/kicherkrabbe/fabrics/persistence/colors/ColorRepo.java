@@ -14,4 +14,6 @@ public interface ColorRepo {
 
     Flux<Color> findByIds(Collection<ColorId> ids);
 
+    Flux<Color> findAll();
+
 }

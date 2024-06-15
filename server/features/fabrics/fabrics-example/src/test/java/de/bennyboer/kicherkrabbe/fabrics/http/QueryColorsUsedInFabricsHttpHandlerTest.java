@@ -12,7 +12,7 @@ import reactor.core.publisher.Flux;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class QueryColorsHttpHandlerTest extends HttpHandlerTest {
+public class QueryColorsUsedInFabricsHttpHandlerTest extends HttpHandlerTest {
 
     @Test
     void shouldSuccessfullyQueryColorsAsUser() {
@@ -27,7 +27,7 @@ public class QueryColorsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/fabrics/colors")
+                .uri("/api/fabrics/colors/used")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -63,7 +63,7 @@ public class QueryColorsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without a token
         var exchange = client.get()
-                .uri("/api/fabrics/colors")
+                .uri("/api/fabrics/colors/used")
                 .exchange();
 
         // then: the response is successful
@@ -92,7 +92,7 @@ public class QueryColorsHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.get()
-                .uri("/api/fabrics/colors")
+                .uri("/api/fabrics/colors/used")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 

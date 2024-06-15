@@ -98,6 +98,21 @@ public abstract class TopicRepoTest {
         assertThat(found).containsExactlyInAnyOrder(topic1, topic3);
     }
 
+    @Test
+    void shouldFindAllTopics() {
+        // given: some topics
+        var topic1 = Topic.of(TopicId.of("TOPIC_ID_1"), TopicName.of("Topic Name 1"));
+        var topic2 = Topic.of(TopicId.of("TOPIC_ID_2"), TopicName.of("Topic Name 2"));
+        save(topic1);
+        save(topic2);
+
+        // when: finding all topics
+        var found = findAll();
+
+        // then: all topics are found
+        assertThat(found).containsExactlyInAnyOrder(topic1, topic2);
+    }
+
     private void save(Topic topic) {
         repo.save(topic).block();
     }
@@ -112,6 +127,10 @@ public abstract class TopicRepoTest {
 
     private List<Topic> findByIds(Collection<TopicId> ids) {
         return repo.findByIds(ids).collectList().block();
+    }
+
+    private List<Topic> findAll() {
+        return repo.findAll().collectList().block();
     }
 
 }

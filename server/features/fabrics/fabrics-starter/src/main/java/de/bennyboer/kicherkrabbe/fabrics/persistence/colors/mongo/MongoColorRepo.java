@@ -58,4 +58,10 @@ public class MongoColorRepo implements ColorRepo {
                 .map(MongoColorTransformer::fromMongo);
     }
 
+    @Override
+    public Flux<Color> findAll() {
+        return template.findAll(MongoColor.class, collectionName)
+                .map(MongoColorTransformer::fromMongo);
+    }
+
 }

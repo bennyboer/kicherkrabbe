@@ -1,0 +1,62 @@
+<div class="container">
+  <app-loading-bar [visible]="isLoading() | async"></app-loading-bar>
+
+  @if (getFabric() | async; as fabricOption) {
+    @if (fabricOption.unwrap(); as fabric) {
+      <span class="created-at">
+        Erstellt am: {{ fabric.createdAt | date: 'dd.MM.yyyy' }} um {{ fabric.createdAt | date: 'HH:mm' }} Uhr
+      </span>
+
+      <hr>
+
+      <div class="image-container">
+        <img [src]="getImageUrl(fabric.image)" width="100%" alt="Bild des Stoffs">
+      </div>
+
+      <form class="name-form" (submit)="false">
+        <div class="form-group">
+          <span class="input-label-group">
+            <label for="name">Name</label>
+            <input #name
+                   id="name"
+                   name="name"
+                   type="text"
+                   [value]="fabric.name"
+                   (input)="updateTransientName(name.value)"/>
+          </span>
+          <app-button (click)="updateName(fabric)" [disabled]="cannotUpdateName() | async">Speichern</app-button>
+        </div>
+
+        @if (isFailedUpdatingName() | async) {
+          <app-note level="error">
+            Der Name konnte nicht aktualisiert werden. Bitte versuche es erneut.
+          </app-note>
+        }
+
+        <button type="submit"
+                class="hidden"
+                (click)="updateName(fabric)"
+                [disabled]="cannotUpdateName() | async">
+        </button>
+      </form>
+
+      <hr>
+
+      <div class="actions">
+        <span>
+          <app-button routerLink="..">Zurück zur Übersicht</app-button>
+        </span>
+        <span>
+          @if (isDeleteConfirmation() | async) {
+            <app-button color="warn" (click)="deleteFabric(fabric)">Wirklich löschen?</app-button>
+          } @else {
+            <app-button (click)="waitForDeleteConfirmation()">Stoff löschen</app-button>
+          }
+        </span>
+      </div>
+    } @else {
+      <p>Der Stoff konnte nicht gefunden werden.</p>
+    }
+  }
+
+</div>

@@ -74,6 +74,12 @@ export class Option<T> {
     }
   }
 
+  ifNone(consumer: () => void): void {
+    if (this.isNone()) {
+      consumer();
+    }
+  }
+
   ifSomeOrElse(ifSomeFn: (value: T) => void, orElseFn: () => void) {
     if (this.isSome()) {
       ifSomeFn(this.orElseThrow());
