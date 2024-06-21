@@ -5,7 +5,11 @@ import { AdminAuthService, AuthInterceptor } from './services';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { ContainerComponent, HeaderComponent } from './components';
 
 const PAGES = [DashboardPage, LoginPage];
@@ -14,13 +18,7 @@ const COMPONENTS = [ContainerComponent, HeaderComponent];
 
 @NgModule({
   declarations: [...PAGES, ...COMPONENTS],
-  imports: [
-    CommonModule,
-    AdminRoutingModule,
-    SharedModule,
-    FormsModule,
-    HttpClientModule,
-  ],
+  imports: [CommonModule, AdminRoutingModule, SharedModule, FormsModule],
   providers: [
     AdminAuthService,
     {
@@ -28,6 +26,7 @@ const COMPONENTS = [ContainerComponent, HeaderComponent];
       useClass: AuthInterceptor,
       multi: true,
     },
+    provideHttpClient(withInterceptorsFromDi()),
   ],
 })
 export class AdminModule {}

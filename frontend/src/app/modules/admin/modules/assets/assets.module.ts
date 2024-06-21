@@ -3,12 +3,15 @@ import { ImageUploadComponent } from './components';
 import { AssetsService } from './services/assets.service';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../../shared/shared.module';
-import { HttpClientModule } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 
 @NgModule({
   declarations: [ImageUploadComponent],
-  imports: [CommonModule, SharedModule, HttpClientModule],
   exports: [ImageUploadComponent],
-  providers: [AssetsService],
+  imports: [CommonModule, SharedModule],
+  providers: [AssetsService, provideHttpClient(withInterceptorsFromDi())],
 })
 export class AssetsModule {}
