@@ -17,9 +17,13 @@ import {
   takeUntil,
 } from 'rxjs';
 import { FabricsService } from '../../services';
-import { Chip, NotificationService } from '../../../../../shared';
+import {
+  Chip,
+  ColorBadgeColor,
+  NotificationService,
+} from '../../../../../shared';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FabricTopic, FabricTypeAvailability } from '../../model';
+import { FabricColor, FabricTopic, FabricTypeAvailability } from '../../model';
 import { none, Option, some } from '../../../../../../util';
 import { environment } from '../../../../../../../environments';
 
@@ -44,6 +48,12 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     new BehaviorSubject<FabricTopic[]>([]);
   private readonly loadingAvailableTopics$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
+  private readonly selectedColors$: BehaviorSubject<FabricColor[]> =
+    new BehaviorSubject<FabricColor[]>([]);
+  private readonly availableColors$: BehaviorSubject<FabricColor[]> =
+    new BehaviorSubject<FabricColor[]>([]);
+  private readonly loadingAvailableColors$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
   private readonly creatingFabric$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
   private readonly failed$: BehaviorSubject<boolean> =
@@ -63,6 +73,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.reloadAvailableTopics();
+    this.reloadAvailableColors();
   }
 
   ngOnDestroy(): void {
@@ -70,6 +81,10 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     this.imageId$.complete();
     this.availableTopics$.complete();
     this.loadingAvailableTopics$.complete();
+    this.selectedTopics$.complete();
+    this.selectedColors$.complete();
+    this.availableColors$.complete();
+    this.loadingAvailableColors$.complete();
     this.creatingFabric$.complete();
     this.failed$.complete();
 
@@ -84,7 +99,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
   createFabric(): boolean {
     const name = this.name$.value;
     const image = this.imageId$.value.orElseThrow('Image ID is missing');
-    const colors = new Set<string>();
+    const colors = new Set<string>(this.selectedColors$.value.map((c) => c.id));
     const topics = new Set<string>(this.selectedTopics$.value.map((t) => t.id));
     const availability: FabricTypeAvailability[] = [];
 
@@ -158,16 +173,32 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     return this.availableTopics$.asObservable();
   }
 
+  getAvailableColors(): Observable<FabricColor[]> {
+    return this.availableColors$.asObservable();
+  }
+
   getSelectedTopics(): Observable<FabricTopic[]> {
     return this.selectedTopics$.asObservable();
+  }
+
+  getSelectedColors(): Observable<FabricColor[]> {
+    return this.selectedColors$.asObservable();
   }
 
   isLoadingAvailableTopics(): Observable<boolean> {
     return this.loadingAvailableTopics$.asObservable();
   }
 
-  toChips(topics: FabricTopic[]): Chip[] {
-    return topics.map(this.toChip);
+  isLoadingAvailableColors(): Observable<boolean> {
+    return this.loadingAvailableColors$.asObservable();
+  }
+
+  topicsToChips(topics: FabricTopic[]): Chip[] {
+    return topics.map(this.topicToChip);
+  }
+
+  colorsToChips(colors: FabricColor[]): Chip[] {
+    return colors.map(this.colorToChip);
   }
 
   onTopicRemoved(chip: Chip) {
@@ -175,6 +206,13 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
       (topic) => topic.id !== chip.id,
     );
     this.selectedTopics$.next(topics);
+  }
+
+  onColorRemoved(chip: Chip) {
+    const colors = this.selectedColors$.value.filter(
+      (color) => color.id !== chip.id,
+    );
+    this.selectedColors$.next(colors);
   }
 
   onTopicAdded(chip: Chip) {
@@ -185,10 +223,32 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
-  private toChip(topic: FabricTopic): Chip {
+  onColorAdded(chip: Chip) {
+    const color = this.availableColors$.value.find((t) => t.id === chip.id);
+    if (color) {
+      const colors = [...this.selectedColors$.value, color];
+      this.selectedColors$.next(colors);
+    }
+  }
+
+  private topicToChip(topic: FabricTopic): Chip {
     return Chip.of({
       id: topic.id,
       label: topic.name,
+    });
+  }
+
+  private colorToChip(color: FabricColor): Chip {
+    const colorBadgeColor: ColorBadgeColor = {
+      red: color.red,
+      green: color.green,
+      blue: color.blue,
+    };
+
+    return Chip.of({
+      id: color.id,
+      label: color.name,
+      content: colorBadgeColor,
     });
   }
 
@@ -207,6 +267,27 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
           this.notificationService.publish({
             message:
               'Die verfügbaren Themen konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
+            type: 'error',
+          });
+        },
+      });
+  }
+
+  private reloadAvailableColors(): void {
+    this.loadingAvailableColors$.next(true);
+    this.fabricsService
+      .getAvailableColorsForFabrics()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (colors) => {
+          this.availableColors$.next(colors);
+          this.loadingAvailableColors$.next(false);
+        },
+        error: () => {
+          this.loadingAvailableColors$.next(false);
+          this.notificationService.publish({
+            message:
+              'Die verfügbaren Farben konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
             type: 'error',
           });
         },

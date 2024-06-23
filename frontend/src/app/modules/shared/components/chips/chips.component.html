@@ -18,6 +18,8 @@
   <input #addChipTextField
          class="add-chips-text-field"
          type="text"
+         (blur)="onAddChipTextFieldBlurred()"
+         (focus)="onAddChipTextFieldFocused()"
          (input)="onAddChipTextFieldValueChanged(addChipTextField.value)"
          (keydown.escape)="cancelAddingChips()"
          (keydown.enter)="addChipIfAvailable(addChipTextField.value)">
@@ -29,9 +31,11 @@
     @if (getSearchResults() | async; as searchResults) {
       <app-button-column [rounded]="false" [size]="ButtonSize.FIT_CONTENT">
         @for (chip of searchResults; track chip.id) {
-          <app-button (click)="onAvailableChipSelected(chip)">
+          <app-button (click)="onAvailableChipSelected(chip)" (mousedown)="onAvailableChipMouseDown($event)">
             <div class="dropdown-item">
-              {{ chip.label }}
+              <ng-container [ngTemplateOutlet]="chipDropdownItemTemplateRef"
+                            [ngTemplateOutletContext]="{ $implicit: chip }">
+              </ng-container>
             </div>
           </app-button>
         }

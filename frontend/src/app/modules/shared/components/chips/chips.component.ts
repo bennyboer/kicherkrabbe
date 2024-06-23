@@ -14,7 +14,14 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
-import { BehaviorSubject, map, Observable, Subject, takeUntil } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  Observable,
+  Subject,
+  takeUntil,
+} from 'rxjs';
 import { none, Option, Point, some, someOrNone } from '../../../../util';
 import {
   NotificationService,
@@ -59,6 +66,9 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
   @ViewChildren('addChipTextField')
   addChipTextFieldElements!: QueryList<ElementRef>;
 
+  @Input({ required: true })
+  chipDropdownItemTemplateRef!: TemplateRef<any>;
+
   @Input()
   set chips(chips: Chip[]) {
     someOrNone(chips).ifSome((chips) => this.chips$.next(chips));
@@ -71,6 +81,12 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
 
   @Input()
   type: string = 'Chip';
+
+  /**
+   * Whether the available options are always shown or only when the user starts typing.
+   */
+  @Input()
+  alwaysShowOptions: boolean = false;
 
   @Output()
   added: EventEmitter<Chip> = new EventEmitter<Chip>();
@@ -89,6 +105,10 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
     new BehaviorSubject<string>('');
   private readonly searchResults$: BehaviorSubject<Chip[]> =
     new BehaviorSubject<Chip[]>([]);
+  private readonly inputFocused$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
+  private readonly showOverlay$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   private overlay: Option<OverlayRef> = none();
@@ -107,27 +127,51 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
       }
     });
 
-    this.search$.pipe(takeUntil(this.destroy$)).subscribe((search) => {
-      const isEmpty = search.length === 0;
-      if (isEmpty) {
-        this.searchResults$.next([]);
-      } else {
-        const availableChips = this.availableChips$.value;
-        const result = availableChips.filter((chip) =>
-          chip.label.toLowerCase().includes(search),
-        );
-        this.searchResults$.next(result);
-      }
-    });
+    const filteredAvailableChips$ = combineLatest([
+      this.chips$,
+      this.availableChips$,
+    ]).pipe(
+      map(([chips, availableChips]) => {
+        const chipIds = new Set<string>(chips.map((chip) => chip.id));
+        return availableChips.filter((c) => !chipIds.has(c.id));
+      }),
+    );
+
+    combineLatest([this.search$, filteredAvailableChips$])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([search, filteredAvailableChips]) => {
+        const isEmpty = search.length === 0;
+        if (isEmpty) {
+          if (this.alwaysShowOptions) {
+            this.searchResults$.next(filteredAvailableChips);
+          } else {
+            this.searchResults$.next([]);
+          }
+        } else {
+          const result = filteredAvailableChips.filter((chip) =>
+            chip.label.toLowerCase().includes(search),
+          );
+          this.searchResults$.next(result);
+        }
+      });
 
     this.searchResults$.pipe(takeUntil(this.destroy$)).subscribe((result) => {
-      const isEmpty = result.length === 0;
-      if (isEmpty) {
-        this.closeOverlayIfOpen();
-      } else {
-        this.makeSureOverlayIsOpen();
-      }
+      const hasAtLeastOneResult = result.length > 0;
+      this.showOverlay$.next(hasAtLeastOneResult || this.alwaysShowOptions);
     });
+
+    combineLatest([this.showOverlay$, this.inputFocused$])
+      .pipe(
+        map(([showOverlay, inputFocused]) => showOverlay && inputFocused),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((show) => {
+        if (show) {
+          this.makeSureOverlayIsOpen();
+        } else {
+          this.closeOverlayIfOpen();
+        }
+      });
   }
 
   ngAfterViewInit(): void {
@@ -147,6 +191,8 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
     this.availableChips$.complete();
     this.adding$.complete();
     this.search$.complete();
+    this.inputFocused$.complete();
+    this.showOverlay$.complete();
 
     this.destroy$.next();
     this.destroy$.complete();
@@ -167,7 +213,19 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   onAddChipTextFieldAppeared(input: HTMLInputElement): void {
-    input.focus();
+    /*
+    For some reason, the input elements position is not yet calculated correctly when the component is initialized.
+    Thus we wait a bit before we focus the input element.
+     */
+    setTimeout(() => input.focus(), 100);
+  }
+
+  onAddChipTextFieldBlurred(): void {
+    this.inputFocused$.next(false);
+  }
+
+  onAddChipTextFieldFocused(): void {
+    this.inputFocused$.next(true);
   }
 
   onAddChipTextFieldValueChanged(value: string): void {
@@ -198,12 +256,9 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
     );
   }
 
-  isChipAvailable(label: string): boolean {
-    return this.availableChips$.value.some((chip) => chip.label === label);
-  }
-
   cancelAddingChips(): void {
     this.adding$.next(false);
+    this.inputFocused$.next(false);
   }
 
   getSearchResults(): Observable<Chip[]> {
@@ -211,7 +266,12 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   onAvailableChipSelected(chip: Chip): void {
+    this.inputFocused$.next(false);
     this.addChip(chip);
+  }
+
+  onAvailableChipMouseDown(event: MouseEvent): void {
+    event.preventDefault();
   }
 
   removeChip(chip: Chip): void {
@@ -225,9 +285,10 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
 
   private makeSureOverlayIsOpen(): void {
     this.overlay.ifNone(() => {
-      const textField = someOrNone(this.addChipTextFieldElements.first)
+      const textField = someOrNone(this.addChipTextFieldElements)
+        .map((inputs) => inputs.first)
         .map((input) => input.nativeElement)
-        .orElseThrow('Add chip text field is not available');
+        .orElseThrow('Text field not found');
 
       const overlay = this.overlayService.pushOverlay({
         templateRef: this.searchOverlayTemplate,
@@ -236,7 +297,7 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
           x: 0,
           y: textField.offsetHeight,
         }),
-        closeOnBackdropClick: true,
+        closeOnBackdropClick: false,
       });
 
       this.overlay = some(overlay);

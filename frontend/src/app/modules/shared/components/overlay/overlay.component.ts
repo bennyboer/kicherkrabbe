@@ -52,7 +52,7 @@ export class OverlayComponent {
 
     const isClickOnBackdrop = !isClickOnOverlay && !isClickOnParent;
 
-    if (isClickOnBackdrop) {
+    if (isClickOnBackdrop && this.overlay.closeOnBackdropClick) {
       this.overlay.close();
     }
   }

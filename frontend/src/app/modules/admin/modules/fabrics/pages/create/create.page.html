@@ -35,14 +35,52 @@
     } @else {
       @if (getAvailableTopics() | async; as topics) {
         @if (getSelectedTopics() | async; as selectedTopics) {
-          <app-chips [chips]="toChips(selectedTopics)"
-                     [available]="toChips(topics)"
+          <app-chips [chips]="topicsToChips(selectedTopics)"
+                     [available]="topicsToChips(topics)"
+                     [alwaysShowOptions]="true"
+                     [chipDropdownItemTemplateRef]="topicDropdownItemTemplateRef"
                      (removed)="onTopicRemoved($event)"
                      (added)="onTopicAdded($event)">
             <ng-template let-chip>
               {{ chip.label }}
             </ng-template>
           </app-chips>
+
+          <ng-template #topicDropdownItemTemplateRef let-chip>
+            {{ chip.label }}
+          </ng-template>
+        }
+      }
+    }
+  </div>
+
+  <div class="colors-container">
+    <h4>Farben</h4>
+
+    @if (isLoadingAvailableColors() | async) {
+      <div class="loading-container">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
+    } @else {
+      @if (getAvailableColors() | async; as colors) {
+        @if (getSelectedColors() | async; as selectedColors) {
+          <app-chips [chips]="colorsToChips(selectedColors)"
+                     [available]="colorsToChips(colors)"
+                     [alwaysShowOptions]="true"
+                     [chipDropdownItemTemplateRef]="colorDropdownItemTemplateRef"
+                     (removed)="onColorRemoved($event)"
+                     (added)="onColorAdded($event)">
+            <ng-template let-chip>
+              {{ chip.label }}
+            </ng-template>
+          </app-chips>
+
+          <ng-template #colorDropdownItemTemplateRef let-chip>
+            <div class="color-dropdown-item">
+              <app-color-badge [color]="chip.content"></app-color-badge>
+              {{ chip.label }}
+            </div>
+          </ng-template>
         }
       }
     }

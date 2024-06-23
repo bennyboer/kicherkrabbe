@@ -21,6 +21,7 @@ import { environment } from '../../../../../../environments';
 import {
   ColorId,
   Fabric,
+  FabricColor,
   FabricId,
   FabricTopic,
   FabricTypeAvailability,
@@ -77,8 +78,20 @@ interface TopicDTO {
   name: string;
 }
 
+interface ColorDTO {
+  id: string;
+  name: string;
+  red: number;
+  green: number;
+  blue: number;
+}
+
 interface QueryTopicsResponse {
   topics: TopicDTO[];
+}
+
+interface QueryColorsResponse {
+  colors: ColorDTO[];
 }
 
 @Injectable()
@@ -209,6 +222,24 @@ export class FabricsService implements OnDestroy {
         map((response) =>
           response.topics.map((topic) =>
             FabricTopic.of({ id: topic.id, name: topic.name }),
+          ),
+        ),
+      );
+  }
+
+  getAvailableColorsForFabrics(): Observable<FabricColor[]> {
+    return this.http
+      .get<QueryColorsResponse>(`${environment.apiUrl}/fabrics/colors`)
+      .pipe(
+        map((response) =>
+          response.colors.map((color) =>
+            FabricColor.of({
+              id: color.id,
+              name: color.name,
+              red: color.red,
+              green: color.green,
+              blue: color.blue,
+            }),
           ),
         ),
       );

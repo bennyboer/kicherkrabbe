@@ -104,6 +104,14 @@ export class Option<T> {
     return this.orElseThrow();
   }
 
+  orElseTry(supplier: () => Option<T>): Option<T> {
+    if (this.isNone()) {
+      return supplier();
+    }
+
+    return this;
+  }
+
   unwrap(): T | null {
     if (this.isNone()) {
       return null;
