@@ -57,6 +57,19 @@ h3 {
   aspect-ratio: 1;
 }
 
+.color-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+}
+
 @media only screen and (max-width: 1000px) {
   .actions {
     flex-direction: column;

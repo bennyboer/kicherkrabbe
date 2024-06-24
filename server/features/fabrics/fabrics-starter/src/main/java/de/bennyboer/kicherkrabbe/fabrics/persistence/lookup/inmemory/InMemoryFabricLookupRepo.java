@@ -1,10 +1,7 @@
 package de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.inmemory;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.inmemory.InMemoryEventSourcingReadModelRepo;
-import de.bennyboer.kicherkrabbe.fabrics.ColorId;
-import de.bennyboer.kicherkrabbe.fabrics.FabricId;
-import de.bennyboer.kicherkrabbe.fabrics.FabricTypeId;
-import de.bennyboer.kicherkrabbe.fabrics.TopicId;
+import de.bennyboer.kicherkrabbe.fabrics.*;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.FabricLookupRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.LookupFabric;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.LookupFabricPage;
@@ -135,6 +132,14 @@ public class InMemoryFabricLookupRepo extends InMemoryEventSourcingReadModelRepo
     public Flux<TopicId> findUniqueTopics() {
         return getAll()
                 .flatMap(fabric -> Flux.fromIterable(fabric.getTopics()))
+                .distinct();
+    }
+
+    @Override
+    public Flux<FabricTypeId> findUniqueFabricTypes() {
+        return getAll()
+                .flatMap(fabric -> Flux.fromIterable(fabric.getAvailability()))
+                .map(FabricTypeAvailability::getTypeId)
                 .distinct();
     }
 

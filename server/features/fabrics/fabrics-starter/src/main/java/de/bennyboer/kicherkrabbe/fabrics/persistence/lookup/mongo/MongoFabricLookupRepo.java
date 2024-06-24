@@ -198,6 +198,16 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
     }
 
     @Override
+    public Flux<FabricTypeId> findUniqueFabricTypes() {
+        return template.query(MongoLookupFabric.class)
+                .inCollection(collectionName)
+                .distinct("availability.fabricTypeId")
+                .as(String.class)
+                .all()
+                .map(FabricTypeId::of);
+    }
+
+    @Override
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         IndexDefinition createdAtIndex = new Index().on("createdAt", Sort.Direction.ASC);
         IndexDefinition nameIndex = new Index().on("name", Sort.Direction.ASC);

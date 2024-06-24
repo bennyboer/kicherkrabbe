@@ -37,6 +37,8 @@ public class FabricsHttpConfig {
                         .andRoute(GET("/topics/used"), handler::getTopicsUsedInFabrics)
                         .andRoute(GET("/colors"), handler::getAvailableColorsForFabrics)
                         .andRoute(GET("/colors/used"), handler::getColorsUsedInFabrics)
+                        .andRoute(GET("/fabric-types"), handler::getAvailableFabricTypesForFabrics)
+                        .andRoute(GET("/fabric-types/used"), handler::getFabricTypesUsedInFabrics)
                         .andRoute(POST("/create"), handler::createFabric)
                         .andNest(path("/{fabricId}"), route(GET("/"), handler::getFabric)
                                 .andRoute(GET("/published"), handler::getPublishedFabric)
@@ -62,7 +64,8 @@ public class FabricsHttpConfig {
         return exchanges -> exchanges.pathMatchers(POST, "/api/fabrics/published").permitAll()
                 .pathMatchers(GET, "/api/fabrics/{fabricId}/published").permitAll()
                 .pathMatchers(GET, "/api/fabrics/topics/used").permitAll()
-                .pathMatchers(GET, "/api/fabrics/colors/used").permitAll();
+                .pathMatchers(GET, "/api/fabrics/colors/used").permitAll()
+                .pathMatchers(GET, "/api/fabrics/fabric-types/used").permitAll();
     }
 
 }

@@ -37,5 +37,7 @@ public interface FabricLookupRepo extends EventSourcingReadModelRepo<FabricId, L
     Flux<ColorId> findUniqueColors();
 
     Flux<TopicId> findUniqueTopics();
-    
+
+    Flux<FabricTypeId> findUniqueFabricTypes();
+
 }

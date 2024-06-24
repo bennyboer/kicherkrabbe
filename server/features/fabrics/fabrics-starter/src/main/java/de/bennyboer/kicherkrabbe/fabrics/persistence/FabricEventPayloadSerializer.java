@@ -115,7 +115,7 @@ public class FabricEventPayloadSerializer implements EventSerializer {
             case "COLORS_UPDATED" -> ColorsUpdatedEvent.of(
                     ((List<String>) payload.get("colors")).stream().map(ColorId::of).collect(Collectors.toSet())
             );
-            case "TOPIC_UPDATED" -> TopicsUpdatedEvent.of(
+            case "TOPICS_UPDATED" -> TopicsUpdatedEvent.of(
                     ((List<String>) payload.get("topics")).stream().map(TopicId::of).collect(Collectors.toSet())
             );
             case "AVAILABILITY_UPDATED" -> AvailabilityUpdatedEvent.of(

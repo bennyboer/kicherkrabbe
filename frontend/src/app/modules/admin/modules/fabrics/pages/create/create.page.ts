@@ -23,7 +23,12 @@ import {
   NotificationService,
 } from '../../../../../shared';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FabricColor, FabricTopic, FabricTypeAvailability } from '../../model';
+import {
+  FabricColor,
+  FabricTopic,
+  FabricType,
+  FabricTypeAvailability,
+} from '../../model';
 import { none, Option, some } from '../../../../../../util';
 import { environment } from '../../../../../../../environments';
 
@@ -54,6 +59,12 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     new BehaviorSubject<FabricColor[]>([]);
   private readonly loadingAvailableColors$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
+  private readonly selectedFabricTypes$: BehaviorSubject<FabricType[]> =
+    new BehaviorSubject<FabricType[]>([]);
+  private readonly availableFabricTypes$: BehaviorSubject<FabricType[]> =
+    new BehaviorSubject<FabricType[]>([]);
+  private readonly loadingAvailableFabricTypes$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
   private readonly creatingFabric$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
   private readonly failed$: BehaviorSubject<boolean> =
@@ -74,6 +85,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
   ngOnInit(): void {
     this.reloadAvailableTopics();
     this.reloadAvailableColors();
+    this.reloadAvailableFabricTypes();
   }
 
   ngOnDestroy(): void {
@@ -85,6 +97,9 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     this.selectedColors$.complete();
     this.availableColors$.complete();
     this.loadingAvailableColors$.complete();
+    this.availableFabricTypes$.complete();
+    this.selectedFabricTypes$.complete();
+    this.loadingAvailableFabricTypes$.complete();
     this.creatingFabric$.complete();
     this.failed$.complete();
 
@@ -101,7 +116,13 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     const image = this.imageId$.value.orElseThrow('Image ID is missing');
     const colors = new Set<string>(this.selectedColors$.value.map((c) => c.id));
     const topics = new Set<string>(this.selectedTopics$.value.map((t) => t.id));
-    const availability: FabricTypeAvailability[] = [];
+    const availability: FabricTypeAvailability[] =
+      this.selectedFabricTypes$.value.map((fabricType) =>
+        FabricTypeAvailability.of({
+          typeId: fabricType.id,
+          inStock: true,
+        }),
+      );
 
     this.creatingFabric$.next(true);
     this.failed$.next(false);
@@ -141,7 +162,12 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
   }
 
   isFormValid(): Observable<boolean> {
-    return this.name$.pipe(map((name) => name.length > 0));
+    const nameValid$ = this.name$.pipe(map((name) => name.length > 0));
+    const imageIdValid$ = this.imageId$.pipe(map((id) => id.isSome()));
+
+    return combineLatest([nameValid$, imageIdValid$]).pipe(
+      map(([nameValid, imageIdValid]) => nameValid && imageIdValid),
+    );
   }
 
   canCreateFabric(): Observable<boolean> {
@@ -177,12 +203,20 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     return this.availableColors$.asObservable();
   }
 
+  getAvailableFabricTypes(): Observable<FabricType[]> {
+    return this.availableFabricTypes$.asObservable();
+  }
+
   getSelectedTopics(): Observable<FabricTopic[]> {
     return this.selectedTopics$.asObservable();
   }
 
   getSelectedColors(): Observable<FabricColor[]> {
     return this.selectedColors$.asObservable();
+  }
+
+  getSelectedFabricTypes(): Observable<FabricType[]> {
+    return this.selectedFabricTypes$.asObservable();
   }
 
   isLoadingAvailableTopics(): Observable<boolean> {
@@ -193,12 +227,20 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     return this.loadingAvailableColors$.asObservable();
   }
 
+  isLoadingAvailableFabricTypes(): Observable<boolean> {
+    return this.loadingAvailableFabricTypes$.asObservable();
+  }
+
   topicsToChips(topics: FabricTopic[]): Chip[] {
     return topics.map(this.topicToChip);
   }
 
   colorsToChips(colors: FabricColor[]): Chip[] {
     return colors.map(this.colorToChip);
+  }
+
+  fabricTypesToChips(fabricTypes: FabricType[]): Chip[] {
+    return fabricTypes.map(this.fabricTypeToChip);
   }
 
   onTopicRemoved(chip: Chip) {
@@ -215,6 +257,13 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     this.selectedColors$.next(colors);
   }
 
+  onFabricTypeRemoved(chip: Chip) {
+    const fabricTypes = this.selectedFabricTypes$.value.filter(
+      (fabricType) => fabricType.id !== chip.id,
+    );
+    this.selectedFabricTypes$.next(fabricTypes);
+  }
+
   onTopicAdded(chip: Chip) {
     const topic = this.availableTopics$.value.find((t) => t.id === chip.id);
     if (topic) {
@@ -228,6 +277,16 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     if (color) {
       const colors = [...this.selectedColors$.value, color];
       this.selectedColors$.next(colors);
+    }
+  }
+
+  onFabricTypeAdded(chip: Chip) {
+    const fabricType = this.availableFabricTypes$.value.find(
+      (t) => t.id === chip.id,
+    );
+    if (fabricType) {
+      const fabricTypes = [...this.selectedFabricTypes$.value, fabricType];
+      this.selectedFabricTypes$.next(fabricTypes);
     }
   }
 
@@ -249,6 +308,13 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
       id: color.id,
       label: color.name,
       content: colorBadgeColor,
+    });
+  }
+
+  private fabricTypeToChip(fabricType: FabricType): Chip {
+    return Chip.of({
+      id: fabricType.id,
+      label: fabricType.name,
     });
   }
 
@@ -288,6 +354,27 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
           this.notificationService.publish({
             message:
               'Die verfügbaren Farben konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
+            type: 'error',
+          });
+        },
+      });
+  }
+
+  private reloadAvailableFabricTypes(): void {
+    this.loadingAvailableFabricTypes$.next(true);
+    this.fabricsService
+      .getAvailableFabricTypesForFabrics()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (fabricTypes) => {
+          this.availableFabricTypes$.next(fabricTypes);
+          this.loadingAvailableFabricTypes$.next(false);
+        },
+        error: () => {
+          this.loadingAvailableFabricTypes$.next(false);
+          this.notificationService.publish({
+            message:
+              'Die verfügbaren Stoffarten konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
             type: 'error',
           });
         },

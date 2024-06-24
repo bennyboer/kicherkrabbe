@@ -12,6 +12,7 @@ import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.Color;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.ColorRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.inmemory.InMemoryColorRepo;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.fabrictypes.FabricType;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.fabrictypes.FabricTypeRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.fabrictypes.inmemory.InMemoryFabricTypeRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.FabricLookupRepo;
@@ -229,6 +230,14 @@ public class FabricsModuleTest {
 
     public List<Color> getColorsUsedInFabrics(Agent agent) {
         return module.getColorsUsedInFabrics(agent).collectList().block();
+    }
+
+    public List<FabricType> getAvailableFabricTypesForFabrics(Agent agent) {
+        return module.getAvailableFabricTypesForFabrics(agent).collectList().block();
+    }
+
+    public List<FabricType> getFabricTypesUsedInFabrics(Agent agent) {
+        return module.getFabricTypesUsedInFabrics(agent).collectList().block();
     }
 
     public void allowUserToCreateFabrics(String userId) {

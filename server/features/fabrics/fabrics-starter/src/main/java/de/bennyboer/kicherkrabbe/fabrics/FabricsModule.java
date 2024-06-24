@@ -81,6 +81,17 @@ public class FabricsModule {
                 .flatMapMany(colorRepo::findByIds);
     }
 
+    public Flux<FabricType> getAvailableFabricTypesForFabrics(Agent agent) {
+        return assertAgentIsAllowedTo(agent, CREATE)
+                .thenMany(fabricTypeRepo.findAll());
+    }
+
+    public Flux<FabricType> getFabricTypesUsedInFabrics(Agent ignoredAgent) {
+        return fabricLookupRepo.findUniqueFabricTypes()
+                .collectList()
+                .flatMapMany(fabricTypeRepo::findByIds);
+    }
+
     public Mono<FabricDetails> getFabric(String fabricId, Agent agent) {
         var id = FabricId.of(fabricId);
 

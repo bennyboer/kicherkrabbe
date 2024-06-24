@@ -10,6 +10,7 @@ import de.bennyboer.kicherkrabbe.fabrics.http.api.*;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.requests.*;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.*;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.Color;
+import de.bennyboer.kicherkrabbe.fabrics.persistence.fabrictypes.FabricType;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.topics.Topic;
 import de.bennyboer.kicherkrabbe.fabrics.publish.AlreadyPublishedError;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.AlreadyUnpublishedError;
@@ -64,7 +65,7 @@ public class FabricsHttpHandler {
                     response.topics = toTopicDTOs(topics);
                     return response;
                 })
-                .flatMap(topics -> ServerResponse.ok().bodyValue(topics));
+                .flatMap(result -> ServerResponse.ok().bodyValue(result));
     }
 
     public Mono<ServerResponse> getTopicsUsedInFabrics(ServerRequest request) {
@@ -76,31 +77,55 @@ public class FabricsHttpHandler {
                     response.topics = toTopicDTOs(topics);
                     return response;
                 })
-                .flatMap(topics -> ServerResponse.ok().bodyValue(topics));
+                .flatMap(result -> ServerResponse.ok().bodyValue(result));
     }
 
     public Mono<ServerResponse> getAvailableColorsForFabrics(ServerRequest request) {
         return toAgent(request)
                 .flatMapMany(module::getAvailableColorsForFabrics)
                 .collectList()
-                .map(colorIds -> {
+                .map(colors -> {
                     var response = new QueryColorsResponse();
-                    response.colors = toColorDTOs(colorIds);
+                    response.colors = toColorDTOs(colors);
                     return response;
                 })
-                .flatMap(colors -> ServerResponse.ok().bodyValue(colors));
+                .flatMap(result -> ServerResponse.ok().bodyValue(result));
     }
 
     public Mono<ServerResponse> getColorsUsedInFabrics(ServerRequest request) {
         return toAgent(request)
                 .flatMapMany(module::getColorsUsedInFabrics)
                 .collectList()
-                .map(colorIds -> {
+                .map(colors -> {
                     var response = new QueryColorsResponse();
-                    response.colors = toColorDTOs(colorIds);
+                    response.colors = toColorDTOs(colors);
                     return response;
                 })
-                .flatMap(colors -> ServerResponse.ok().bodyValue(colors));
+                .flatMap(result -> ServerResponse.ok().bodyValue(result));
+    }
+
+    public Mono<ServerResponse> getAvailableFabricTypesForFabrics(ServerRequest request) {
+        return toAgent(request)
+                .flatMapMany(module::getAvailableFabricTypesForFabrics)
+                .collectList()
+                .map(fabricTypes -> {
+                    var response = new QueryFabricTypesResponse();
+                    response.fabricTypes = toFabricTypeDTOs(fabricTypes);
+                    return response;
+                })
+                .flatMap(result -> ServerResponse.ok().bodyValue(result));
+    }
+
+    public Mono<ServerResponse> getFabricTypesUsedInFabrics(ServerRequest request) {
+        return toAgent(request)
+                .flatMapMany(module::getFabricTypesUsedInFabrics)
+                .collectList()
+                .map(fabricTypes -> {
+                    var response = new QueryFabricTypesResponse();
+                    response.fabricTypes = toFabricTypeDTOs(fabricTypes);
+                    return response;
+                })
+                .flatMap(result -> ServerResponse.ok().bodyValue(result));
     }
 
     public Mono<ServerResponse> getFabrics(ServerRequest request) {
@@ -453,6 +478,8 @@ public class FabricsHttpHandler {
     }
 
     public Mono<ServerResponse> deleteFabric(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
         String fabricId = request.pathVariable("fabricId");
         long version = request.queryParam("version")
                 .map(Long::parseLong)
@@ -468,7 +495,8 @@ public class FabricsHttpHandler {
                         e.getMessage(),
                         e
                 ))
-                .then(Mono.defer(() -> ServerResponse.ok().build()));
+                .then(Mono.defer(() -> ServerResponse.ok().build()))
+                .as(transactionalOperator::transactional);
     }
 
     private Mono<Agent> toAgent(ServerRequest request) {
@@ -481,6 +509,21 @@ public class FabricsHttpHandler {
         return colors.stream()
                 .map(this::toColorDTO)
                 .toList();
+    }
+
+    private List<FabricTypeDTO> toFabricTypeDTOs(List<FabricType> fabricTypes) {
+        return fabricTypes.stream()
+                .map(this::toFabricTypeDTO)
+                .toList();
+    }
+
+    private FabricTypeDTO toFabricTypeDTO(FabricType fabricType) {
+        var result = new FabricTypeDTO();
+
+        result.id = fabricType.getId().getValue();
+        result.name = fabricType.getName().getValue();
+
+        return result;
     }
 
     private ColorDTO toColorDTO(Color color) {

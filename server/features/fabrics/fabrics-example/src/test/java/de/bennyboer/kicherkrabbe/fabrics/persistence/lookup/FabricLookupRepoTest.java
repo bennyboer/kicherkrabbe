@@ -877,12 +877,81 @@ public abstract class FabricLookupRepoTest {
         assertThat(topics).isEmpty();
     }
 
+    @Test
+    void shouldFindUniqueFabricTypes() {
+        // given: some fabrics with different fabric types
+        var fabricTypeId1 = FabricTypeId.of("FABRIC_TYPE_ID_1");
+        var fabricTypeId2 = FabricTypeId.of("FABRIC_TYPE_ID_2");
+        var fabricTypeId3 = FabricTypeId.of("FABRIC_TYPE_ID_3");
+
+        var fabric1 = LookupFabric.of(
+                FabricId.create(),
+                Version.zero(),
+                FabricName.of("Fabric 1"),
+                ImageId.of("IMAGE_ID_1"),
+                Set.of(),
+                Set.of(),
+                Set.of(FabricTypeAvailability.of(fabricTypeId1, true)),
+                true,
+                Instant.parse("2024-03-12T13:00:00.00Z")
+        );
+        var fabric2 = LookupFabric.of(
+                FabricId.create(),
+                Version.zero(),
+                FabricName.of("Fabric 2"),
+                ImageId.of("IMAGE_ID_2"),
+                Set.of(),
+                Set.of(),
+                Set.of(FabricTypeAvailability.of(fabricTypeId2, true)),
+                true,
+                Instant.parse("2024-03-12T09:30:00.00Z")
+        );
+        var fabric3 = LookupFabric.of(
+                FabricId.create(),
+                Version.zero(),
+                FabricName.of("Fabric 3"),
+                ImageId.of("IMAGE_ID_3"),
+                Set.of(),
+                Set.of(),
+                Set.of(
+                        FabricTypeAvailability.of(fabricTypeId2, true),
+                        FabricTypeAvailability.of(fabricTypeId3, true)
+                ),
+                true,
+                Instant.parse("2024-03-12T11:00:00.00Z")
+        );
+
+        update(fabric1);
+        update(fabric2);
+        update(fabric3);
+
+        // when: finding unique fabric types
+        var fabricTypes = findUniqueFabricTypes();
+
+        // then: the unique fabric types are found
+        assertThat(fabricTypes).containsExactlyInAnyOrder(fabricTypeId1, fabricTypeId2, fabricTypeId3);
+
+        // when: finding unique fabric types with no fabrics
+        remove(fabric1.getId());
+        remove(fabric2.getId());
+        remove(fabric3.getId());
+
+        fabricTypes = findUniqueFabricTypes();
+
+        // then: no unique fabric types are found
+        assertThat(fabricTypes).isEmpty();
+    }
+
     private List<ColorId> findUniqueColors() {
         return repo.findUniqueColors().collectList().block();
     }
 
     private List<TopicId> findUniqueTopics() {
         return repo.findUniqueTopics().collectList().block();
+    }
+
+    private List<FabricTypeId> findUniqueFabricTypes() {
+        return repo.findUniqueFabricTypes().collectList().block();
     }
 
     private List<LookupFabric> findByColor(ColorId colorId) {

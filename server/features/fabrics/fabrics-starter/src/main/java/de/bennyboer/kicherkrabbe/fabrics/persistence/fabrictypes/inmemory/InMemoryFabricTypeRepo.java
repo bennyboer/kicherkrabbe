@@ -36,4 +36,9 @@ public class InMemoryFabricTypeRepo implements FabricTypeRepo {
                 .mapNotNull(lookup::get);
     }
 
+    @Override
+    public Flux<FabricType> findAll() {
+        return Flux.fromIterable(lookup.values());
+    }
+
 }

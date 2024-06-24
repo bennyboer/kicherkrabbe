@@ -14,4 +14,6 @@ public interface FabricTypeRepo {
 
     Flux<FabricType> findByIds(Collection<FabricTypeId> ids);
 
+    Flux<FabricType> findAll();
+    
 }

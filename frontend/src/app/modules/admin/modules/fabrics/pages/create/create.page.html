@@ -86,6 +86,35 @@
     }
   </div>
 
+  <div class="fabric-type-availability-container">
+    <h4>Verfügbarkeit</h4>
+
+    @if (isLoadingAvailableFabricTypes() | async) {
+      <div class="loading-container">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
+    } @else {
+      @if (getAvailableFabricTypes() | async; as fabricTypes) {
+        @if (getSelectedFabricTypes() | async; as selectedFabricTypes) {
+          <app-chips [chips]="fabricTypesToChips(selectedFabricTypes)"
+                     [available]="fabricTypesToChips(fabricTypes)"
+                     [alwaysShowOptions]="true"
+                     [chipDropdownItemTemplateRef]="fabricTypeDropdownItemTemplateRef"
+                     (removed)="onFabricTypeRemoved($event)"
+                     (added)="onFabricTypeAdded($event)">
+            <ng-template let-chip>
+              {{ chip.label }}
+            </ng-template>
+          </app-chips>
+
+          <ng-template #fabricTypeDropdownItemTemplateRef let-chip>
+            {{ chip.label }}
+          </ng-template>
+        }
+      }
+    }
+  </div>
+
   <hr>
 
   <div class="actions">

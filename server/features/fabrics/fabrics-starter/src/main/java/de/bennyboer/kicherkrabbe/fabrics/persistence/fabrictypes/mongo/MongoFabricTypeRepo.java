@@ -58,4 +58,10 @@ public class MongoFabricTypeRepo implements FabricTypeRepo {
                 .map(MongoFabricTypeTransformer::fromMongo);
     }
 
+    @Override
+    public Flux<FabricType> findAll() {
+        return template.findAll(MongoFabricType.class, collectionName)
+                .map(MongoFabricTypeTransformer::fromMongo);
+    }
+
 }

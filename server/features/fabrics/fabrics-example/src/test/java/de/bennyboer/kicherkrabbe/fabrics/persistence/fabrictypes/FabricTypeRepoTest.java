@@ -98,6 +98,23 @@ public abstract class FabricTypeRepoTest {
         assertThat(found).containsExactlyInAnyOrder(fabricType1, fabricType3);
     }
 
+    @Test
+    void shouldFindAllFabricTypes() {
+        // given: some fabric types
+        var type1 = FabricType.of(FabricTypeId.of("FABRIC_TYPE_ID_1"), FabricTypeName.of("Fabric Type Name 1"));
+        var type2 = FabricType.of(FabricTypeId.of("FABRIC_TYPE_ID_2"), FabricTypeName.of("Fabric Type Name 2"));
+        var type3 = FabricType.of(FabricTypeId.of("FABRIC_TYPE_ID_3"), FabricTypeName.of("Fabric Type Name 3"));
+        save(type1);
+        save(type2);
+        save(type3);
+
+        // when: finding all fabric types
+        var found = repo.findAll().collectList().block();
+
+        // then: all fabric types are found
+        assertThat(found).containsExactlyInAnyOrder(type1, type2, type3);
+    }
+
     private void save(FabricType fabricType) {
         repo.save(fabricType).block();
     }

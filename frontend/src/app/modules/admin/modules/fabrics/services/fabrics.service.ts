@@ -7,7 +7,6 @@ import {
   filter,
   map,
   Observable,
-  of,
   ReplaySubject,
   Subject,
   takeUntil,
@@ -24,6 +23,7 @@ import {
   FabricColor,
   FabricId,
   FabricTopic,
+  FabricType,
   FabricTypeAvailability,
   ImageId,
   TopicId,
@@ -86,12 +86,46 @@ interface ColorDTO {
   blue: number;
 }
 
+interface FabricTypeDTO {
+  id: string;
+  name: string;
+}
+
 interface QueryTopicsResponse {
   topics: TopicDTO[];
 }
 
 interface QueryColorsResponse {
   colors: ColorDTO[];
+}
+
+interface QueryFabricTypesResponse {
+  fabricTypes: FabricTypeDTO[];
+}
+
+interface RenameFabricRequest {
+  version: number;
+  name: string;
+}
+
+interface UpdateFabricImageRequest {
+  version: number;
+  imageId: string;
+}
+
+interface UpdateFabricTopicsRequest {
+  version: number;
+  topicIds: string[];
+}
+
+interface UpdateFabricColorsRequest {
+  version: number;
+  colorIds: string[];
+}
+
+interface UpdateFabricAvailabilityRequest {
+  version: number;
+  availability: FabricTypeAvailabilityDTO[];
 }
 
 @Injectable()
@@ -212,7 +246,76 @@ export class FabricsService implements OnDestroy {
     version: number,
     name: string,
   ): Observable<void> {
-    return of(null as unknown as void); // TODO
+    const request: RenameFabricRequest = { version, name };
+
+    return this.http.post<void>(
+      `${environment.apiUrl}/fabrics/${id}/rename`,
+      request,
+    );
+  }
+
+  updateFabricImage(
+    id: FabricId,
+    version: number,
+    imageId: ImageId,
+  ): Observable<void> {
+    const request: UpdateFabricImageRequest = { version, imageId };
+
+    return this.http.post<void>(
+      `${environment.apiUrl}/fabrics/${id}/update/image`,
+      request,
+    );
+  }
+
+  updateFabricTopics(
+    id: FabricId,
+    version: number,
+    topics: Set<TopicId>,
+  ): Observable<void> {
+    const request: UpdateFabricTopicsRequest = {
+      version,
+      topicIds: Array.from(topics),
+    };
+
+    return this.http.post<void>(
+      `${environment.apiUrl}/fabrics/${id}/update/topics`,
+      request,
+    );
+  }
+
+  updateFabricColors(
+    id: FabricId,
+    version: number,
+    colors: Set<ColorId>,
+  ): Observable<void> {
+    const request: UpdateFabricColorsRequest = {
+      version,
+      colorIds: Array.from(colors),
+    };
+
+    return this.http.post<void>(
+      `${environment.apiUrl}/fabrics/${id}/update/colors`,
+      request,
+    );
+  }
+
+  updateFabricAvailability(
+    id: FabricId,
+    version: number,
+    availability: FabricTypeAvailability[],
+  ): Observable<void> {
+    const request: UpdateFabricAvailabilityRequest = {
+      version,
+      availability: availability.map((availability) => ({
+        typeId: availability.typeId,
+        inStock: availability.inStock,
+      })),
+    };
+
+    return this.http.post<void>(
+      `${environment.apiUrl}/fabrics/${id}/update/availability`,
+      request,
+    );
   }
 
   getAvailableTopicsForFabrics(): Observable<FabricTopic[]> {
@@ -240,6 +343,20 @@ export class FabricsService implements OnDestroy {
               green: color.green,
               blue: color.blue,
             }),
+          ),
+        ),
+      );
+  }
+
+  getAvailableFabricTypesForFabrics(): Observable<FabricType[]> {
+    return this.http
+      .get<QueryFabricTypesResponse>(
+        `${environment.apiUrl}/fabrics/fabric-types`,
+      )
+      .pipe(
+        map((response) =>
+          response.fabricTypes.map((fabricType) =>
+            FabricType.of({ id: fabricType.id, name: fabricType.name }),
           ),
         ),
       );
