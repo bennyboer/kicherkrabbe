@@ -3,6 +3,20 @@
 <form class="create-fabric-form">
   <hr>
 
+  <div class="image-edit-centering-container">
+    <div class="image-edit-container">
+      @if (getImageId() | async; as imageId) {
+        <div class="image-container">
+          <img [src]="getImageUrl(imageId)" width="100%" alt="Stoffbild">
+        </div>
+      } @else {
+        <app-image-upload (uploaded)="onImageUploaded($event)"></app-image-upload>
+      }
+    </div>
+  </div>
+
+  <hr>
+
   <div class="form-group">
     <label for="name">Name</label>
     <input #name
@@ -13,16 +27,6 @@
            required
            [disabled]="isCreatingFabric() | async"
            (input)="updateName(name.value)">
-  </div>
-
-  <div>
-    @if (getImageId() | async; as imageId) {
-      <div class="image-container">
-        <img [src]="getImageUrl(imageId)" width="100%" alt="Stoffbild">
-      </div>
-    } @else {
-      <app-image-upload (uploaded)="onImageUploaded($event)"></app-image-upload>
-    }
   </div>
 
   <div class="topics-container">

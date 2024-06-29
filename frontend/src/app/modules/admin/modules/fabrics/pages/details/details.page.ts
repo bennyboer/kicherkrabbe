@@ -201,6 +201,48 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
       });
   }
 
+  publishFabric(fabric: Fabric): void {
+    this.fabricsService
+      .publishFabric(fabric.id, fabric.version)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.notificationService.publish({
+            message: `Der Stoff „${fabric.name}“ wurde erfolgreich veröffentlicht.`,
+            type: 'success',
+          });
+        },
+        error: () => {
+          this.notificationService.publish({
+            message:
+              'Ein Fehler ist aufgetreten. Der Stoff konnte nicht veröffentlicht werden. Versuche es noch einmal.',
+            type: 'error',
+          });
+        },
+      });
+  }
+
+  unpublishFabric(fabric: Fabric): void {
+    this.fabricsService
+      .unpublishFabric(fabric.id, fabric.version)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.notificationService.publish({
+            message: `Der Stoff „${fabric.name}“ wurde erfolgreich von der Öffentlichkeit zurückgezogen.`,
+            type: 'success',
+          });
+        },
+        error: () => {
+          this.notificationService.publish({
+            message:
+              'Ein Fehler ist aufgetreten. Der Stoff konnte nicht von der Öffentlichkeit zurückgezogen werden. Versuche es noch einmal.',
+            type: 'error',
+          });
+        },
+      });
+  }
+
   isDeleteConfirmation(): Observable<boolean> {
     return this.waitingForDeleteConfirmation$.asObservable();
   }

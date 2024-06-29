@@ -3,26 +3,41 @@
 
   @if (getFabric() | async; as fabricOption) {
     @if (fabricOption.unwrap(); as fabric) {
-      <span class="created-at">
-        Erstellt am: {{ fabric.createdAt | date: 'dd.MM.yyyy' }} um {{ fabric.createdAt | date: 'HH:mm' }} Uhr
-      </span>
+      <div class="top-action-bar">
+        <span class="created-at">
+          Erstellt am: {{ fabric.createdAt | date: 'dd.MM.yyyy' }} um {{ fabric.createdAt | date: 'HH:mm' }} Uhr
+        </span>
+        <span class="top-action-bar-actions">
+          @if (fabric.published) {
+            <app-button color="warn" (click)="unpublishFabric(fabric)">Veröffentlichung aufheben</app-button>
+          } @else {
+            <app-button color="primary" (click)="publishFabric(fabric)">Veröffentlichen</app-button>
+          }
+        </span>
+      </div>
 
       <hr>
 
-      @if (isEditingImage() | async) {
-        <app-image-upload (uploaded)="onImageUploaded(fabric, $event)"></app-image-upload>
-      } @else {
-        <div class="image-container">
-          @if (getImageId() | async; as imageId) {
-            <img [src]="getImageUrl(imageId)" width="100%" alt="Bild des Stoffs">
+      <div class="image-edit-centering-container">
+        <div class="image-edit-container">
+          @if (isEditingImage() | async) {
+            <app-image-upload (uploaded)="onImageUploaded(fabric, $event)"></app-image-upload>
           } @else {
-            <img [src]="getImageUrl(fabric.image)" width="100%" alt="Bild des Stoffs">
+            <div class="image-container">
+              @if (getImageId() | async; as imageId) {
+                <img [src]="getImageUrl(imageId)" width="100%" alt="Bild des Stoffs">
+              } @else {
+                <img [src]="getImageUrl(fabric.image)" width="100%" alt="Bild des Stoffs">
+              }
+            </div>
+            <div>
+              <app-button (click)="editImage()">Bild ändern</app-button>
+            </div>
           }
         </div>
-        <div>
-          <app-button (click)="editImage()">Bild ändern</app-button>
-        </div>
-      }
+      </div>
+
+      <hr>
 
       <form class="name-form" (submit)="false">
         <div class="form-group">

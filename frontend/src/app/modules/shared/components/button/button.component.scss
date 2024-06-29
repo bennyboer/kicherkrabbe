@@ -51,6 +51,14 @@
 
   &:hover, &.active {
     background-color: var(--contrast-lower);
+
+    &.primary {
+      background-color: rgba(var(--primary-2-rgb), 0.5);
+    }
+
+    &.warn {
+      background-color: rgba(var(--primary-1-rgb), 0.5);
+    }
   }
 
   &:focus {

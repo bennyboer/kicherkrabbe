@@ -24,21 +24,29 @@
       <p>Es gibt noch keine Stoffe. Versuche einen anzulegen.</p>
     }
   } @else {
-    <ul class="fabrics-list">
+    <table class="fabrics-table">
       @for (fabric of fabrics; track fabric.id) {
-        <li [routerLink]="[fabric.id]">
-          <!-- TODO Small image of the fabric -->
-          <span class="details">
-            <span class="name">
-              {{ fabric.name }}
+        <tr [routerLink]="[fabric.id]">
+          <td class="image-cell">
+            <img [src]="getImageUrl(fabric.image)">
+          </td>
+          <td class="details-cell">
+            <span class="details">
+              <span class="name">
+                {{ fabric.name }}
+              </span>
+              <span class="created-at">
+                Erstellt am {{ fabric.createdAt | date: 'dd.MM.yyyy' }} um {{ fabric.createdAt | date: 'HH:mm' }} Uhr
+              </span>
             </span>
-            <span class="created-at">
-              Erstellt am {{ fabric.createdAt | date: 'dd.MM.yyyy' }} um {{ fabric.createdAt | date: 'HH:mm' }} Uhr
+          </td>
+          <td class="published-cell">
+            <span class="material-icons" title="{{ fabric.published ? 'Veröffentlicht' : 'Nicht veröffentlicht' }}">
+              {{ fabric.published ? 'visibility' : 'visibility_off' }}
             </span>
-          </span>
-          <!-- TODO Info whether the fabric is published -->
-        </li>
+          </td>
+        </tr>
       }
-    </ul>
+    </table>
   }
 }

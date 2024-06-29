@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { FabricsService } from '../../services';
 import { Fabric } from '../../model';
+import { environment } from '../../../../../../../environments';
 
 @Component({
   selector: 'app-fabrics-page',
@@ -43,5 +44,9 @@ export class FabricsPage implements OnDestroy {
 
   updateSearch(value: string): void {
     this.search$.next(value.trim());
+  }
+
+  getImageUrl(imageId: string): string {
+    return `${environment.apiUrl}/assets/${imageId}/content`;
   }
 }

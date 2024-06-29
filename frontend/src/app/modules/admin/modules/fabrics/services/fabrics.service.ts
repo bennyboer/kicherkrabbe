@@ -241,6 +241,26 @@ export class FabricsService implements OnDestroy {
     });
   }
 
+  publishFabric(id: string, version: number): Observable<void> {
+    return this.http.post<void>(
+      `${environment.apiUrl}/fabrics/${id}/publish`,
+      {},
+      {
+        params: { version: version.toString() },
+      },
+    );
+  }
+
+  unpublishFabric(id: string, version: number): Observable<void> {
+    return this.http.post<void>(
+      `${environment.apiUrl}/fabrics/${id}/unpublish`,
+      {},
+      {
+        params: { version: version.toString() },
+      },
+    );
+  }
+
   updateFabricName(
     id: FabricId,
     version: number,
