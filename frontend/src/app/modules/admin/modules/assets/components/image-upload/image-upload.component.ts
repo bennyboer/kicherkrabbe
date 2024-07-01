@@ -215,8 +215,12 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
 
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
-    canvas.width = width * devicePixelRatio;
-    canvas.height = height * devicePixelRatio;
+
+    width *= devicePixelRatio;
+    height *= devicePixelRatio;
+
+    canvas.width = width;
+    canvas.height = height;
 
     context.drawImage(image, 0, 0, width, height);
 
