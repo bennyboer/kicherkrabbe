@@ -1,22 +1,23 @@
 import { Image } from '../../../../../util';
-import { Color } from './color';
-import { Theme } from './theme';
 import { Availability } from './availability';
+
+type ColorId = string;
+type ThemeId = string;
 
 export class Fabric {
   readonly id: string;
   readonly name: string;
   readonly image: Image;
-  readonly colors: Set<Color>;
-  readonly themes: Set<Theme>;
+  readonly colors: Set<ColorId>;
+  readonly themes: Set<ThemeId>;
   readonly availability: Availability;
 
   private constructor(props: {
     id: string;
     name: string;
     image: Image;
-    colors: Set<Color>;
-    themes: Set<Theme>;
+    colors: Set<ColorId>;
+    themes: Set<ThemeId>;
     availability: Availability;
   }) {
     this.id = props.id;
@@ -31,8 +32,8 @@ export class Fabric {
     id: string;
     name: string;
     image: Image;
-    colors: Set<Color>;
-    themes: Set<Theme>;
+    colors: Set<ColorId>;
+    themes: Set<ThemeId>;
     availability: Availability;
   }): Fabric {
     return new Fabric({

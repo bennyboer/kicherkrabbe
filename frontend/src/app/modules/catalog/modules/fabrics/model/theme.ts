@@ -14,31 +14,3 @@ export class Theme {
     });
   }
 }
-
-export const FLORAL = Theme.of({ id: 'floral', name: 'Floral' });
-export const ANIMALS = Theme.of({ id: 'animals', name: 'Tiere' });
-export const HALLOWEEN = Theme.of({ id: 'halloween', name: 'Halloween' });
-export const MARITIM = Theme.of({ id: 'maritim', name: 'Maritim' });
-export const FANTASY = Theme.of({ id: 'fantasie', name: 'Fantasie' });
-export const ABSTRACT = Theme.of({ id: 'abstrakt', name: 'Abstrakt' });
-export const SPACE = Theme.of({ id: 'space', name: 'Weltraum' });
-export const FRUITS = Theme.of({ id: 'fruits', name: 'Früchte' });
-export const SUMMER = Theme.of({ id: 'summer', name: 'Sommer' });
-export const SWEETS = Theme.of({ id: 'sweets', name: 'Süßigkeiten' });
-export const FALL = Theme.of({ id: 'fall', name: 'Herbst' });
-export const WINTER = Theme.of({ id: 'winter', name: 'Winter' });
-
-export const THEMES = [
-  FLORAL,
-  ANIMALS,
-  MARITIM,
-  FANTASY,
-  ABSTRACT,
-  SPACE,
-  FRUITS,
-  SUMMER,
-  SWEETS,
-  HALLOWEEN,
-  FALL,
-  WINTER,
-];

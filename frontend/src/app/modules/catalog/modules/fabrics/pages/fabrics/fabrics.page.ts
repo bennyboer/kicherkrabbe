@@ -8,6 +8,7 @@ import {
   BehaviorSubject,
   combineLatest,
   map,
+  Observable,
   ReplaySubject,
   Subject,
   takeUntil,
@@ -18,8 +19,10 @@ import {
   FilterSelectionMode,
   SortingOption,
 } from '../../../../../shared';
-import { COLORS, Fabric, THEMES } from '../../model';
+import { Fabric } from '../../model';
 import { FabricsStoreService } from '../../services';
+import { none, Option, some } from '../../../../../../util';
+import { FabricsFilter } from '../../services/store.service';
 
 interface Sorting {
   property: string;
@@ -45,34 +48,43 @@ export class FabricsPage implements OnInit, OnDestroy {
     CardListItem[]
   >(1);
 
-  protected readonly filters: Filter[] = [
-    Filter.of({
-      id: 'theme',
-      label: 'Thema',
-      items: THEMES.map((theme) => ({
-        id: theme.id,
-        label: theme.name,
-      })),
-      selectionMode: FilterSelectionMode.MULTIPLE,
+  protected readonly filters$: Observable<Filter[]> = combineLatest([
+    this.fabricsStore.getAvailableThemes(),
+    this.fabricsStore.getAvailableColors(),
+  ]).pipe(
+    map(([themes, colors]) => {
+      const availability = Filter.of({
+        id: 'availability',
+        label: 'Verfügbarkeit',
+        items: [
+          { id: 'available', label: 'Auf Lager' },
+          { id: 'unavailable', label: 'Nicht auf Lager' },
+        ],
+      });
+
+      const theme = Filter.of({
+        id: 'theme',
+        label: 'Thema',
+        items: themes.map((theme) => ({
+          id: theme.id,
+          label: theme.name,
+        })),
+        selectionMode: FilterSelectionMode.MULTIPLE,
+      });
+
+      const color = Filter.of({
+        id: 'color',
+        label: 'Farbe',
+        items: colors.map((color) => ({
+          id: color.id,
+          label: color.name,
+        })),
+        selectionMode: FilterSelectionMode.MULTIPLE,
+      });
+
+      return [theme, color, availability];
     }),
-    Filter.of({
-      id: 'color',
-      label: 'Farbe',
-      items: COLORS.map((color) => ({
-        id: color.id,
-        label: color.name,
-      })),
-      selectionMode: FilterSelectionMode.MULTIPLE,
-    }),
-    Filter.of({
-      id: 'availability',
-      label: 'Verfügbarkeit',
-      items: [
-        { id: 'available', label: 'Auf Lager' },
-        { id: 'unavailable', label: 'Nicht auf Lager' },
-      ],
-    }),
-  ];
+  );
 
   protected readonly sortingOptions: SortingOption[] = [
     SortingOption.of({
@@ -95,15 +107,40 @@ export class FabricsPage implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    combineLatest([
-      this.fabricsStore.getFabrics(),
-      this.sorting$,
-      this.activeFilters$,
-    ])
+    this.activeFilters$
       .pipe(
-        map(([fabrics, sorting, filters]) =>
-          this.sortItems(this.filterItems(fabrics, filters), sorting).map(
-            (fabric) => this.mapFabricToItem(fabric),
+        map((filters) => {
+          const themeFilter = filters.find((filter) => filter.id === 'theme');
+          const colorFilter = filters.find((filter) => filter.id === 'color');
+          const availabilityFilter = filters.find(
+            (filter) => filter.id === 'availability',
+          );
+
+          const themeIds: Option<Set<string>> = themeFilter?.isActive()
+            ? some(new Set<string>(themeFilter.getSelected()))
+            : none();
+          const colorIds: Option<Set<string>> = colorFilter?.isActive()
+            ? some(new Set<string>(colorFilter.getSelected()))
+            : none();
+          const inStock: Option<boolean> = availabilityFilter?.isActive()
+            ? some(availabilityFilter.isSelected('available'))
+            : none();
+
+          return FabricsFilter.of({
+            themeIds,
+            colorIds,
+            inStock,
+          });
+        }),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((filter) => this.fabricsStore.updateFilter(filter));
+
+    combineLatest([this.fabricsStore.getFabrics(), this.sorting$])
+      .pipe(
+        map(([fabrics, sorting]) =>
+          this.sortItems(fabrics, sorting).map((fabric) =>
+            this.mapFabricToItem(fabric),
           ),
         ),
         takeUntil(this.destroy$),
@@ -129,50 +166,6 @@ export class FabricsPage implements OnInit, OnDestroy {
       property: option.id,
       ascending,
     });
-  }
-
-  private filterItems(fabrics: Fabric[], filters: Filter[]): Fabric[] {
-    return fabrics.filter((fabric) => this.matchesFilters(fabric, filters));
-  }
-
-  private matchesFilters(fabric: Fabric, filters: Filter[]): boolean {
-    return filters.every((filter) => this.matchesFilter(fabric, filter));
-  }
-
-  private matchesFilter(fabric: Fabric, filter: Filter): boolean {
-    const filterId = filter.id;
-    switch (filterId) {
-      case 'theme':
-        return this.matchesThemeFilter(fabric, filter);
-      case 'color':
-        return this.matchesColorFilter(fabric, filter);
-      case 'availability':
-        return this.matchesAvailabilityFilter(fabric, filter);
-      default:
-        throw new Error(`Unknown filter id: ${filterId}`);
-    }
-  }
-
-  private matchesThemeFilter(fabric: Fabric, filter: Filter): boolean {
-    return [...fabric.themes]
-      .map((theme) => theme.id)
-      .some((id) => filter.isSelected(id));
-  }
-
-  private matchesColorFilter(fabric: Fabric, filter: Filter): boolean {
-    return [...fabric.colors]
-      .map((color) => color.id)
-      .some((id) => filter.isSelected(id));
-  }
-
-  private matchesAvailabilityFilter(fabric: Fabric, filter: Filter): boolean {
-    if (filter.isSelected('available')) {
-      return fabric.availability.isAvailableInAnyType();
-    } else if (filter.isSelected('unavailable')) {
-      return !fabric.availability.isAvailableInAnyType();
-    }
-
-    return true;
   }
 
   private sortItems(fabrics: Fabric[], sorting: Sorting): Fabric[] {

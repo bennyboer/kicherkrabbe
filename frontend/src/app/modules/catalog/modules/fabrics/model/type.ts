@@ -14,11 +14,3 @@ export class Type {
     });
   }
 }
-
-export const FRENCH_TERRY = Type.of({
-  id: 'french-terry',
-  name: 'Sommersweat / French Terry',
-});
-export const JERSEY = Type.of({ id: 'jersey', name: 'Jersey' });
-
-export const TYPES = [FRENCH_TERRY, JERSEY];

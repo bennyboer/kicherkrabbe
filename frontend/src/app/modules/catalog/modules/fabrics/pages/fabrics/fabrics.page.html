@@ -1,8 +1,10 @@
-<app-filter-sort-bar [filters]="filters"
-                     [sortingOptions]="sortingOptions"
-                     (filtered)="updateFilters($event.filters)"
-                     (sorted)="updateSorting($event.option, $event.ascending)">
-</app-filter-sort-bar>
+@if (filters$ | async; as filters) {
+  <app-filter-sort-bar [filters]="filters"
+                       [sortingOptions]="sortingOptions"
+                       (filtered)="updateFilters($event.filters)"
+                       (sorted)="updateSorting($event.option, $event.ascending)">
+  </app-filter-sort-bar>
+}
 
 @if (items$ | async; as items) {
   @if (items.length > 0) {
