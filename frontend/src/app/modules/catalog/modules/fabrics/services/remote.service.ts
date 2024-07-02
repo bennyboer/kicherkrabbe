@@ -10,7 +10,7 @@ import {
 } from '../model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../../environments';
-import { Image } from '../../../../../util';
+import { Image, someOrNone } from '../../../../../util';
 
 interface FabricsAvailabilityFilterDTO {
   active: boolean;
@@ -83,6 +83,10 @@ interface QueryColorsResponse {
   colors: ColorDTO[];
 }
 
+interface QueryPublishedFabricResponse {
+  fabric: PublishedFabricDTO;
+}
+
 @Injectable()
 export class RemoteFabricsService {
   constructor(private readonly http: HttpClient) {}
@@ -122,22 +126,41 @@ export class RemoteFabricsService {
       active: boolean;
       inStock: boolean;
     };
+    sort?: {
+      ascending: boolean;
+    };
+    skip?: number;
+    limit?: number;
   }): Observable<Fabric[]> {
-    // TODO Support filtering, sorting and paging
+    const availability = someOrNone(props.availability)
+      .map((a) => ({
+        active: a.active,
+        inStock: a.inStock,
+      }))
+      .orElse({
+        active: false,
+        inStock: true,
+      });
+    const sort = someOrNone(props.sort)
+      .map((s) => ({
+        property: FabricsSortPropertyDTO.ALPHABETICAL,
+        direction: s.ascending
+          ? FabricsSortDirectionDTO.ASCENDING
+          : FabricsSortDirectionDTO.DESCENDING,
+      }))
+      .orElse({
+        property: FabricsSortPropertyDTO.ALPHABETICAL,
+        direction: FabricsSortDirectionDTO.ASCENDING,
+      });
+
     const request: QueryPublishedFabricsRequest = {
       searchTerm: '',
       colorIds: props.colorIds ?? [],
       topicIds: props.topicIds ?? [],
-      availability: props.availability ?? {
-        active: false,
-        inStock: true,
-      },
-      sort: {
-        property: FabricsSortPropertyDTO.ALPHABETICAL,
-        direction: FabricsSortDirectionDTO.ASCENDING,
-      },
-      skip: 0,
-      limit: 999999,
+      availability,
+      sort,
+      skip: props.skip ?? 0,
+      limit: props.limit ?? 100,
     };
 
     return this.http
@@ -150,6 +173,18 @@ export class RemoteFabricsService {
           response.fabrics.map((fabric: PublishedFabricDTO) =>
             this.mapPublishedFabricDTOToFabric(fabric),
           ),
+        ),
+      );
+  }
+
+  getFabric(id: string): Observable<Fabric> {
+    return this.http
+      .get<QueryPublishedFabricResponse>(
+        `${environment.apiUrl}/fabrics/${id}/published`,
+      )
+      .pipe(
+        map((response: QueryPublishedFabricResponse) =>
+          this.mapPublishedFabricDTOToFabric(response.fabric),
         ),
       );
   }
