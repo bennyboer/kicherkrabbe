@@ -8,9 +8,12 @@
 
       <p>
         @if (fabric.isAvailableInAnyType()) {
-          Der Stoff ist auf Lager und kann sofort zu deinem Kleidungsstück weiterverarbeitet werden!
-            Folgende Stoffarten sind verfügbar: <strong>{{ fabric.getAvailableTypesLabel() }}</strong>.
-            Solltest du eine andere Stoffart wünschen, kontaktiere uns bitte.
+          @if (fabricTypeLabels$ | async; as fabricTypesLabels) {
+            Der Stoff ist auf Lager und kann sofort zu deinem Kleidungsstück weiterverarbeitet werden!
+              Folgende Stoffarten sind verfügbar:
+            <strong>{{ fabric.getAvailableTypesLabel(fabricTypesLabels) }}</strong>.
+              Solltest du eine andere Stoffart wünschen, kontaktiere uns bitte.
+          }
         } @else {
           Aktuell ist der Stoff nicht auf Lager. Wir können ihn aber für dich bestellen. Die Lieferzeit deines Kleidungsstücks verlängert sich dann um ca. 1-2 Wochen.
         }
@@ -19,7 +22,7 @@
       <h2>Pflegehinweise</h2>
 
       <p>
-        Bei allen unserer Stoffe gilt: Bitte wasche sie bei 30 Grad und vermeide den Trockner! So bleibt dein
+        Bei all unseren Stoffen gilt: Bitte wasche sie bei 30 Grad und vermeide den Trockner! So bleibt dein
         Kleidungsstück lange schön.
       </p>
 

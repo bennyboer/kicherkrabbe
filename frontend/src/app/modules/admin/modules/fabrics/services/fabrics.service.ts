@@ -394,7 +394,11 @@ export class FabricsService implements OnDestroy {
       .post<QueryFabricsResponse>(`${environment.apiUrl}/fabrics/`, request)
       .pipe(
         map((response) => this.toInternalFabrics(response.fabrics)),
-        map((fabrics) => fabrics.sort((a, b) => a.name.localeCompare(b.name))),
+        map((fabrics) =>
+          fabrics.sort((a, b) =>
+            a.name.localeCompare(b.name, 'de-de', { numeric: true }),
+          ),
+        ),
       )
       .subscribe({
         next: (fabrics) => {

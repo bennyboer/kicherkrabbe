@@ -1,5 +1,3 @@
-import { Type } from './type';
-
 export class Availability {
   readonly types: TypeAvailability[];
 
@@ -19,17 +17,17 @@ export class Availability {
 }
 
 export class TypeAvailability {
-  readonly type: Type;
+  readonly typeId: string;
   readonly inStock: boolean;
 
-  private constructor(props: { type: Type; inStock: boolean }) {
-    this.type = props.type;
+  private constructor(props: { typeId: string; inStock: boolean }) {
+    this.typeId = props.typeId;
     this.inStock = props.inStock;
   }
 
-  static of(props: { type: Type; inStock: boolean }): TypeAvailability {
+  static of(props: { typeId: string; inStock: boolean }): TypeAvailability {
     return new TypeAvailability({
-      type: props.type,
+      typeId: props.typeId,
       inStock: props.inStock,
     });
   }

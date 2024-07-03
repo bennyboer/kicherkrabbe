@@ -87,6 +87,15 @@ interface QueryPublishedFabricResponse {
   fabric: PublishedFabricDTO;
 }
 
+interface FabricTypeDTO {
+  id: string;
+  name: string;
+}
+
+interface QueryFabricTypesResponse {
+  fabricTypes: FabricTypeDTO[];
+}
+
 @Injectable()
 export class RemoteFabricsService {
   constructor(private readonly http: HttpClient) {}
@@ -114,6 +123,20 @@ export class RemoteFabricsService {
               name: color.name,
               hex: `#${color.red.toString(16)}${color.green.toString(16)}${color.blue.toString(16)}`,
             }),
+          ),
+        ),
+      );
+  }
+
+  getAvailableFabricTypes(): Observable<Type[]> {
+    return this.http
+      .get<QueryFabricTypesResponse>(
+        `${environment.apiUrl}/fabrics/fabric-types/used`,
+      )
+      .pipe(
+        map((response: QueryFabricTypesResponse) =>
+          response.fabricTypes.flatMap((type: FabricTypeDTO) =>
+            Type.of({ id: type.id, name: type.name }),
           ),
         ),
       );
@@ -201,7 +224,7 @@ export class RemoteFabricsService {
       availability: Availability.of({
         types: fabric.availability.map((availability) =>
           TypeAvailability.of({
-            type: Type.of({ id: availability.typeId, name: 'Test' }),
+            typeId: availability.typeId,
             inStock: availability.inStock,
           }),
         ),

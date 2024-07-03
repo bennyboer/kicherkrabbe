@@ -1,4 +1,4 @@
-import { Image } from '../../../../../util';
+import { Image, someOrNone } from '../../../../../util';
 import { Availability } from './availability';
 
 type ColorId = string;
@@ -50,10 +50,12 @@ export class Fabric {
     return this.availability.isAvailableInAnyType();
   }
 
-  getAvailableTypesLabel(): string {
+  getAvailableTypesLabel(typeIdToLabel: Map<string, string>): string {
     return this.availability.types
-      .filter((typeAvailability) => typeAvailability.inStock)
-      .map((typeAvailability) => typeAvailability.type.name)
+      .filter((availability) => availability.inStock)
+      .map((availability) => someOrNone(typeIdToLabel.get(availability.typeId)))
+      .filter((label) => label.isSome())
+      .map((label) => label.orElseThrow())
       .join(', ');
   }
 
