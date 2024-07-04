@@ -13,9 +13,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
 import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.index.IndexDefinition;
 import org.springframework.data.mongodb.core.index.ReactiveIndexOperations;
+import org.springframework.data.mongodb.core.query.Collation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import reactor.core.publisher.Flux;
@@ -126,7 +128,11 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
         }
 
         if (filterAvailability) {
-            criteria = criteria.and("availability.inStock").is(inStock);
+            if (inStock) {
+                criteria = criteria.and("availability.inStock").is(true);
+            } else {
+                criteria = criteria.and("availability.inStock").ne(true);
+            }
         }
 
         AggregationOperation match = match(criteria);
@@ -135,7 +141,11 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
                 : Sort.by(Sort.Order.desc("name")));
         AggregationOperation transformToPage = transformToPage(skip, limit);
 
-        Aggregation aggregation = newAggregation(match, sortBy, transformToPage);
+        AggregationOptions options = AggregationOptions.builder()
+                .collation(Collation.of("de-de"))
+                .build();
+        Aggregation aggregation = newAggregation(match, sortBy, transformToPage)
+                .withOptions(options);
 
         return template.aggregate(aggregation, collectionName, PipelinePage.class)
                 .next()

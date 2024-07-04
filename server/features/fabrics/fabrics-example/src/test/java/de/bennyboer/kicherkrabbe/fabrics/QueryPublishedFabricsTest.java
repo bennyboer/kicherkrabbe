@@ -280,11 +280,13 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         // given: some topics are available
         markTopicAsAvailable("WINTER_ID", "Winter");
         markTopicAsAvailable("ANIMALS_ID", "Animals");
+        markTopicAsAvailable("SUMMER_ID", "Summer");
 
         // and: some colors are available
         markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
         markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
         markColorAsAvailable("BLACK_ID", "Black", 0, 0, 0);
+        markColorAsAvailable("BROWN_ID", "Brown", 165, 42, 42);
 
         // and: some fabric types are available
         markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
@@ -302,12 +304,20 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         notAvailableInJersey.typeId = "JERSEY_ID";
         notAvailableInJersey.inStock = false;
 
+        var availableInCotton = new FabricTypeAvailabilityDTO();
+        availableInCotton.typeId = "COTTON_ID";
+        availableInCotton.inStock = true;
+
+        var notAvailableInCotton = new FabricTypeAvailabilityDTO();
+        notAvailableInCotton.typeId = "COTTON_ID";
+        notAvailableInCotton.inStock = false;
+
         String fabricId1 = createFabric(
                 "Ice bear party",
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(availableInJersey),
+                Set.of(availableInJersey, notAvailableInCotton),
                 agent
         );
         String fabricId2 = createFabric(
@@ -315,12 +325,21 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
                 "PENGUIN_IMAGE_ID",
                 Set.of("BLACK_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(notAvailableInJersey),
+                Set.of(notAvailableInJersey, availableInCotton),
+                agent
+        );
+        String fabricId3 = createFabric(
+                "Coconut party",
+                "COCONUT_IMAGE_ID",
+                Set.of("BROWN_ID", "WHITE_ID"),
+                Set.of("SUMMER_ID"),
+                Set.of(notAvailableInCotton, notAvailableInJersey),
                 agent
         );
 
         publishFabric(fabricId1, 0L, agent);
         publishFabric(fabricId2, 0L, agent);
+        publishFabric(fabricId3, 0L, agent);
 
         // when: the user queries the published fabrics with an availability filter
         var availability = new FabricsAvailabilityFilterDTO();
@@ -345,14 +364,47 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         // then: only the matching fabrics are returned
         assertThat(result.getSkip()).isEqualTo(0);
         assertThat(result.getLimit()).isEqualTo(100);
+        assertThat(result.getTotal()).isEqualTo(2);
+        assertThat(result.getResults()).hasSize(2);
+
+        var fabricNames = result.getResults()
+                .stream()
+                .map(PublishedFabric::getName)
+                .map(FabricName::getValue)
+                .toList();
+        assertThat(fabricNames).containsExactlyInAnyOrder("Ice bear party", "Penguin party");
+
+        // when: the user queries the published fabrics for fabrics that are not in stock
+        availability.active = true;
+        availability.inStock = false;
+
+        result = getPublishedFabrics(
+                "",
+                Set.of(),
+                Set.of(),
+                availability,
+                sort,
+                0,
+                100,
+                agent
+        );
+
+        // then: only the matching fabrics are returned
+        assertThat(result.getSkip()).isEqualTo(0);
+        assertThat(result.getLimit()).isEqualTo(100);
         assertThat(result.getTotal()).isEqualTo(1);
         assertThat(result.getResults()).hasSize(1);
 
-        var fabric = result.getResults().get(0);
-        assertThat(fabric.getName()).isEqualTo(FabricName.of("Ice bear party"));
+        fabricNames = result.getResults()
+                .stream()
+                .map(PublishedFabric::getName)
+                .map(FabricName::getValue)
+                .toList();
+        assertThat(fabricNames).containsExactlyInAnyOrder("Coconut party");
 
         // when: the availability filter is inactive
         availability.active = false;
+        availability.inStock = true;
 
         result = getPublishedFabrics(
                 "",
@@ -368,8 +420,8 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         // then: all fabrics are returned
         assertThat(result.getSkip()).isEqualTo(0);
         assertThat(result.getLimit()).isEqualTo(100);
-        assertThat(result.getTotal()).isEqualTo(2);
-        assertThat(result.getResults()).hasSize(2);
+        assertThat(result.getTotal()).isEqualTo(3);
+        assertThat(result.getResults()).hasSize(3);
     }
 
     @Test

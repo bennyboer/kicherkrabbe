@@ -85,9 +85,17 @@ public class InMemoryFabricLookupRepo extends InMemoryEventSourcingReadModelRepo
                 })
                 .filter(fabric -> colors.isEmpty() || fabric.getColors().stream().anyMatch(colors::contains))
                 .filter(fabric -> topics.isEmpty() || fabric.getTopics().stream().anyMatch(topics::contains))
-                .filter(fabric -> !filterAvailability || fabric.getAvailability().stream().anyMatch(availability ->
-                        availability.isInStock() == inStock
-                ))
+                .filter(fabric -> {
+                    if (!filterAvailability) {
+                        return true;
+                    }
+
+                    if (inStock) {
+                        return fabric.getAvailability().stream().anyMatch(FabricTypeAvailability::isInStock);
+                    } else {
+                        return fabric.getAvailability().stream().noneMatch(FabricTypeAvailability::isInStock);
+                    }
+                })
                 .sort(comparator)
                 .collectList()
                 .flatMap(fabrics -> {

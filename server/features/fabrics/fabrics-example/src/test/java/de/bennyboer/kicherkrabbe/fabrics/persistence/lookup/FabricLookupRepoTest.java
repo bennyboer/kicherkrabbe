@@ -533,6 +533,21 @@ public abstract class FabricLookupRepoTest {
         // then: all published fabrics are found with availability filter
         assertThat(result.getResults()).containsExactly(fabric1);
 
+        // when: finding published fabrics with availability filter where we want fabrics that are not in stock
+        result = findPublished(
+                "",
+                Set.of(),
+                Set.of(),
+                true,
+                false,
+                true,
+                0,
+                10
+        );
+
+        // then: all published fabrics are found with availability filter
+        assertThat(result.getResults()).containsExactly(fabric2);
+
         // when: finding published fabrics with paging
         result = findPublished(
                 "",
