@@ -112,7 +112,10 @@
                          (removed)="onColorRemoved(fabric, selectedColors,$event)"
                          (added)="onColorAdded(fabric, selectedColors,$event)">
                 <ng-template let-chip>
-                  {{ chip.label }}
+                  <div class="color-chip">
+                    <app-color-badge [color]="chip.content" size="20"></app-color-badge>
+                    {{ chip.label }}
+                  </div>
                 </ng-template>
               </app-chips>
 

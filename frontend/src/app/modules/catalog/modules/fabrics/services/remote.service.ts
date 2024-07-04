@@ -121,7 +121,9 @@ export class RemoteFabricsService {
             Color.of({
               id: color.id,
               name: color.name,
-              hex: `#${color.red.toString(16)}${color.green.toString(16)}${color.blue.toString(16)}`,
+              red: color.red,
+              green: color.green,
+              blue: color.blue,
             }),
           ),
         ),

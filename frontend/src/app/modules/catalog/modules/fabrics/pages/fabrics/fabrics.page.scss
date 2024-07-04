@@ -42,3 +42,10 @@
   padding: 8px;
   text-align: center;
 }
+
+.color-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}

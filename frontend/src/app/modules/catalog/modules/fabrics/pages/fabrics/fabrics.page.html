@@ -25,3 +25,10 @@
 <ng-template #template let-item>
   <div class="repeated-fabric-image" [style.background-image]="'url(' + item.imageUrl + ')'"></div>
 </ng-template>
+
+<ng-template #colorItemTemplate let-item>
+  <div class="color-item">
+    <app-color-badge [color]="item.content.color" size="20"></app-color-badge>
+    <span>{{ item.label }}</span>
+  </div>
+</ng-template>

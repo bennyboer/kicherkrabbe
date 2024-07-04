@@ -1,19 +1,37 @@
 export class Color {
   readonly id: string;
   readonly name: string;
-  readonly hex: string;
+  readonly red: number;
+  readonly green: number;
+  readonly blue: number;
 
-  private constructor(props: { id: string; name: string; hex: string }) {
+  private constructor(props: {
+    id: string;
+    name: string;
+    red: number;
+    green: number;
+    blue: number;
+  }) {
     this.id = props.id;
     this.name = props.name;
-    this.hex = props.hex;
+    this.red = props.red;
+    this.green = props.green;
+    this.blue = props.blue;
   }
 
-  static of(props: { id: string; name: string; hex: string }): Color {
+  static of(props: {
+    id: string;
+    name: string;
+    red: number;
+    green: number;
+    blue: number;
+  }): Color {
     return new Color({
       id: props.id,
       name: props.name,
-      hex: props.hex,
+      red: props.red,
+      green: props.green,
+      blue: props.blue,
     });
   }
 }

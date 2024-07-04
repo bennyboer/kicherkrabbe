@@ -6,6 +6,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  TemplateRef,
 } from '@angular/core';
 import { DropdownItem, DropdownItemId } from '../dropdown/dropdown.component';
 import {
@@ -38,16 +39,23 @@ export enum FilterSelectionMode {
 class FilterDropdownItem implements DropdownItem {
   readonly id: FilterItemId;
   readonly label: string;
+  readonly content: any;
 
-  private constructor(props: { id: FilterItemId; label: string }) {
+  private constructor(props: {
+    id: FilterItemId;
+    label: string;
+    content: any;
+  }) {
     this.id = props.id;
     this.label = props.label;
+    this.content = props.content;
   }
 
   static fromFilterItem(item: FilterItem): FilterDropdownItem {
     return new FilterDropdownItem({
       id: item.id,
       label: item.label,
+      content: item,
     });
   }
 }
@@ -57,6 +65,7 @@ export class Filter {
   readonly label: string;
   readonly items: FilterItem[];
   readonly selectionMode: FilterSelectionMode = FilterSelectionMode.SINGLE;
+  readonly itemTemplateRef: Option<TemplateRef<any>>;
 
   private readonly selected$: BehaviorSubject<Set<FilterItemId>> =
     new BehaviorSubject<Set<FilterItemId>>(new Set<FilterItemId>());
@@ -66,11 +75,13 @@ export class Filter {
     label: string;
     items: FilterItem[];
     selectionMode: Option<FilterSelectionMode>;
+    itemTemplateRef: Option<TemplateRef<any>>;
   }) {
     this.id = props.id;
     this.label = props.label;
     this.items = props.items;
     this.selectionMode = props.selectionMode.orElse(FilterSelectionMode.SINGLE);
+    this.itemTemplateRef = props.itemTemplateRef;
   }
 
   static of(props: {
@@ -78,6 +89,7 @@ export class Filter {
     label: string;
     items: FilterItem[];
     selectionMode?: FilterSelectionMode;
+    itemTemplateRef?: TemplateRef<any>;
   }): Filter {
     if (!props.label || props.label.trim().length === 0) {
       throw new Error('Label is required');
@@ -92,6 +104,7 @@ export class Filter {
       label: props.label,
       items: props.items,
       selectionMode: someOrNone(props.selectionMode),
+      itemTemplateRef: someOrNone(props.itemTemplateRef),
     });
   }
 
@@ -175,7 +188,7 @@ class SortingOptionDropdownItem implements DropdownItem {
     this.label = props.label;
   }
 
-  static fromSortingOption(item: SortingOption): FilterDropdownItem {
+  static fromSortingOption(item: SortingOption): SortingOptionDropdownItem {
     return new SortingOptionDropdownItem({
       id: item.id,
       label: item.label,

@@ -3,6 +3,8 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  TemplateRef,
+  ViewChild,
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -84,6 +86,9 @@ const FABRICS_LIMIT = 50;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FabricsPage implements OnInit, OnDestroy {
+  @ViewChild('colorItemTemplate')
+  private readonly colorItemTemplate!: TemplateRef<any>;
+
   private readonly availableThemes$: BehaviorSubject<Set<Theme>> =
     new BehaviorSubject<Set<Theme>>(new Set<Theme>());
   private readonly availableColors$: BehaviorSubject<Set<Color>> =
@@ -142,8 +147,14 @@ export class FabricsPage implements OnInit, OnDestroy {
           .map((color) => ({
             id: color.id,
             label: color.name,
+            color: {
+              red: color.red,
+              green: color.green,
+              blue: color.blue,
+            },
           })),
         selectionMode: FilterSelectionMode.MULTIPLE,
+        itemTemplateRef: this.colorItemTemplate,
       });
 
       return [theme, color, availability];

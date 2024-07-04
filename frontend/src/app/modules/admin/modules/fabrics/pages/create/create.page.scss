@@ -6,6 +6,13 @@ h3 {
   text-align: center;
 }
 
+.color-chip {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
 .image-edit-centering-container {
   display: flex;
   flex-direction: row;

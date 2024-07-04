@@ -47,7 +47,13 @@
                     [useRadioButtonForSingleSelection]="true"
                     (selectionChanged)="updateFilterDropdownItemsSelection(filter, $event)">
         <ng-template let-item>
-          <span>{{ item.label }}</span>
+          @if (filter.itemTemplateRef.isSome()) {
+            <ng-container [ngTemplateOutlet]="filter.itemTemplateRef.unwrap()"
+                          [ngTemplateOutletContext]="{ $implicit: item }">
+            </ng-container>
+          } @else {
+            <span>{{ item.label }}</span>
+          }
         </ng-template>
 
         <div header class="dropdown-header">
