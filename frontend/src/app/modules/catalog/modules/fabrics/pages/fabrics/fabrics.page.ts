@@ -295,7 +295,7 @@ export class FabricsPage implements OnInit, OnDestroy {
         topicIds: Array.from(filters.themeIds.orElse(new Set<string>())),
         colorIds: Array.from(filters.colorIds.orElse(new Set<string>())),
         availability: {
-          active: filters.inStock.orElse(false),
+          active: filters.inStock.isSome(),
           inStock: filters.inStock.orElse(true),
         },
         sort: {
