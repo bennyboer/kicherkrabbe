@@ -8,12 +8,18 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 
 const PAGES = [FabricsPage, FabricPage];
 
 @NgModule({
   declarations: [...PAGES],
-  imports: [CommonModule, FabricsRoutingModule, SharedModule],
+  imports: [
+    CommonModule,
+    FabricsRoutingModule,
+    SharedModule,
+    InfiniteScrollDirective,
+  ],
   providers: [
     RemoteFabricsService,
     provideHttpClient(withInterceptorsFromDi()),

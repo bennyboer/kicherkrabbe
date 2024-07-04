@@ -11,8 +11,10 @@ import {
   filter,
   map,
   Observable,
+  ReplaySubject,
   Subject,
   takeUntil,
+  tap,
 } from 'rxjs';
 import {
   CardListItem,
@@ -73,7 +75,7 @@ export class FabricsFilter {
   }
 }
 
-const FABRICS_LIMIT = 99999; // TODO Use paging
+const FABRICS_LIMIT = 50;
 
 @Component({
   selector: 'app-fabrics-page',
@@ -82,13 +84,29 @@ const FABRICS_LIMIT = 99999; // TODO Use paging
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FabricsPage implements OnInit, OnDestroy {
-  protected readonly availableThemes$: BehaviorSubject<Set<Theme>> =
+  private readonly availableThemes$: BehaviorSubject<Set<Theme>> =
     new BehaviorSubject<Set<Theme>>(new Set<Theme>());
-  protected readonly availableColors$: BehaviorSubject<Set<Color>> =
+  private readonly availableColors$: BehaviorSubject<Set<Color>> =
     new BehaviorSubject<Set<Color>>(new Set<Color>());
-  protected readonly items$: BehaviorSubject<CardListItem[]> =
-    new BehaviorSubject<CardListItem[]>([]);
+  private readonly activeFilters$: BehaviorSubject<FabricsFilter> =
+    new BehaviorSubject<FabricsFilter>(FabricsFilter.empty());
+  private readonly sorting$: BehaviorSubject<Sorting> =
+    new BehaviorSubject<Sorting>({
+      property: 'name',
+      ascending: true,
+    });
+  private readonly fabrics$: BehaviorSubject<Fabric[]> = new BehaviorSubject<
+    Fabric[]
+  >([]);
+  private readonly loadingFabrics$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
+  protected readonly items$: Subject<CardListItem[]> = new ReplaySubject<
+    CardListItem[]
+  >(1);
+  private readonly destroy$: Subject<void> = new Subject<void>();
 
+  protected readonly loading$: Observable<boolean> =
+    this.loadingFabrics$.asObservable();
   protected readonly filters$: Observable<Filter[]> = combineLatest([
     this.availableThemes$,
     this.availableColors$,
@@ -141,18 +159,6 @@ export class FabricsPage implements OnInit, OnDestroy {
     }),
   ];
 
-  private readonly activeFilters$: BehaviorSubject<FabricsFilter> =
-    new BehaviorSubject<FabricsFilter>(FabricsFilter.empty());
-  private readonly sorting$: BehaviorSubject<Sorting> =
-    new BehaviorSubject<Sorting>({
-      property: 'name',
-      ascending: true,
-    });
-  private readonly fabrics$: BehaviorSubject<Fabric[]> = new BehaviorSubject<
-    Fabric[]
-  >([]);
-  private readonly destroy$: Subject<void> = new Subject<void>();
-
   constructor(private readonly fabricsService: RemoteFabricsService) {}
 
   ngOnInit(): void {
@@ -161,14 +167,18 @@ export class FabricsPage implements OnInit, OnDestroy {
 
     combineLatest([this.activeFilters$, this.sorting$])
       .pipe(debounceTime(100), takeUntil(this.destroy$))
-      .subscribe(([filters, sorting]) =>
-        this.reloadFabrics(filters, sorting, 0, FABRICS_LIMIT),
-      );
+      .subscribe(([filters, sorting]) => this.reloadFabrics(filters, sorting));
 
-    this.fabrics$.pipe(takeUntil(this.destroy$)).subscribe((fabrics) => {
-      const items = fabrics.map((fabric) => this.mapFabricToItem(fabric));
-      this.items$.next(items);
-    });
+    this.fabrics$
+      .pipe(
+        filter((fabrics) => fabrics.length > 0),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((fabrics) => {
+        const items = fabrics.map((fabric) => this.mapFabricToItem(fabric));
+
+        this.items$.next(items);
+      });
   }
 
   ngOnDestroy(): void {
@@ -178,9 +188,26 @@ export class FabricsPage implements OnInit, OnDestroy {
     this.availableColors$.complete();
     this.availableThemes$.complete();
     this.fabrics$.complete();
+    this.loadingFabrics$.complete();
 
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  onScroll(): void {
+    const skip = this.fabrics$.value.length;
+
+    this.loadFabrics(
+      this.activeFilters$.value,
+      this.sorting$.value,
+      skip,
+      FABRICS_LIMIT,
+    )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((fabrics) => {
+        const currentFabrics = this.fabrics$.value;
+        this.fabrics$.next([...currentFabrics, ...fabrics]);
+      });
   }
 
   protected updateFilters(filters: Filter[]): void {
@@ -248,13 +275,22 @@ export class FabricsPage implements OnInit, OnDestroy {
       });
   }
 
-  private reloadFabrics(
+  private reloadFabrics(filters: FabricsFilter, sorting: Sorting): void {
+    this.fabrics$.next([]);
+    this.loadFabrics(filters, sorting, 0, FABRICS_LIMIT)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((fabrics) => this.fabrics$.next(fabrics));
+  }
+
+  private loadFabrics(
     filters: FabricsFilter,
     sorting: Sorting,
     skip: number,
     limit: number,
-  ): void {
-    this.fabricsService
+  ): Observable<Fabric[]> {
+    this.loadingFabrics$.next(true);
+
+    return this.fabricsService
       .getFabrics({
         topicIds: Array.from(filters.themeIds.orElse(new Set<string>())),
         colorIds: Array.from(filters.colorIds.orElse(new Set<string>())),
@@ -268,7 +304,11 @@ export class FabricsPage implements OnInit, OnDestroy {
         skip,
         limit,
       })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((fabrics) => this.fabrics$.next(fabrics));
+      .pipe(
+        tap({
+          next: () => this.loadingFabrics$.next(false),
+          error: () => this.loadingFabrics$.next(false),
+        }),
+      );
   }
 }

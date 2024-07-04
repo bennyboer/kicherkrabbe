@@ -21,6 +21,7 @@
     "@angular/router": "^18.0.4",
     "material-icons": "^1.13.12",
     "ngx-colors": "^3.6.0",
+    "ngx-infinite-scroll": "^18.0.0",
     "rxjs": "~7.8.0",
     "sse.js": "2.5.0",
     "tslib": "^2.3.0",
