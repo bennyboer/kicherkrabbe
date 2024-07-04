@@ -142,7 +142,7 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
         AggregationOperation transformToPage = transformToPage(skip, limit);
 
         AggregationOptions options = AggregationOptions.builder()
-                .collation(Collation.of("de-de"))
+                .collation(Collation.of("de").numericOrderingEnabled())
                 .build();
         Aggregation aggregation = newAggregation(match, sortBy, transformToPage)
                 .withOptions(options);
