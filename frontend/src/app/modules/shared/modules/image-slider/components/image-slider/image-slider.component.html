@@ -1,0 +1,38 @@
+<div class="image-slider-layout">
+  <div class="images-container">
+    <div #images class="images" [style.left.px]="dragOffset$ | async"
+         [class.animations-disabled]="animationsDisabled$ | async"
+         [class.dragging]="dragging$ | async">
+      @if (previousImage$ | async; as previousImage) {
+        @if (previousImage.isSome()) {
+          <div class="previous-image">
+            <app-image-slider-image [image]="previousImage.orElseThrow()"></app-image-slider-image>
+          </div>
+        }
+      }
+
+      @if (image$ | async; as image) {
+        <app-image-slider-image [image]="image"
+                                (dragOffsetChanged)="onDragOffsetChanged($event)"
+                                (draggingStarted)="onDraggingStarted()"
+                                (draggingEnded)="onDraggingEnded($event)">
+        </app-image-slider-image>
+      }
+
+      @if (nextImage$ | async; as nextImage) {
+        @if (nextImage.isSome()) {
+          <div class="next-image">
+            <app-image-slider-image [image]="nextImage.orElseThrow()"></app-image-slider-image>
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <div class="thumbnails">
+    @for (thumbnail of thumbnails$ | async; track thumbnail.image.url) {
+      <app-image-slider-thumbnail [thumbnail]="thumbnail"
+                                  (click)="onThumbnailClicked(thumbnail)"></app-image-slider-thumbnail>
+    }
+  </div>
+</div>

@@ -1,0 +1,65 @@
+:host {
+  display: block;
+}
+
+.image-slider-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.images-container {
+  overflow: hidden;
+}
+
+.images {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  &.dragging {
+    cursor: grabbing;
+  }
+
+  &:not(.animations-disabled) {
+    transition: left 0.2s ease-in-out;
+  }
+
+  .previous-image {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+  }
+
+  .next-image {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.thumbnails {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 4px;
+
+  & > app-image-slider-thumbnail {
+    flex-basis: calc((100% - 5 * 4px) / 6);
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .thumbnails {
+    & > app-image-slider-thumbnail {
+      flex-basis: calc((100% - 3 * 4px) / 4);
+    }
+  }
+}

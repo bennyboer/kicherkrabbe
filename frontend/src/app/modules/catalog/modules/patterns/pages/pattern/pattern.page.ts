@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PatternsStoreService } from '../../services';
-import { map, switchMap } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
+import { Image } from '../../../../../../util';
+import { ImageSliderImage } from '../../../../../shared/modules/image-slider';
 
 @Component({
   selector: 'app-pattern-page',
@@ -14,9 +16,17 @@ export class PatternPage {
     map((params) => params['id']),
     switchMap((id) => this.patternsStore.getPatternById(id)),
   );
+  protected readonly images$: Observable<ImageSliderImage[]> =
+    this.pattern$.pipe(
+      map((pattern) => this.toImageSliderImages(pattern.images)),
+    );
 
   constructor(
     private readonly patternsStore: PatternsStoreService,
     private readonly route: ActivatedRoute,
   ) {}
+
+  toImageSliderImages(images: Image[]): ImageSliderImage[] {
+    return images.map((image) => ImageSliderImage.of({ url: image.url }));
+  }
 }

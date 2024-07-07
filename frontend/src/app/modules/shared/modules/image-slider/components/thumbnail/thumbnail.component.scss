@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  width: 100%;
+  user-select: none;
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 8px;
+
+    &.active {
+      outline: 2px solid var(--text);
+    }
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    img {
+      outline: 2px solid var(--text);
+    }
+  }
+}

@@ -2,17 +2,10 @@
   <h1>{{ pattern.name }}</h1>
 
   <div class="layout">
-    <div class="images desktop">
-      <ul>
-        @for (image of pattern.images; track image.url) {
-          <li><img [src]="image.url"></li>
-        }
-      </ul>
-    </div>
-    <div class="images mobile">
-      <ul>
-        <li><img [src]="pattern.images[0].url"></li>
-      </ul>
+    <div class="images">
+      @if (images$ | async; as images) {
+        <app-image-slider [images]="images"></app-image-slider>
+      }
     </div>
     <div class="details">
       <app-price-tag class="price">ab {{ pattern.getStartingPrice().formatted() }}</app-price-tag>
@@ -55,13 +48,6 @@
           </p>
         </div>
       }
-    </div>
-    <div class="images mobile">
-      <ul>
-        @for (image of pattern.images.slice(1); track image.url) {
-          <li><img [src]="image.url"></li>
-        }
-      </ul>
     </div>
   </div>
 }
