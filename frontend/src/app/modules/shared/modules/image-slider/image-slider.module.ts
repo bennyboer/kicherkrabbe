@@ -1,13 +1,17 @@
 import { NgModule } from '@angular/core';
 import {
-  ImageComponent,
   ImageSliderComponent,
+  SlidingImageComponent,
   ThumbnailComponent,
 } from './components';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
-  declarations: [ImageSliderComponent, ImageComponent, ThumbnailComponent],
+  declarations: [
+    ImageSliderComponent,
+    ThumbnailComponent,
+    SlidingImageComponent,
+  ],
   imports: [CommonModule],
   exports: [ImageSliderComponent],
 })

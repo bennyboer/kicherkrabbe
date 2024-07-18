@@ -1,0 +1,13 @@
+:host {
+  display: block;
+  overflow: hidden;
+
+  canvas {
+    position: absolute;
+    border-radius: 8px;
+  }
+
+  &.dragging {
+    cursor: grabbing;
+  }
+}

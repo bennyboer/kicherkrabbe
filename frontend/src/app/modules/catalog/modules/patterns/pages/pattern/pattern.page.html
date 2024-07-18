@@ -4,7 +4,7 @@
   <div class="layout">
     <div class="images">
       @if (images$ | async; as images) {
-        <app-image-slider [images]="images"></app-image-slider>
+        <app-image-slider [images]="images" [theme]="theme$ | async"></app-image-slider>
       }
     </div>
     <div class="details">

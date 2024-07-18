@@ -4,6 +4,7 @@ import { PatternsStoreService } from '../../services';
 import { map, Observable, switchMap } from 'rxjs';
 import { Image } from '../../../../../../util';
 import { ImageSliderImage } from '../../../../../shared/modules/image-slider';
+import { Theme, ThemeService } from '../../../../../../services';
 
 @Component({
   selector: 'app-pattern-page',
@@ -20,10 +21,14 @@ export class PatternPage {
     this.pattern$.pipe(
       map((pattern) => this.toImageSliderImages(pattern.images)),
     );
+  protected readonly theme$ = this.themeService
+    .getTheme()
+    .pipe(map((theme) => (theme === Theme.DARK ? 'dark' : 'light')));
 
   constructor(
     private readonly patternsStore: PatternsStoreService,
     private readonly route: ActivatedRoute,
+    private readonly themeService: ThemeService,
   ) {}
 
   toImageSliderImages(images: Image[]): ImageSliderImage[] {
