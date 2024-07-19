@@ -8,15 +8,8 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import {
-  BehaviorSubject,
-  filter,
-  Observable,
-  ReplaySubject,
-  Subject,
-  takeUntil,
-} from 'rxjs';
-import { ImageSliderImage, Thumbnail } from '../../models';
+import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
+import { ImageSliderImage } from '../../models';
 import { someOrNone } from '../../../../../../util';
 import { SlidingImageComponent } from '../sliding-image/sliding-image.component';
 
@@ -33,13 +26,12 @@ export class ImageSliderComponent implements OnInit, OnDestroy {
   protected readonly images$: BehaviorSubject<ImageSliderImage[]> =
     new BehaviorSubject<ImageSliderImage[]>([]);
   private readonly destroy$: Subject<void> = new Subject<void>();
-  protected readonly thumbnails$: Subject<Thumbnail[]> = new ReplaySubject<
-    Thumbnail[]
-  >(1);
   protected readonly theme$: BehaviorSubject<'light' | 'dark'> =
     new BehaviorSubject<'light' | 'dark'>('light');
   protected readonly fit$: BehaviorSubject<'contain' | 'cover'> =
     new BehaviorSubject<'contain' | 'cover'>('contain');
+  protected readonly activeImageIndex$: BehaviorSubject<number> =
+    new BehaviorSubject<number>(0);
 
   @Input({ required: true })
   set images(value: ImageSliderImage[]) {
@@ -63,7 +55,7 @@ export class ImageSliderComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const resized$ = new Observable<void>((observer) => {
-      const resizeObserver = new ResizeObserver((entries) => {
+      const resizeObserver = new ResizeObserver(() => {
         observer.next();
       });
 
@@ -77,60 +69,26 @@ export class ImageSliderComponent implements OnInit, OnDestroy {
     resized$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.cd.markForCheck());
-
-    this.images$
-      .pipe(
-        filter((images) => images.length > 0),
-        takeUntil(this.destroy$),
-      )
-      .subscribe((images) => {
-        this.thumbnails$.next(
-          images.map((image, index) =>
-            Thumbnail.of({ image, active: index === 0 }),
-          ),
-        );
-      });
   }
 
   ngOnDestroy(): void {
     this.images$.complete();
-    this.thumbnails$.complete();
     this.theme$.complete();
     this.fit$.complete();
+    this.activeImageIndex$.complete();
 
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  onThumbnailClicked(thumbnail: Thumbnail): void {
+  onThumbnailClicked(image: ImageSliderImage): void {
     const images = this.images$.value;
-    const image = thumbnail.image;
-    const imageIndex = images.findIndex(
-      (image) => image.url === thumbnail.image.url,
-    );
+    const imageIndex = images.findIndex((i) => i.url === image.url);
 
     this.slidingImage.slideTo(Math.max(0, imageIndex));
-    this.thumbnails$.next(
-      images.map((thumbnailImage) =>
-        Thumbnail.of({
-          image: thumbnailImage,
-          active: thumbnailImage.url === image.url,
-        }),
-      ),
-    );
   }
 
   onImageIndexChanged(index: number): void {
-    const images = this.images$.value;
-    const image = images[index];
-
-    this.thumbnails$.next(
-      images.map((thumbnailImage) =>
-        Thumbnail.of({
-          image: thumbnailImage,
-          active: thumbnailImage.url === image.url,
-        }),
-      ),
-    );
+    this.activeImageIndex$.next(index);
   }
 }

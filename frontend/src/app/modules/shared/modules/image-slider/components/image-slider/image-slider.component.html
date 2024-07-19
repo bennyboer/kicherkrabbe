@@ -10,9 +10,10 @@
   </div>
 
   <div class="thumbnails">
-    @for (thumbnail of thumbnails$ | async; track thumbnail.image.url) {
-      <app-image-slider-thumbnail [thumbnail]="thumbnail"
-                                  (click)="onThumbnailClicked(thumbnail)">
+    @for (image of images$ | async; track image.url; let index = $index) {
+      <app-image-slider-thumbnail [image]="image"
+                                  [active]="index === (activeImageIndex$ | async)"
+                                  (click)="onThumbnailClicked(image)">
       </app-image-slider-thumbnail>
     }
   </div>

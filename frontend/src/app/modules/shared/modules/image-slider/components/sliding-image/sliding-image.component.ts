@@ -17,6 +17,7 @@ import {
   animationFrameScheduler,
   BehaviorSubject,
   combineLatest,
+  concatMap,
   debounceTime,
   delay,
   distinctUntilChanged,
@@ -24,7 +25,6 @@ import {
   from,
   fromEvent,
   map,
-  mergeMap,
   Observable,
   startWith,
   Subject,
@@ -142,7 +142,7 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
         tap(() => this.loading$.next(true)),
         switchMap((images) =>
           from(images).pipe(
-            mergeMap((image) => this.loadImage(image)),
+            concatMap((image) => this.loadImage(image)),
             toArray(),
           ),
         ),

@@ -4,8 +4,8 @@ import {
   Input,
   OnDestroy,
 } from '@angular/core';
-import { Thumbnail } from '../../models';
-import { ReplaySubject, Subject } from 'rxjs';
+import { ImageSliderImage } from '../../models';
+import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
 import { someOrNone } from '../../../../../../util';
 
 @Component({
@@ -15,15 +15,23 @@ import { someOrNone } from '../../../../../../util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThumbnailComponent implements OnDestroy {
-  protected readonly thumbnail$: Subject<Thumbnail> =
-    new ReplaySubject<Thumbnail>(1);
+  protected readonly image$: Subject<ImageSliderImage> =
+    new ReplaySubject<ImageSliderImage>(1);
+  protected readonly active$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
 
   @Input({ required: true })
-  set thumbnail(value: Thumbnail) {
-    someOrNone(value).map((thumbnail) => this.thumbnail$.next(thumbnail));
+  set image(value: ImageSliderImage) {
+    someOrNone(value).map((thumbnail) => this.image$.next(thumbnail));
+  }
+
+  @Input()
+  set active(value: boolean) {
+    someOrNone(value).map((active) => this.active$.next(active));
   }
 
   ngOnDestroy(): void {
-    this.thumbnail$.complete();
+    this.image$.complete();
+    this.active$.complete();
   }
 }
