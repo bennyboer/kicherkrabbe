@@ -114,7 +114,7 @@ export class ImageSliderComponent implements OnInit, OnDestroy {
       images.map((thumbnailImage) =>
         Thumbnail.of({
           image: thumbnailImage,
-          active: thumbnailImage === image,
+          active: thumbnailImage.url === image.url,
         }),
       ),
     );
@@ -128,7 +128,7 @@ export class ImageSliderComponent implements OnInit, OnDestroy {
       images.map((thumbnailImage) =>
         Thumbnail.of({
           image: thumbnailImage,
-          active: thumbnailImage === image,
+          active: thumbnailImage.url === image.url,
         }),
       ),
     );
