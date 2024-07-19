@@ -19,15 +19,5 @@ export class CatalogPage {
       link: 'fabrics',
       imageUrl: '/assets/examples/example.jpg',
     }),
-    CardListItem.of({
-      title: 'Stickereien',
-      link: 'embroideries',
-      imageUrl: '/assets/examples/example.jpg',
-    }),
-    CardListItem.of({
-      title: 'Accessoires',
-      link: 'accessories',
-      imageUrl: '/assets/examples/example.jpg',
-    }),
   ];
 }
