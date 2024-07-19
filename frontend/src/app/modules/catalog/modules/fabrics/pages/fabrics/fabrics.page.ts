@@ -180,16 +180,11 @@ export class FabricsPage implements OnInit, OnDestroy {
       .pipe(debounceTime(100), takeUntil(this.destroy$))
       .subscribe(([filters, sorting]) => this.reloadFabrics(filters, sorting));
 
-    this.fabrics$
-      .pipe(
-        filter((fabrics) => fabrics.length > 0),
-        takeUntil(this.destroy$),
-      )
-      .subscribe((fabrics) => {
-        const items = fabrics.map((fabric) => this.mapFabricToItem(fabric));
+    this.fabrics$.pipe(takeUntil(this.destroy$)).subscribe((fabrics) => {
+      const items = fabrics.map((fabric) => this.mapFabricToItem(fabric));
 
-        this.items$.next(items);
-      });
+      this.items$.next(items);
+    });
   }
 
   ngOnDestroy(): void {
