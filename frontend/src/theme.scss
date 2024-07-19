@@ -14,6 +14,9 @@
     --text: #FFFFFF;
     --text-rgb: 255, 255, 255;
 
+    --red: #FF4E43;
+    --green: #66CC99;
+
     --primary-1-sub: #AC3F37;
     --primary-1-sub-rgb: 172, 63, 55;
 
@@ -48,6 +51,9 @@
   &.light {
     --text: #000000;
     --text-rgb: 0, 0, 0;
+
+    --red: #FF4E43;
+    --green: #66CC99;
 
     --primary-1-sub: #FFA59F;
     --primary-1-sub-rgb: 255, 165, 159;

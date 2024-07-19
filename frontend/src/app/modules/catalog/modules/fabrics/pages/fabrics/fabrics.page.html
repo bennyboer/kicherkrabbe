@@ -11,7 +11,7 @@
     <div class="scroll-container"
          infiniteScroll
          (scrolled)="onScroll()">
-      <app-card-list [items]="items" [template]="template"></app-card-list>
+      <app-card-list [items]="items" [template]="template" [descriptionTemplate]="descriptionTemplate"></app-card-list>
     </div>
   } @else {
     <div class="no-results-hint">
@@ -24,6 +24,21 @@
 
 <ng-template #template let-item>
   <div class="repeated-fabric-image" [style.background-image]="'url(' + item.imageUrl + ')'"></div>
+</ng-template>
+
+<ng-template #descriptionTemplate let-item>
+  <div class="description">
+    <div class="title">{{ item.title }}</div>
+    @if (item.content.isSome()) {
+      <div class="availability-status">
+        @if (item.content.orElseThrow().inStock) {
+          <span class="in-stock-badge"></span> Auf Lager
+        } @else {
+          <span class="out-of-stock-badge"></span> Nachbestellbar
+        }
+      </div>
+    }
+  </div>
 </ng-template>
 
 <ng-template #colorItemTemplate let-item>

@@ -11,12 +11,14 @@ export class CardListItem {
   readonly description: Option<string>;
   readonly link: string;
   readonly imageUrl: string;
+  readonly content: Option<any>;
 
   private constructor(props: {
     title: string;
     description: Option<string>;
     link: string;
     imageUrl: string;
+    content: Option<any>;
   }) {
     this.title = someOrNone(props.title).orElseThrow('Title is required');
     this.description = props.description;
@@ -24,6 +26,7 @@ export class CardListItem {
     this.imageUrl = someOrNone(props.imageUrl).orElseThrow(
       'Image URL is required',
     );
+    this.content = props.content;
   }
 
   static of(props: {
@@ -31,12 +34,14 @@ export class CardListItem {
     description?: string;
     link: string;
     imageUrl: string;
+    content?: any;
   }): CardListItem {
     return new CardListItem({
       title: props.title,
       description: someOrNone(props.description),
       link: props.link,
       imageUrl: props.imageUrl,
+      content: someOrNone(props.content),
     });
   }
 }
@@ -58,7 +63,13 @@ export class CardListComponent {
     this.template = someOrNone(template);
   }
 
+  @Input('descriptionTemplate')
+  set setDescriptionTemplate(contentTemplate: TemplateRef<any>) {
+    this.descriptionTemplate = someOrNone(contentTemplate);
+  }
+
   protected template: Option<TemplateRef<any>> = none();
+  protected descriptionTemplate: Option<TemplateRef<any>> = none();
 
   protected items: CardListItem[] = [];
 }

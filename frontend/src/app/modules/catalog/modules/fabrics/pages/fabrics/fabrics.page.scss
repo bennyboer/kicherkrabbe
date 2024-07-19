@@ -49,3 +49,40 @@
   align-items: center;
   gap: 8px;
 }
+
+.description {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+
+  .title {
+    font-size: 18px;
+  }
+
+  .availability-status {
+    font-weight: 200;
+    font-size: 12px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+
+  .in-stock-badge, .out-of-stock-badge {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 100%;
+  }
+
+  .in-stock-badge {
+    background-color: var(--green);
+  }
+
+  .out-of-stock-badge {
+    background-color: var(--red);
+  }
+}

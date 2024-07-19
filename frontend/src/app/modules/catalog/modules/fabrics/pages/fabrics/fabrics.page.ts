@@ -255,9 +255,11 @@ export class FabricsPage implements OnInit, OnDestroy {
   private mapFabricToItem(fabric: Fabric): CardListItem {
     return CardListItem.of({
       title: fabric.name,
-      description: fabric.getStockStatusLabel(),
       link: `/catalog/fabrics/${fabric.id}`,
       imageUrl: fabric.image.url ?? '',
+      content: {
+        inStock: fabric.isAvailableInAnyType(),
+      },
     });
   }
 

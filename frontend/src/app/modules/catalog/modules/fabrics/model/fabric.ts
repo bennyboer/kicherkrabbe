@@ -58,10 +58,4 @@ export class Fabric {
       .map((label) => label.orElseThrow())
       .join(', ');
   }
-
-  getStockStatusLabel(): string {
-    return this.availability.isAvailableInAnyType()
-      ? 'Auf Lager'
-      : 'Nicht auf Lager (nachbestellbar)';
-  }
 }

@@ -1,20 +1,30 @@
 <ul class="card-list">
   @for (item of items; track item.link) {
-    <li class="card-list-item" [routerLink]="item.link">
-      <div class="upper-content">
-        <div *ngIf="template.isSome()">
-          <ng-container *ngTemplateOutlet="template.orElseThrow(); context: { $implicit: item }"></ng-container>
+    <a [routerLink]="item.link">
+      <li class="card-list-item">
+        <div class="upper-content">
+          @if (template.isSome()) {
+            <div>
+              <ng-container *ngTemplateOutlet="template.orElseThrow(); context: { $implicit: item }"></ng-container>
+            </div>
+          } @else {
+            <div class="image">
+              <img [src]="item.imageUrl" alt="@{item.title}">
+            </div>
+          }
         </div>
-        <div *ngIf="template.isNone()" class="image">
-          <img [src]="item.imageUrl" alt="@{item.title}">
+        <div class="content">
+          @if (descriptionTemplate.isSome()) {
+            <ng-container *ngTemplateOutlet="descriptionTemplate.orElseThrow(); context: { $implicit: item }">
+            </ng-container>
+          } @else {
+            <div class="title">{{ item.title }}</div>
+            @if (item.description.isSome()) {
+              <div class="description">{{ item.description.orElse('') }}</div>
+            }
+          }
         </div>
-      </div>
-      <div class="content">
-        <div class="title">{{ item.title }}</div>
-        @if (item.description.isSome()) {
-          <div class="description">{{ item.description.orElse('') }}</div>
-        }
-      </div>
-    </li>
+      </li>
+    </a>
   }
 </ul>
