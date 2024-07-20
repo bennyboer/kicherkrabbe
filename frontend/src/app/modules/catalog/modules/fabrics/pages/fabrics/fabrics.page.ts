@@ -104,7 +104,7 @@ export class FabricsPage implements OnInit, OnDestroy {
     Fabric[]
   >([]);
   private readonly loadingFabrics$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+    new BehaviorSubject<boolean>(true);
   protected readonly items$: Subject<CardListItem[]> = new ReplaySubject<
     CardListItem[]
   >(1);
@@ -112,6 +112,9 @@ export class FabricsPage implements OnInit, OnDestroy {
 
   protected readonly loading$: Observable<boolean> =
     this.loadingFabrics$.asObservable();
+  protected readonly notLoading$: Observable<boolean> = this.loading$.pipe(
+    map((loading) => !loading),
+  );
   protected readonly filters$: Observable<Filter[]> = combineLatest([
     this.availableThemes$,
     this.availableColors$,

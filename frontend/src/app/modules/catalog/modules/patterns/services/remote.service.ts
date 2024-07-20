@@ -71,16 +71,19 @@ export class RemotePatternsService {
         Image.of({
           url: '/assets/images/patterns/basic-kleid-die-dritte/E.jpg',
         }),
+        Image.of({
+          url: '/assets/images/patterns/basic-kleid-die-dritte/F.jpg',
+        }),
       ],
       variants: [
         PatternVariant.of({
           id: 'basic',
           name: 'Basic',
           sizes: [
-            SizeRange.of({ from: 80, to: 86, price: Money.euro(3300) }),
-            SizeRange.of({ from: 92, to: 98, price: Money.euro(3500) }),
-            SizeRange.of({ from: 104, to: 110, price: Money.euro(3700) }),
-            SizeRange.of({ from: 116, to: 116, price: Money.euro(3900) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(2900) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(3100) }),
+            SizeRange.of({ from: 104, to: 110, price: Money.euro(3300) }),
+            SizeRange.of({ from: 116, to: 116, price: Money.euro(3500) }),
           ],
         }),
       ],
@@ -88,6 +91,10 @@ export class RemotePatternsService {
         PatternExtra.of({
           name: 'Rollkragen',
           price: Money.euro(500),
+        }),
+        PatternExtra.of({
+          name: 'Lange Ärmel',
+          price: Money.euro(400),
         }),
       ],
       attribution: 'kiOo kiOo',
@@ -346,20 +353,20 @@ export class RemotePatternsService {
           id: 'normal',
           name: 'Normal',
           sizes: [
-            SizeRange.of({ from: 80, to: 86, price: Money.euro(4000) }),
-            SizeRange.of({ from: 92, to: 98, price: Money.euro(4200) }),
-            SizeRange.of({ from: 104, to: 110, price: Money.euro(4400) }),
-            SizeRange.of({ from: 116, to: 116, price: Money.euro(4600) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(3800) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(4000) }),
+            SizeRange.of({ from: 104, to: 110, price: Money.euro(4200) }),
+            SizeRange.of({ from: 116, to: 116, price: Money.euro(4400) }),
           ],
         }),
         PatternVariant.of({
           id: 'top-length',
           name: 'Toplänge',
           sizes: [
-            SizeRange.of({ from: 80, to: 86, price: Money.euro(3400) }),
-            SizeRange.of({ from: 92, to: 98, price: Money.euro(3600) }),
-            SizeRange.of({ from: 104, to: 110, price: Money.euro(3800) }),
-            SizeRange.of({ from: 116, to: 116, price: Money.euro(4000) }),
+            SizeRange.of({ from: 80, to: 86, price: Money.euro(3300) }),
+            SizeRange.of({ from: 92, to: 98, price: Money.euro(3500) }),
+            SizeRange.of({ from: 104, to: 110, price: Money.euro(3700) }),
+            SizeRange.of({ from: 116, to: 116, price: Money.euro(3900) }),
           ],
         }),
       ],
@@ -423,12 +430,6 @@ export class RemotePatternsService {
         Image.of({
           url: '/assets/images/patterns/pumphose-penny/B.jpg',
         }),
-        Image.of({
-          url: '/assets/images/patterns/pumphose-penny/C.jpg',
-        }),
-        Image.of({
-          url: '/assets/images/patterns/pumphose-penny/D.jpg',
-        }),
       ],
       variants: [
         PatternVariant.of({
@@ -450,6 +451,8 @@ export class RemotePatternsService {
           price: Money.euro(200),
         }),
       ],
+      originalPatternName: 'Carlotta',
+      attribution: 'Ida & Tilda',
     }),
     Pattern.of({
       id: 'sommerkleid-yuna',
@@ -766,7 +769,7 @@ export class RemotePatternsService {
       ],
       extras: [
         PatternExtra.of({
-          name: 'Fake Knopfleiste',
+          name: 'Fake Knopfleiste + Spitze',
           price: Money.euro(300),
         }),
         PatternExtra.of({

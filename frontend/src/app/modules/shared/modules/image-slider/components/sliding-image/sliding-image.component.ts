@@ -454,20 +454,22 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
   }): ImageLayout {
     const { width, height, image } = props;
 
-    const isPortrait = image.height > image.width;
-    if (isPortrait) {
-      const aspectRatio = image.width / image.height;
-      const imageWidth = height * aspectRatio;
-      const imageHeight = height;
-      const x = (width - imageWidth) / 2;
-      const y = 0;
-      return { width: imageWidth, height: imageHeight, x, y };
-    } else {
+    const preferredAspectRatio = width / height;
+    const imageAspectRatio = image.width / image.height;
+    const isImageWider = imageAspectRatio >= preferredAspectRatio;
+    if (isImageWider) {
       const aspectRatio = image.height / image.width;
       const imageWidth = width;
       const imageHeight = width * aspectRatio;
       const x = 0;
       const y = (height - imageHeight) / 2;
+      return { width: imageWidth, height: imageHeight, x, y };
+    } else {
+      const aspectRatio = image.width / image.height;
+      const imageWidth = height * aspectRatio;
+      const imageHeight = height;
+      const x = (width - imageWidth) / 2;
+      const y = 0;
       return { width: imageWidth, height: imageHeight, x, y };
     }
   }

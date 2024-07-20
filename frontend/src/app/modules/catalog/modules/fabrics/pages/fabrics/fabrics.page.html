@@ -13,7 +13,7 @@
          (scrolled)="onScroll()">
       <app-card-list [items]="items" [template]="template" [descriptionTemplate]="descriptionTemplate"></app-card-list>
     </div>
-  } @else {
+  } @else if (notLoading$ | async) {
     <div class="no-results-hint">
       <p>Es konnten keine Stoffe gefunden werden.</p>
     </div>

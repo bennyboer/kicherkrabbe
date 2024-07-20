@@ -1,3 +1,49 @@
 :host {
   display: block;
 }
+
+.banner-container {
+  height: 400px;
+
+  .banner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 400px;
+    overflow: hidden;
+    margin-top: -30px;
+  }
+}
+
+.column-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
+
+  .left {
+    flex: 1 1 auto;
+  }
+
+  .right {
+    flex: 0 0 350px;
+
+    img {
+      border-radius: 12px;
+    }
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .column-layout {
+    flex-direction: column;
+  }
+
+  .banner-container {
+    height: 150px;
+
+    .banner {
+      height: 150px;
+    }
+  }
+}
