@@ -108,6 +108,18 @@ public class SecurityConfig {
 
                 return corsConfig;
             });
+        } else {
+            corsSpec.configurationSource(request -> {
+                var corsConfig = new CorsConfiguration();
+
+                corsConfig.addAllowedOrigin("www.kicherkrabbe.com");
+                corsConfig.addAllowedMethod("*");
+                corsConfig.addAllowedHeader("*");
+                corsConfig.setAllowCredentials(false);
+                corsConfig.setMaxAge(3600L);
+
+                return corsConfig;
+            });
         }
     }
 
