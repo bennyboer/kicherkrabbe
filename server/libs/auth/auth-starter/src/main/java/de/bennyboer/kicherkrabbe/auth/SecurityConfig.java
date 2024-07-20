@@ -112,7 +112,7 @@ public class SecurityConfig {
             corsSpec.configurationSource(request -> {
                 var corsConfig = new CorsConfiguration();
 
-                corsConfig.addAllowedOrigin("www.kicherkrabbe.com");
+                corsConfig.addAllowedOrigin("https://www.kicherkrabbe.com");
                 corsConfig.addAllowedMethod("*");
                 corsConfig.addAllowedHeader("*");
                 corsConfig.setAllowCredentials(false);
