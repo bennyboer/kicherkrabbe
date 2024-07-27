@@ -65,9 +65,18 @@ const FABRICS = ManagementItem.of({
   route: 'fabrics',
 });
 
-const ESSENTIAL_MANAGEMENT_ITEMS = [TOPICS, FABRIC_TYPES, COLORS, FABRICS].sort(
-  (a, b) => a.label.localeCompare(b.label),
-);
+const PATTERNS = ManagementItem.of({
+  label: 'Schnitte',
+  route: 'patterns',
+});
+
+const ESSENTIAL_MANAGEMENT_ITEMS = [
+  TOPICS,
+  FABRIC_TYPES,
+  COLORS,
+  FABRICS,
+  PATTERNS,
+].sort((a, b) => a.label.localeCompare(b.label));
 const MANAGEMENT_ITEMS = [DASHBOARD, ...ESSENTIAL_MANAGEMENT_ITEMS];
 
 @Component({

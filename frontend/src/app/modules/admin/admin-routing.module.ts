@@ -54,6 +54,13 @@ const routes: Routes = [
             (m) => m.FabricsModule,
           ),
       },
+      {
+        path: 'patterns',
+        loadChildren: () =>
+          import('./modules/patterns/patterns.module').then(
+            (m) => m.PatternsModule,
+          ),
+      },
     ],
   },
   {

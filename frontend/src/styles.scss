@@ -116,6 +116,10 @@ input[type="password"] {
     cursor: not-allowed;
     color: var(--contrast-mid);
   }
+
+  &.error {
+    outline-color: var(--red);
+  }
 }
 
 .material-icons {

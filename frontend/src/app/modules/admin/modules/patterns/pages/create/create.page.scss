@@ -1,0 +1,98 @@
+:host {
+  display: block;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-left: 6px solid var(--background-mid-contrast);
+  border-radius: 6px;
+  padding-left: 12px;
+
+  & > input {
+    width: 100%;
+  }
+}
+
+.two-columns {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+
+  & > * {
+    flex: 1 1 auto;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  margin-top: 28px;
+  border-top: 1px solid var(--background-mid-contrast);
+}
+
+.error {
+  color: var(--red);
+}
+
+.loading-button-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+ul.image-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    flex-basis: calc(100% / 4 - 8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--contrast);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
+
+.add-image-button-container {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media only screen and (max-width: 1000px) {
+  .two-columns {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  ul.image-list {
+    flex-direction: column;
+    flex-wrap: nowrap;
+
+    li {
+      flex-basis: 100%;
+    }
+  }
+}

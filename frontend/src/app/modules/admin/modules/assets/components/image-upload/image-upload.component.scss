@@ -40,6 +40,14 @@
   gap: 12px;
 }
 
+.image-selector {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
 .preview-title {
   margin: 0;
   text-align: center;

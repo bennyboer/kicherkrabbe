@@ -266,9 +266,9 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
     );
   }
 
-  onImageUploaded(fabric: Fabric, imageId: string): void {
-    this.imageId$.next(some(imageId));
-    this.updateImage(fabric, imageId);
+  onImageUploaded(fabric: Fabric, imageIds: string[]): void {
+    this.imageId$.next(some(imageIds[0]));
+    this.updateImage(fabric, imageIds[0]);
   }
 
   getImageId(): Observable<string> {

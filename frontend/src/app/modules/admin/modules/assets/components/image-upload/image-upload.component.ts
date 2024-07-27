@@ -15,14 +15,25 @@ import { AssetsService } from '../../services/assets.service';
 import {
   BehaviorSubject,
   combineLatest,
+  concatMap,
   delay,
+  from,
+  map,
+  mergeMap,
   Observable,
   ReplaySubject,
   Subject,
+  switchMap,
+  take,
   takeUntil,
+  toArray,
 } from 'rxjs';
 
 type Step = 'file-select' | 'preview' | 'upload';
+
+interface SelectedImageIndexContainer {
+  index: number;
+}
 
 @Component({
   selector: 'app-image-upload',
@@ -46,31 +57,43 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
   exportQuality: number = 0.9;
 
+  @Input()
+  multiple: boolean = false;
+
   @Output()
-  uploaded: EventEmitter<string> = new EventEmitter<string>();
+  uploaded: EventEmitter<string[]> = new EventEmitter<string[]>();
 
   private readonly step$: BehaviorSubject<Step> = new BehaviorSubject<Step>(
     'file-select',
   );
-  private readonly file$: Subject<File> = new ReplaySubject(1);
-  private readonly image$: Subject<HTMLImageElement> = new ReplaySubject(1);
+  private readonly files$: Subject<File[]> = new ReplaySubject(1);
+  protected readonly images$: Subject<HTMLImageElement[]> = new ReplaySubject(
+    1,
+  );
+  protected readonly selectedImageIndex$: BehaviorSubject<SelectedImageIndexContainer> =
+    new BehaviorSubject<SelectedImageIndexContainer>({ index: 0 });
   private readonly blackWatermark$: Subject<HTMLImageElement> =
     new ReplaySubject(1);
   private readonly whiteWatermark$: Subject<HTMLImageElement> =
     new ReplaySubject(1);
   private readonly canvas$: Subject<HTMLCanvasElement> = new ReplaySubject(1);
-  private readonly resultImage$: Subject<Blob> = new ReplaySubject(1);
+  private readonly resultImages$: Subject<Blob[]> = new ReplaySubject(1);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(private readonly assetsService: AssetsService) {}
 
   ngOnInit(): void {
-    this.file$
+    this.files$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((file) => this.loadImageFromFile(file));
+      .subscribe((files) => this.loadImagesFromFiles(files));
+
+    const selectedImage$ = combineLatest([
+      this.images$,
+      this.selectedImageIndex$,
+    ]).pipe(map(([images, index]) => images[index.index]));
 
     combineLatest([
-      this.image$,
+      selectedImage$,
       this.blackWatermark$,
       this.whiteWatermark$,
       this.canvas$,
@@ -83,6 +106,12 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
           whiteWatermark,
           canvas,
         ),
+      );
+
+    combineLatest([this.images$, this.blackWatermark$, this.whiteWatermark$])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([images, blackWatermark, whiteWatermark]) =>
+        this.renderImages(images, blackWatermark, whiteWatermark),
       );
   }
 
@@ -103,12 +132,13 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy(): void {
     this.step$.complete();
-    this.file$.complete();
-    this.image$.complete();
+    this.files$.complete();
+    this.images$.complete();
     this.blackWatermark$.complete();
     this.whiteWatermark$.complete();
     this.canvas$.complete();
-    this.resultImage$.complete();
+    this.resultImages$.complete();
+    this.selectedImageIndex$.complete();
 
     this.destroy$.next();
     this.destroy$.complete();
@@ -118,8 +148,8 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.step$.asObservable();
   }
 
-  onFileSelected(file: File): void {
-    this.file$.next(file);
+  onFilesSelected(files: File[]): void {
+    this.files$.next(files);
     this.step$.next('preview');
   }
 
@@ -130,14 +160,43 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   upload(): void {
     this.step$.next('upload');
 
-    this.resultImage$.pipe(takeUntil(this.destroy$)).subscribe((blob) => {
-      this.assetsService
-        .uploadAsset(blob)
-        .pipe(delay(2000))
-        .subscribe((assetId) => {
-          this.uploaded.emit(assetId);
-        });
-    });
+    this.resultImages$
+      .pipe(
+        switchMap((blobs) =>
+          from(blobs).pipe(
+            mergeMap((blob) => this.assetsService.uploadAsset(blob)),
+            take(blobs.length),
+            toArray(),
+          ),
+        ),
+        delay(2000),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((assetIds) => this.uploaded.emit(assetIds));
+  }
+
+  selectImageIndex(index: number, images: HTMLImageElement[]): void {
+    if (index < 0 || index >= images.length) {
+      return;
+    }
+
+    this.selectedImageIndex$.next({ index });
+  }
+
+  private renderImages(
+    images: HTMLImageElement[],
+    blackWatermark: HTMLImageElement,
+    whiteWatermark: HTMLImageElement,
+  ): void {
+    from(images)
+      .pipe(
+        concatMap((image) =>
+          this.renderImage(image, blackWatermark, whiteWatermark),
+        ),
+        toArray(),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((blobs) => this.resultImages$.next(blobs));
   }
 
   private onImageAndCanvasReady(
@@ -172,21 +231,6 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
       height,
       devicePixelRatio,
     );
-
-    const resultCanvas = document.createElement('canvas');
-    const desiredHeight = this.desiredWidth / aspectRatio;
-    this.drawImageAndWatermark(
-      resultCanvas,
-      image,
-      blackWatermark,
-      whiteWatermark,
-      this.desiredWidth,
-      desiredHeight,
-      1,
-    );
-    const dataUrl = resultCanvas.toDataURL('image/jpeg', this.exportQuality);
-    const blob = this.dataUrlToBlob(dataUrl);
-    this.resultImage$.next(blob);
   }
 
   private dataUrlToBlob(dataUrl: string): Blob {
@@ -276,14 +320,32 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
     return colorSum / (data.length / 4);
   }
 
-  private loadImageFromFile(file: File): void {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const image = new Image();
-      image.onload = () => this.image$.next(image);
-      image.src = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
+  private loadImagesFromFiles(files: File[]): void {
+    if (files.length === 0) {
+      return;
+    }
+
+    from(files)
+      .pipe(
+        concatMap((file) => this.loadImageFromFile(file)),
+        toArray(),
+      )
+      .subscribe((images) => this.images$.next(images));
+  }
+
+  private loadImageFromFile(file: File): Observable<HTMLImageElement> {
+    return new Observable<HTMLImageElement>((observer) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const image = new Image();
+        image.onload = () => {
+          observer.next(image);
+          observer.complete();
+        };
+        image.src = event.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
   private loadWatermarks(): void {
@@ -300,6 +362,31 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
       const image = new Image();
       image.onload = () => observer.next(image);
       image.src = url;
+    });
+  }
+
+  private renderImage(
+    image: HTMLImageElement,
+    blackWatermark: HTMLImageElement,
+    whiteWatermark: HTMLImageElement,
+  ): Observable<Blob> {
+    return new Observable<Blob>((observer) => {
+      const aspectRatio = image.naturalWidth / image.naturalHeight;
+      const resultCanvas = document.createElement('canvas');
+      const desiredHeight = this.desiredWidth / aspectRatio;
+      this.drawImageAndWatermark(
+        resultCanvas,
+        image,
+        blackWatermark,
+        whiteWatermark,
+        this.desiredWidth,
+        desiredHeight,
+        1,
+      );
+      const dataUrl = resultCanvas.toDataURL('image/jpeg', this.exportQuality);
+      const blob = this.dataUrlToBlob(dataUrl);
+      observer.next(blob);
+      observer.complete();
     });
   }
 }

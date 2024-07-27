@@ -38,8 +38,11 @@ export class FileSelectComponent implements OnInit, OnDestroy {
   @Input()
   accept: string = '';
 
+  @Input()
+  multiple: boolean = false;
+
   @Output()
-  selected: EventEmitter<File> = new EventEmitter<File>();
+  selected: EventEmitter<File[]> = new EventEmitter<File[]>();
 
   constructor(
     private readonly elementRef: ElementRef,
@@ -74,9 +77,9 @@ export class FileSelectComponent implements OnInit, OnDestroy {
 
     this.droppable$.next(false);
 
-    const file = event.dataTransfer?.files[0];
-    if (file) {
-      this.onFileSelected(file);
+    const files = event.dataTransfer?.files;
+    if (files) {
+      this.onFilesSelected(Array.from(files));
     }
   }
 
@@ -91,28 +94,28 @@ export class FileSelectComponent implements OnInit, OnDestroy {
   openFilePicker(fileInput: HTMLInputElement): void {
     fileInput.click();
 
-    const fileSelected$ = fromEvent(fileInput, 'change').pipe(
+    const filesSelected$ = fromEvent(fileInput, 'change').pipe(
       map((event) => {
         const target = event.target as HTMLInputElement;
-        const file = target.files?.item(0);
+        const files = Array.from(target.files || []);
 
-        return someOrNone(file);
+        return someOrNone(files);
       }),
     );
-    const cancelled$: Observable<Option<File>> = fromEvent(
+    const cancelled$: Observable<Option<File[]>> = fromEvent(
       fileInput,
       'cancel',
     ).pipe(map(() => none()));
-    const fileSelectedOrCancelled$ = race(fileSelected$, cancelled$).pipe(
+    const fileSelectedOrCancelled$ = race(filesSelected$, cancelled$).pipe(
       take(1),
     );
 
     fileSelectedOrCancelled$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((file) => file.ifSome((f) => this.onFileSelected(f)));
+      .subscribe((files) => files.ifSome((f) => this.onFilesSelected(f)));
   }
 
-  onFileSelected(file: File): void {
-    this.selected.emit(file);
+  onFilesSelected(files: File[]): void {
+    this.selected.emit(files);
   }
 }

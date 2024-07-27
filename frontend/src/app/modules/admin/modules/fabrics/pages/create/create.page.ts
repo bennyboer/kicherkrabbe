@@ -180,8 +180,8 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     return this.canCreateFabric().pipe(map((canCreate) => !canCreate));
   }
 
-  onImageUploaded(imageId: string): void {
-    this.imageId$.next(some(imageId));
+  onImageUploaded(imageIds: string[]): void {
+    this.imageId$.next(some(imageIds[0]));
   }
 
   getImageId(): Observable<string> {

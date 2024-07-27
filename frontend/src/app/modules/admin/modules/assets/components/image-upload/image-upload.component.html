@@ -1,7 +1,11 @@
 @if (getStep() | async; as step) {
   @switch (step) {
     @case ('file-select') {
-      <app-file-select label="Bild" accept="image/png,image/jpeg" (selected)="onFileSelected($event)"></app-file-select>
+      <app-file-select label="{{ multiple ? 'Bilder' : 'Bild' }}"
+                       accept="image/png,image/jpeg"
+                       [multiple]="multiple"
+                       (selected)="onFilesSelected($event)">
+      </app-file-select>
     }
     @case ('preview') {
       <div class="fenced-container">
@@ -9,6 +13,21 @@
           <h3 class="preview-title">Vorschau</h3>
           <div class="canvas-container">
             <canvas #canvas></canvas>
+          </div>
+          <div class="image-selector">
+            @if (images$ | async; as images) {
+              @if (images.length > 1) {
+                @if (selectedImageIndex$ | async; as selectedImageIndex) {
+                  <app-button (click)="selectImageIndex(selectedImageIndex.index- 1, images)">
+                    <span class="material-icons">keyboard_arrow_left</span>
+                  </app-button>
+                  <span>{{ selectedImageIndex.index + 1 }} / {{ images.length }}</span>
+                  <app-button (click)="selectImageIndex(selectedImageIndex.index + 1, images)">
+                    <span class="material-icons">keyboard_arrow_right</span>
+                  </app-button>
+                }
+              }
+            }
           </div>
           <div class="actions">
             <app-button (click)="reset()">Zurück</app-button>
@@ -21,7 +40,7 @@
       <div class="fenced-container">
         <div class="upload-container">
           <app-loading-spinner size="48"></app-loading-spinner>
-          <span>Dein Bild wird hochgeladen...</span>
+          <span>{{ multiple ? 'Bilder werden' : 'Bild wird' }} hochgeladen...</span>
         </div>
       </div>
     }

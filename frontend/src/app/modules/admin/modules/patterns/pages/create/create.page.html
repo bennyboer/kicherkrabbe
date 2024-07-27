@@ -1,0 +1,73 @@
+<h3>Neuen Schnitt erstellen</h3>
+
+<div class="form">
+  <div class="form-field">
+    <label for="name">Name</label>
+    <input #name id="name" type="text" placeholder="z.B. Sommerkleid" autofocus [class.error]="nameError$ | async"
+           (input)="updateName(name.value)">
+    @if (nameError$ | async) {
+      <span class="error">Bitte gib einen Namen ein</span>
+    }
+  </div>
+
+  <div class="two-columns">
+    <div class="form-field">
+      <label for="originalPatternName">Originalname des Schnitts (optional)</label>
+      <input #originalPatternName
+             id="originalPatternName"
+             type="text"
+             (input)="updateOriginalPatternName(originalPatternName.value)">
+    </div>
+    <div class="form-field">
+      <label for="attribution">Schnittdesigner (optional)</label>
+      <input #attribution id="attribution" type="text" (input)="updateAttribution(attribution.value)">
+    </div>
+  </div>
+
+  <div class="images">
+    @if (imageIds$ | async; as imageIds) {
+      @if (imageIds.length > 0) {
+        <ul class="image-list" [nxtSortablejs]="imageIds">
+          @for (imageId of imageIds; track imageId) {
+            <li>
+              <img [src]="getImageUrl(imageId)" width="100%">
+            </li>
+          }
+        </ul>
+      }
+    }
+
+    @if (imageUploadActive$ | async) {
+      <app-image-upload [multiple]="true" (uploaded)="onImagesUploaded($event)"></app-image-upload>
+    } @else {
+      <div class="add-image-button-container">
+        <app-button (click)="activateImageUpload()">
+          <span class="icon-button">
+            <span class="material-icons">add</span>
+            <span>
+              Bilder hinzufügen
+            </span>
+          </span>
+        </app-button>
+      </div>
+    }
+  </div>
+</div>
+
+<div class="actions">
+    <span>
+      <app-button routerLink="..">Abbrechen</app-button>
+    </span>
+  <span>
+      <app-button [disabled]="cannotSubmit$ | async" (click)="create()" color="primary">
+        @if (creating$ | async) {
+          <span class="loading-button-text">
+            <app-loading-spinner size="16"></app-loading-spinner>
+            <span>Erstellt...</span>
+          </span>
+        } @else {
+          Erstellen
+        }
+      </app-button>
+    </span>
+</div>

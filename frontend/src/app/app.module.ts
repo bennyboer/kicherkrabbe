@@ -11,6 +11,7 @@ import {
 import { NotFoundPage, StartPage } from './pages';
 import { SharedModule } from './modules/shared/shared.module';
 import { ThemeService } from './services';
+import { SortablejsModule } from 'nxt-sortablejs';
 
 const COMPONENTS = [
   AppComponent,
@@ -27,6 +28,9 @@ const PAGES = [StartPage, NotFoundPage];
     BrowserAnimationsModule,
     AppRoutingModule,
     SharedModule.forRoot(),
+    SortablejsModule.forRoot({
+      animation: 150,
+    }),
   ],
   providers: [ThemeService],
   bootstrap: [AppComponent],

@@ -1,0 +1,13 @@
+<div class="action-bar">
+  <input #search type="text" placeholder="Suchen..." (input)="updateSearch(search.value)"/>
+  <app-button routerLink="create">
+    <span class="icon-button">
+      <span class="material-icons">add</span>
+      <span>
+        Neuer Schnitt
+      </span>
+    </span>
+  </app-button>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
