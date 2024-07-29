@@ -1,0 +1,95 @@
+@if (extras$ | async; as extras) {
+  @if (extras.length > 0) {
+    <table class="extras-table">
+      <colgroup>
+        <col style="width: 60px">
+        <col>
+        <col style="width: 160px">
+        <col style="width: 120px">
+      </colgroup>
+
+      <thead>
+      <tr>
+        <th class="col-drag-indicator"></th>
+        <th class="col-name">Name</th>
+        <th class="col-price">Preis</th>
+        <th class="col-actions"></th>
+      </tr>
+      </thead>
+      <tbody [nxtSortablejs]="extras" [config]="sortableConfig">
+        @for (extra of extras; track extra.id) {
+          @if (extra.editing) {
+            <tr>
+              <td class="col-drag-indicator">
+                <span class="drag-indicator drag-handle">
+                  <span class="material-icons">drag_indicator</span>
+                </span>
+              </td>
+              <td class="col-name">
+                <input #nameInput
+                       type="text"
+                       style="width: 200px"
+                       [value]="extra.extra.name"
+                       (keydown.enter)="save(extra, nameInput.value, priceInput.value)">
+              </td>
+              <td class="col-price">
+                <input #priceInput
+                       type="text"
+                       style="width: 100px"
+                       [value]="extra.extra.price.formatted()"
+                       (keydown.enter)="save(extra, nameInput.value, priceInput.value)">
+              </td>
+              <td class="col-actions">
+                <span class="row-actions">
+                    <app-button [size]="ButtonSize.SMALL"
+                                color="primary"
+                                (click)="save(extra, nameInput.value, priceInput.value)">
+                      <span class="material-icons">check</span>
+                    </app-button>
+                  <app-button [size]="ButtonSize.SMALL"
+                              color="warn"
+                              (click)="cancel(extra)">
+                      <span class="material-icons">close</span>
+                    </app-button>
+                </span>
+              </td>
+            </tr>
+          } @else {
+            <tr>
+              <td class="col-drag-indicator">
+                <span class="drag-indicator drag-handle">
+                  <span class="material-icons">drag_indicator</span>
+                </span>
+              </td>
+              <td class="col-name">
+                {{ extra.extra.name }}
+              </td>
+              <td class="col-price">
+                {{ extra.extra.price.formatted() }}
+              </td>
+              <td class="col-actions">
+                <span class="row-actions">
+                    <app-button [size]="ButtonSize.SMALL" (click)="edit(extra)">
+                      <span class="material-icons">edit</span>
+                    </app-button>
+                    <app-button [size]="ButtonSize.SMALL" color="warn" (click)="delete(extra)">
+                      <span class="material-icons">delete</span>
+                    </app-button>
+                </span>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  }
+}
+
+<div class="extra-actions">
+  <app-button (click)="add()">
+      <span class="icon-button">
+        <span class="material-icons">add</span>
+        <span>Extra hinzufügen</span>
+      </span>
+  </app-button>
+</div>

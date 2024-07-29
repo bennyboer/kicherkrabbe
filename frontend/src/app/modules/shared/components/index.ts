@@ -11,7 +11,7 @@ export {
   DropdownItem,
   DropdownItemId,
 } from './dropdown/dropdown.component';
-export { ButtonComponent, Size } from './button/button.component';
+export { ButtonComponent, ButtonSize } from './button/button.component';
 export { ButtonRowComponent } from './button-row/button-row.component';
 export { ButtonColumnComponent } from './button-column/button-column.component';
 export { CheckboxComponent } from './checkbox/checkbox.component';

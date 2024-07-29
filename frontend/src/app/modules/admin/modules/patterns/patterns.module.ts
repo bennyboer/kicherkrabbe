@@ -5,9 +5,10 @@ import { PAGES } from './pages';
 import { SharedModule } from '../../../shared/shared.module';
 import { AssetsModule } from '../assets/assets.module';
 import { SortablejsModule } from 'nxt-sortablejs';
+import { COMPONENTS } from './components';
 
 @NgModule({
-  declarations: [...PAGES],
+  declarations: [...PAGES, ...COMPONENTS],
   imports: [
     CommonModule,
     PatternsRoutingModule,

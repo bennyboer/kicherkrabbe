@@ -24,12 +24,51 @@
     </div>
   </div>
 
-  <div class="images">
+  <div class="form-field">
+    <label>Kategorien</label>
+    @if (loadingAvailableCategories$ | async) {
+      <div class="loading-container">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
+    } @else {
+      @if (availableCategories$ | async; as categories) {
+        @if (selectedCategories$ | async; as selectedCategories) {
+          <app-chips [chips]="categoriesToChips(selectedCategories)"
+                     [available]="categoriesToChips(categories)"
+                     [alwaysShowOptions]="true"
+                     [chipDropdownItemTemplateRef]="topicDropdownItemTemplateRef"
+                     (removed)="onCategoryRemoved($event)"
+                     (added)="onCategoryAdded($event)">
+            <ng-template let-chip>
+              {{ chip.label }}
+            </ng-template>
+          </app-chips>
+
+          <ng-template #topicDropdownItemTemplateRef let-chip>
+            {{ chip.label }}
+          </ng-template>
+        }
+      }
+    }
+  </div>
+
+  <div class="form-field">
+    <label>Varianten</label>
+    <app-variants></app-variants>
+  </div>
+
+  <div class="form-field">
+    <label>Extras</label>
+    <app-extras [extras]="extras$ | async" (changed)="onExtrasChanged($event)"></app-extras>
+  </div>
+
+  <div class="form-field">
+    <label>Bilder</label>
     @if (imageIds$ | async; as imageIds) {
       @if (imageIds.length > 0) {
         <ul class="image-list" [nxtSortablejs]="imageIds">
           @for (imageId of imageIds; track imageId) {
-            <li>
+            <li class="drag-handle">
               <img [src]="getImageUrl(imageId)" width="100%">
             </li>
           }

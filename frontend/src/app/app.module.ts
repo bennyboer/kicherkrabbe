@@ -30,6 +30,7 @@ const PAGES = [StartPage, NotFoundPage];
     SharedModule.forRoot(),
     SortablejsModule.forRoot({
       animation: 150,
+      handle: '.drag-handle',
     }),
   ],
   providers: [ThemeService],

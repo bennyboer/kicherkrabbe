@@ -28,7 +28,7 @@ import {
   OverlayRef,
   OverlayService,
 } from '../../services';
-import { Size as ButtonSize } from '../button/button.component';
+import { ButtonSize as ButtonSize } from '../button/button.component';
 
 export class Chip {
   readonly id: string;

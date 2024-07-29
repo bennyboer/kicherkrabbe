@@ -6,7 +6,7 @@ import {
   Input,
 } from '@angular/core';
 import { ButtonColumnService } from './button-column.service';
-import { Size } from '../button/button.component';
+import { ButtonSize } from '../button/button.component';
 import { ButtonRegistry } from '../button/button-registry';
 
 @Component({
@@ -23,7 +23,7 @@ import { ButtonRegistry } from '../button/button-registry';
 })
 export class ButtonColumnComponent {
   @Input('size')
-  set setSize(size: Size) {
+  set setSize(size: ButtonSize) {
     this.buttonRegistry.setSize(size);
   }
 

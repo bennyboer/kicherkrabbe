@@ -1,6 +1,22 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  combineLatest,
+  delay,
+  finalize,
+  map,
+  Observable,
+  of,
+} from 'rxjs';
 import { environment } from '../../../../../../../environments';
+import { PatternCategory, PatternExtra } from '../../model';
+import { ButtonSize, Chip } from '../../../../../shared';
+import { Money } from '../../../../../../util';
 
 @Component({
   selector: 'app-create-pattern-page',
@@ -8,7 +24,7 @@ import { environment } from '../../../../../../../environments';
   styleUrls: ['./create.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreatePage implements OnDestroy {
+export class CreatePage implements OnInit, OnDestroy {
   private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
     '',
   );
@@ -33,12 +49,36 @@ export class CreatePage implements OnDestroy {
   private readonly attribution$: BehaviorSubject<string> =
     new BehaviorSubject<string>('');
 
+  protected readonly availableCategories$: BehaviorSubject<PatternCategory[]> =
+    new BehaviorSubject<PatternCategory[]>([]);
+  protected readonly loadingAvailableCategories$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(true);
+  protected readonly selectedCategories$: BehaviorSubject<PatternCategory[]> =
+    new BehaviorSubject<PatternCategory[]>([]);
+
+  protected readonly extras$: BehaviorSubject<PatternExtra[]> =
+    new BehaviorSubject<PatternExtra[]>([]);
+
   protected readonly creating$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
 
   protected readonly cannotSubmit$: Observable<boolean> = this.nameValid$.pipe(
     map((valid) => !valid),
   );
+
+  protected readonly ButtonSize = ButtonSize;
+
+  ngOnInit(): void {
+    this.reloadAvailableCategories();
+
+    // TODO Replace with setting from pattern
+    setTimeout(() => {
+      this.extras$.next([
+        PatternExtra.of({ name: 'Kapuze', price: Money.euro(500) }),
+        PatternExtra.of({ name: 'Taschen', price: Money.euro(300) }),
+      ]);
+    }, 500);
+  }
 
   ngOnDestroy(): void {
     this.name$.complete();
@@ -48,6 +88,10 @@ export class CreatePage implements OnDestroy {
     this.attribution$.complete();
     this.imageIds$.complete();
     this.imageUploadActive$.complete();
+    this.availableCategories$.complete();
+    this.loadingAvailableCategories$.complete();
+    this.selectedCategories$.complete();
+    this.extras$.complete();
   }
 
   create(): void {
@@ -57,6 +101,7 @@ export class CreatePage implements OnDestroy {
     const originalPatternName = this.originalPatternName$.value;
     const attribution = this.attribution$.value;
     const imageIds = this.imageIds$.value;
+    const extras = this.extras$.value;
 
     console.log(
       'Create pattern',
@@ -64,6 +109,7 @@ export class CreatePage implements OnDestroy {
       originalPatternName,
       attribution,
       imageIds,
+      extras,
     ); // TODO
   }
 
@@ -94,5 +140,57 @@ export class CreatePage implements OnDestroy {
 
   getImageUrl(imageId: string): string {
     return `${environment.apiUrl}/assets/${imageId}/content`;
+  }
+
+  categoriesToChips(categories: PatternCategory[]): Chip[] {
+    return categories.map((category) => this.categoryToChip(category));
+  }
+
+  onCategoryRemoved(chip: Chip): void {
+    const categories = this.selectedCategories$.value.filter(
+      (category) => category.id !== chip.id,
+    );
+    this.selectedCategories$.next(categories);
+  }
+
+  onCategoryAdded(chip: Chip): void {
+    const category = this.availableCategories$.value.find(
+      (c) => c.id === chip.id,
+    );
+    if (category) {
+      const categories = [...this.selectedCategories$.value, category];
+      this.selectedCategories$.next(categories);
+    }
+  }
+
+  onExtrasChanged(extras: PatternExtra[]): void {
+    this.extras$.next(extras);
+  }
+
+  private categoryToChip(category: PatternCategory): Chip {
+    return Chip.of({
+      id: category.id,
+      label: category.name,
+    });
+  }
+
+  private reloadAvailableCategories(): void {
+    this.loadingAvailableCategories$.next(true);
+
+    // TODO Replace with backend call
+    const mockCategories = [
+      PatternCategory.of({ id: 'top', name: 'Oberteil' }),
+      PatternCategory.of({ id: 'trousers', name: 'Hose' }),
+      PatternCategory.of({ id: 'onesie', name: 'Einteiler' }),
+      PatternCategory.of({ id: 'dress', name: 'Kleid' }),
+      PatternCategory.of({ id: 'accessoire', name: 'Accessoire' }),
+    ];
+
+    of(mockCategories)
+      .pipe(
+        delay(500),
+        finalize(() => this.loadingAvailableCategories$.next(false)),
+      )
+      .subscribe((categories) => this.availableCategories$.next(categories));
   }
 }

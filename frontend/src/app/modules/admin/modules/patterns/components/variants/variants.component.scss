@@ -1,0 +1,83 @@
+:host {
+  display: block;
+}
+
+.variants-table {
+  margin-bottom: 8px;
+  border-collapse: collapse;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+
+  th {
+    font-weight: normal;
+    font-size: 12px;
+    color: rgba(var(--text-rgb), 0.6);
+  }
+
+  th, td {
+    padding: 8px 16px;
+  }
+
+  .col-name {
+    text-align: left;
+  }
+
+  .col-price {
+    text-align: center;
+  }
+
+  .drag-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: move;
+    user-select: none;
+  }
+
+  .row-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .row-details {
+    border-top: 1px solid var(--contrast-mid);
+    background-color: rgba(var(--contrast-lower-rgb), 0.7);
+  }
+
+  .toggle-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    transform: rotate(-90deg);
+
+    &.expanded {
+      transform: rotate(0deg);
+    }
+  }
+
+  tr {
+    background-color: var(--contrast-lower);
+  }
+
+  thead {
+    tr {
+      border-bottom: 1px solid var(--contrast-mid);
+    }
+  }
+
+  tbody {
+    tr.item {
+      height: 64px;
+      border-top: 1px solid var(--contrast-mid);
+
+      &:first-child {
+        border-top: none;
+      }
+    }
+  }
+}

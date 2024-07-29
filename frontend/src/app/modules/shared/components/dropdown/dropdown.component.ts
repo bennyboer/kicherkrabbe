@@ -30,7 +30,7 @@ import {
   someOrNone,
 } from '../../../../util';
 import { OverlayRef, OverlayService } from '../../services';
-import { Size as ButtonSize } from '../button/button.component';
+import { ButtonSize as ButtonSize } from '../button/button.component';
 
 export type DropdownItemId = string;
 

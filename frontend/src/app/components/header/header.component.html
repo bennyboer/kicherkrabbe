@@ -10,7 +10,7 @@
     <div class="other">
       <div class="desktop">
         <nav class="navigation">
-          <app-button-row #buttonRow [size]="Size.LARGE" [rounded]="false">
+          <app-button-row #buttonRow [size]="ButtonSize.LARGE" [rounded]="false">
             <ng-container [ngTemplateOutlet]="links" [ngTemplateOutletInjector]="buttonRow.getInjector()">
             </ng-container>
           </app-button-row>
@@ -41,7 +41,7 @@
     </span>
   </div>
   <nav class="mobile-navigation">
-    <app-button-column #buttonColumn [size]="Size.LARGE">
+    <app-button-column #buttonColumn [size]="ButtonSize.LARGE">
       <ng-container [ngTemplateOutlet]="links" [ngTemplateOutletInjector]="buttonColumn.getInjector()">
       </ng-container>
     </app-button-column>

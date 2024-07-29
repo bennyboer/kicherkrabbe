@@ -17,7 +17,7 @@ import { none, Option, some, someOrNone } from '../../../../util';
 import { Subject, takeUntil } from 'rxjs';
 import { ButtonId, ButtonRegistry } from './button-registry';
 
-export enum Size {
+export enum ButtonSize {
   SMALL = 'SMALL',
   NORMAL = 'MEDIUM',
   LARGE = 'LARGE',
@@ -53,7 +53,7 @@ export class ButtonComponent implements OnInit, OnDestroy {
   }
 
   @Input('size')
-  set setSize(size: Size) {
+  set setSize(size: ButtonSize) {
     this.sizeToClass(this.size).ifSome((className) =>
       this.removeClass(className),
     );
@@ -66,7 +66,7 @@ export class ButtonComponent implements OnInit, OnDestroy {
     MouseEvent | KeyboardEvent
   >();
 
-  private size: Size = Size.NORMAL;
+  private size: ButtonSize = ButtonSize.NORMAL;
   private buttonId: Option<ButtonId> = none();
   private readonly destroy$: Subject<void> = new Subject<void>();
 
@@ -142,13 +142,13 @@ export class ButtonComponent implements OnInit, OnDestroy {
     }
   }
 
-  private sizeToClass(size: Size): Option<string> {
+  private sizeToClass(size: ButtonSize): Option<string> {
     switch (size) {
-      case Size.SMALL:
+      case ButtonSize.SMALL:
         return some('small');
-      case Size.LARGE:
+      case ButtonSize.LARGE:
         return some('large');
-      case Size.FIT_CONTENT:
+      case ButtonSize.FIT_CONTENT:
         return some('fit-content');
       default:
         return none();

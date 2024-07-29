@@ -12,8 +12,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border-left: 6px solid var(--background-mid-contrast);
-  border-radius: 6px;
+  border-left: 2px solid var(--background-low-contrast);
   padding-left: 12px;
 
   & > input {

@@ -1,4 +1,4 @@
-import { ButtonComponent, Size } from './button.component';
+import { ButtonComponent, ButtonSize } from './button.component';
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 
@@ -39,9 +39,8 @@ export abstract class ButtonRegistry implements OnDestroy {
   private readonly lookup$: BehaviorSubject<RegisteredButtonsLookup> =
     new BehaviorSubject<RegisteredButtonsLookup>({});
 
-  private readonly size$: BehaviorSubject<Size> = new BehaviorSubject<Size>(
-    Size.NORMAL,
-  );
+  private readonly size$: BehaviorSubject<ButtonSize> =
+    new BehaviorSubject<ButtonSize>(ButtonSize.NORMAL);
 
   ngOnDestroy(): void {
     this.lookup$.complete();
@@ -89,11 +88,11 @@ export abstract class ButtonRegistry implements OnDestroy {
       );
   }
 
-  getSize(): Observable<Size> {
+  getSize(): Observable<ButtonSize> {
     return this.size$.asObservable();
   }
 
-  setSize(size: Size): void {
+  setSize(size: ButtonSize): void {
     this.size$.next(size);
   }
 
