@@ -112,17 +112,17 @@ export class SizesComponent implements OnDestroy {
   }
 
   edit(size: EditablePricedSizeRange): void {
-    const updatedSizes$ = this.sizes$.value.map((s) =>
+    const updatedSizes = this.sizes$.value.map((s) =>
       s.size.id === size.size.id ? s.startEditing() : s,
     );
-    this.sizes$.next(updatedSizes$);
+    this.sizes$.next(updatedSizes);
   }
 
   delete(size: EditablePricedSizeRange): void {
-    const updatedSizes$ = this.sizes$.value.filter(
-      (s) => s.size.id === size.size.id,
+    const updatedSizes = this.sizes$.value.filter(
+      (s) => s.size.id !== size.size.id,
     );
-    this.sizes$.next(updatedSizes$);
+    this.sizes$.next(updatedSizes);
     this.emitChange();
   }
 
@@ -131,10 +131,10 @@ export class SizesComponent implements OnDestroy {
   }
 
   cancel(size: EditablePricedSizeRange): void {
-    const updatedSizes$ = this.sizes$.value.map((s) =>
+    const updatedSizes = this.sizes$.value.map((s) =>
       s.size.id === size.size.id ? s.stopEditing() : s,
     );
-    this.sizes$.next(updatedSizes$);
+    this.sizes$.next(updatedSizes);
   }
 
   save(
@@ -172,14 +172,14 @@ export class SizesComponent implements OnDestroy {
       .withUnit(updatedUnit.orElseNull())
       .withPrice(priceAsMoney);
 
-    const updatedSizes$ = this.sizes$.value.map((s) => {
+    const updatedSizes = this.sizes$.value.map((s) => {
       if (s.size.id === size.size.id) {
         return s.stopEditing().withSize(updatedSize);
       }
 
       return s;
     });
-    this.sizes$.next(updatedSizes$);
+    this.sizes$.next(updatedSizes);
     this.emitChange();
   }
 

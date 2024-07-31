@@ -70,6 +70,7 @@
           @for (imageId of imageIds; track imageId) {
             <li class="drag-handle">
               <img [src]="getImageUrl(imageId)" width="100%">
+              <span class="delete-button material-icons" (click)="deleteImage(imageId)">close</span>
             </li>
           }
         </ul>
@@ -77,7 +78,10 @@
     }
 
     @if (imageUploadActive$ | async) {
-      <app-image-upload [multiple]="true" (uploaded)="onImagesUploaded($event)"></app-image-upload>
+      <app-image-upload [multiple]="true"
+                        [desiredWidth]="1024"
+                        (uploaded)="onImagesUploaded($event)">
+      </app-image-upload>
     } @else {
       <div class="add-image-button-container">
         <app-button (click)="activateImageUpload()">

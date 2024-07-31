@@ -63,6 +63,7 @@ ul.image-list {
   list-style: none;
 
   li {
+    position: relative;
     flex-basis: calc(100% / 4 - 8px);
     display: flex;
     justify-content: center;
@@ -70,6 +71,22 @@ ul.image-list {
     background-color: var(--contrast);
     border-radius: 12px;
     overflow: hidden;
+
+    .delete-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 1;
+      user-select: none;
+      cursor: pointer;
+      border-radius: 100%;
+      font-size: 32px;
+      transition: background-color 0.2s ease-in-out;
+
+      &:hover {
+        background-color: var(--red);
+      }
+    }
   }
 }
 

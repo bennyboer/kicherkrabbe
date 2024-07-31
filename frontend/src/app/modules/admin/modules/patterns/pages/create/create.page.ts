@@ -166,6 +166,11 @@ export class CreatePage implements OnInit, OnDestroy {
     this.variants$.next(variants);
   }
 
+  deleteImage(imageId: string): void {
+    const imageIds = this.imageIds$.value.filter((id) => id !== imageId);
+    this.imageIds$.next(imageIds);
+  }
+
   private categoryToChip(category: PatternCategory): Chip {
     return Chip.of({
       id: category.id,
