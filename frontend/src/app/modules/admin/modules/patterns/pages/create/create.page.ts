@@ -14,9 +14,8 @@ import {
   of,
 } from 'rxjs';
 import { environment } from '../../../../../../../environments';
-import { PatternCategory, PatternExtra } from '../../model';
+import { PatternCategory, PatternExtra, PatternVariant } from '../../model';
 import { ButtonSize, Chip } from '../../../../../shared';
-import { Money } from '../../../../../../util';
 
 @Component({
   selector: 'app-create-pattern-page',
@@ -56,6 +55,8 @@ export class CreatePage implements OnInit, OnDestroy {
   protected readonly selectedCategories$: BehaviorSubject<PatternCategory[]> =
     new BehaviorSubject<PatternCategory[]>([]);
 
+  protected readonly variants$: BehaviorSubject<PatternVariant[]> =
+    new BehaviorSubject<PatternVariant[]>([]);
   protected readonly extras$: BehaviorSubject<PatternExtra[]> =
     new BehaviorSubject<PatternExtra[]>([]);
 
@@ -70,14 +71,6 @@ export class CreatePage implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.reloadAvailableCategories();
-
-    // TODO Replace with setting from pattern
-    setTimeout(() => {
-      this.extras$.next([
-        PatternExtra.of({ name: 'Kapuze', price: Money.euro(500) }),
-        PatternExtra.of({ name: 'Taschen', price: Money.euro(300) }),
-      ]);
-    }, 500);
   }
 
   ngOnDestroy(): void {
@@ -92,6 +85,7 @@ export class CreatePage implements OnInit, OnDestroy {
     this.loadingAvailableCategories$.complete();
     this.selectedCategories$.complete();
     this.extras$.complete();
+    this.variants$.complete();
   }
 
   create(): void {
@@ -101,16 +95,17 @@ export class CreatePage implements OnInit, OnDestroy {
     const originalPatternName = this.originalPatternName$.value;
     const attribution = this.attribution$.value;
     const imageIds = this.imageIds$.value;
+    const variants = this.variants$.value;
     const extras = this.extras$.value;
 
-    console.log(
-      'Create pattern',
+    console.log('Create pattern', {
       name,
       originalPatternName,
       attribution,
       imageIds,
+      variants,
       extras,
-    ); // TODO
+    }); // TODO
   }
 
   updateName(value: string): void {
@@ -165,6 +160,10 @@ export class CreatePage implements OnInit, OnDestroy {
 
   onExtrasChanged(extras: PatternExtra[]): void {
     this.extras$.next(extras);
+  }
+
+  onVariantsChanged(variants: PatternVariant[]): void {
+    this.variants$.next(variants);
   }
 
   private categoryToChip(category: PatternCategory): Chip {

@@ -54,7 +54,7 @@
 
   <div class="form-field">
     <label>Varianten</label>
-    <app-variants></app-variants>
+    <app-variants [variants]="variants$ | async" (changed)="onVariantsChanged($event)"></app-variants>
   </div>
 
   <div class="form-field">

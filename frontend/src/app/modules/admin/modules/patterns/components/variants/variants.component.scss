@@ -4,6 +4,7 @@
 
 .variants-table {
   margin-bottom: 8px;
+  table-layout: fixed;
   border-collapse: collapse;
   width: 100%;
   border-radius: 12px;
@@ -19,12 +20,35 @@
     padding: 8px 16px;
   }
 
+  .col-toggle {
+    width: 20px;
+  }
+
+  .col-drag-indicator {
+    width: 20px;
+  }
+
   .col-name {
+    width: auto;
     text-align: left;
+
+    & > input {
+      width: 100%;
+    }
+  }
+
+  .col-size {
+    width: 160px;
+    text-align: center;
   }
 
   .col-price {
+    width: 160px;
     text-align: center;
+  }
+
+  .col-actions {
+    width: 80px;
   }
 
   .drag-indicator {
@@ -79,5 +103,11 @@
         border-top: none;
       }
     }
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .col-price, .col-size {
+    display: none;
   }
 }

@@ -1,0 +1,67 @@
+:host {
+  display: block;
+}
+
+.sizes-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.row-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+th {
+  font-weight: normal;
+  font-size: 12px;
+  color: rgba(var(--text-rgb), 0.6);
+}
+
+th, td {
+  padding: 8px 16px;
+}
+
+.col-from {
+  width: 100px;
+  text-align: left;
+
+  & > input {
+    width: 100%;
+  }
+}
+
+.col-to {
+  width: 100px;
+  text-align: left;
+
+  & > input {
+    width: 100%;
+  }
+}
+
+.col-unit {
+  width: 100px;
+  text-align: left;
+
+  & > input {
+    width: 100%;
+  }
+}
+
+.col-price {
+  width: 100px;
+  text-align: left;
+
+  & > input {
+    width: 100%;
+  }
+}
+
+.col-actions {
+  width: auto;
+  text-align: left;
+}

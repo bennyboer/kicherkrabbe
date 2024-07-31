@@ -1,25 +1,18 @@
 @if (variants$ | async; as variants) {
   @if (variants.length > 0) {
     <table class="variants-table">
-      <colgroup>
-        <col style="width: 60px">
-        <col style="width: 60px">
-        <col>
-        <col style="width: 160px">
-        <col style="width: 120px">
-      </colgroup>
-
       <thead>
       <tr>
         <th class="col-toggle"></th>
         <th class="col-drag-indicator"></th>
         <th class="col-name">Name</th>
-        <th class="col-price">ab Preis</th>
+        <th class="col-size">Größen</th>
+        <th class="col-price">Preis</th>
         <th class="col-actions"></th>
       </tr>
       </thead>
       <tbody [nxtSortablejs]="variants" [config]="sortableConfig">
-        @for (variant of variants; track variant.id) {
+        @for (variant of variants; track variant.variant.id) {
           @if (variant.editing) {
             <tr class="item">
               <td class="col-toggle">
@@ -35,33 +28,37 @@
               <td class="col-name">
                 <input #nameInput
                        type="text"
-                       style="width: 200px"
                        [value]="variant.variant.name"
                        (keydown.enter)="save(variant, nameInput.value)">
               </td>
+              <td class="col-size">
+                {{ variant.variant.getFormattedSizeRange() }}
+              </td>
               <td class="col-price">
-                ab {{ variant.variant.getStartingPrice().formatted() }}
+                {{ variant.variant.getFormattedPriceRange() }}
               </td>
               <td class="col-actions">
                 <span class="row-actions">
-                    <app-button [size]="ButtonSize.SMALL"
-                                color="primary"
-                                (click)="save(variant, nameInput.value)">
-                      <span class="material-icons">check</span>
-                    </app-button>
+                  <app-button [size]="ButtonSize.SMALL"
+                              color="primary"
+                              (click)="save(variant, nameInput.value)">
+                    <span class="material-icons">check</span>
+                  </app-button>
                   <app-button [size]="ButtonSize.SMALL"
                               color="warn"
                               (click)="cancel(variant)">
-                      <span class="material-icons">close</span>
-                    </app-button>
+                    <span class="material-icons">close</span>
+                  </app-button>
                 </span>
               </td>
             </tr>
 
             @if (variant.expanded) {
               <tr class="row-details">
-                <td colspan="5">
-                  <ng-container *ngTemplateOutlet="details"></ng-container>
+                <td [colSpan]="getVisibleColumnCount()">
+                  <app-sizes [sizes]="variant.variant.sizes"
+                             (changed)="onVariantSizesChanged(variant, $event)">
+                  </app-sizes>
                 </td>
               </tr>
             }
@@ -80,8 +77,11 @@
               <td class="col-name">
                 {{ variant.variant.name }}
               </td>
+              <td class="col-size">
+                {{ variant.variant.getFormattedSizeRange() }}
+              </td>
               <td class="col-price">
-                ab {{ variant.variant.getStartingPrice().formatted() }}
+                {{ variant.variant.getFormattedPriceRange() }}
               </td>
               <td class="col-actions">
                 <span class="row-actions">
@@ -97,8 +97,10 @@
 
             @if (variant.expanded) {
               <tr class="row-details">
-                <td colspan="5">
-                  <ng-container *ngTemplateOutlet="details"></ng-container>
+                <td [colSpan]="getVisibleColumnCount()">
+                  <app-sizes [sizes]="variant.variant.sizes"
+                             (changed)="onVariantSizesChanged(variant, $event)">
+                  </app-sizes>
                 </td>
               </tr>
             }
@@ -117,22 +119,3 @@
       </span>
   </app-button>
 </div>
-
-<ng-template #details>
-  <table class="details-table">
-    <thead>
-      <tr>
-        <th>Von</th>
-        <th>Bis</th>
-        <th>Preis</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>56</td>
-        <td>64</td>
-        <td>30 €</td>
-      </tr>
-    </tbody>
-  </table>
-</ng-template>

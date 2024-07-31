@@ -96,6 +96,14 @@ export class Option<T> {
     return this.orElseThrow();
   }
 
+  orElseNull(): T | null | undefined {
+    if (this.isNone()) {
+      return null;
+    }
+
+    return this.orElseThrow();
+  }
+
   orElseGet(other: () => T): T {
     if (this.isNone()) {
       return other();

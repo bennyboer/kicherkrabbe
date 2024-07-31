@@ -1,11 +1,25 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { PatternVariant } from '../../model';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  fromEvent,
+  map,
+  startWith,
+  Subject,
+  takeUntil,
+} from 'rxjs';
+import { PatternVariant, PricedSizeRange } from '../../model';
 import { someOrNone, validateProps } from '../../../../../../util';
 import { ButtonSize } from '../../../../../shared';
 
 class EditablePatternVariant {
-  readonly id: string;
   readonly variant: PatternVariant;
   readonly editing: boolean;
   readonly expanded: boolean;
@@ -17,7 +31,6 @@ class EditablePatternVariant {
   }) {
     validateProps(props);
 
-    this.id = crypto.randomUUID();
     this.variant = props.variant;
     this.editing = props.editing;
     this.expanded = props.expanded;
@@ -59,7 +72,14 @@ class EditablePatternVariant {
   withName(name: string): EditablePatternVariant {
     return EditablePatternVariant.of({
       ...this,
-      variant: PatternVariant.of({ name, sizes: this.variant.sizes }),
+      variant: this.variant.withName(name),
+    });
+  }
+
+  withSizes(sizes: PricedSizeRange[]): EditablePatternVariant {
+    return EditablePatternVariant.of({
+      ...this,
+      variant: this.variant.withSizes(sizes),
     });
   }
 }
@@ -70,7 +90,36 @@ class EditablePatternVariant {
   styleUrls: ['./variants.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class VariantsComponent implements OnDestroy {
+export class VariantsComponent implements OnInit, OnDestroy {
+  @Input()
+  set variants(extras: PatternVariant[] | null) {
+    someOrNone(extras).ifSome((extras) => {
+      this.variants$.next(
+        extras.map((variant) => {
+          const id = variant.id;
+          const old = someOrNone(
+            this.variants$.value.find((v) => v.variant.id === id),
+          );
+
+          return old
+            .map((o) =>
+              EditablePatternVariant.of({
+                variant,
+                editing: o.editing,
+                expanded: o.expanded,
+              }),
+            )
+            .orElseGet(() => EditablePatternVariant.of({ variant }));
+        }),
+      );
+    });
+  }
+
+  @Output()
+  changed: EventEmitter<PatternVariant[]> = new EventEmitter<
+    PatternVariant[]
+  >();
+
   protected readonly variants$: BehaviorSubject<EditablePatternVariant[]> =
     new BehaviorSubject<EditablePatternVariant[]>([]);
 
@@ -81,13 +130,32 @@ export class VariantsComponent implements OnDestroy {
 
   protected readonly ButtonSize = ButtonSize;
 
+  protected isMobile: boolean = false;
+
+  private readonly destroy$: Subject<void> = new Subject<void>();
+
+  ngOnInit(): void {
+    const mediaQueryList = window.matchMedia('(max-width: 1000px)');
+
+    fromEvent(mediaQueryList, 'change')
+      .pipe(
+        map(() => mediaQueryList.matches),
+        startWith(mediaQueryList.matches),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((isMobile) => (this.isMobile = isMobile));
+  }
+
   ngOnDestroy(): void {
     this.variants$.complete();
+
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   add(): void {
     const newVariant = EditablePatternVariant.of({
-      variant: PatternVariant.of({ name: '', sizes: [] }),
+      variant: PatternVariant.of({ name: '' }),
     }).startEditing();
 
     this.variants$.next([...this.variants$.value, newVariant]);
@@ -95,15 +163,18 @@ export class VariantsComponent implements OnDestroy {
 
   save(variant: EditablePatternVariant, name: string): void {
     const updatedVariants = this.variants$.value.map((v) =>
-      v.id === variant.id ? variant.stopEditing().withName(name) : v,
+      v.variant.id === variant.variant.id
+        ? variant.stopEditing().withName(name)
+        : v,
     );
 
     this.variants$.next(updatedVariants);
+    this.emitChange();
   }
 
   cancel(variant: EditablePatternVariant): void {
     const updatedVariants = this.variants$.value.map((v) =>
-      v.id === variant.id ? variant.stopEditing() : v,
+      v.variant.id === variant.variant.id ? variant.stopEditing() : v,
     );
 
     this.variants$.next(updatedVariants);
@@ -111,7 +182,7 @@ export class VariantsComponent implements OnDestroy {
 
   edit(variant: EditablePatternVariant): void {
     const updatedVariants = this.variants$.value.map((v) =>
-      v.id === variant.id ? variant.startEditing() : v,
+      v.variant.id === variant.variant.id ? variant.startEditing() : v,
     );
 
     this.variants$.next(updatedVariants);
@@ -119,17 +190,38 @@ export class VariantsComponent implements OnDestroy {
 
   delete(variant: EditablePatternVariant): void {
     const updatedVariants = this.variants$.value.filter(
-      (v) => v.id !== variant.id,
+      (v) => v.variant.id !== variant.variant.id,
+    );
+
+    this.variants$.next(updatedVariants);
+    this.emitChange();
+  }
+
+  toggle(variant: EditablePatternVariant): void {
+    const updatedVariants = this.variants$.value.map((v) =>
+      v.variant.id === variant.variant.id ? variant.toggle() : v,
     );
 
     this.variants$.next(updatedVariants);
   }
 
-  toggle(variant: EditablePatternVariant): void {
+  onVariantSizesChanged(
+    variant: EditablePatternVariant,
+    sizes: PricedSizeRange[],
+  ): void {
     const updatedVariants = this.variants$.value.map((v) =>
-      v.id === variant.id ? variant.toggle() : v,
+      v.variant.id === variant.variant.id ? v.withSizes(sizes) : v,
     );
 
     this.variants$.next(updatedVariants);
+    this.emitChange();
+  }
+
+  getVisibleColumnCount(): number {
+    return this.isMobile ? 4 : 6;
+  }
+
+  private emitChange(): void {
+    this.changed.emit(this.variants$.value.map((v) => v.variant));
   }
 }
