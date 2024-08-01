@@ -17,7 +17,7 @@ public class UsersMessaging {
             UsersModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-created-update-lookup",
+                "users.user-created-update-lookup",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -36,7 +36,7 @@ public class UsersMessaging {
             UsersModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-created-add-permissions",
+                "users.user-created-add-permissions",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -55,7 +55,7 @@ public class UsersMessaging {
             UsersModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-deleted-update-lookup",
+                "users.user-deleted-update-lookup",
                 AggregateType.of("USER"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -74,7 +74,7 @@ public class UsersMessaging {
             UsersModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-deleted-remove-permissions",
+                "users.user-deleted-remove-permissions",
                 AggregateType.of("USER"),
                 EventName.of("DELETED"),
                 (event) -> {

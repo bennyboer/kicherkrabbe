@@ -20,7 +20,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-created-allow-user-to-create-fabrics",
+                "fabrics.user-created-allow-user-to-create-fabrics",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -37,7 +37,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-deleted-remove-permissions",
+                "fabrics.user-deleted-remove-permissions",
                 AggregateType.of("USER"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -54,7 +54,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForAllEvents(
-                "fabric-created-or-updated-update-lookup",
+                "fabrics.fabric-created-or-updated-update-lookup",
                 AggregateType.of("FABRIC"),
                 (event) -> {
                     String fabricId = event.getMetadata().getAggregateId().getValue();
@@ -74,7 +74,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabric-deleted-remove-from-lookup",
+                "fabrics.fabric-deleted-remove-from-lookup",
                 AggregateType.of("FABRIC"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -91,7 +91,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabric-created-allow-user-to-manage-fabric",
+                "fabrics.fabric-created-allow-user-to-manage-fabric",
                 AggregateType.of("FABRIC"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -109,7 +109,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabric-deleted-remove-permissions",
+                "fabrics.fabric-deleted-remove-permissions",
                 AggregateType.of("FABRIC"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -126,7 +126,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabric-published-allow-anonymous-and-system-users-to-read-published-fabric",
+                "fabrics.fabric-published-allow-anonymous-and-system-users-to-read-published-fabric",
                 AggregateType.of("FABRIC"),
                 EventName.of("PUBLISHED"),
                 (event) -> {
@@ -143,7 +143,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabric-unpublished-disallow-anonymous-and-system-users-to-read-published-fabric",
+                "fabrics.fabric-unpublished-disallow-anonymous-and-system-users-to-read-published-fabric",
                 AggregateType.of("FABRIC"),
                 EventName.of("UNPUBLISHED"),
                 (event) -> {
@@ -160,7 +160,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabric-type-deleted-remove-fabric-type-from-fabrics",
+                "fabrics.fabric-type-deleted-remove-fabric-type-from-fabrics",
                 AggregateType.of("FABRIC_TYPE"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -177,7 +177,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "topic-deleted-remove-topic-from-fabrics",
+                "fabrics.topic-deleted-remove-topic-from-fabrics",
                 AggregateType.of("TOPIC"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -194,7 +194,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "color-deleted-remove-color-from-fabrics",
+                "fabrics.color-deleted-remove-color-from-fabrics",
                 AggregateType.of("COLOR"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -211,7 +211,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "topic-created-mark-topic-as-available",
+                "fabrics.topic-created-mark-topic-as-available",
                 AggregateType.of("TOPIC"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -229,7 +229,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "topic-updated-mark-topic-as-available",
+                "fabrics.topic-updated-mark-topic-as-available",
                 AggregateType.of("TOPIC"),
                 EventName.of("UPDATED"),
                 (event) -> {
@@ -247,7 +247,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "topic-deleted-mark-topic-as-unavailable",
+                "fabrics.topic-deleted-mark-topic-as-unavailable",
                 AggregateType.of("TOPIC"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -264,7 +264,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "color-created-mark-color-as-available",
+                "fabrics.color-created-mark-color-as-available",
                 AggregateType.of("COLOR"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -285,7 +285,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "color-updated-mark-color-as-available",
+                "fabrics.color-updated-mark-color-as-available",
                 AggregateType.of("COLOR"),
                 EventName.of("UPDATED"),
                 (event) -> {
@@ -306,7 +306,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "color-deleted-mark-color-as-unavailable",
+                "fabrics.color-deleted-mark-color-as-unavailable",
                 AggregateType.of("COLOR"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -323,7 +323,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabric-type-created-mark-fabric-type-as-available",
+                "fabrics.fabric-type-created-mark-fabric-type-as-available",
                 AggregateType.of("FABRIC_TYPE"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -341,7 +341,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabric-type-updated-mark-fabric-type-as-available",
+                "fabrics.fabric-type-updated-mark-fabric-type-as-available",
                 AggregateType.of("FABRIC_TYPE"),
                 EventName.of("UPDATED"),
                 (event) -> {
@@ -359,7 +359,7 @@ public class FabricsMessaging {
             FabricsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabric-type-deleted-mark-fabric-type-as-unavailable",
+                "fabrics.fabric-type-deleted-mark-fabric-type-as-unavailable",
                 AggregateType.of("FABRIC_TYPE"),
                 EventName.of("DELETED"),
                 (event) -> {

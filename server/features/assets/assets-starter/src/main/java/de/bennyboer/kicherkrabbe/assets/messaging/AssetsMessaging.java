@@ -17,7 +17,7 @@ public class AssetsMessaging {
             AssetsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-created-allow-user-to-create-assets",
+                "assets.user-created-allow-user-to-create-assets",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -34,7 +34,7 @@ public class AssetsMessaging {
             AssetsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-deleted-remove-permissions",
+                "assets.user-deleted-remove-permissions",
                 AggregateType.of("USER"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -51,7 +51,7 @@ public class AssetsMessaging {
             AssetsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "asset-created-allow-user-to-manage-asset",
+                "assets.asset-created-allow-user-to-manage-asset",
                 AggregateType.of("ASSET"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -69,7 +69,7 @@ public class AssetsMessaging {
             AssetsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "asset-deleted-remove-permissions",
+                "assets.asset-deleted-remove-permissions",
                 AggregateType.of("ASSET"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -86,7 +86,7 @@ public class AssetsMessaging {
             AssetsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "asset-created-allow-anonymous-users-to-read-asset",
+                "assets.asset-created-allow-anonymous-users-to-read-asset",
                 AggregateType.of("ASSET"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -103,7 +103,7 @@ public class AssetsMessaging {
             AssetsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "asset-deleted-disallow-anonymous-users-to-read-asset",
+                "assets.asset-deleted-disallow-anonymous-users-to-read-asset",
                 AggregateType.of("ASSET"),
                 EventName.of("DELETED"),
                 (event) -> {

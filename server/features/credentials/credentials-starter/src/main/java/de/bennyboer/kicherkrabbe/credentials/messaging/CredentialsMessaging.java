@@ -22,7 +22,7 @@ public class CredentialsMessaging {
             CredentialsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "credentials-created-update-lookup",
+                "credentials.credentials-created-update-lookup",
                 AggregateType.of("CREDENTIALS"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -41,7 +41,7 @@ public class CredentialsMessaging {
             CredentialsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "credentials-created-add-permissions",
+                "credentials.credentials-created-add-permissions",
                 AggregateType.of("CREDENTIALS"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -63,7 +63,7 @@ public class CredentialsMessaging {
             CredentialsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "credentials-deleted-update-lookup",
+                "credentials.credentials-deleted-update-lookup",
                 AggregateType.of("CREDENTIALS"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -82,7 +82,7 @@ public class CredentialsMessaging {
             CredentialsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "credentials-deleted-remove-permissions",
+                "credentials.credentials-deleted-remove-permissions",
                 AggregateType.of("CREDENTIALS"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -101,7 +101,7 @@ public class CredentialsMessaging {
             CredentialsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-created-create-credentials",
+                "credentials.user-created-create-credentials",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -128,7 +128,7 @@ public class CredentialsMessaging {
             CredentialsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-deleted-delete-credentials",
+                "credentials.user-deleted-delete-credentials",
                 AggregateType.of("USER"),
                 EventName.of("DELETED"),
                 (event) -> {

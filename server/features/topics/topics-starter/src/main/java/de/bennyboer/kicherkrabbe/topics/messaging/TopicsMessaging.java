@@ -20,7 +20,7 @@ public class TopicsMessaging {
             TopicsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-created-allow-user-to-create-topics",
+                "topics.user-created-allow-user-to-create-topics",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -37,7 +37,7 @@ public class TopicsMessaging {
             TopicsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-deleted-remove-permissions",
+                "topics.user-deleted-remove-permissions",
                 AggregateType.of("USER"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -54,7 +54,7 @@ public class TopicsMessaging {
             TopicsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "topic-created-update-lookup",
+                "topics.topic-created-update-lookup",
                 AggregateType.of("TOPIC"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -71,7 +71,7 @@ public class TopicsMessaging {
             TopicsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "topic-updated-update-lookup",
+                "topics.topic-updated-update-lookup",
                 AggregateType.of("TOPIC"),
                 EventName.of("UPDATED"),
                 (event) -> {
@@ -88,7 +88,7 @@ public class TopicsMessaging {
             TopicsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "topic-deleted-remove-topic-from-lookup",
+                "topics.topic-deleted-remove-topic-from-lookup",
                 AggregateType.of("TOPIC"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -105,7 +105,7 @@ public class TopicsMessaging {
             TopicsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "topic-created-allow-user-to-manage-topic",
+                "topics.topic-created-allow-user-to-manage-topic",
                 AggregateType.of("TOPIC"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -128,7 +128,7 @@ public class TopicsMessaging {
             TopicsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "topic-deleted-remove-permissions",
+                "topics.topic-deleted-remove-permissions",
                 AggregateType.of("TOPIC"),
                 EventName.of("DELETED"),
                 (event) -> {

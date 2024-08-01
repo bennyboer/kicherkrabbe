@@ -20,7 +20,7 @@ public class FabricTypesMessaging {
             FabricTypesModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-created-allow-user-to-create-fabric-types",
+                "fabric-types.user-created-allow-user-to-create-fabric-types",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -37,7 +37,7 @@ public class FabricTypesMessaging {
             FabricTypesModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-deleted-remove-permissions",
+                "fabric-types.user-deleted-remove-permissions",
                 AggregateType.of("USER"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -54,7 +54,7 @@ public class FabricTypesMessaging {
             FabricTypesModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabric-type-created-update-lookup",
+                "fabric-types.fabric-type-created-update-lookup",
                 AggregateType.of("FABRIC_TYPE"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -71,7 +71,7 @@ public class FabricTypesMessaging {
             FabricTypesModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabric-type-updated-update-lookup",
+                "fabric-types.fabric-type-updated-update-lookup",
                 AggregateType.of("FABRIC_TYPE"),
                 EventName.of("UPDATED"),
                 (event) -> {
@@ -88,7 +88,7 @@ public class FabricTypesMessaging {
             FabricTypesModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabricType-deleted-remove-fabric-type-from-lookup",
+                "fabric-types.fabric-type-deleted-remove-fabric-type-from-lookup",
                 AggregateType.of("FABRIC_TYPE"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -105,7 +105,7 @@ public class FabricTypesMessaging {
             FabricTypesModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabric-type-created-allow-user-to-manage-fabric-type",
+                "fabric-types.fabric-type-created-allow-user-to-manage-fabric-type",
                 AggregateType.of("FABRIC_TYPE"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -128,7 +128,7 @@ public class FabricTypesMessaging {
             FabricTypesModule module
     ) {
         return factory.createEventListenerForEvent(
-                "fabric-type-deleted-remove-permissions",
+                "fabric-types.fabric-type-deleted-remove-permissions",
                 AggregateType.of("FABRIC_TYPE"),
                 EventName.of("DELETED"),
                 (event) -> {

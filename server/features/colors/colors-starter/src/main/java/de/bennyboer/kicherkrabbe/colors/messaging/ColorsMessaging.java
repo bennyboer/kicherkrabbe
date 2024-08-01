@@ -17,7 +17,7 @@ public class ColorsMessaging {
             ColorsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-created-add-permission-to-create-colors",
+                "colors.user-created-add-permission-to-create-colors",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -34,7 +34,7 @@ public class ColorsMessaging {
             ColorsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "user-deleted-remove-permissions",
+                "colors.user-deleted-remove-permissions",
                 AggregateType.of("USER"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -51,7 +51,7 @@ public class ColorsMessaging {
             ColorsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "color-created-update-lookup",
+                "colors.color-created-update-lookup",
                 AggregateType.of("COLOR"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -68,7 +68,7 @@ public class ColorsMessaging {
             ColorsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "color-updated-update-lookup",
+                "colors.color-updated-update-lookup",
                 AggregateType.of("COLOR"),
                 EventName.of("UPDATED"),
                 (event) -> {
@@ -85,7 +85,7 @@ public class ColorsMessaging {
             ColorsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "color-deleted-remove-from-lookup",
+                "colors.color-deleted-remove-from-lookup",
                 AggregateType.of("COLOR"),
                 EventName.of("DELETED"),
                 (event) -> {
@@ -102,7 +102,7 @@ public class ColorsMessaging {
             ColorsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "color-created-allow-creator-to-manage-color",
+                "colors.color-created-allow-creator-to-manage-color",
                 AggregateType.of("COLOR"),
                 EventName.of("CREATED"),
                 (event) -> {
@@ -120,7 +120,7 @@ public class ColorsMessaging {
             ColorsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "color-deleted-remove-permissions-for-color",
+                "colors.color-deleted-remove-permissions-for-color",
                 AggregateType.of("COLOR"),
                 EventName.of("DELETED"),
                 (event) -> {
