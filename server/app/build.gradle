@@ -6,13 +6,14 @@ dependencies {
     implementation project(':libs:auth:auth-starter')
 
     implementation project(':features:assets:assets-starter')
-    implementation project(':features:credentials:credentials-starter')
-    implementation project(':features:users:users-starter')
-    implementation project(':features:topics:topics-starter')
+    implementation project(':features:categories:categories-starter')
     implementation project(':features:colors:colors-starter')
+    implementation project(':features:credentials:credentials-starter')
     implementation project(':features:fabric-types:fabric-types-starter')
     implementation project(':features:fabrics:fabrics-starter')
     implementation project(':features:frontend')
+    implementation project(':features:topics:topics-starter')
+    implementation project(':features:users:users-starter')
 
     testImplementation project(':libs:persistence:persistence-testing')
     testImplementation project(':libs:messaging:messaging-testing')

@@ -88,3 +88,8 @@ include('features:colors:colors-example')
 include('features:fabric-types:fabric-types-core')
 include('features:fabric-types:fabric-types-starter')
 include('features:fabric-types:fabric-types-example')
+
+// Categories
+include('features:categories:categories-core')
+include('features:categories:categories-starter')
+include('features:categories:categories-example')
