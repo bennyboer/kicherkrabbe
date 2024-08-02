@@ -155,15 +155,24 @@ public class CategoriesHttpHandler {
         String categoryId = request.pathVariable("categoryId");
 
         return request.bodyToMono(RegroupCategoryRequest.class)
-                .flatMap(req -> toAgent(request).flatMap(agent -> module.regroupCategory(
-                        categoryId,
-                        req.version,
-                        switch (req.group) {
-                            case CLOTHING -> CategoryGroup.CLOTHING;
-                            case NONE -> CategoryGroup.NONE;
-                        },
-                        agent
-                )))
+                .flatMap(req -> {
+                    if (req.group == null) {
+                        return Mono.error(new ResponseStatusException(
+                                BAD_REQUEST,
+                                "Group must be provided."
+                        ));
+                    }
+
+                    return toAgent(request).flatMap(agent -> module.regroupCategory(
+                            categoryId,
+                            req.version,
+                            switch (req.group) {
+                                case CLOTHING -> CategoryGroup.CLOTHING;
+                                case NONE -> CategoryGroup.NONE;
+                            },
+                            agent
+                    ));
+                })
                 .map(version -> {
                     var result = new RegroupCategoryResponse();
                     result.version = version;
