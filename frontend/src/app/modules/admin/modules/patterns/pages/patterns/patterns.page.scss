@@ -9,3 +9,16 @@
   gap: 12px;
   margin-bottom: 8px;
 }
+
+@media only screen and (max-width: 1000px) {
+  .action-bar {
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: flex-start;
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+}

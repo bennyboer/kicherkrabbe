@@ -28,7 +28,7 @@ public class CategoriesHttpConfig {
     public RouterFunction<ServerResponse> categoriesHttpRouting(CategoriesHttpHandler handler) {
         return nest(
                 path("/api/categories"),
-                route(GET("/"), handler::getCategories)
+                route(GET(""), handler::getCategories)
                         .andRoute(GET("/groups/{group}"), handler::getCategoriesByGroup)
                         .andRoute(GET("/changes"), handler::getChanges)
                         .andRoute(POST("/create"), handler::createCategory)
@@ -37,7 +37,7 @@ public class CategoriesHttpConfig {
                                 route(GET(""), handler::getCategory)
                                         .andRoute(POST("/rename"), handler::renameCategory)
                                         .andRoute(POST("/regroup"), handler::regroupCategory)
-                                        .andRoute(DELETE("/"), handler::deleteCategory)
+                                        .andRoute(DELETE(""), handler::deleteCategory)
                         )
         );
     }

@@ -65,12 +65,12 @@ export class DropdownComponent implements OnDestroy, OnInit {
   showSelectionIndicator: boolean = false;
 
   @Input('items')
-  set setItems(items: DropdownItem[]) {
+  set setItems(items: DropdownItem[] | null) {
     someOrNone(items).ifSome((items) => this.items$.next(items));
   }
 
   @Input('selected')
-  set setSelected(selected: DropdownItemId[]) {
+  set setSelected(selected: DropdownItemId[] | null) {
     someOrNone(selected).ifSome((selected) => {
       this.selected$.next(new Set(selected));
     });
