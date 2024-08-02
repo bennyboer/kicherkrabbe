@@ -20,7 +20,7 @@ import {
   DropdownItemId,
 } from '../../../shared';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { Option } from '../../../../util';
+import { Option, validateProps } from '../../../../util';
 import { AdminAuthService } from '../../services';
 
 class ManagementItem {
@@ -28,6 +28,8 @@ class ManagementItem {
   readonly route: string;
 
   private constructor(props: { label: string; route: string }) {
+    validateProps(props);
+
     this.label = props.label;
     this.route = props.route;
   }
@@ -70,12 +72,18 @@ const PATTERNS = ManagementItem.of({
   route: 'patterns',
 });
 
+const CATEGORIES = ManagementItem.of({
+  label: 'Kategorien',
+  route: 'categories',
+});
+
 const ESSENTIAL_MANAGEMENT_ITEMS = [
   TOPICS,
   FABRIC_TYPES,
   COLORS,
   FABRICS,
   PATTERNS,
+  CATEGORIES,
 ].sort((a, b) => a.label.localeCompare(b.label));
 const MANAGEMENT_ITEMS = [DASHBOARD, ...ESSENTIAL_MANAGEMENT_ITEMS];
 

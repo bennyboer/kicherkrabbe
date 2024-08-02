@@ -61,6 +61,13 @@ const routes: Routes = [
             (m) => m.PatternsModule,
           ),
       },
+      {
+        path: 'categories',
+        loadChildren: () =>
+          import('./modules/categories/categories.module').then(
+            (m) => m.CategoriesModule,
+          ),
+      },
     ],
   },
   {
