@@ -14,6 +14,7 @@ include('app')
 // Core libraries
 include('libs:commons')
 include('libs:testing')
+include('libs:money')
 
 // Event Sourcing
 include('libs:eventsourcing:eventsourcing-core')
@@ -93,3 +94,8 @@ include('features:fabric-types:fabric-types-example')
 include('features:categories:categories-core')
 include('features:categories:categories-starter')
 include('features:categories:categories-example')
+
+// Patterns
+include('features:patterns:patterns-core')
+include('features:patterns:patterns-starter')
+include('features:patterns:patterns-example')
