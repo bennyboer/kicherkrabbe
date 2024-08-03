@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { filter, map, Observable, Subject, takeUntil } from 'rxjs';
+import { filter, map, Observable, Subject, takeUntil, tap } from 'rxjs';
 import { none, Option, some, someOrNone } from '../../../../../util';
 import { SSE } from 'sse.js';
 import { HttpClient } from '@angular/common/http';
@@ -46,6 +46,10 @@ interface CategoryChangeDTO {
   type: string;
   affected: string[];
   payload: any;
+}
+
+interface CreateCategoryResponse {
+  id: string;
 }
 
 @Injectable()
@@ -119,16 +123,18 @@ export class CategoriesService implements OnDestroy {
   createCategory(props: {
     name: string;
     group: CategoryGroup;
-  }): Observable<void> {
+  }): Observable<CategoryId> {
     const request: CreateCategoryRequest = {
       name: props.name,
       group: this.toApiCategoryGroup(props.group),
     };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/categories/create`,
-      request,
-    );
+    return this.http
+      .post<CreateCategoryResponse>(
+        `${environment.apiUrl}/categories/create`,
+        request,
+      )
+      .pipe(map((response) => response.id));
   }
 
   renameCategory(

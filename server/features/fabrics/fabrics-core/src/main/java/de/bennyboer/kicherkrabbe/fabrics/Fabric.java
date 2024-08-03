@@ -173,7 +173,8 @@ public class Fabric implements Aggregate {
                     .withImage(e.getImage())
                     .withColors(e.getColors())
                     .withTopics(e.getTopics())
-                    .withAvailability(e.getAvailability());
+                    .withAvailability(e.getAvailability())
+                    .withCreatedAt(metadata.getDate());
             case DeletedEvent ignored -> withDeletedAt(metadata.getDate());
             case PublishedEvent ignored -> withPublished(true);
             case UnpublishedEvent ignored -> withPublished(false);

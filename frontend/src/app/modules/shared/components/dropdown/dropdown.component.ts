@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import {
   BehaviorSubject,
+  filter,
   map,
   Observable,
   of,
@@ -37,6 +38,11 @@ export type DropdownItemId = string;
 export interface DropdownItem {
   id: DropdownItemId;
   label: string;
+}
+
+interface SelectedEvent {
+  selected: Set<DropdownItemId>;
+  emitEvent: boolean;
 }
 
 @Component({
@@ -72,7 +78,10 @@ export class DropdownComponent implements OnDestroy, OnInit {
   @Input('selected')
   set setSelected(selected: DropdownItemId[] | null) {
     someOrNone(selected).ifSome((selected) => {
-      this.selected$.next(new Set(selected));
+      this.selected$.next({
+        selected: new Set(selected),
+        emitEvent: false,
+      });
     });
   }
 
@@ -85,8 +94,11 @@ export class DropdownComponent implements OnDestroy, OnInit {
 
   private readonly items$: BehaviorSubject<DropdownItem[]> =
     new BehaviorSubject<DropdownItem[]>([]);
-  private readonly selected$: BehaviorSubject<Set<DropdownItemId>> =
-    new BehaviorSubject<Set<DropdownItemId>>(new Set<DropdownItemId>());
+  private readonly selected$: BehaviorSubject<SelectedEvent> =
+    new BehaviorSubject<SelectedEvent>({
+      selected: new Set<DropdownItemId>(),
+      emitEvent: false,
+    });
   private readonly destroy$: Subject<void> = new Subject<void>();
   private readonly openedOverlay$: BehaviorSubject<Option<OverlayRef>> =
     new BehaviorSubject<Option<OverlayRef>>(none());
@@ -97,9 +109,14 @@ export class DropdownComponent implements OnDestroy, OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.selected$.pipe(takeUntil(this.destroy$)).subscribe((selected) => {
-      this.selectionChanged.emit(Array.from(selected));
-    });
+    this.selected$
+      .pipe(
+        filter((event) => event.emitEvent),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((event) =>
+        this.selectionChanged.emit(Array.from(event.selected)),
+      );
   }
 
   ngOnDestroy(): void {
@@ -116,7 +133,7 @@ export class DropdownComponent implements OnDestroy, OnInit {
   getSelected(): Observable<DropdownItemId[]> {
     return this.selected$
       .asObservable()
-      .pipe(map((selected) => Array.from(selected)));
+      .pipe(map((event) => Array.from(event.selected)));
   }
 
   isSelected(id: DropdownItemId): Observable<boolean> {
@@ -124,14 +141,17 @@ export class DropdownComponent implements OnDestroy, OnInit {
   }
 
   toggleItemSelection(id: DropdownItemId): void {
-    const updatedSet = new Set([...this.selected$.value]);
+    const updatedSet = new Set([...this.selected$.value.selected]);
     const isSelected = updatedSet.has(id);
 
     if (isSelected) {
       if (this.multiple) {
         const updated = updatedSet.delete(id);
         if (updated) {
-          this.selected$.next(updatedSet);
+          this.selected$.next({
+            selected: updatedSet,
+            emitEvent: true,
+          });
         }
       }
     } else {
@@ -141,7 +161,10 @@ export class DropdownComponent implements OnDestroy, OnInit {
 
       updatedSet.add(id);
 
-      this.selected$.next(updatedSet);
+      this.selected$.next({
+        selected: updatedSet,
+        emitEvent: true,
+      });
     }
   }
 
@@ -184,11 +207,17 @@ export class DropdownComponent implements OnDestroy, OnInit {
 
   selectAll(): void {
     const itemIds = this.items$.value.map((item) => item.id);
-    this.selected$.next(new Set(itemIds));
+    this.selected$.next({
+      selected: new Set(itemIds),
+      emitEvent: true,
+    });
   }
 
   clearSelection(): void {
-    this.selected$.next(new Set<DropdownItemId>());
+    this.selected$.next({
+      selected: new Set<DropdownItemId>(),
+      emitEvent: true,
+    });
   }
 
   onItemClick(item: DropdownItem): void {

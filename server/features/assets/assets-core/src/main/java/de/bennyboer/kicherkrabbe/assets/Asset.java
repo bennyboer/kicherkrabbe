@@ -79,7 +79,8 @@ public class Asset implements Aggregate {
                     .withDeletedAt(e.getDeletedAt().orElse(null));
             case CreatedEvent e -> withId(id)
                     .withContentType(e.getContentType())
-                    .withLocation(e.getLocation());
+                    .withLocation(e.getLocation())
+                    .withCreatedAt(metadata.getDate());
             case DeletedEvent ignored -> withDeletedAt(metadata.getDate());
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());
         }).withVersion(version);

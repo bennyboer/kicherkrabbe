@@ -95,7 +95,8 @@ public class User implements Aggregate {
                     .withDeletedAt(e.getDeletedAt().orElse(null));
             case CreatedEvent e -> withId(id)
                     .withName(e.getName())
-                    .withMail(e.getMail());
+                    .withMail(e.getMail())
+                    .withCreatedAt(metadata.getDate());
             case RenamedEvent e -> withName(e.getName());
             case DeletedEvent ignored -> withDeletedAt(metadata.getDate())
                     .withName(name.anonymize())

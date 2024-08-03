@@ -77,7 +77,8 @@ public class FabricType implements Aggregate {
                     .withCreatedAt(e.getCreatedAt())
                     .withDeletedAt(e.getDeletedAt().orElse(null));
             case CreatedEvent e -> withId(id)
-                    .withName(e.getName());
+                    .withName(e.getName())
+                    .withCreatedAt(metadata.getDate());
             case UpdatedEvent e -> withName(e.getName());
             case DeletedEvent ignored -> withDeletedAt(metadata.getDate());
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());

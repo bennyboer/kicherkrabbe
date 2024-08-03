@@ -6,12 +6,17 @@ import {
 } from '@angular/core';
 import {
   BehaviorSubject,
+  catchError,
   combineLatest,
   debounceTime,
+  EMPTY,
+  finalize,
+  first,
   map,
   Observable,
   Subject,
   takeUntil,
+  tap,
 } from 'rxjs';
 import {
   DropdownComponent,
@@ -59,27 +64,22 @@ export class CategoriesPage implements OnInit, OnDestroy {
 
   private readonly destroy$: Subject<void> = new Subject<void>();
 
+  private listeningToChanges: boolean = false;
+
   constructor(
     private readonly categoriesService: CategoriesService,
     private readonly notificationService: NotificationService,
   ) {}
 
   ngOnInit(): void {
-    combineLatest([this.searchTerm$, this.selectedGroup$])
-      .pipe(debounceTime(300), takeUntil(this.destroy$))
+    combineLatest([
+      this.searchTerm$.pipe(debounceTime(300)),
+      this.selectedGroup$,
+    ])
+      .pipe(takeUntil(this.destroy$))
       .subscribe(([searchTerm, group]) =>
         this.reloadCategories({ searchTerm, group: group.orElseNull() }),
       );
-
-    this.categoriesService
-      .getCategoryChanges()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.reloadCategories({
-          searchTerm: this.searchTerm$.value,
-          group: this.selectedGroup$.value.orElseNull(),
-        });
-      });
   }
 
   ngOnDestroy(): void {
@@ -121,6 +121,11 @@ export class CategoriesPage implements OnInit, OnDestroy {
     dropdown.toggleOpened();
   }
 
+  clearGroupSelection(dropdown: DropdownComponent): void {
+    dropdown.clearSelection();
+    dropdown.toggleOpened();
+  }
+
   private dropdownItemToCategoryGroupType(
     item: DropdownItemId,
   ): CategoryGroupType {
@@ -137,27 +142,59 @@ export class CategoriesPage implements OnInit, OnDestroy {
   private reloadCategories(props: {
     searchTerm?: string;
     group?: CategoryGroup | null;
+    indicateLoading?: boolean;
   }): void {
-    this.loadingCategories$.next(true);
+    const indicateLoading = someOrNone(props.indicateLoading).orElse(true);
+    if (indicateLoading) {
+      this.loadingCategories$.next(true);
+    }
 
-    this.categoriesService
+    this.loadCategories(props)
+      .pipe(
+        first(),
+        finalize(() => this.loadingCategories$.next(false)),
+      )
+      .subscribe((categories) => this.categories$.next(categories));
+  }
+
+  private loadCategories(props: {
+    searchTerm?: string;
+    group?: CategoryGroup | null;
+  }): Observable<Category[]> {
+    return this.categoriesService
       .getCategories({
         searchTerm: props.searchTerm,
         group: props.group,
       })
-      .subscribe({
-        next: (categories) => {
-          this.loadingCategories$.next(false);
-          this.categories$.next(categories);
-        },
-        error: () => {
-          this.loadingCategories$.next(false);
+      .pipe(
+        tap(() => this.listenToChangesIfNotAlreadyListening()),
+        catchError((e) => {
+          console.error(e);
           this.notificationService.publish({
             type: 'error',
             message:
               'Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neu zu laden.',
           });
-        },
+          return EMPTY;
+        }),
+      );
+  }
+
+  private listenToChangesIfNotAlreadyListening() {
+    if (this.listeningToChanges) {
+      return;
+    }
+    this.listeningToChanges = true;
+
+    this.categoriesService
+      .getCategoryChanges()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.reloadCategories({
+          searchTerm: this.searchTerm$.value,
+          group: this.selectedGroup$.value.orElseNull(),
+          indicateLoading: false,
+        });
       });
   }
 }

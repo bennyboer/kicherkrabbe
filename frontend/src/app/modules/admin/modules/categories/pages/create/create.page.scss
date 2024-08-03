@@ -1,0 +1,42 @@
+:host {
+  display: block;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-left: 2px solid var(--background-low-contrast);
+  padding-left: 12px;
+
+  & > input {
+    width: 100%;
+  }
+}
+
+.error {
+  color: var(--red);
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  margin-top: 28px;
+  border-top: 1px solid var(--background-mid-contrast);
+}
+
+.loading-button-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

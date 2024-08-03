@@ -102,7 +102,8 @@ public class Color implements Aggregate {
                     .withName(e.getName())
                     .withRed(e.getRed())
                     .withGreen(e.getGreen())
-                    .withBlue(e.getBlue());
+                    .withBlue(e.getBlue())
+                    .withCreatedAt(metadata.getDate());
             case UpdatedEvent e -> withName(e.getName())
                     .withRed(e.getRed())
                     .withGreen(e.getGreen())

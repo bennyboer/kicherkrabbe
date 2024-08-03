@@ -85,7 +85,8 @@ public class Category implements Aggregate {
                     .withDeletedAt(e.getDeletedAt().orElse(null));
             case CreatedEvent e -> withId(id)
                     .withName(e.getName())
-                    .withGroup(e.getGroup());
+                    .withGroup(e.getGroup())
+                    .withCreatedAt(metadata.getDate());
             case RenamedEvent e -> withName(e.getName());
             case RegroupedEvent e -> withGroup(e.getGroup());
             case DeletedEvent ignored -> withDeletedAt(metadata.getDate());
