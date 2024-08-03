@@ -8,6 +8,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublish
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.money.Money;
+import de.bennyboer.kicherkrabbe.patterns.publish.AlreadyPublishedError;
+import de.bennyboer.kicherkrabbe.patterns.unpublish.AlreadyUnpublishedError;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -32,6 +34,7 @@ public class PatternServiceTest {
                 OriginalPatternName.of("Sommerkleid EXTREME"),
                 PatternDesigner.of("EXTREME PATTERNS")
         );
+        var categories = Set.of(PatternCategoryId.of("CATEGORY_ID_1"), PatternCategoryId.of("CATEGORY_ID_2"));
         var images = List.of(ImageId.of("IMAGE_ID_1"));
         var variants = List.of(
                 PatternVariant.of(
@@ -68,6 +71,7 @@ public class PatternServiceTest {
         var id = create(
                 name,
                 attribution,
+                categories,
                 images,
                 variants,
                 extras
@@ -80,6 +84,7 @@ public class PatternServiceTest {
         assertThat(pattern.getName()).isEqualTo(name);
         assertThat(pattern.isNotDeleted()).isTrue();
         assertThat(pattern.getAttribution()).isEqualTo(attribution);
+        assertThat(pattern.getCategories()).isEqualTo(categories);
         assertThat(pattern.getImages()).isEqualTo(images);
         assertThat(pattern.getVariants()).isEqualTo(variants);
         assertThat(pattern.getExtras()).isEqualTo(extras);
@@ -101,6 +106,7 @@ public class PatternServiceTest {
         var id = create(
                 name,
                 PatternAttribution.empty(),
+                Set.of(),
                 images,
                 variants,
                 List.of()
@@ -113,6 +119,7 @@ public class PatternServiceTest {
         assertThat(pattern.getName()).isEqualTo(name);
         assertThat(pattern.isNotDeleted()).isTrue();
         assertThat(pattern.getAttribution()).isEqualTo(PatternAttribution.empty());
+        assertThat(pattern.getCategories()).isEmpty();
         assertThat(pattern.getImages()).isEqualTo(images);
         assertThat(pattern.getVariants()).isEqualTo(variants);
         assertThat(pattern.getExtras()).isEmpty();
@@ -124,6 +131,7 @@ public class PatternServiceTest {
         assertThatThrownBy(() -> create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(),
                 List.of(PatternVariant.of(
                         PatternVariantName.of("Short"),
@@ -139,6 +147,7 @@ public class PatternServiceTest {
         assertThatThrownBy(() -> create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(),
                 List.of()
@@ -151,6 +160,7 @@ public class PatternServiceTest {
         var id = create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(PatternVariant.of(
                         PatternVariantName.of("Short"),
@@ -176,6 +186,7 @@ public class PatternServiceTest {
         var id = create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(PatternVariant.of(
                         PatternVariantName.of("Short"),
@@ -198,6 +209,7 @@ public class PatternServiceTest {
         var id = create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(
                         PatternVariant.of(
@@ -221,6 +233,7 @@ public class PatternServiceTest {
         var id = create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(
                         PatternVariant.of(
@@ -240,11 +253,75 @@ public class PatternServiceTest {
     }
 
     @Test
+    void shouldUpdateCategories() {
+        // given: a pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternAttribution.empty(),
+                Set.of(PatternCategoryId.of("CATEGORY_ID_1")),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+
+        // when: updating the categories
+        var updatedVersion = patternService.updateCategories(
+                id,
+                Version.zero(),
+                Set.of(PatternCategoryId.of("CATEGORY_ID_1"), PatternCategoryId.of("CATEGORY_ID_2")),
+                Agent.system()
+        ).block();
+
+        // then: the categories are updated
+        var pattern = get(id);
+        assertThat(pattern.getId()).isEqualTo(id);
+        assertThat(pattern.getVersion()).isEqualTo(updatedVersion);
+        assertThat(pattern.getCategories()).containsExactlyInAnyOrder(
+                PatternCategoryId.of("CATEGORY_ID_1"),
+                PatternCategoryId.of("CATEGORY_ID_2")
+        );
+    }
+
+    @Test
+    void shouldNotUpdateCategoriesGivenAnOutdatedVersion() {
+        // given: a pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternAttribution.empty(),
+                Set.of(PatternCategoryId.of("CATEGORY_ID_1")),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+
+        // and: the pattern is renamed
+        rename(id, Version.zero(), PatternName.of("Sommerkleid 2024"));
+
+        // when: updating the categories with an outdated version; then: an error is raised
+        assertThatThrownBy(() -> updateCategories(
+                id,
+                Version.zero(),
+                Set.of(PatternCategoryId.of("CATEGORY_ID_1"), PatternCategoryId.of("CATEGORY_ID_2"))
+        )).matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
     void shouldUpdateAttribution() {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(
                         PatternVariant.of(
@@ -283,6 +360,7 @@ public class PatternServiceTest {
         var id = create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(
                         PatternVariant.of(
@@ -313,6 +391,7 @@ public class PatternServiceTest {
         var id = create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(
                         PatternVariant.of(
@@ -349,6 +428,7 @@ public class PatternServiceTest {
         var id = create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(
                         PatternVariant.of(
@@ -379,6 +459,7 @@ public class PatternServiceTest {
         var id = create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(
                         PatternVariant.of(
@@ -439,6 +520,7 @@ public class PatternServiceTest {
         var id = create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(
                         PatternVariant.of(
@@ -481,6 +563,7 @@ public class PatternServiceTest {
         var id = create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(
                         PatternVariant.of(
@@ -534,6 +617,7 @@ public class PatternServiceTest {
         var id = create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(
                         PatternVariant.of(
@@ -570,6 +654,157 @@ public class PatternServiceTest {
     }
 
     @Test
+    void shouldPublishPattern() {
+        // given: a pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+
+        // when: publishing the pattern
+        var updatedVersion = publish(id, Version.zero());
+
+        // then: the pattern is published
+        var pattern = get(id);
+        assertThat(pattern.getId()).isEqualTo(id);
+        assertThat(pattern.getVersion()).isEqualTo(updatedVersion);
+        assertThat(pattern.isPublished()).isTrue();
+    }
+
+    @Test
+    void shouldNotPublishPatternGivenAnOutdatedVersion() {
+        // given: a pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+
+        // and: the pattern is renamed
+        rename(id, Version.zero(), PatternName.of("Sommerkleid 2024"));
+
+        // when: publishing the pattern with an outdated version; then: an error is raised
+        assertThatThrownBy(() -> publish(id, Version.zero()))
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
+    void shouldUnpublishPattern() {
+        // given: a published pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+        var version = publish(id, Version.zero());
+
+        // when: unpublishing the pattern
+        var updatedVersion = unpublish(id, version);
+
+        // then: the pattern is unpublished
+        var pattern = get(id);
+        assertThat(pattern.getId()).isEqualTo(id);
+        assertThat(pattern.getVersion()).isEqualTo(updatedVersion);
+        assertThat(pattern.isPublished()).isFalse();
+    }
+
+    @Test
+    void shouldNotUnpublishPatternGivenAnOutdatedVersion() {
+        // given: a published pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+        var version = publish(id, Version.zero());
+
+        // and: the pattern is renamed
+        rename(id, version, PatternName.of("Sommerkleid 2024"));
+
+        // when: unpublishing the pattern with an outdated version; then: an error is raised
+        assertThatThrownBy(() -> unpublish(id, version))
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
+    void shouldNotBeAbleToPublishAlreadyPublishedPattern() {
+        // given: a published pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+        var version = publish(id, Version.zero());
+
+        // when: trying to publish the pattern again; then: an error is raised
+        assertThatThrownBy(() -> publish(id, version))
+                .matches(e -> e instanceof AlreadyPublishedError);
+    }
+
+    @Test
+    void shouldNotBeAbleToUnpublishAlreadyUnpublishedPattern() {
+        // given: an unpublished pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+
+        // when: trying to unpublish the pattern; then: an error is raised
+        assertThatThrownBy(() -> unpublish(id, Version.zero()))
+                .matches(e -> e instanceof AlreadyUnpublishedError);
+    }
+
+    @Test
     void shouldRestoreFromSnapshot() {
         // given: a pattern
         var name = PatternName.of("Sommerkleid");
@@ -577,6 +812,7 @@ public class PatternServiceTest {
                 OriginalPatternName.of("Sommerkleid EXTREME"),
                 PatternDesigner.of("EXTREME PATTERNS")
         );
+        var categories = Set.of(PatternCategoryId.of("CATEGORY_ID_1"), PatternCategoryId.of("CATEGORY_ID_2"));
         var images = List.of(ImageId.of("IMAGE_ID_1"));
         var variants = List.of(
                 PatternVariant.of(
@@ -611,6 +847,7 @@ public class PatternServiceTest {
         var id = create(
                 name,
                 attribution,
+                categories,
                 images,
                 variants,
                 extras
@@ -637,8 +874,10 @@ public class PatternServiceTest {
 
         // then: the pattern is restored from the snapshot
         assertThat(pattern.getVersion()).isEqualTo(Version.of(100));
+        assertThat(pattern.isPublished()).isFalse();
         assertThat(pattern.getName()).isEqualTo(PatternName.of("Sommerkleid 98"));
         assertThat(pattern.getAttribution()).isEqualTo(attribution);
+        assertThat(pattern.getCategories()).isEqualTo(categories);
         assertThat(pattern.getImages()).isEqualTo(images);
         assertThat(pattern.getVariants()).isEqualTo(variants);
         assertThat(pattern.getExtras()).isEqualTo(extras);
@@ -651,6 +890,7 @@ public class PatternServiceTest {
         var id = create(
                 PatternName.of("Sommerkleid"),
                 PatternAttribution.empty(),
+                Set.of(),
                 List.of(ImageId.of("IMAGE_ID_1")),
                 List.of(PatternVariant.of(
                         PatternVariantName.of("Short"),
@@ -689,6 +929,7 @@ public class PatternServiceTest {
     private PatternId create(
             PatternName name,
             PatternAttribution attribution,
+            Set<PatternCategoryId> categories,
             List<ImageId> images,
             List<PatternVariant> variants,
             List<PatternExtra> extras
@@ -696,11 +937,20 @@ public class PatternServiceTest {
         return patternService.create(
                 name,
                 attribution,
+                categories,
                 images,
                 variants,
                 extras,
                 Agent.system()
         ).block().getId();
+    }
+
+    private Version publish(PatternId id, Version version) {
+        return patternService.publish(id, version, Agent.system()).block();
+    }
+
+    private Version unpublish(PatternId id, Version version) {
+        return patternService.unpublish(id, version, Agent.system()).block();
     }
 
     private Version rename(PatternId id, Version version, PatternName name) {
@@ -709,6 +959,10 @@ public class PatternServiceTest {
 
     private Version updateAttribution(PatternId id, Version version, PatternAttribution attribution) {
         return patternService.updateAttribution(id, version, attribution, Agent.system()).block();
+    }
+
+    private Version updateCategories(PatternId id, Version version, Set<PatternCategoryId> categories) {
+        return patternService.updateCategories(id, version, categories, Agent.system()).block();
     }
 
     private Version updateImages(PatternId id, Version version, List<ImageId> images) {

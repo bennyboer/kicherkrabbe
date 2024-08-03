@@ -11,14 +11,18 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.EventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.patterns.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.patterns.delete.DeleteCmd;
+import de.bennyboer.kicherkrabbe.patterns.publish.PublishCmd;
 import de.bennyboer.kicherkrabbe.patterns.rename.RenameCmd;
+import de.bennyboer.kicherkrabbe.patterns.unpublish.UnpublishCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.attribution.UpdateAttributionCmd;
+import de.bennyboer.kicherkrabbe.patterns.update.categories.UpdateCategoriesCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.extras.UpdateExtrasCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.images.UpdateImagesCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.variants.UpdateVariantsCmd;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Set;
 
 public class PatternService extends AggregateService<Pattern, PatternId> {
 
@@ -35,6 +39,7 @@ public class PatternService extends AggregateService<Pattern, PatternId> {
     public Mono<AggregateIdAndVersion<PatternId>> create(
             PatternName name,
             PatternAttribution attribution,
+            Set<PatternCategoryId> categories,
             List<ImageId> images,
             List<PatternVariant> variants,
             List<PatternExtra> extras,
@@ -42,8 +47,16 @@ public class PatternService extends AggregateService<Pattern, PatternId> {
     ) {
         PatternId id = PatternId.create();
 
-        return dispatchCommandToLatest(id, agent, CreateCmd.of(name, attribution, images, variants, extras))
+        return dispatchCommandToLatest(id, agent, CreateCmd.of(name, attribution, categories, images, variants, extras))
                 .map(version -> AggregateIdAndVersion.of(id, version));
+    }
+
+    public Mono<Version> publish(PatternId id, Version version, Agent agent) {
+        return dispatchCommand(id, version, agent, PublishCmd.of());
+    }
+
+    public Mono<Version> unpublish(PatternId id, Version version, Agent agent) {
+        return dispatchCommand(id, version, agent, UnpublishCmd.of());
     }
 
     public Mono<Version> rename(PatternId id, Version version, PatternName name, Agent agent) {
@@ -52,6 +65,15 @@ public class PatternService extends AggregateService<Pattern, PatternId> {
 
     public Mono<Version> updateAttribution(PatternId id, Version version, PatternAttribution attribution, Agent agent) {
         return dispatchCommand(id, version, agent, UpdateAttributionCmd.of(attribution));
+    }
+
+    public Mono<Version> updateCategories(
+            PatternId id,
+            Version version,
+            Set<PatternCategoryId> categories,
+            Agent agent
+    ) {
+        return dispatchCommand(id, version, agent, UpdateCategoriesCmd.of(categories));
     }
 
     public Mono<Version> updateImages(PatternId id, Version version, List<ImageId> images, Agent agent) {

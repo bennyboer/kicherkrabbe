@@ -1,6 +1,7 @@
 subprojects {
     dependencies {
         implementation project(':libs:commons')
+        implementation project(':libs:money')
         implementation project(':libs:persistence:persistence-starter')
         implementation project(':libs:eventsourcing:eventsourcing-starter')
         implementation project(':libs:messaging:messaging-starter')

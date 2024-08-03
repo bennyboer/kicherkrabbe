@@ -32,4 +32,11 @@ public class Currency {
         return of("Euro", "EUR", "€");
     }
 
+    public static Currency fromShortForm(String shortForm) {
+        return switch (shortForm) {
+            case "EUR" -> euro();
+            default -> throw new IllegalArgumentException("Unknown currency short form: " + shortForm);
+        };
+    }
+
 }

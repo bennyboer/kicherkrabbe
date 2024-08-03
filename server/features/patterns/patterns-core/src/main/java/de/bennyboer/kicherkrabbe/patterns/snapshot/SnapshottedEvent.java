@@ -11,6 +11,7 @@ import lombok.Value;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
@@ -24,9 +25,13 @@ public class SnapshottedEvent implements Event {
 
     public static final Version VERSION = Version.zero();
 
+    boolean published;
+
     PatternName name;
 
     PatternAttribution attribution;
+
+    Set<PatternCategoryId> categories;
 
     List<ImageId> images;
 
@@ -40,8 +45,10 @@ public class SnapshottedEvent implements Event {
     Instant deletedAt;
 
     public static SnapshottedEvent of(
+            boolean published,
             PatternName name,
             PatternAttribution attribution,
+            Set<PatternCategoryId> categories,
             List<ImageId> images,
             List<PatternVariant> variants,
             List<PatternExtra> extras,
@@ -50,6 +57,7 @@ public class SnapshottedEvent implements Event {
     ) {
         notNull(name, "Pattern name must be given");
         notNull(attribution, "Attribution must be given");
+        notNull(categories, "Categories must be given");
         notNull(images, "Images must be given");
         notNull(variants, "Variants must be given");
         notNull(extras, "Extras must be given");
@@ -58,8 +66,10 @@ public class SnapshottedEvent implements Event {
         check(!variants.isEmpty(), "Variants must not be empty");
 
         return new SnapshottedEvent(
+                published,
                 name,
                 attribution,
+                categories,
                 images,
                 variants,
                 extras,
