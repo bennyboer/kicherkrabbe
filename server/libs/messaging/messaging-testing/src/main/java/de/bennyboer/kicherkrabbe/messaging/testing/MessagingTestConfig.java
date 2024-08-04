@@ -54,7 +54,7 @@ public class MessagingTestConfig {
 
     @Bean(destroyMethod = "stop")
     public RabbitMQContainer rabbitMQContainer() {
-        var container = new RabbitMQContainer("rabbitmq:3.13.1-management")
+        var container = new RabbitMQContainer("rabbitmq:3.13.4-management")
                 .withExposedPorts(5672, 15672)
                 .withStartupTimeout(Duration.ofSeconds(120));
 

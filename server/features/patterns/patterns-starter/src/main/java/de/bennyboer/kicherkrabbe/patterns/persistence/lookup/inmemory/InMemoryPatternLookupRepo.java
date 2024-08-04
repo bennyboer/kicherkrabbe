@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.patterns.persistence.lookup.inmemory;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.inmemory.InMemoryEventSourcingReadModelRepo;
+import de.bennyboer.kicherkrabbe.patterns.PatternCategoryId;
 import de.bennyboer.kicherkrabbe.patterns.PatternId;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.LookupPattern;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.LookupPatternPage;
@@ -11,6 +12,7 @@ import reactor.core.publisher.Mono;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Locale;
+import java.util.Set;
 
 public class InMemoryPatternLookupRepo extends InMemoryEventSourcingReadModelRepo<PatternId, LookupPattern>
         implements PatternLookupRepo {
@@ -21,7 +23,13 @@ public class InMemoryPatternLookupRepo extends InMemoryEventSourcingReadModelRep
     }
 
     @Override
-    public Mono<LookupPatternPage> find(Collection<PatternId> patternIds, String searchTerm, long skip, long limit) {
+    public Mono<LookupPatternPage> find(
+            Collection<PatternId> patternIds,
+            Set<PatternCategoryId> categories,
+            String searchTerm,
+            long skip,
+            long limit
+    ) {
         return getAll()
                 .filter(pattern -> patternIds.contains(pattern.getId()))
                 .filter(pattern -> {

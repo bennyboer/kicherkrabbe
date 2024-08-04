@@ -12,10 +12,11 @@ import reactor.core.publisher.Sinks;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryMessagingOutboxRepo implements MessagingOutboxRepo {
 
-    private final Map<MessagingOutboxEntryId, MessagingOutboxEntry> entries = new HashMap<>();
+    private final Map<MessagingOutboxEntryId, MessagingOutboxEntry> entries = new ConcurrentHashMap<>();
 
     private final Sinks.Many<MessagingOutboxEntry> insertSink = Sinks.many().multicast().directBestEffort();
 

@@ -6,6 +6,8 @@ import de.bennyboer.kicherkrabbe.changes.ResourceChangesTracker;
 import de.bennyboer.kicherkrabbe.changes.ResourceType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListenerFactory;
 import de.bennyboer.kicherkrabbe.patterns.messaging.PatternsMessaging;
+import de.bennyboer.kicherkrabbe.patterns.persistence.categories.PatternCategoryRepo;
+import de.bennyboer.kicherkrabbe.patterns.persistence.categories.mongo.MongoPatternCategoryRepo;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.PatternLookupRepo;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.mongo.MongoPatternLookupRepo;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
@@ -32,6 +34,11 @@ public class PatternsModuleConfig {
     @Bean
     public PatternLookupRepo patternLookupRepo(ReactiveMongoTemplate template) {
         return new MongoPatternLookupRepo(template);
+    }
+
+    @Bean
+    public PatternCategoryRepo patternCategoryRepo(ReactiveMongoTemplate template) {
+        return new MongoPatternCategoryRepo(template);
     }
 
     @Bean("patternChangesTracker")
@@ -64,9 +71,16 @@ public class PatternsModuleConfig {
             PatternService patternService,
             @Qualifier("patternsPermissionsService") PermissionsService permissionsService,
             PatternLookupRepo patternLookupRepo,
-            @Qualifier("patternChangesTracker") ResourceChangesTracker patternChangesTracker
+            @Qualifier("patternChangesTracker") ResourceChangesTracker patternChangesTracker,
+            PatternCategoryRepo patternCategoryRepo
     ) {
-        return new PatternsModule(patternService, permissionsService, patternLookupRepo, patternChangesTracker);
+        return new PatternsModule(
+                patternService,
+                permissionsService,
+                patternLookupRepo,
+                patternChangesTracker,
+                patternCategoryRepo
+        );
     }
 
 }

@@ -66,7 +66,7 @@ public class Category implements Aggregate {
             ));
             case CreateCmd c -> ApplyCommandResult.of(CreatedEvent.of(c.getName(), c.getGroup()));
             case RenameCmd c -> ApplyCommandResult.of(RenamedEvent.of(c.getName()));
-            case RegroupCmd c -> ApplyCommandResult.of(RegroupedEvent.of(c.getGroup()));
+            case RegroupCmd c -> ApplyCommandResult.of(RegroupedEvent.of(getName(), c.getGroup()));
             case DeleteCmd ignored -> ApplyCommandResult.of(DeletedEvent.of());
             default -> throw new IllegalArgumentException("Unknown command " + cmd.getClass().getSimpleName());
         };

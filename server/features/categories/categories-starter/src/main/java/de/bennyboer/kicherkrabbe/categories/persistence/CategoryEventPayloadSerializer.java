@@ -46,6 +46,7 @@ public class CategoryEventPayloadSerializer implements EventSerializer {
                     "name", e.getName().getValue()
             );
             case RegroupedEvent e -> Map.of(
+                    "name", e.getName().getValue(),
                     "group", switch (e.getGroup()) {
                         case CLOTHING -> "CLOTHING";
                         case NONE -> "NONE";
@@ -73,6 +74,7 @@ public class CategoryEventPayloadSerializer implements EventSerializer {
                     CategoryName.of((String) payload.get("name"))
             );
             case "REGROUPED" -> RegroupedEvent.of(
+                    CategoryName.of((String) payload.get("name")),
                     CategoryGroup.valueOf((String) payload.get("group"))
             );
             case "DELETED" -> DeletedEvent.of();

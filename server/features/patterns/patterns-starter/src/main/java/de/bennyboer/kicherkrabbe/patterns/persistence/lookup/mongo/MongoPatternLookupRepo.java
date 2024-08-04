@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.patterns.persistence.lookup.mongo;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.MongoEventSourcingReadModelRepo;
+import de.bennyboer.kicherkrabbe.patterns.PatternCategoryId;
 import de.bennyboer.kicherkrabbe.patterns.PatternId;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.LookupPattern;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.LookupPatternPage;
@@ -35,7 +36,13 @@ public class MongoPatternLookupRepo
     }
 
     @Override
-    public Mono<LookupPatternPage> find(Collection<PatternId> patternIds, String searchTerm, long skip, long limit) {
+    public Mono<LookupPatternPage> find(
+            Collection<PatternId> patternIds,
+            Set<PatternCategoryId> categories,
+            String searchTerm,
+            long skip,
+            long limit
+    ) {
         Set<String> ids = patternIds.stream()
                 .map(PatternId::getValue)
                 .collect(Collectors.toSet());

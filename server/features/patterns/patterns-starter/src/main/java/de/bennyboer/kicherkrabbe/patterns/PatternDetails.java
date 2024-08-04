@@ -27,7 +27,7 @@ public class PatternDetails {
 
     Set<PatternCategoryId> categories;
 
-    Set<ImageId> images;
+    List<ImageId> images;
 
     List<PatternVariant> variants;
 
@@ -42,7 +42,7 @@ public class PatternDetails {
             PatternName name,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
-            Set<ImageId> images,
+            List<ImageId> images,
             List<PatternVariant> variants,
             List<PatternExtra> extras,
             Instant createdAt
