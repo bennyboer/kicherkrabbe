@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.patterns;
 import de.bennyboer.kicherkrabbe.changes.ReceiverId;
 import de.bennyboer.kicherkrabbe.changes.ResourceChange;
 import de.bennyboer.kicherkrabbe.changes.ResourceChangesTracker;
+import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.money.Money;
 import de.bennyboer.kicherkrabbe.patterns.http.api.*;
@@ -74,7 +75,23 @@ public class PatternsModule {
     }
 
     public Mono<PatternDetails> getPattern(String patternId, Agent agent) {
-        return Mono.empty(); // TODO
+        var internalPatternId = PatternId.of(patternId);
+
+        return assertAgentIsAllowedTo(agent, READ, internalPatternId)
+                .then(patternLookupRepo.findById(internalPatternId))
+                .switchIfEmpty(Mono.error(new PatternNotFoundError(internalPatternId)))
+                .map(pattern -> PatternDetails.of(
+                        pattern.getId(),
+                        pattern.getVersion(),
+                        pattern.isPublished(),
+                        pattern.getName(),
+                        pattern.getAttribution(),
+                        pattern.getCategories(),
+                        pattern.getImages(),
+                        pattern.getVariants(),
+                        pattern.getExtras(),
+                        pattern.getCreatedAt()
+                ));
     }
 
     public Mono<PublishedPatternsPage> getPublishedPatterns(
@@ -149,17 +166,29 @@ public class PatternsModule {
 
     @Transactional(propagation = MANDATORY)
     public Mono<Long> renamePattern(String patternId, long version, String name, Agent agent) {
-        return Mono.empty(); // TODO
+        var internalPatternId = PatternId.of(patternId);
+
+        return assertAgentIsAllowedTo(agent, RENAME, internalPatternId)
+                .then(patternService.rename(internalPatternId, Version.of(version), PatternName.of(name), agent))
+                .map(Version::getValue);
     }
 
     @Transactional(propagation = MANDATORY)
     public Mono<Long> publishPattern(String patternId, long version, Agent agent) {
-        return Mono.empty(); // TODO
+        var internalPatternId = PatternId.of(patternId);
+
+        return assertAgentIsAllowedTo(agent, PUBLISH, internalPatternId)
+                .then(patternService.publish(internalPatternId, Version.of(version), agent))
+                .map(Version::getValue);
     }
 
     @Transactional(propagation = MANDATORY)
     public Mono<Long> unpublishPattern(String patternId, long version, Agent agent) {
-        return Mono.empty(); // TODO
+        var internalPatternId = PatternId.of(patternId);
+
+        return assertAgentIsAllowedTo(agent, UNPUBLISH, internalPatternId)
+                .then(patternService.unpublish(internalPatternId, Version.of(version), agent))
+                .map(Version::getValue);
     }
 
     @Transactional(propagation = MANDATORY)
@@ -169,7 +198,12 @@ public class PatternsModule {
             List<PatternVariantDTO> variants,
             Agent agent
     ) {
-        return Mono.empty(); // TODO
+        var internalPatternId = PatternId.of(patternId);
+        var internalVariants = toInternalVariants(variants);
+
+        return assertAgentIsAllowedTo(agent, UPDATE_VARIANTS, internalPatternId)
+                .then(patternService.updateVariants(internalPatternId, Version.of(version), internalVariants, agent))
+                .map(Version::getValue);
     }
 
     @Transactional(propagation = MANDATORY)
@@ -179,32 +213,74 @@ public class PatternsModule {
             PatternAttributionDTO attribution,
             Agent agent
     ) {
-        return Mono.empty(); // TODO
+        var internalPatternId = PatternId.of(patternId);
+        var internalAttribution = toInternalAttribution(attribution);
+
+        return assertAgentIsAllowedTo(agent, UPDATE_ATTRIBUTION, internalPatternId)
+                .then(patternService.updateAttribution(
+                        internalPatternId,
+                        Version.of(version),
+                        internalAttribution,
+                        agent
+                ))
+                .map(Version::getValue);
     }
 
     @Transactional(propagation = MANDATORY)
     public Mono<Long> updatePatternCategories(String patternId, long version, Set<String> categories, Agent agent) {
-        return Mono.empty(); // TODO
+        var internalPatternId = PatternId.of(patternId);
+        var internalCategories = toInternalCategories(categories);
+
+        return assertAgentIsAllowedTo(agent, UPDATE_CATEGORIES, internalPatternId)
+                .then(assertCategoriesAvailable(internalCategories))
+                .then(patternService.updateCategories(
+                        internalPatternId,
+                        Version.of(version),
+                        internalCategories,
+                        agent
+                ))
+                .map(Version::getValue);
     }
 
     @Transactional(propagation = MANDATORY)
     public Mono<Long> updatePatternImages(String patternId, long version, List<String> images, Agent agent) {
-        return Mono.empty(); // TODO
+        var internalPatternId = PatternId.of(patternId);
+        var internalImages = toInternalImages(images);
+
+        return assertAgentIsAllowedTo(agent, UPDATE_IMAGES, internalPatternId)
+                .then(patternService.updateImages(internalPatternId, Version.of(version), internalImages, agent))
+                .map(Version::getValue);
     }
 
     @Transactional(propagation = MANDATORY)
     public Mono<Long> updatePatternExtras(String patternId, long version, List<PatternExtraDTO> extras, Agent agent) {
-        return Mono.empty(); // TODO
+        var internalPatternId = PatternId.of(patternId);
+        var internalExtras = toInternalExtras(extras);
+
+        return assertAgentIsAllowedTo(agent, UPDATE_EXTRAS, internalPatternId)
+                .then(patternService.updateExtras(internalPatternId, Version.of(version), internalExtras, agent))
+                .map(Version::getValue);
     }
 
     @Transactional(propagation = MANDATORY)
     public Mono<Void> deletePattern(String patternId, long version, Agent agent) {
-        return Mono.empty(); // TODO
+        var internalPatternId = PatternId.of(patternId);
+
+        return assertAgentIsAllowedTo(agent, DELETE, internalPatternId)
+                .then(patternService.delete(internalPatternId, Version.of(version), agent))
+                .then();
     }
 
     @Transactional(propagation = MANDATORY)
     public Flux<String> removeCategoryFromPatterns(String categoryId, Agent agent) {
-        return Flux.empty(); // TODO
+        return patternLookupRepo.findByCategory(PatternCategoryId.of(categoryId))
+                .delayUntil(pattern -> patternService.removeCategory(
+                        pattern.getId(),
+                        pattern.getVersion(),
+                        PatternCategoryId.of(categoryId),
+                        agent
+                ))
+                .map(pattern -> pattern.getId().getValue());
     }
 
     public Mono<Void> allowUserToCreatePatterns(String userId) {
@@ -229,6 +305,14 @@ public class PatternsModule {
         var renamePermission = Permission.builder()
                 .holder(holder)
                 .isAllowedTo(RENAME)
+                .on(resource);
+        var publishPermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(PUBLISH)
+                .on(resource);
+        var unpublishPermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(UNPUBLISH)
                 .on(resource);
         var updateAttributionPermission = Permission.builder()
                 .holder(holder)
@@ -258,6 +342,8 @@ public class PatternsModule {
         return permissionsService.addPermissions(
                 readPermission,
                 renamePermission,
+                publishPermission,
+                unpublishPermission,
                 updateAttributionPermission,
                 updateCategoriesPermission,
                 updateImagesPermission,

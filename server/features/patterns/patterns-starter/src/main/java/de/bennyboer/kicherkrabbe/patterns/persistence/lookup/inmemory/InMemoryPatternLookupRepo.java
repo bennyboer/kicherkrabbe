@@ -55,4 +55,15 @@ public class InMemoryPatternLookupRepo extends InMemoryEventSourcingReadModelRep
                 });
     }
 
+    @Override
+    public Flux<LookupPattern> findByCategory(PatternCategoryId categoryId) {
+        return getAll()
+                .filter(pattern -> pattern.getCategories().contains(categoryId));
+    }
+
+    @Override
+    public Mono<LookupPattern> findById(PatternId internalPatternId) {
+        return get(internalPatternId);
+    }
+
 }

@@ -13,6 +13,8 @@ import de.bennyboer.kicherkrabbe.patterns.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.patterns.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.patterns.delete.DeletedEvent;
+import de.bennyboer.kicherkrabbe.patterns.delete.category.CategoryRemovedEvent;
+import de.bennyboer.kicherkrabbe.patterns.delete.category.RemoveCategoryCmd;
 import de.bennyboer.kicherkrabbe.patterns.publish.AlreadyPublishedError;
 import de.bennyboer.kicherkrabbe.patterns.publish.PublishCmd;
 import de.bennyboer.kicherkrabbe.patterns.publish.PublishedEvent;
@@ -38,6 +40,7 @@ import lombok.Value;
 import lombok.With;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -135,6 +138,7 @@ public class Pattern implements Aggregate {
             case UpdateImagesCmd c -> ApplyCommandResult.of(ImagesUpdatedEvent.of(c.getImages()));
             case UpdateVariantsCmd c -> ApplyCommandResult.of(VariantsUpdatedEvent.of(c.getVariants()));
             case UpdateExtrasCmd c -> ApplyCommandResult.of(ExtrasUpdatedEvent.of(c.getExtras()));
+            case RemoveCategoryCmd c -> ApplyCommandResult.of(CategoryRemovedEvent.of(c.getCategoryId()));
             case DeleteCmd ignored -> ApplyCommandResult.of(DeletedEvent.of());
             default -> throw new IllegalArgumentException("Unknown command " + cmd.getClass().getSimpleName());
         };
@@ -171,6 +175,11 @@ public class Pattern implements Aggregate {
             case ImagesUpdatedEvent e -> withImages(e.getImages());
             case VariantsUpdatedEvent e -> withVariants(e.getVariants());
             case ExtrasUpdatedEvent e -> withExtras(e.getExtras());
+            case CategoryRemovedEvent e -> {
+                Set<PatternCategoryId> updatedCategories = new HashSet<>(getCategories());
+                updatedCategories.remove(e.getCategoryId());
+                yield withCategories(updatedCategories);
+            }
             case DeletedEvent ignored -> withDeletedAt(metadata.getDate());
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());
         }).withVersion(version);

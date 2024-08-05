@@ -106,6 +106,41 @@ public class PatternsModuleTest {
         module.disallowAnonymousAndSystemUsersToReadPublishedPattern(patternId).block();
     }
 
+    public void updatePatternAttribution(
+            String patternId,
+            long version,
+            PatternAttributionDTO attribution,
+            Agent agent
+    ) {
+        module.updatePatternAttribution(patternId, version, attribution, agent).block();
+
+        module.updatePatternInLookup(patternId).block();
+    }
+
+    public void updatePatternCategories(String patternId, long version, Set<String> categories, Agent agent) {
+        module.updatePatternCategories(patternId, version, categories, agent).block();
+
+        module.updatePatternInLookup(patternId).block();
+    }
+
+    public void updatePatternImages(String patternId, long version, List<String> images, Agent agent) {
+        module.updatePatternImages(patternId, version, images, agent).block();
+
+        module.updatePatternInLookup(patternId).block();
+    }
+
+    public void updatePatternVariants(String patternId, long version, List<PatternVariantDTO> variants, Agent agent) {
+        module.updatePatternVariants(patternId, version, variants, agent).block();
+
+        module.updatePatternInLookup(patternId).block();
+    }
+
+    public void updatePatternExtras(String patternId, long version, List<PatternExtraDTO> extras, Agent agent) {
+        module.updatePatternExtras(patternId, version, extras, agent).block();
+
+        module.updatePatternInLookup(patternId).block();
+    }
+
     public PatternDetails getPattern(String patternId, Agent agent) {
         return module.getPattern(patternId, agent).block();
     }

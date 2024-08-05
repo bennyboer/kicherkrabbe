@@ -11,7 +11,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.index.Index;
+import org.springframework.data.mongodb.core.index.IndexDefinition;
+import org.springframework.data.mongodb.core.index.ReactiveIndexOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collection;
@@ -20,6 +25,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
@@ -71,8 +77,33 @@ public class MongoPatternLookupRepo
     }
 
     @Override
+    public Flux<LookupPattern> findByCategory(PatternCategoryId categoryId) {
+        Criteria criteria = where("categories").is(categoryId.getValue());
+        Query query = new Query(criteria);
+
+        return template.find(query, MongoLookupPattern.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
+    public Mono<LookupPattern> findById(PatternId internalPatternId) {
+        Criteria criteria = where("_id").is(internalPatternId.getValue());
+        Query query = new Query(criteria);
+
+        return template.findOne(query, MongoLookupPattern.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
     protected String stringifyId(PatternId patternId) {
         return patternId.getValue();
+    }
+
+    @Override
+    protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
+        IndexDefinition categoriesIndex = new Index().on("categories", ASC);
+
+        return indexOps.ensureIndex(categoriesIndex).then();
     }
 
     private AggregationOperation transformToPage(long skip, long limit) {

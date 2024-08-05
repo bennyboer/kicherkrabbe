@@ -922,6 +922,63 @@ public class PatternServiceTest {
         assertThat(snapshotEvents.getLast().getMetadata().getAggregateVersion()).isEqualTo(Version.of(200));
     }
 
+    @Test
+    void shouldRemoveCategory() {
+        // given: a pattern with two categories
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternAttribution.empty(),
+                Set.of(PatternCategoryId.of("CATEGORY_ID_1"), PatternCategoryId.of("CATEGORY_ID_2")),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(PatternVariant.of(
+                        PatternVariantName.of("Short"),
+                        Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                )),
+                List.of()
+        );
+
+        // when: removing a category
+        var updatedVersion = removeCategory(id, Version.zero(), PatternCategoryId.of("CATEGORY_ID_1"));
+
+        // then: the category is removed
+        var pattern = get(id);
+        assertThat(pattern.getId()).isEqualTo(id);
+        assertThat(pattern.getVersion()).isEqualTo(updatedVersion);
+        assertThat(pattern.getCategories()).containsExactly(PatternCategoryId.of("CATEGORY_ID_2"));
+
+        // when: removing the other category
+        updatedVersion = removeCategory(id, updatedVersion, PatternCategoryId.of("CATEGORY_ID_2"));
+
+        // then: the other category is removed
+        pattern = get(id);
+        assertThat(pattern.getId()).isEqualTo(id);
+        assertThat(pattern.getVersion()).isEqualTo(updatedVersion);
+        assertThat(pattern.getCategories()).isEmpty();
+    }
+
+    @Test
+    void shouldNotRemoveCategoryGivenAnOutdatedVersion() {
+        // given: a pattern with two categories
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternAttribution.empty(),
+                Set.of(PatternCategoryId.of("CATEGORY_ID_1"), PatternCategoryId.of("CATEGORY_ID_2")),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(PatternVariant.of(
+                        PatternVariantName.of("Short"),
+                        Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                )),
+                List.of()
+        );
+
+        // and: the pattern is renamed
+        rename(id, Version.zero(), PatternName.of("Sommerkleid 2024"));
+
+        // when: removing a category with an outdated version; then: an error is raised
+        assertThatThrownBy(() -> removeCategory(id, Version.zero(), PatternCategoryId.of("CATEGORY_ID_1")))
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
     private Pattern get(PatternId id) {
         return patternService.get(id).block();
     }
@@ -975,6 +1032,10 @@ public class PatternServiceTest {
 
     private Version updateExtras(PatternId id, Version version, List<PatternExtra> extras) {
         return patternService.updateExtras(id, version, extras, Agent.system()).block();
+    }
+
+    private Version removeCategory(PatternId id, Version version, PatternCategoryId categoryId) {
+        return patternService.removeCategory(id, version, categoryId, Agent.system()).block();
     }
 
     private void delete(PatternId id, Version version) {

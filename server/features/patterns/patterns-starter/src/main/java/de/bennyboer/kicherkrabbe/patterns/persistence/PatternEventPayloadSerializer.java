@@ -9,6 +9,7 @@ import de.bennyboer.kicherkrabbe.money.Money;
 import de.bennyboer.kicherkrabbe.patterns.*;
 import de.bennyboer.kicherkrabbe.patterns.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.delete.DeletedEvent;
+import de.bennyboer.kicherkrabbe.patterns.delete.category.CategoryRemovedEvent;
 import de.bennyboer.kicherkrabbe.patterns.publish.PublishedEvent;
 import de.bennyboer.kicherkrabbe.patterns.rename.RenamedEvent;
 import de.bennyboer.kicherkrabbe.patterns.snapshot.SnapshottedEvent;
@@ -75,6 +76,9 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             case ExtrasUpdatedEvent e -> Map.of(
                     "extras", serializeExtras(e.getExtras())
             );
+            case CategoryRemovedEvent e -> Map.of(
+                    "categoryId", e.getCategoryId().getValue()
+            );
             case DeletedEvent ignored -> Map.of();
             default -> throw new IllegalStateException("Unexpected event: " + event);
         };
@@ -114,8 +118,11 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             case "IMAGES_UPDATED" -> ImagesUpdatedEvent.of(deserializeImages((List<String>) payload.get("images")));
             case "VARIANTS_UPDATED" ->
                     VariantsUpdatedEvent.of(deserializeVariants((List<Map<String, Object>>) payload.get("variants")));
-            case "EXTRAS_UPDATED" -> ExtrasUpdatedEvent.of(deserializeExtras((List<Map<String, Object>>) payload.get(
-                    "extras")));
+            case "EXTRAS_UPDATED" -> ExtrasUpdatedEvent.of(deserializeExtras(
+                    (List<Map<String, Object>>) payload.get("extras")
+            ));
+            case "CATEGORY_REMOVED" ->
+                    CategoryRemovedEvent.of(PatternCategoryId.of((String) payload.get("categoryId")));
             case "DELETED" -> DeletedEvent.of();
             default -> throw new IllegalStateException("Unexpected event name: " + name);
         };

@@ -10,6 +10,10 @@ public class Actions {
 
     public static final Action RENAME = Action.of("RENAME");
 
+    public static final Action PUBLISH = Action.of("PUBLISH");
+
+    public static final Action UNPUBLISH = Action.of("UNPUBLISH");
+
     public static final Action UPDATE_ATTRIBUTION = Action.of("UPDATE_ATTRIBUTION");
 
     public static final Action UPDATE_CATEGORIES = Action.of("UPDATE_CATEGORIES");

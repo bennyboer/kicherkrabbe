@@ -11,6 +11,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.EventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.patterns.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.patterns.delete.DeleteCmd;
+import de.bennyboer.kicherkrabbe.patterns.delete.category.RemoveCategoryCmd;
 import de.bennyboer.kicherkrabbe.patterns.publish.PublishCmd;
 import de.bennyboer.kicherkrabbe.patterns.rename.RenameCmd;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.UnpublishCmd;
@@ -86,6 +87,10 @@ public class PatternService extends AggregateService<Pattern, PatternId> {
 
     public Mono<Version> updateExtras(PatternId id, Version version, List<PatternExtra> extras, Agent agent) {
         return dispatchCommand(id, version, agent, UpdateExtrasCmd.of(extras));
+    }
+
+    public Mono<Version> removeCategory(PatternId id, Version version, PatternCategoryId categoryId, Agent agent) {
+        return dispatchCommand(id, version, agent, RemoveCategoryCmd.of(categoryId));
     }
 
     public Mono<Version> delete(PatternId id, Version version, Agent agent) {
