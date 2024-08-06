@@ -11,9 +11,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
 import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.index.IndexDefinition;
 import org.springframework.data.mongodb.core.index.ReactiveIndexOperations;
+import org.springframework.data.mongodb.core.query.Collation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import reactor.core.publisher.Flux;
@@ -92,6 +94,74 @@ public class MongoPatternLookupRepo
 
         return template.findOne(query, MongoLookupPattern.class, collectionName)
                 .map(serializer::deserialize);
+    }
+
+    @Override
+    public Flux<PatternCategoryId> findUniqueCategories() {
+        return template.query(MongoLookupPattern.class)
+                .inCollection(collectionName)
+                .distinct("categories")
+                .as(String.class)
+                .all()
+                .map(PatternCategoryId::of);
+    }
+
+    @Override
+    public Mono<LookupPattern> findPublished(PatternId id) {
+        Criteria criteria = where("_id").is(id.getValue())
+                .and("published").is(true);
+        Query query = new Query(criteria);
+
+        return template.findOne(query, MongoLookupPattern.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
+    public Mono<LookupPatternPage> findPublished(
+            String searchTerm,
+            Set<PatternCategoryId> categories,
+            boolean ascending,
+            long skip,
+            long limit
+    ) {
+        Set<String> categoryIds = categories.stream()
+                .map(PatternCategoryId::getValue)
+                .collect(Collectors.toSet());
+
+        Criteria criteria = where("published").is(true);
+
+        if (!searchTerm.isBlank()) {
+            String quotedSearchTerm = Pattern.quote(searchTerm);
+            criteria = criteria.and("name").regex(quotedSearchTerm, "i");
+        }
+
+        if (!categoryIds.isEmpty()) {
+            criteria = criteria.and("categories").in(categoryIds);
+        }
+
+        AggregationOperation match = match(criteria);
+        AggregationOperation sortBy = sort(ascending
+                ? Sort.by(Sort.Order.asc("name"))
+                : Sort.by(Sort.Order.desc("name")));
+        AggregationOperation transformToPage = transformToPage(skip, limit);
+
+        AggregationOptions options = AggregationOptions.builder()
+                .collation(Collation.of("de").numericOrderingEnabled())
+                .build();
+        Aggregation aggregation = newAggregation(match, sortBy, transformToPage)
+                .withOptions(options);
+
+        return template.aggregate(aggregation, collectionName, PipelinePage.class)
+                .next()
+                .map(result -> LookupPatternPage.of(
+                        skip,
+                        limit,
+                        result.getTotal(),
+                        result.getMatches()
+                                .stream()
+                                .map(serializer::deserialize)
+                                .toList()
+                ));
     }
 
     @Override

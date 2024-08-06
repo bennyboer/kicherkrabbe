@@ -8,6 +8,8 @@ public class Actions {
 
     public static final Action READ = Action.of("READ");
 
+    public static final Action READ_PUBLISHED = Action.of("READ_PUBLISHED");
+
     public static final Action RENAME = Action.of("RENAME");
 
     public static final Action PUBLISH = Action.of("PUBLISH");

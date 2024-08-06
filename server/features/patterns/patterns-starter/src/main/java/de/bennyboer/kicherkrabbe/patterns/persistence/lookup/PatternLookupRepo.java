@@ -23,4 +23,16 @@ public interface PatternLookupRepo extends EventSourcingReadModelRepo<PatternId,
 
     Mono<LookupPattern> findById(PatternId internalPatternId);
 
+    Flux<PatternCategoryId> findUniqueCategories();
+
+    Mono<LookupPattern> findPublished(PatternId id);
+
+    Mono<LookupPatternPage> findPublished(
+            String searchTerm,
+            Set<PatternCategoryId> categories,
+            boolean ascending,
+            long skip,
+            long limit
+    );
+
 }

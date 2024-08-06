@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static de.bennyboer.kicherkrabbe.patterns.Actions.*;
+import static de.bennyboer.kicherkrabbe.patterns.http.api.PatternsSortDirectionDTO.ASCENDING;
 import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @AllArgsConstructor
@@ -100,21 +101,64 @@ public class PatternsModule {
             PatternsSortDTO sort,
             long skip,
             long limit,
-            Agent agent
+            Agent ignoredAgent
     ) {
-        return Mono.empty(); // TODO
+        Set<PatternCategoryId> toInternalCategories = categories.stream()
+                .map(PatternCategoryId::of)
+                .collect(Collectors.toSet());
+        boolean sortAscending = sort.direction == ASCENDING;
+
+        return patternLookupRepo.findPublished(
+                        searchTerm,
+                        toInternalCategories,
+                        sortAscending,
+                        skip,
+                        limit
+                )
+                .map(result -> PublishedPatternsPage.of(
+                        result.getSkip(),
+                        result.getLimit(),
+                        result.getTotal(),
+                        result.getResults()
+                                .stream()
+                                .map(pattern -> PublishedPattern.of(
+                                        pattern.getId(),
+                                        pattern.getName(),
+                                        pattern.getAttribution(),
+                                        pattern.getCategories(),
+                                        pattern.getImages(),
+                                        pattern.getVariants(),
+                                        pattern.getExtras()
+                                )).toList()
+                ));
     }
 
     public Mono<PublishedPattern> getPublishedPattern(String patternId, Agent agent) {
-        return Mono.empty(); // TODO
+        var id = PatternId.of(patternId);
+
+        return assertAgentIsAllowedTo(agent, READ_PUBLISHED, id)
+                .then(patternLookupRepo.findPublished(id))
+                .map(pattern -> PublishedPattern.of(
+                        pattern.getId(),
+                        pattern.getName(),
+                        pattern.getAttribution(),
+                        pattern.getCategories(),
+                        pattern.getImages(),
+                        pattern.getVariants(),
+                        pattern.getExtras()
+                ))
+                .onErrorResume(MissingPermissionError.class, e -> Mono.empty());
     }
 
     public Flux<PatternCategory> getAvailableCategoriesForPatterns(Agent agent) {
-        return Flux.empty(); // TODO
+        return assertAgentIsAllowedTo(agent, CREATE)
+                .thenMany(patternCategoryRepo.findAll());
     }
 
-    public Flux<PatternCategory> getCategoriesUsedInPatterns(Agent agent) {
-        return Flux.empty(); // TODO
+    public Flux<PatternCategory> getCategoriesUsedInPatterns(Agent ignoredAgent) {
+        return patternLookupRepo.findUniqueCategories()
+                .collect(Collectors.toSet())
+                .flatMapMany(patternCategoryRepo::findByIds);
     }
 
     public Flux<ResourceChange> getPatternChanges(Agent agent) {
@@ -302,6 +346,10 @@ public class PatternsModule {
                 .holder(holder)
                 .isAllowedTo(READ)
                 .on(resource);
+        var readPublishedPermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(READ_PUBLISHED)
+                .on(resource);
         var renamePermission = Permission.builder()
                 .holder(holder)
                 .isAllowedTo(RENAME)
@@ -341,6 +389,7 @@ public class PatternsModule {
 
         return permissionsService.addPermissions(
                 readPermission,
+                readPublishedPermission,
                 renamePermission,
                 publishPermission,
                 unpublishPermission,
@@ -397,11 +446,43 @@ public class PatternsModule {
     }
 
     public Mono<Void> allowAnonymousAndSystemUsersToReadPublishedPattern(String patternId) {
-        return Mono.empty(); // TODO
+        var resource = Resource.of(getResourceType(), ResourceId.of(patternId));
+        var systemHolder = Holder.group(HolderId.system());
+        var anonymousHolder = Holder.group(HolderId.anonymous());
+
+        var readPublishedPermission = Permission.builder()
+                .holder(anonymousHolder)
+                .isAllowedTo(READ_PUBLISHED)
+                .on(resource);
+        var readPublishedSystemPermission = Permission.builder()
+                .holder(systemHolder)
+                .isAllowedTo(READ_PUBLISHED)
+                .on(resource);
+
+        return permissionsService.addPermissions(
+                readPublishedPermission,
+                readPublishedSystemPermission
+        );
     }
 
     public Mono<Void> disallowAnonymousAndSystemUsersToReadPublishedPattern(String patternId) {
-        return Mono.empty(); // TODO
+        var resource = Resource.of(getResourceType(), ResourceId.of(patternId));
+        var systemHolder = Holder.group(HolderId.system());
+        var anonymousHolder = Holder.group(HolderId.anonymous());
+
+        var readPublishedPermission = Permission.builder()
+                .holder(anonymousHolder)
+                .isAllowedTo(READ_PUBLISHED)
+                .on(resource);
+        var readPublishedSystemPermission = Permission.builder()
+                .holder(systemHolder)
+                .isAllowedTo(READ_PUBLISHED)
+                .on(resource);
+
+        return permissionsService.removePermissions(
+                readPublishedPermission,
+                readPublishedSystemPermission
+        );
     }
 
     private Flux<PatternId> getAccessiblePatternIds(Agent agent) {

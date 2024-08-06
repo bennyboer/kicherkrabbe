@@ -66,4 +66,59 @@ public class InMemoryPatternLookupRepo extends InMemoryEventSourcingReadModelRep
         return get(internalPatternId);
     }
 
+    @Override
+    public Flux<PatternCategoryId> findUniqueCategories() {
+        return getAll()
+                .flatMap(pattern -> Flux.fromIterable(pattern.getCategories()))
+                .distinct();
+    }
+
+    @Override
+    public Mono<LookupPattern> findPublished(PatternId id) {
+        return getAll()
+                .filter(pattern -> pattern.getId().equals(id) && pattern.isPublished())
+                .singleOrEmpty();
+    }
+
+    @Override
+    public Mono<LookupPatternPage> findPublished(
+            String searchTerm,
+            Set<PatternCategoryId> categories,
+            boolean ascending,
+            long skip,
+            long limit
+    ) {
+        Comparator<LookupPattern> comparator = Comparator.comparing(pattern -> pattern.getName().getValue());
+        if (!ascending) {
+            comparator = comparator.reversed();
+        }
+
+        return getAll()
+                .filter(LookupPattern::isPublished)
+                .filter(pattern -> {
+                    if (searchTerm.isBlank()) {
+                        return true;
+                    }
+
+                    return pattern.getName()
+                            .getValue()
+                            .toLowerCase(Locale.ROOT)
+                            .contains(searchTerm.toLowerCase(Locale.ROOT));
+                })
+                .filter(pattern -> categories.isEmpty() || pattern.getCategories()
+                        .stream()
+                        .anyMatch(categories::contains))
+                .sort(comparator)
+                .collectList()
+                .flatMap(patterns -> {
+                    long total = patterns.size();
+
+                    return Flux.fromIterable(patterns)
+                            .skip(skip)
+                            .take(limit)
+                            .collectList()
+                            .map(results -> LookupPatternPage.of(skip, limit, total, results));
+                });
+    }
+
 }

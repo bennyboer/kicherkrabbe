@@ -64,6 +64,19 @@ public class MongoLookupPatternSerializer implements ReadModelSerializer<LookupP
                     return mongoVariant;
                 })
                 .toList();
+        result.extras = readModel.getExtras()
+                .stream()
+                .map(extra -> {
+                    var mongoExtra = new MongoLookupPatternExtra();
+
+                    mongoExtra.name = extra.getName().getValue();
+                    mongoExtra.price = new MongoLookupPrice();
+                    mongoExtra.price.amount = extra.getPrice().getAmount();
+                    mongoExtra.price.currency = extra.getPrice().getCurrency().getShortForm();
+
+                    return mongoExtra;
+                })
+                .toList();
         result.createdAt = readModel.getCreatedAt();
 
         return result;

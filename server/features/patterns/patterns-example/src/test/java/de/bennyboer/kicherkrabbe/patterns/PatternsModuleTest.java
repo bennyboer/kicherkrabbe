@@ -175,12 +175,12 @@ public class PatternsModuleTest {
         module.allowUserToManagePattern(patternId, userId).block();
     }
 
-    public List<PatternCategory> getAvailableTopicsForPatterns(Agent agent) {
+    public List<PatternCategory> getAvailableCategoriesForPatterns(Agent agent) {
         return module.getAvailableCategoriesForPatterns(agent).collectList().block();
     }
 
-    public List<PatternCategory> getTopicsUsedInPatterns(Agent agent) {
-        return module.getAvailableCategoriesForPatterns(agent).collectList().block();
+    public List<PatternCategory> getCategoriesUsedInPatterns(Agent agent) {
+        return module.getCategoriesUsedInPatterns(agent).collectList().block();
     }
 
     public void markCategoryAsAvailable(String id, String name) {
