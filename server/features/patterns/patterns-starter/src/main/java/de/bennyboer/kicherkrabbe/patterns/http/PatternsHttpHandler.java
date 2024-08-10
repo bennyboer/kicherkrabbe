@@ -367,6 +367,11 @@ public class PatternsHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorMap(CategoriesMissingError.class, e -> new ResponseStatusException(
+                        PRECONDITION_FAILED,
+                        e.getMessage(),
+                        e
+                ))
                 .as(transactionalOperator::transactional);
     }
 
