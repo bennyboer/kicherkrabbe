@@ -28,7 +28,7 @@ public class RenamePatternHttpHandlerTest extends HttpHandlerTest {
 
         // and: the module is configured to return a successful response
         when(module.renamePattern(
-                "FABRIC_ID",
+                "PATTERN_ID",
                 request.version,
                 request.name,
                 Agent.user(AgentId.of("USER_ID"))
@@ -36,7 +36,7 @@ public class RenamePatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/FABRIC_ID/rename")
+                .uri("/api/patterns/PATTERN_ID/rename")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -58,7 +58,7 @@ public class RenamePatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/patterns/FABRIC_ID/rename")
+                .uri("/api/patterns/PATTERN_ID/rename")
                 .bodyValue(request)
                 .exchange();
 
@@ -75,7 +75,7 @@ public class RenamePatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/api/patterns/FABRIC_ID/rename")
+                .uri("/api/patterns/PATTERN_ID/rename")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
@@ -96,7 +96,7 @@ public class RenamePatternHttpHandlerTest extends HttpHandlerTest {
 
         // and: the module is configured to return a conflict response
         when(module.renamePattern(
-                "FABRIC_ID",
+                "PATTERN_ID",
                 request.version,
                 request.name,
                 Agent.user(AgentId.of("USER_ID"))
@@ -108,7 +108,7 @@ public class RenamePatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/FABRIC_ID/rename")
+                .uri("/api/patterns/PATTERN_ID/rename")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -129,7 +129,7 @@ public class RenamePatternHttpHandlerTest extends HttpHandlerTest {
 
         // and: the module is configured to return an illegal argument exception
         when(module.renamePattern(
-                "FABRIC_ID",
+                "PATTERN_ID",
                 request.version,
                 request.name,
                 Agent.user(AgentId.of("USER_ID"))
@@ -137,7 +137,7 @@ public class RenamePatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/FABRIC_ID/rename")
+                .uri("/api/patterns/PATTERN_ID/rename")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();

@@ -6,16 +6,17 @@ import {
 } from '@angular/core';
 import {
   BehaviorSubject,
+  catchError,
   combineLatest,
-  delay,
   finalize,
+  first,
   map,
   Observable,
-  of,
 } from 'rxjs';
 import { environment } from '../../../../../../../environments';
 import { PatternCategory, PatternExtra, PatternVariant } from '../../model';
-import { ButtonSize, Chip } from '../../../../../shared';
+import { ButtonSize, Chip, NotificationService } from '../../../../../shared';
+import { PatternCategoriesService } from '../../services';
 
 @Component({
   selector: 'app-create-pattern-page',
@@ -68,6 +69,11 @@ export class CreatePage implements OnInit, OnDestroy {
   );
 
   protected readonly ButtonSize = ButtonSize;
+
+  constructor(
+    private readonly patternCategoriesService: PatternCategoriesService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   ngOnInit(): void {
     this.reloadAvailableCategories();
@@ -181,18 +187,19 @@ export class CreatePage implements OnInit, OnDestroy {
   private reloadAvailableCategories(): void {
     this.loadingAvailableCategories$.next(true);
 
-    // TODO Replace with backend call
-    const mockCategories = [
-      PatternCategory.of({ id: 'top', name: 'Oberteil' }),
-      PatternCategory.of({ id: 'trousers', name: 'Hose' }),
-      PatternCategory.of({ id: 'onesie', name: 'Einteiler' }),
-      PatternCategory.of({ id: 'dress', name: 'Kleid' }),
-      PatternCategory.of({ id: 'accessoire', name: 'Accessoire' }),
-    ];
-
-    of(mockCategories)
+    this.patternCategoriesService
+      .getCategories()
       .pipe(
-        delay(500),
+        first(),
+        catchError((e) => {
+          console.error(e);
+          this.notificationService.publish({
+            type: 'error',
+            message:
+              'Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neuzuladen.',
+          });
+          return [];
+        }),
         finalize(() => this.loadingAvailableCategories$.next(false)),
       )
       .subscribe((categories) => this.availableCategories$.next(categories));

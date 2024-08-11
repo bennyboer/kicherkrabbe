@@ -6,18 +6,18 @@ import de.bennyboer.kicherkrabbe.patterns.PatternCategoryName;
 
 public class MongoPatternCategoryTransformer {
 
-    public static MongoPatternCategory toMongo(PatternCategory topic) {
+    public static MongoPatternCategory toMongo(PatternCategory category) {
         var result = new MongoPatternCategory();
 
-        result.id = topic.getId().getValue();
-        result.name = topic.getName().getValue();
+        result.id = category.getId().getValue();
+        result.name = category.getName().getValue();
 
         return result;
     }
 
-    public static PatternCategory fromMongo(MongoPatternCategory topic) {
-        PatternCategoryId id = PatternCategoryId.of(topic.id);
-        PatternCategoryName name = PatternCategoryName.of(topic.name);
+    public static PatternCategory fromMongo(MongoPatternCategory category) {
+        PatternCategoryId id = PatternCategoryId.of(category.id);
+        PatternCategoryName name = PatternCategoryName.of(category.name);
 
         return PatternCategory.of(id, name);
     }

@@ -6,6 +6,7 @@ import { SharedModule } from '../../../shared/shared.module';
 import { AssetsModule } from '../assets/assets.module';
 import { SortablejsModule } from 'nxt-sortablejs';
 import { COMPONENTS } from './components';
+import { PatternCategoriesService, PatternsService } from './services';
 
 @NgModule({
   declarations: [...PAGES, ...COMPONENTS],
@@ -16,5 +17,6 @@ import { COMPONENTS } from './components';
     AssetsModule,
     SortablejsModule,
   ],
+  providers: [PatternsService, PatternCategoriesService],
 })
 export class PatternsModule {}

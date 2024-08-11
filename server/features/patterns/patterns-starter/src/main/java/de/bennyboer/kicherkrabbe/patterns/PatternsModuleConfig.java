@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.changes.MessagingResourceChangesTracker;
 import de.bennyboer.kicherkrabbe.changes.ResourceChangesTracker;
 import de.bennyboer.kicherkrabbe.changes.ResourceType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListenerFactory;
+import de.bennyboer.kicherkrabbe.patterns.http.PatternsHttpConfig;
 import de.bennyboer.kicherkrabbe.patterns.messaging.PatternsMessaging;
 import de.bennyboer.kicherkrabbe.patterns.persistence.categories.PatternCategoryRepo;
 import de.bennyboer.kicherkrabbe.patterns.persistence.categories.mongo.MongoPatternCategoryRepo;
@@ -26,6 +27,7 @@ import static de.bennyboer.kicherkrabbe.patterns.Actions.READ;
 @Import({
         PatternsAggregateConfig.class,
         PatternsPermissionsConfig.class,
+        PatternsHttpConfig.class,
         PatternsMessaging.class,
         SecurityConfig.class
 })

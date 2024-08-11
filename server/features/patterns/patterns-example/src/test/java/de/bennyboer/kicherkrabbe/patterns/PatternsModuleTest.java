@@ -191,8 +191,8 @@ public class PatternsModuleTest {
         module.markCategoryAsUnavailable(id).block();
     }
 
-    public void removeCategoryFromPatterns(String topicId) {
-        List<String> updatedPatternIds = module.removeCategoryFromPatterns(topicId, Agent.system())
+    public void removeCategoryFromPatterns(String categoryId) {
+        List<String> updatedPatternIds = module.removeCategoryFromPatterns(categoryId, Agent.system())
                 .collectList()
                 .block();
 

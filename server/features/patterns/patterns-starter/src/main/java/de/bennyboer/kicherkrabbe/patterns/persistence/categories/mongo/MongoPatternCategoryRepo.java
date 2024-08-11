@@ -22,7 +22,7 @@ public class MongoPatternCategoryRepo implements PatternCategoryRepo {
     private final ReactiveMongoTemplate template;
 
     public MongoPatternCategoryRepo(ReactiveMongoTemplate template) {
-        this("fabrics_topics", template);
+        this("patterns_categories", template);
     }
 
     public MongoPatternCategoryRepo(String collectionName, ReactiveMongoTemplate template) {
@@ -31,8 +31,8 @@ public class MongoPatternCategoryRepo implements PatternCategoryRepo {
     }
 
     @Override
-    public Mono<PatternCategory> save(PatternCategory topic) {
-        return template.save(MongoPatternCategoryTransformer.toMongo(topic), collectionName)
+    public Mono<PatternCategory> save(PatternCategory category) {
+        return template.save(MongoPatternCategoryTransformer.toMongo(category), collectionName)
                 .map(MongoPatternCategoryTransformer::fromMongo);
     }
 
@@ -46,11 +46,11 @@ public class MongoPatternCategoryRepo implements PatternCategoryRepo {
 
     @Override
     public Flux<PatternCategory> findByIds(Set<PatternCategoryId> ids) {
-        Set<String> topicIds = ids.stream()
+        Set<String> categoryIds = ids.stream()
                 .map(PatternCategoryId::getValue)
                 .collect(Collectors.toSet());
 
-        Criteria criteria = where("_id").in(topicIds);
+        Criteria criteria = where("_id").in(categoryIds);
         Query query = query(criteria);
 
         return template.find(query, MongoPatternCategory.class, collectionName)

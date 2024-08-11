@@ -25,7 +25,7 @@ export class PricedSizeRange {
   static of(props: {
     from?: number;
     to?: number | null;
-    unit?: string;
+    unit?: string | null;
     price?: Money;
   }): PricedSizeRange {
     return new PricedSizeRange({

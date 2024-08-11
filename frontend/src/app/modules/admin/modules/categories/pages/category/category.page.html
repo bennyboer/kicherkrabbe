@@ -52,7 +52,7 @@
           @if (deleteConfirmationRequired$ | async) {
             <app-button color="warn" (click)="delete(category)">Wirklich löschen?</app-button>
           } @else {
-            <app-button (click)="waitForDeleteConfirmation()">Thema löschen</app-button>
+            <app-button (click)="waitForDeleteConfirmation()">Kategorie löschen</app-button>
           }
         </span>
     </div>
