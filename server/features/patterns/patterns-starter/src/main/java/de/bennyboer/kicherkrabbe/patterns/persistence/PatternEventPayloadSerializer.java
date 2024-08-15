@@ -90,7 +90,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             case "CREATED" -> CreatedEvent.of(
                     PatternName.of((String) payload.get("name")),
                     deserializeAttribution((Map<String, Object>) payload.get("attribution")),
-                    deserializeCategories((Set<String>) payload.get("categories")),
+                    deserializeCategories((List<String>) payload.get("categories")),
                     deserializeImages((List<String>) payload.get("images")),
                     deserializeVariants((List<Map<String, Object>>) payload.get("variants")),
                     deserializeExtras((List<Map<String, Object>>) payload.get("extras"))
@@ -99,7 +99,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
                     (boolean) payload.get("published"),
                     PatternName.of((String) payload.get("name")),
                     deserializeAttribution((Map<String, Object>) payload.get("attribution")),
-                    deserializeCategories((Set<String>) payload.get("categories")),
+                    deserializeCategories((List<String>) payload.get("categories")),
                     deserializeImages((List<String>) payload.get("images")),
                     deserializeVariants((List<Map<String, Object>>) payload.get("variants")),
                     deserializeExtras((List<Map<String, Object>>) payload.get("extras")),
@@ -113,11 +113,13 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             case "RENAMED" -> RenamedEvent.of(PatternName.of((String) payload.get("name")));
             case "ATTRIBUTION_UPDATED" ->
                     AttributionUpdatedEvent.of(deserializeAttribution((Map<String, Object>) payload.get("attribution")));
-            case "CATEGORIES_UPDATED" -> CategoriesUpdatedEvent.of(deserializeCategories((Set<String>) payload.get(
-                    "categories")));
+            case "CATEGORIES_UPDATED" -> CategoriesUpdatedEvent.of(deserializeCategories(
+                    (List<String>) payload.get("categories")
+            ));
             case "IMAGES_UPDATED" -> ImagesUpdatedEvent.of(deserializeImages((List<String>) payload.get("images")));
-            case "VARIANTS_UPDATED" ->
-                    VariantsUpdatedEvent.of(deserializeVariants((List<Map<String, Object>>) payload.get("variants")));
+            case "VARIANTS_UPDATED" -> VariantsUpdatedEvent.of(deserializeVariants(
+                    (List<Map<String, Object>>) payload.get("variants")
+            ));
             case "EXTRAS_UPDATED" -> ExtrasUpdatedEvent.of(deserializeExtras(
                     (List<Map<String, Object>>) payload.get("extras")
             ));
@@ -162,7 +164,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
         return images.stream().map(ImageId::getValue).toList();
     }
 
-    private Set<PatternCategoryId> deserializeCategories(Set<String> payload) {
+    private Set<PatternCategoryId> deserializeCategories(List<String> payload) {
         return payload.stream().map(PatternCategoryId::of).collect(Collectors.toSet());
     }
 

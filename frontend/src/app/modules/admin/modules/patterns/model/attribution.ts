@@ -15,8 +15,8 @@ export class PatternAttribution {
   }
 
   static of(props: {
-    originalPatternName?: string;
-    designer?: string;
+    originalPatternName?: string | null;
+    designer?: string | null;
   }): PatternAttribution {
     return new PatternAttribution({
       originalPatternName: someOrNone(props.originalPatternName),

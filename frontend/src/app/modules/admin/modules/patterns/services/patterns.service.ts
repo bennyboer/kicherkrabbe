@@ -36,8 +36,8 @@ interface PatternDTO {
 }
 
 interface PatternAttributionDTO {
-  originalPatternName: string;
-  designer: string;
+  originalPatternName?: string;
+  designer?: string;
 }
 
 interface PatternExtraDTO {
@@ -60,6 +60,10 @@ interface PricedSizeRangeDTO {
 interface MoneyDTO {
   amount: number;
   currency: string;
+}
+
+interface QueryPatternResponse {
+  pattern: PatternDTO;
 }
 
 interface QueryPatternsRequest {
@@ -165,8 +169,8 @@ export class PatternsService implements OnDestroy {
 
   getPattern(id: PatternId): Observable<Pattern> {
     return this.http
-      .get<PatternDTO>(`${environment.apiUrl}/patterns/${id}`)
-      .pipe(map((Pattern) => this.toInternalPattern(Pattern)));
+      .get<QueryPatternResponse>(`${environment.apiUrl}/patterns/${id}`)
+      .pipe(map((response) => this.toInternalPattern(response.pattern)));
   }
 
   getPatterns(props: {
@@ -188,11 +192,12 @@ export class PatternsService implements OnDestroy {
     };
 
     return this.http
-      .post<QueryPatternsResponse>(
-        `${environment.apiUrl}/patterns/query`,
-        request,
-      )
-      .pipe(map((response) => response.patterns.map(this.toInternalPattern)));
+      .post<QueryPatternsResponse>(`${environment.apiUrl}/patterns`, request)
+      .pipe(
+        map((response) =>
+          response.patterns.map((p) => this.toInternalPattern(p)),
+        ),
+      );
   }
 
   createPattern(props: {
@@ -214,7 +219,7 @@ export class PatternsService implements OnDestroy {
 
     return this.http
       .post<CreatePatternResponse>(
-        `${environment.apiUrl}/categories/create`,
+        `${environment.apiUrl}/patterns/create`,
         request,
       )
       .pipe(map((response) => response.id));
@@ -228,7 +233,7 @@ export class PatternsService implements OnDestroy {
     const request: RenamePatternRequest = { version, name };
 
     return this.http.post<void>(
-      `${environment.apiUrl}/categories/${id}/rename`,
+      `${environment.apiUrl}/patterns/${id}/rename`,
       request,
     );
   }
@@ -241,7 +246,7 @@ export class PatternsService implements OnDestroy {
     const request: UpdateImagesRequest = { version, images };
 
     return this.http.post<void>(
-      `${environment.apiUrl}/categories/${id}/images`,
+      `${environment.apiUrl}/patterns/${id}/images`,
       request,
     );
   }
@@ -257,7 +262,7 @@ export class PatternsService implements OnDestroy {
     };
 
     return this.http.post<void>(
-      `${environment.apiUrl}/categories/${id}/attribution`,
+      `${environment.apiUrl}/patterns/${id}/attribution`,
       request,
     );
   }
@@ -270,7 +275,7 @@ export class PatternsService implements OnDestroy {
     const request: UpdateCategoriesRequest = { version, categories };
 
     return this.http.post<void>(
-      `${environment.apiUrl}/categories/${id}/categories`,
+      `${environment.apiUrl}/patterns/${id}/categories`,
       request,
     );
   }
@@ -286,7 +291,7 @@ export class PatternsService implements OnDestroy {
     };
 
     return this.http.post<void>(
-      `${environment.apiUrl}/categories/${id}/variants`,
+      `${environment.apiUrl}/patterns/${id}/variants`,
       request,
     );
   }
@@ -302,14 +307,14 @@ export class PatternsService implements OnDestroy {
     };
 
     return this.http.post<void>(
-      `${environment.apiUrl}/categories/${id}/extras`,
+      `${environment.apiUrl}/patterns/${id}/extras`,
       request,
     );
   }
 
   publishPattern(id: PatternId, version: number): Observable<void> {
     return this.http.post<void>(
-      `${environment.apiUrl}/categories/${id}/publish`,
+      `${environment.apiUrl}/patterns/${id}/publish`,
       {},
       {
         params: { version: version.toString() },
@@ -319,7 +324,7 @@ export class PatternsService implements OnDestroy {
 
   unpublishPattern(id: PatternId, version: number): Observable<void> {
     return this.http.post<void>(
-      `${environment.apiUrl}/categories/${id}/unpublish`,
+      `${environment.apiUrl}/patterns/${id}/unpublish`,
       {},
       {
         params: { version: version.toString() },
@@ -328,7 +333,7 @@ export class PatternsService implements OnDestroy {
   }
 
   deletePattern(id: string, version: number): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/categories/${id}`, {
+    return this.http.delete<void>(`${environment.apiUrl}/patterns/${id}`, {
       params: { version: version.toString() },
     });
   }
@@ -432,10 +437,14 @@ export class PatternsService implements OnDestroy {
   private toApiAttribution(
     attribution: PatternAttribution,
   ): PatternAttributionDTO {
-    return {
-      originalPatternName: attribution.originalPatternName.orElse(''),
-      designer: attribution.designer.orElse(''),
-    };
+    const result: PatternAttributionDTO = {};
+
+    attribution.originalPatternName.ifSome(
+      (value) => (result.originalPatternName = value),
+    );
+    attribution.designer.ifSome((value) => (result.designer = value));
+
+    return result;
   }
 
   private toApiVariant(variant: PatternVariant): PatternVariantDTO {

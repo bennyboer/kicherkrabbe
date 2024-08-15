@@ -8,15 +8,23 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
+  delay,
   finalize,
   first,
   map,
   Observable,
 } from 'rxjs';
 import { environment } from '../../../../../../../environments';
-import { PatternCategory, PatternExtra, PatternVariant } from '../../model';
+import {
+  PatternAttribution,
+  PatternCategory,
+  PatternExtra,
+  PatternVariant,
+} from '../../model';
 import { ButtonSize, Chip, NotificationService } from '../../../../../shared';
-import { PatternCategoriesService } from '../../services';
+import { PatternCategoriesService, PatternsService } from '../../services';
+import { ActivatedRoute, Router } from '@angular/router';
+import { someOrNone } from '../../../../../../util';
 
 @Component({
   selector: 'app-create-pattern-page',
@@ -43,10 +51,16 @@ export class CreatePage implements OnInit, OnDestroy {
   >([]);
   protected readonly imageUploadActive$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(true);
+  protected readonly imagesValid$: Observable<boolean> = this.imageIds$.pipe(
+    map((imageIds) => imageIds.length > 0),
+  );
+  protected readonly imagesError$: Observable<boolean> = this.imagesValid$.pipe(
+    map((valid) => !valid),
+  );
 
   private readonly originalPatternName$: BehaviorSubject<string> =
     new BehaviorSubject<string>('');
-  private readonly attribution$: BehaviorSubject<string> =
+  private readonly designer$: BehaviorSubject<string> =
     new BehaviorSubject<string>('');
 
   protected readonly availableCategories$: BehaviorSubject<PatternCategory[]> =
@@ -58,21 +72,48 @@ export class CreatePage implements OnInit, OnDestroy {
 
   protected readonly variants$: BehaviorSubject<PatternVariant[]> =
     new BehaviorSubject<PatternVariant[]>([]);
+  protected readonly variantsValid$: Observable<boolean> = this.variants$.pipe(
+    map(
+      (variants) =>
+        variants.length > 0 &&
+        variants.every((v) => v.name.trim().length > 0 && v.sizes.length > 0),
+    ),
+  );
+  protected readonly variantsError$: Observable<boolean> =
+    this.variantsValid$.pipe(map((valid) => !valid));
+
   protected readonly extras$: BehaviorSubject<PatternExtra[]> =
     new BehaviorSubject<PatternExtra[]>([]);
+  protected readonly extrasValid$: Observable<boolean> = this.extras$.pipe(
+    map((extras) => extras.every((e) => e.name.trim().length > 0)),
+  );
+  protected readonly extrasError$: Observable<boolean> = this.extrasValid$.pipe(
+    map((valid) => !valid),
+  );
 
   protected readonly creating$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
 
-  protected readonly cannotSubmit$: Observable<boolean> = this.nameValid$.pipe(
-    map((valid) => !valid),
+  protected readonly cannotSubmit$: Observable<boolean> = combineLatest([
+    this.nameValid$,
+    this.variantsValid$,
+    this.extrasValid$,
+    this.imagesValid$,
+  ]).pipe(
+    map(
+      ([name, variants, extras, images]) =>
+        !name || !variants || !extras || !images,
+    ),
   );
 
   protected readonly ButtonSize = ButtonSize;
 
   constructor(
+    private readonly patternsService: PatternsService,
     private readonly patternCategoriesService: PatternCategoriesService,
     private readonly notificationService: NotificationService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -84,7 +125,7 @@ export class CreatePage implements OnInit, OnDestroy {
     this.nameTouched$.complete();
     this.creating$.complete();
     this.originalPatternName$.complete();
-    this.attribution$.complete();
+    this.designer$.complete();
     this.imageIds$.complete();
     this.imageUploadActive$.complete();
     this.availableCategories$.complete();
@@ -98,20 +139,55 @@ export class CreatePage implements OnInit, OnDestroy {
     this.creating$.next(true);
 
     const name = this.name$.value;
-    const originalPatternName = this.originalPatternName$.value;
-    const attribution = this.attribution$.value;
-    const imageIds = this.imageIds$.value;
+    const originalPatternName = someOrNone(this.originalPatternName$.value)
+      .map((n) => n.trim())
+      .filter((n) => n.length > 0)
+      .orElseNull();
+    const designer = someOrNone(this.designer$.value)
+      .map((n) => n.trim())
+      .filter((n) => n.length > 0)
+      .orElseNull();
+    const attribution = PatternAttribution.of({
+      originalPatternName,
+      designer,
+    });
+    const categories = this.selectedCategories$.value.map((c) => c.id);
+    const images = this.imageIds$.value;
     const variants = this.variants$.value;
     const extras = this.extras$.value;
 
-    console.log('Create pattern', {
-      name,
-      originalPatternName,
-      attribution,
-      imageIds,
-      variants,
-      extras,
-    }); // TODO
+    this.patternsService
+      .createPattern({
+        name,
+        attribution,
+        categories,
+        images,
+        variants,
+        extras,
+      })
+      .pipe(
+        first(),
+        catchError((e) => {
+          console.error(e);
+          this.notificationService.publish({
+            type: 'error',
+            message:
+              'Das Schnittmuster konnte nicht erstellt werden. Bitte versuche es erneut.',
+          });
+          return [];
+        }),
+        finalize(() => this.creating$.next(false)),
+        delay(500),
+      )
+      .subscribe((patternId) => {
+        this.notificationService.publish({
+          type: 'success',
+          message: 'Das Schnittmuster wurde erfolgreich erstellt.',
+        });
+        this.router.navigate(['..', patternId], {
+          relativeTo: this.route,
+        });
+      });
   }
 
   updateName(value: string): void {
@@ -127,7 +203,7 @@ export class CreatePage implements OnInit, OnDestroy {
   }
 
   updateAttribution(value: string): void {
-    this.attribution$.next(value.trim());
+    this.designer$.next(value.trim());
   }
 
   onImagesUploaded(imageIds: string[]): void {
@@ -188,7 +264,7 @@ export class CreatePage implements OnInit, OnDestroy {
     this.loadingAvailableCategories$.next(true);
 
     this.patternCategoriesService
-      .getCategories()
+      .getAvailableCategories()
       .pipe(
         first(),
         catchError((e) => {

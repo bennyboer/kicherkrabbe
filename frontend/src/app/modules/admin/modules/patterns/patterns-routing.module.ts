@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CreatePage, PatternsPage } from './pages';
+import { CreatePage, PatternPage, PatternsPage } from './pages';
 
 const routes: Routes = [
   {
@@ -10,6 +10,10 @@ const routes: Routes = [
   {
     path: 'create',
     component: CreatePage,
+  },
+  {
+    path: ':id',
+    component: PatternPage,
   },
 ];
 

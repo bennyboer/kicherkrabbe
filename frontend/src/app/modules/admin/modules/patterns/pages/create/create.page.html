@@ -55,11 +55,21 @@
   <div class="form-field">
     <label>Varianten</label>
     <app-variants [variants]="variants$ | async" (changed)="onVariantsChanged($event)"></app-variants>
+    @if (variantsError$ | async) {
+      <app-note level="error">
+        Bitte gib mindestens eine Variante an. Jede Variante benötigt außerdem mindestens einen Namen sowie eine Größenangabe mitsamt Preis.
+      </app-note>
+    }
   </div>
 
   <div class="form-field">
     <label>Extras</label>
     <app-extras [extras]="extras$ | async" (changed)="onExtrasChanged($event)"></app-extras>
+    @if (extrasError$ | async) {
+      <app-note level="error">
+        Jedes Extra benötigt einen Namen und einen Preis.
+      </app-note>
+    }
   </div>
 
   <div class="form-field">
@@ -93,6 +103,12 @@
           </span>
         </app-button>
       </div>
+    }
+
+    @if (imagesError$ | async) {
+      <app-note level="error">
+        Bitte lade mindestens ein Bild hoch.
+      </app-note>
     }
   </div>
 </div>

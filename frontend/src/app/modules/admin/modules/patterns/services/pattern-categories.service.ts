@@ -17,9 +17,26 @@ interface PatternCategoryDTO {
 export class PatternCategoriesService {
   constructor(private readonly http: HttpClient) {}
 
-  getCategories(): Observable<PatternCategory[]> {
+  getAvailableCategories(): Observable<PatternCategory[]> {
     return this.http
       .get<QueryCategoriesResponse>(`${environment.apiUrl}/patterns/categories`)
+      .pipe(
+        map((response) =>
+          response.categories.map((category) =>
+            PatternCategory.of({
+              id: category.id,
+              name: category.name,
+            }),
+          ),
+        ),
+      );
+  }
+
+  getUsedCategories(): Observable<PatternCategory[]> {
+    return this.http
+      .get<QueryCategoriesResponse>(
+        `${environment.apiUrl}/patterns/categories/used`,
+      )
       .pipe(
         map((response) =>
           response.categories.map((category) =>

@@ -42,6 +42,9 @@ public class InMemoryPatternLookupRepo extends InMemoryEventSourcingReadModelRep
                             .toLowerCase(Locale.ROOT)
                             .contains(searchTerm.toLowerCase(Locale.ROOT));
                 })
+                .filter(pattern -> categories.isEmpty() || pattern.getCategories()
+                        .stream()
+                        .anyMatch(categories::contains))
                 .sort(Comparator.comparing(LookupPattern::getCreatedAt))
                 .collectList()
                 .flatMap(patterns -> {

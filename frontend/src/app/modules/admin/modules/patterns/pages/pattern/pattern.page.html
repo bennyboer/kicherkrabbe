@@ -1,0 +1,50 @@
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (notLoading$ | async) {
+  @if (pattern$ | async; as pattern) {
+    <h3>{{ pattern.name }}</h3>
+
+    <div class="form">
+      <div class="form-field">
+        <label for="name">Name</label>
+        <div class="form-field-content">
+          <input #name
+                 id="name"
+                 type="text"
+                 placeholder="z.B. Sommerkleid"
+                 [class.error]="nameError$ | async"
+                 [value]="name$ | async"
+                 (input)="updateName(name.value)"
+                 (keydown.enter)="saveUpdatedName(pattern)">
+          <app-button [disabled]="cannotSaveUpdatedName$ | async" (click)="saveUpdatedName(pattern)">
+            Speichern
+          </app-button>
+        </div>
+        @if (nameError$ | async) {
+          <span class="error">Bitte gib einen Namen ein</span>
+        }
+      </div>
+    </div>
+
+    <div class="additional-details">
+      <span class="created-at">
+        Erstellt am {{ pattern.createdAt | date: 'dd.MM.yyyy' }} um {{ pattern.createdAt | date: 'HH:mm' }} Uhr
+      </span>
+    </div>
+
+    <div class="actions">
+        <span>
+          <app-button routerLink="..">Zurück</app-button>
+        </span>
+      <span>
+          @if (deleteConfirmationRequired$ | async) {
+            <app-button color="warn" (click)="delete(pattern)">Wirklich löschen?</app-button>
+          } @else {
+            <app-button (click)="waitForDeleteConfirmation()">Schnittmuster löschen</app-button>
+          }
+        </span>
+    </div>
+  } @else {
+    <app-note level="error">Das Schnittmuster konnte nicht gefunden werden.</app-note>
+  }
+}

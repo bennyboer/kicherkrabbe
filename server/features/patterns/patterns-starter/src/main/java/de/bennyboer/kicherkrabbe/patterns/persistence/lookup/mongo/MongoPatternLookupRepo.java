@@ -54,8 +54,15 @@ public class MongoPatternLookupRepo
         Set<String> ids = patternIds.stream()
                 .map(PatternId::getValue)
                 .collect(Collectors.toSet());
+        Set<String> categoryIds = categories.stream()
+                .map(PatternCategoryId::getValue)
+                .collect(Collectors.toSet());
 
         Criteria criteria = where("_id").in(ids);
+
+        if (!categoryIds.isEmpty()) {
+            criteria.and("categories").in(categoryIds);
+        }
 
         if (!searchTerm.isBlank()) {
             String quotedSearchTerm = Pattern.quote(searchTerm);
