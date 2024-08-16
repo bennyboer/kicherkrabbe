@@ -1,5 +1,8 @@
 :host {
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
 }
 
 input[type="checkbox"] {

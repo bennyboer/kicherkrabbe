@@ -134,6 +134,9 @@ export class PatternPage implements OnInit, OnDestroy {
   protected readonly deleteConfirmationRequired$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
 
+  protected readonly watermark$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(true);
+
   protected readonly loading$: Observable<boolean> = combineLatest([
     this.patternLoading$,
     this.categoriesLoading$,
@@ -231,6 +234,7 @@ export class PatternPage implements OnInit, OnDestroy {
       this.imagesValid$,
     ])
       .pipe(
+        debounceTime(200),
         filter(
           ([pattern, imageIds, valid]) =>
             valid && !this.arePrimitiveArraysEqual(pattern.images, imageIds),
@@ -256,9 +260,14 @@ export class PatternPage implements OnInit, OnDestroy {
     this.extras$.complete();
     this.imageIds$.complete();
     this.imageUploadActive$.complete();
+    this.watermark$.complete();
 
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  onWatermarkChanged(value: boolean): void {
+    this.watermark$.next(value);
   }
 
   updateName(value: string): void {
@@ -754,7 +763,11 @@ export class PatternPage implements OnInit, OnDestroy {
             this.extras$.next(pattern.extras);
           }
 
-          this.imageIds$.next([...pattern.images]);
+          if (
+            !this.arePrimitiveArraysEqual(pattern.images, this.imageIds$.value)
+          ) {
+            this.imageIds$.next([...pattern.images]);
+          }
         },
         error: (e) => {
           console.error(e);

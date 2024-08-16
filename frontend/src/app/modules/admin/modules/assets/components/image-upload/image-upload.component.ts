@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
@@ -48,7 +49,7 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input()
   desiredWidth: number = 768;
 
-  @Input()
+  @Input({ transform: booleanAttribute })
   watermark: boolean = true;
 
   @Input()
