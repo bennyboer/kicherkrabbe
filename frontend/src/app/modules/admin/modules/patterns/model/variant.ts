@@ -1,7 +1,7 @@
-import { Money, someOrNone, validateProps } from '../../../../../util';
+import { Eq, Money, someOrNone, validateProps } from '../../../../../util';
 import { PricedSizeRange } from './priced-size-range';
 
-export class PatternVariant {
+export class PatternVariant implements Eq<PatternVariant> {
   readonly id: string;
   readonly name: string;
   readonly sizes: PricedSizeRange[];
@@ -58,6 +58,14 @@ export class PatternVariant {
     }
 
     return `${lowestPrice.formatted()} - ${highestPrice.formatted()}`;
+  }
+
+  equals(other: PatternVariant): boolean {
+    return (
+      this.name === other.name &&
+      this.sizes.length === other.sizes.length &&
+      this.sizes.every((size, index) => size.equals(other.sizes[index]))
+    );
   }
 
   private getLowestPrice(): Money {

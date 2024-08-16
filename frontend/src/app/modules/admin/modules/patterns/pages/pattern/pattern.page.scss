@@ -36,6 +36,17 @@
   }
 }
 
+.columns {
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  gap: 16px;
+
+  & > * {
+    flex: 1 1 auto;
+  }
+}
+
 .additional-details {
   margin-top: 16px;
 }
@@ -49,4 +60,86 @@
   padding-top: 16px;
   margin-top: 28px;
   border-top: 1px solid var(--background-mid-contrast);
+}
+
+ul.image-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    position: relative;
+    flex-basis: calc(100% / 4 - 8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--contrast);
+    border-radius: 12px;
+    overflow: hidden;
+
+    .delete-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 1;
+      user-select: none;
+      cursor: pointer;
+      border-radius: 100%;
+      font-size: 32px;
+      transition: background-color 0.2s ease-in-out;
+
+      &:hover {
+        background-color: var(--red);
+      }
+    }
+  }
+}
+
+.top-action-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+
+  & > h3 {
+    margin: 0;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .columns {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .top-action-bar {
+    flex-direction: column;
+    align-items: stretch;
+
+    & > span {
+      width: 100%;
+
+      & > app-button {
+        width: 100%;
+      }
+    }
+  }
+
+  ul.image-list {
+    flex-direction: column;
+    flex-wrap: nowrap;
+
+    li {
+      flex-basis: 100%;
+    }
+  }
 }

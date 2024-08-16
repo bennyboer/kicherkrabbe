@@ -246,7 +246,7 @@ export class PatternsService implements OnDestroy {
     const request: UpdateImagesRequest = { version, images };
 
     return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/images`,
+      `${environment.apiUrl}/patterns/${id}/update/images`,
       request,
     );
   }
@@ -262,7 +262,7 @@ export class PatternsService implements OnDestroy {
     };
 
     return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/attribution`,
+      `${environment.apiUrl}/patterns/${id}/update/attribution`,
       request,
     );
   }
@@ -275,7 +275,7 @@ export class PatternsService implements OnDestroy {
     const request: UpdateCategoriesRequest = { version, categories };
 
     return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/categories`,
+      `${environment.apiUrl}/patterns/${id}/update/categories`,
       request,
     );
   }
@@ -291,7 +291,7 @@ export class PatternsService implements OnDestroy {
     };
 
     return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/variants`,
+      `${environment.apiUrl}/patterns/${id}/update/variants`,
       request,
     );
   }
@@ -307,7 +307,7 @@ export class PatternsService implements OnDestroy {
     };
 
     return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/extras`,
+      `${environment.apiUrl}/patterns/${id}/update/extras`,
       request,
     );
   }
@@ -473,7 +473,7 @@ export class PatternsService implements OnDestroy {
   }
 
   private toApiCurrency(currency: Currency): string {
-    if (currency.equalTo(Currency.euro())) {
+    if (currency.equals(Currency.euro())) {
       return 'EUR';
     }
 

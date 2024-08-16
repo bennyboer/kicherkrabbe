@@ -1,6 +1,12 @@
-import { Money, Option, someOrNone, validateProps } from '../../../../../util';
+import {
+  Eq,
+  Money,
+  Option,
+  someOrNone,
+  validateProps,
+} from '../../../../../util';
 
-export class PricedSizeRange {
+export class PricedSizeRange implements Eq<PricedSizeRange> {
   readonly id: string;
   readonly from: number;
   readonly to: Option<number>;
@@ -72,5 +78,14 @@ export class PricedSizeRange {
           }),
       )
       .orElse(this);
+  }
+
+  equals(other: PricedSizeRange): boolean {
+    return (
+      this.from === other.from &&
+      this.to.equals(other.to) &&
+      this.unit.equals(other.unit) &&
+      this.price.equals(other.price)
+    );
   }
 }

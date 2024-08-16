@@ -2,7 +2,16 @@
 
 @if (notLoading$ | async) {
   @if (pattern$ | async; as pattern) {
-    <h3>{{ pattern.name }}</h3>
+    <div class="top-action-bar">
+      <h3>{{ pattern.name }}</h3>
+      <span class="top-action-bar-actions">
+        @if (pattern.published) {
+          <app-button color="warn" (click)="unpublishPattern(pattern)">Veröffentlichung aufheben</app-button>
+        } @else {
+          <app-button color="primary" (click)="publishPattern(pattern)">Veröffentlichen</app-button>
+        }
+      </span>
+    </div>
 
     <div class="form">
       <div class="form-field">
@@ -22,6 +31,119 @@
         </div>
         @if (nameError$ | async) {
           <span class="error">Bitte gib einen Namen ein</span>
+        }
+      </div>
+
+      <div class="columns">
+        <div class="form-field">
+          <label for="originalPatternName">Originalname des Schnitts (optional)</label>
+          <input #originalPatternName
+                 id="originalPatternName"
+                 type="text"
+                 [value]="originalPatternName$ | async"
+                 (input)="updateOriginalPatternName(originalPatternName.value)"
+                 (keydown.enter)="saveUpdatedAttribution(pattern)">
+        </div>
+        <div class="form-field">
+          <label for="designer">Schnittdesigner (optional)</label>
+          <input #designer
+                 id="designer"
+                 type="text"
+                 [value]="designer$ | async"
+                 (input)="updateDesigner(designer.value)"
+                 (keydown.enter)="saveUpdatedAttribution(pattern)">
+        </div>
+        <app-button [disabled]="cannotSaveUpdatedAttribution$ | async" (click)="saveUpdatedAttribution(pattern)">
+          Speichern
+        </app-button>
+      </div>
+
+      <div class="form-field">
+        <label>Kategorien</label>
+        @if (categoriesLoading$ | async) {
+          <div class="loading-container">
+            <app-loading-spinner></app-loading-spinner>
+          </div>
+        } @else {
+          @if (categories$ | async; as categories) {
+            @if (selectedCategories$ | async; as selectedCategories) {
+              <app-chips [chips]="categoriesToChips(toCategories(selectedCategories, categories))"
+                         [available]="categoriesToChips(categories)"
+                         [alwaysShowOptions]="true"
+                         [chipDropdownItemTemplateRef]="topicDropdownItemTemplateRef"
+                         (removed)="onCategoryRemoved($event)"
+                         (added)="onCategoryAdded($event)">
+                <ng-template let-chip>
+                  {{ chip.label }}
+                </ng-template>
+              </app-chips>
+
+              <ng-template #topicDropdownItemTemplateRef let-chip>
+                {{ chip.label }}
+              </ng-template>
+            }
+          }
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Varianten</label>
+        <app-variants [variants]="variants$ | async" (changed)="onVariantsChanged($event)"></app-variants>
+        @if (variantsError$ | async) {
+          <app-note level="error">
+            Bitte gib mindestens eine Variante an. Jede Variante benötigt außerdem mindestens einen Namen sowie eine
+            Größenangabe mitsamt Preis.
+          </app-note>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Extras</label>
+        <app-extras [extras]="extras$ | async" (changed)="onExtrasChanged($event)"></app-extras>
+        @if (extrasError$ | async) {
+          <app-note level="error">
+            Jedes Extra benötigt einen Namen und einen Preis.
+          </app-note>
+        }
+      </div>
+
+      <div class="form-field">
+        <label>Bilder</label>
+        @if (imageIds$ | async; as imageIds) {
+          @if (imageIds.length > 0) {
+            <ul class="image-list" [nxtSortablejs]="imageIds" [config]="imagesSortableConfig">
+              @for (imageId of imageIds; track imageId) {
+                <li class="drag-handle">
+                  <img [src]="getImageUrl(imageId)" width="100%">
+                  <span class="delete-button material-icons" (click)="deleteImage(imageId)">close</span>
+                </li>
+              }
+            </ul>
+          }
+        }
+
+        @if (imageUploadActive$ | async) {
+          <app-image-upload [multiple]="true"
+                            [desiredWidth]="1024"
+                            (uploaded)="onImagesUploaded($event)">
+          </app-image-upload>
+        } @else {
+          <div class="add-image-button-container">
+            <app-button (click)="activateImageUpload()">
+          <span class="icon-button">
+            <span class="material-icons">add</span>
+            <span>
+              Bilder hinzufügen
+            </span>
+          </span>
+            </app-button>
+          </div>
+        }
+
+        @if (imagesError$ | async) {
+          <app-note level="error">
+            Bitte lade mindestens ein Bild hoch.
+          </app-note>
         }
       </div>
     </div>

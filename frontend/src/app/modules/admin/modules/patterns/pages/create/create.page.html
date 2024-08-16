@@ -19,8 +19,8 @@
              (input)="updateOriginalPatternName(originalPatternName.value)">
     </div>
     <div class="form-field">
-      <label for="attribution">Schnittdesigner (optional)</label>
-      <input #attribution id="attribution" type="text" (input)="updateAttribution(attribution.value)">
+      <label for="designer">Schnittdesigner (optional)</label>
+      <input #designer id="designer" type="text" (input)="updateDesigner(designer.value)">
     </div>
   </div>
 
@@ -57,7 +57,8 @@
     <app-variants [variants]="variants$ | async" (changed)="onVariantsChanged($event)"></app-variants>
     @if (variantsError$ | async) {
       <app-note level="error">
-        Bitte gib mindestens eine Variante an. Jede Variante benötigt außerdem mindestens einen Namen sowie eine Größenangabe mitsamt Preis.
+        Bitte gib mindestens eine Variante an. Jede Variante benötigt außerdem mindestens einen Namen sowie eine
+        Größenangabe mitsamt Preis.
       </app-note>
     }
   </div>

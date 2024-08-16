@@ -1,6 +1,6 @@
-import { Money, someOrNone, validateProps } from '../../../../../util';
+import { Eq, Money, someOrNone, validateProps } from '../../../../../util';
 
-export class PatternExtra {
+export class PatternExtra implements Eq<PatternExtra> {
   readonly name: string;
   readonly price: Money;
 
@@ -16,5 +16,9 @@ export class PatternExtra {
       name: props.name,
       price: someOrNone(props.price).orElse(Money.zero()),
     });
+  }
+
+  equals(other: PatternExtra): boolean {
+    return this.name === other.name && this.price.equals(other.price);
   }
 }

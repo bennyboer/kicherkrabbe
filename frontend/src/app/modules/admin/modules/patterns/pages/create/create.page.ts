@@ -202,7 +202,7 @@ export class CreatePage implements OnInit, OnDestroy {
     this.originalPatternName$.next(value.trim());
   }
 
-  updateAttribution(value: string): void {
+  updateDesigner(value: string): void {
     this.designer$.next(value.trim());
   }
 

@@ -1,6 +1,7 @@
 import { someOrNone } from './option';
+import { Eq } from './equals';
 
-export class Currency {
+export class Currency implements Eq<Currency> {
   readonly name: string;
   readonly symbol: string;
 
@@ -19,11 +20,11 @@ export class Currency {
     return Currency.of({ name: 'EUR', symbol: '€' });
   }
 
-  equalTo(currency: Currency): boolean {
-    return this.name === currency.name;
+  differentFrom(currency: Currency): boolean {
+    return !this.equals(currency);
   }
 
-  differentFrom(currency: Currency): boolean {
-    return !this.equalTo(currency);
+  equals(other: Currency): boolean {
+    return this.name === other.name;
   }
 }

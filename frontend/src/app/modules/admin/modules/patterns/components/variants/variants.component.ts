@@ -124,7 +124,10 @@ export class VariantsComponent implements OnInit, OnDestroy {
     new BehaviorSubject<EditablePatternVariant[]>([]);
 
   protected readonly sortableConfig: any = {
-    onUpdate: () => this.variants$.next(this.variants$.value),
+    onUpdate: () => {
+      this.variants$.next(this.variants$.value);
+      this.emitChange();
+    },
     draggable: '.item',
   };
 

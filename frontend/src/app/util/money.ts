@@ -1,7 +1,8 @@
 import { Currency } from './currency';
 import { someOrNone } from './option';
+import { Eq } from './equals';
 
-export class Money {
+export class Money implements Eq<Money> {
   readonly value: number;
   readonly currency: Currency;
 
@@ -114,5 +115,9 @@ export class Money {
 
   formatted(): string {
     return `${this.toNatural().toFixed(2).replace('.', ',')} ${this.currency.symbol}`;
+  }
+
+  equals(other: Money): boolean {
+    return this.value === other.value && this.currency.equals(other.currency);
   }
 }
