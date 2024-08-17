@@ -91,8 +91,15 @@
     @if (imageUploadActive$ | async) {
       <app-image-upload [multiple]="true"
                         [desiredWidth]="1024"
+                        [watermark]="watermark$ | async"
                         (uploaded)="onImagesUploaded($event)">
       </app-image-upload>
+      <div>
+        <app-checkbox label="Wasserzeichen hinzufügen"
+                      [checked]="watermark$ | async"
+                      (checkedChanges)="onWatermarkChanged($event)">
+        </app-checkbox>
+      </div>
     } @else {
       <div class="add-image-button-container">
         <app-button (click)="activateImageUpload()">

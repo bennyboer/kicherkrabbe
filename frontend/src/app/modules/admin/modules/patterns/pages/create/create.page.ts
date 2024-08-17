@@ -91,6 +91,9 @@ export class CreatePage implements OnInit, OnDestroy {
     map((valid) => !valid),
   );
 
+  protected readonly watermark$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(true);
+
   protected readonly creating$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
 
@@ -133,6 +136,7 @@ export class CreatePage implements OnInit, OnDestroy {
     this.selectedCategories$.complete();
     this.extras$.complete();
     this.variants$.complete();
+    this.watermark$.complete();
   }
 
   create(): void {
@@ -246,6 +250,10 @@ export class CreatePage implements OnInit, OnDestroy {
 
   onVariantsChanged(variants: PatternVariant[]): void {
     this.variants$.next(variants);
+  }
+
+  onWatermarkChanged(value: boolean): void {
+    this.watermark$.next(value);
   }
 
   deleteImage(imageId: string): void {
