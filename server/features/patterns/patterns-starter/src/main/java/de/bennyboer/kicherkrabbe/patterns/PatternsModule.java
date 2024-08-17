@@ -98,19 +98,21 @@ public class PatternsModule {
     public Mono<PublishedPatternsPage> getPublishedPatterns(
             String searchTerm,
             Set<String> categories,
+            Set<Long> sizes,
             PatternsSortDTO sort,
             long skip,
             long limit,
             Agent ignoredAgent
     ) {
-        Set<PatternCategoryId> toInternalCategories = categories.stream()
+        Set<PatternCategoryId> internalCategories = categories.stream()
                 .map(PatternCategoryId::of)
                 .collect(Collectors.toSet());
         boolean sortAscending = sort.direction == ASCENDING;
 
         return patternLookupRepo.findPublished(
                         searchTerm,
-                        toInternalCategories,
+                        internalCategories,
+                        sizes,
                         sortAscending,
                         skip,
                         limit

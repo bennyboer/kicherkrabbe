@@ -63,6 +63,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         var result = getPublishedPatterns(
                 "",
                 Set.of(),
+                Set.of(),
                 sort,
                 0,
                 100,
@@ -82,6 +83,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         // and: the user queries the published patterns
         result = getPublishedPatterns(
                 "",
+                Set.of(),
                 Set.of(),
                 sort,
                 0,
@@ -125,6 +127,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         result = getPublishedPatterns(
                 "",
                 Set.of(),
+                Set.of(),
                 sort,
                 0,
                 100,
@@ -140,6 +143,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         // when: the system user queries the published patterns
         result = getPublishedPatterns(
                 "",
+                Set.of(),
                 Set.of(),
                 sort,
                 0,
@@ -204,6 +208,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         var result = getPublishedPatterns(
                 "summer",
                 Set.of(),
+                Set.of(),
                 sort,
                 0,
                 100,
@@ -223,6 +228,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         result = getPublishedPatterns(
                 "test",
                 Set.of(),
+                Set.of(),
                 sort,
                 0,
                 100,
@@ -238,6 +244,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         // when: the user queries the published patterns with a search term that matches multiple patterns
         result = getPublishedPatterns(
                 "dress",
+                Set.of(),
                 Set.of(),
                 sort,
                 0,
@@ -302,6 +309,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         var result = getPublishedPatterns(
                 "",
                 Set.of(),
+                Set.of(),
                 sort,
                 0,
                 100,
@@ -363,6 +371,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         var result = getPublishedPatterns(
                 "",
                 Set.of("DRESS_ID"),
+                Set.of(),
                 sort,
                 0,
                 100,
@@ -382,6 +391,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         result = getPublishedPatterns(
                 "",
                 Set.of("SKIRT_ID"),
+                Set.of(),
                 sort,
                 0,
                 100,
@@ -396,6 +406,153 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         pattern = result.getResults().get(0);
         assertThat(pattern.getName()).isEqualTo(PatternName.of("Dressskirt"));
+    }
+
+    @Test
+    void shouldFilterBySizes() {
+        // given: some patterns with different size ranges
+        allowUserToCreatePatterns("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        var pricedSizeRange1 = new PricedSizeRangeDTO();
+        pricedSizeRange1.from = 80;
+        pricedSizeRange1.to = 86L;
+        pricedSizeRange1.price = new MoneyDTO();
+        pricedSizeRange1.price.amount = 1000;
+        pricedSizeRange1.price.currency = "EUR";
+
+        var pricedSizeRange2 = new PricedSizeRangeDTO();
+        pricedSizeRange2.from = 92;
+        pricedSizeRange2.to = 98L;
+        pricedSizeRange2.price = new MoneyDTO();
+        pricedSizeRange2.price.amount = 1200;
+        pricedSizeRange2.price.currency = "EUR";
+
+        var variantWithBothSizeRanges = new PatternVariantDTO();
+        variantWithBothSizeRanges.name = "Normal";
+        variantWithBothSizeRanges.pricedSizeRanges = Set.of(pricedSizeRange1, pricedSizeRange2);
+
+        var variantWithSizeRange1 = new PatternVariantDTO();
+        variantWithSizeRange1.name = "Normal";
+        variantWithSizeRange1.pricedSizeRanges = Set.of(pricedSizeRange1);
+
+        var variantWithSizeRange2 = new PatternVariantDTO();
+        variantWithSizeRange2.name = "Normal";
+        variantWithSizeRange2.pricedSizeRanges = Set.of(pricedSizeRange2);
+
+        String patternId1 = createPattern(
+                "Summerdress 1",
+                new PatternAttributionDTO(),
+                Set.of(),
+                List.of("IMAGE_ID"),
+                List.of(variantWithBothSizeRanges),
+                List.of(),
+                agent
+        );
+
+        String patternId2 = createPattern(
+                "Summerdress 2",
+                new PatternAttributionDTO(),
+                Set.of(),
+                List.of("IMAGE_ID"),
+                List.of(variantWithSizeRange1),
+                List.of(),
+                agent
+        );
+
+        String patternId3 = createPattern(
+                "Summerdress 3",
+                new PatternAttributionDTO(),
+                Set.of(),
+                List.of("IMAGE_ID"),
+                List.of(variantWithSizeRange2),
+                List.of(),
+                agent
+        );
+
+        String patternId4 = createPattern(
+                "Summerdress 4",
+                new PatternAttributionDTO(),
+                Set.of(),
+                List.of("IMAGE_ID"),
+                List.of(variantWithSizeRange1, variantWithSizeRange2),
+                List.of(),
+                agent
+        );
+
+        publishPattern(patternId1, 0L, agent);
+        publishPattern(patternId2, 0L, agent);
+        publishPattern(patternId3, 0L, agent);
+        publishPattern(patternId4, 0L, agent);
+
+        // when: the user queries the published patterns with a size filter
+        var sort = new PatternsSortDTO();
+        sort.property = ALPHABETICAL;
+        sort.direction = ASCENDING;
+
+        var result = getPublishedPatterns(
+                "",
+                Set.of(),
+                Set.of(86L),
+                sort,
+                0,
+                100,
+                agent
+        );
+
+        // then: only the matching patterns are returned
+        assertThat(result.getSkip()).isEqualTo(0);
+        assertThat(result.getLimit()).isEqualTo(100);
+        assertThat(result.getTotal()).isEqualTo(3);
+        assertThat(result.getResults()).hasSize(3);
+
+        var patternIds = result.getResults()
+                .stream()
+                .map(PublishedPattern::getId)
+                .map(PatternId::getValue)
+                .toList();
+        assertThat(patternIds).containsExactlyInAnyOrder(patternId1, patternId2, patternId4);
+
+        // when: the user queries the published patterns with another size filter
+        result = getPublishedPatterns(
+                "",
+                Set.of(),
+                Set.of(98L),
+                sort,
+                0,
+                100,
+                agent
+        );
+
+        // then: only the matching patterns are returned
+        assertThat(result.getSkip()).isEqualTo(0);
+        assertThat(result.getLimit()).isEqualTo(100);
+        assertThat(result.getTotal()).isEqualTo(3);
+        assertThat(result.getResults()).hasSize(3);
+
+        patternIds = result.getResults()
+                .stream()
+                .map(PublishedPattern::getId)
+                .map(PatternId::getValue)
+                .toList();
+        assertThat(patternIds).containsExactlyInAnyOrder(patternId1, patternId3, patternId4);
+
+        // when: a size is filtered that does not match any pattern
+        result = getPublishedPatterns(
+                "",
+                Set.of(),
+                Set.of(100L),
+                sort,
+                0,
+                100,
+                agent
+        );
+
+        // then: no patterns are returned
+        assertThat(result.getSkip()).isEqualTo(0);
+        assertThat(result.getLimit()).isEqualTo(100);
+        assertThat(result.getTotal()).isEqualTo(0);
+        assertThat(result.getResults()).isEmpty();
     }
 
     @Test
@@ -448,6 +605,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         var result = getPublishedPatterns(
                 "",
                 Set.of(),
+                Set.of(),
                 sort,
                 0,
                 1,
@@ -466,6 +624,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         // when: the user queries the published patterns with a skip
         result = getPublishedPatterns(
                 "",
+                Set.of(),
                 Set.of(),
                 sort,
                 1,

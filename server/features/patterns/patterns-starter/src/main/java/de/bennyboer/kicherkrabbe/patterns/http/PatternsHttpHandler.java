@@ -120,6 +120,7 @@ public class PatternsHttpHandler {
                 .flatMap(req -> toAgent(request).flatMap(agent -> module.getPublishedPatterns(
                         req.searchTerm,
                         req.categories,
+                        req.sizes,
                         req.sort,
                         req.skip,
                         req.limit,

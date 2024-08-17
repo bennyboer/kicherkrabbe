@@ -761,6 +761,7 @@ public abstract class PatternLookupRepoTest {
         var result = findPublished(
                 "",
                 Set.of(),
+                Set.of(),
                 true,
                 0,
                 10
@@ -772,6 +773,7 @@ public abstract class PatternLookupRepoTest {
         // when: finding published patterns ordered by name descending
         result = findPublished(
                 "a",
+                Set.of(),
                 Set.of(),
                 false,
                 0,
@@ -785,6 +787,7 @@ public abstract class PatternLookupRepoTest {
         result = findPublished(
                 "C",
                 Set.of(),
+                Set.of(),
                 true,
                 0,
                 10
@@ -797,6 +800,7 @@ public abstract class PatternLookupRepoTest {
         result = findPublished(
                 "",
                 Set.of(PatternCategoryId.of("HATS_ID")),
+                Set.of(),
                 true,
                 0,
                 10
@@ -805,9 +809,62 @@ public abstract class PatternLookupRepoTest {
         // then: all published patterns are found with categories filter
         assertThat(result.getResults()).containsExactly(pattern3);
 
+        // when: finding published patterns with sizes filter
+        result = findPublished(
+                "",
+                Set.of(),
+                Set.of(92L),
+                true,
+                0,
+                10
+        );
+
+        // then: all published patterns are found with sizes filter
+        assertThat(result.getResults()).containsExactlyInAnyOrder(pattern1, pattern3);
+
+        // when: finding published patterns with another sizes filter
+        result = findPublished(
+                "",
+                Set.of(),
+                Set.of(104L),
+                true,
+                0,
+                10
+        );
+
+        // then: all published patterns are found with another sizes filter
+        assertThat(result.getResults()).containsExactly(pattern1);
+
+        // when: finding published patterns with another sizes filter
+        result = findPublished(
+                "",
+                Set.of(),
+                Set.of(170L),
+                true,
+                0,
+                10
+        );
+
+        // then: all published patterns are found with another sizes filter
+        assertThat(result.getResults()).isEmpty();
+
+        // when: finding published patterns with another sizes filter
+        result = findPublished(
+                "",
+                Set.of(),
+                Set.of(86L, 104L),
+                true,
+                0,
+                10
+        );
+
+        // then: all published patterns are found with another sizes filter
+        assertThat(result.getResults()).containsExactlyInAnyOrder(pattern1, pattern3);
+
         // when: finding published patterns with paging
         result = findPublished(
                 "",
+                Set.of(),
                 Set.of(),
                 true,
                 0,
@@ -820,6 +877,7 @@ public abstract class PatternLookupRepoTest {
         // when: finding published patterns with paging
         result = findPublished(
                 "",
+                Set.of(),
                 Set.of(),
                 true,
                 1,
@@ -1071,6 +1129,7 @@ public abstract class PatternLookupRepoTest {
     private LookupPatternPage findPublished(
             String searchTerm,
             Set<PatternCategoryId> categories,
+            Set<Long> sizes,
             boolean ascending,
             long skip,
             long limit
@@ -1078,6 +1137,7 @@ public abstract class PatternLookupRepoTest {
         return repo.findPublished(
                 searchTerm,
                 categories,
+                sizes,
                 ascending,
                 skip,
                 limit

@@ -18,6 +18,8 @@ public class QueryPublishedPatternsRequest {
 
     Set<String> categories;
 
+    Set<Long> sizes;
+
     PatternsSortDTO sort;
 
     long skip;

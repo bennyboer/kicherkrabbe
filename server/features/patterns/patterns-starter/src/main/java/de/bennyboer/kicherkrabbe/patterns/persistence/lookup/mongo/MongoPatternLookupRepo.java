@@ -127,6 +127,7 @@ public class MongoPatternLookupRepo
     public Mono<LookupPatternPage> findPublished(
             String searchTerm,
             Set<PatternCategoryId> categories,
+            Set<Long> sizes,
             boolean ascending,
             long skip,
             long limit
@@ -144,6 +145,16 @@ public class MongoPatternLookupRepo
 
         if (!categoryIds.isEmpty()) {
             criteria = criteria.and("categories").in(categoryIds);
+        }
+
+        if (!sizes.isEmpty()) {
+            Criteria sizeCriteria = new Criteria();
+            sizeCriteria = sizeCriteria.orOperator(
+                    where("variants.pricedSizeRanges.from").in(sizes),
+                    where("variants.pricedSizeRanges.to").in(sizes)
+            );
+
+            criteria = criteria.andOperator(sizeCriteria);
         }
 
         AggregationOperation match = match(criteria);

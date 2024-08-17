@@ -30,6 +30,7 @@ public interface PatternLookupRepo extends EventSourcingReadModelRepo<PatternId,
     Mono<LookupPatternPage> findPublished(
             String searchTerm,
             Set<PatternCategoryId> categories,
+            Set<Long> sizes,
             boolean ascending,
             long skip,
             long limit

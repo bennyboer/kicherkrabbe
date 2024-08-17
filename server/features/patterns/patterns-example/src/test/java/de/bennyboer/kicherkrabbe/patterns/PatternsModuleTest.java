@@ -152,6 +152,7 @@ public class PatternsModuleTest {
     public PublishedPatternsPage getPublishedPatterns(
             String searchTerm,
             Set<String> categories,
+            Set<Long> sizes,
             PatternsSortDTO sort,
             long skip,
             long limit,
@@ -160,6 +161,7 @@ public class PatternsModuleTest {
         return module.getPublishedPatterns(
                 searchTerm,
                 categories,
+                sizes,
                 sort,
                 skip,
                 limit,

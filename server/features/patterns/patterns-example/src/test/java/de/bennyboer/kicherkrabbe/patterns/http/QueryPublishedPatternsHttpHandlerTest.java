@@ -31,6 +31,7 @@ public class QueryPublishedPatternsHttpHandlerTest extends HttpHandlerTest {
         request.skip = 3;
         request.limit = 5;
         request.categories = Set.of("CATEGORY_ID");
+        request.sizes = Set.of();
         request.sort = new PatternsSortDTO();
         request.sort.property = ALPHABETICAL;
         request.sort.direction = ASCENDING;
@@ -39,6 +40,7 @@ public class QueryPublishedPatternsHttpHandlerTest extends HttpHandlerTest {
         when(module.getPublishedPatterns(
                 request.searchTerm,
                 request.categories,
+                request.sizes,
                 request.sort,
                 request.skip,
                 request.limit,
@@ -123,6 +125,7 @@ public class QueryPublishedPatternsHttpHandlerTest extends HttpHandlerTest {
         request.skip = 3;
         request.limit = 5;
         request.categories = Set.of("CATEGORY_ID");
+        request.sizes = Set.of();
         request.sort = new PatternsSortDTO();
         request.sort.property = ALPHABETICAL;
         request.sort.direction = ASCENDING;
@@ -131,6 +134,7 @@ public class QueryPublishedPatternsHttpHandlerTest extends HttpHandlerTest {
         when(module.getPublishedPatterns(
                 request.searchTerm,
                 request.categories,
+                request.sizes,
                 request.sort,
                 request.skip,
                 request.limit,

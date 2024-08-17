@@ -9,10 +9,7 @@ import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.PatternLookupRepo;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 public class InMemoryPatternLookupRepo extends InMemoryEventSourcingReadModelRepo<PatternId, LookupPattern>
         implements PatternLookupRepo {
@@ -87,6 +84,7 @@ public class InMemoryPatternLookupRepo extends InMemoryEventSourcingReadModelRep
     public Mono<LookupPatternPage> findPublished(
             String searchTerm,
             Set<PatternCategoryId> categories,
+            Set<Long> sizes,
             boolean ascending,
             long skip,
             long limit
@@ -111,6 +109,21 @@ public class InMemoryPatternLookupRepo extends InMemoryEventSourcingReadModelRep
                 .filter(pattern -> categories.isEmpty() || pattern.getCategories()
                         .stream()
                         .anyMatch(categories::contains))
+                .filter(pattern -> {
+                    if (sizes.isEmpty()) {
+                        return true;
+                    }
+
+                    var availableSizes = new HashSet<>();
+                    for (var variant : pattern.getVariants()) {
+                        for (var range : variant.getPricedSizeRanges()) {
+                            availableSizes.add(range.getFrom());
+                            range.getTo().ifPresent(availableSizes::add);
+                        }
+                    }
+
+                    return !Collections.disjoint(sizes, availableSizes);
+                })
                 .sort(comparator)
                 .collectList()
                 .flatMap(patterns -> {
