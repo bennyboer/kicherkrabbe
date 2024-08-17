@@ -392,11 +392,14 @@ export class PatternsService implements OnDestroy {
   }
 
   private toInternalVariant(variant: PatternVariantDTO): PatternVariant {
+    const sizes = variant.pricedSizeRanges.map((range) =>
+      this.toInternalPricedSizeRange(range),
+    );
+    sizes.sort((a, b) => a.from - b.from);
+
     return PatternVariant.of({
       name: variant.name,
-      sizes: variant.pricedSizeRanges.map((range) =>
-        this.toInternalPricedSizeRange(range),
-      ),
+      sizes,
     });
   }
 
