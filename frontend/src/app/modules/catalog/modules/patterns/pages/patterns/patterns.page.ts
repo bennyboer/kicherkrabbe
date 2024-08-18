@@ -81,6 +81,9 @@ export class PatternsPage implements OnInit, OnDestroy {
         patternsLoading || categoriesLoading,
     ),
   );
+  protected readonly notLoading$: Observable<boolean> = this.loading$.pipe(
+    map((loading) => !loading),
+  );
   protected readonly items$: Observable<CardListItem[]> = this.patterns$.pipe(
     map((patterns) =>
       patterns.map((pattern) => this.mapPatternToItem(pattern)),

@@ -8,7 +8,7 @@
       }
     </div>
     <div class="details">
-      <app-price-tag class="price">ab {{ pattern.getStartingPrice().formatted() }}</app-price-tag>
+      <app-price-tag class="price">{{ pattern.getFormattedPriceRange() }}</app-price-tag>
 
       @if (pattern.variants.length > 1) {
         <h2>Varianten</h2>

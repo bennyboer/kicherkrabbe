@@ -64,6 +64,17 @@ export class Pattern {
     });
   }
 
+  getFormattedPriceRange(): string {
+    const startingPrice = this.getStartingPrice();
+    const endingPrice = this.getEndingPrice();
+
+    if (startingPrice.isEqualTo(endingPrice)) {
+      return startingPrice.formatted();
+    }
+
+    return `${startingPrice.formatted({ withSymbol: false })} - ${endingPrice.formatted()}`;
+  }
+
   getStartingPrice(): Money {
     const prices = this.variants.map((variant) => variant.getStartingPrice());
 
@@ -73,6 +84,19 @@ export class Pattern {
 
     return prices.reduce(
       (acc, price) => (acc.isLessThan(price) ? acc : price),
+      prices[0],
+    );
+  }
+
+  getEndingPrice(): Money {
+    const prices = this.variants.map((variant) => variant.getEndingPrice());
+
+    if (prices.length === 0) {
+      return Money.zero();
+    }
+
+    return prices.reduce(
+      (acc, price) => (acc.isGreaterThan(price) ? acc : price),
       prices[0],
     );
   }

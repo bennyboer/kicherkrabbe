@@ -42,6 +42,19 @@ export class PatternVariant {
     );
   }
 
+  getEndingPrice(): Money {
+    const prices = this.sizes.map((size) => size.price);
+
+    if (prices.length === 0) {
+      return Money.zero();
+    }
+
+    return prices.reduce(
+      (acc, price) => (acc.isGreaterThan(price) ? acc : price),
+      prices[0],
+    );
+  }
+
   getSmallestSize(): number {
     const sizes = this.sizes.map((size) => size.from);
 

@@ -113,8 +113,18 @@ export class Money implements Eq<Money> {
     return this.value / 100;
   }
 
-  formatted(): string {
-    return `${this.toNatural().toFixed(2).replace('.', ',')} ${this.currency.symbol}`;
+  formatted(props?: { withSymbol?: boolean }): string {
+    const withSymbol = someOrNone(props)
+      .flatMap((p) => someOrNone(p.withSymbol))
+      .orElse(true);
+
+    let result = `${this.toNatural().toFixed(2).replace('.', ',')}`;
+
+    if (withSymbol) {
+      result += ` ${this.currency.symbol}`;
+    }
+
+    return result;
   }
 
   equals(other: Money): boolean {

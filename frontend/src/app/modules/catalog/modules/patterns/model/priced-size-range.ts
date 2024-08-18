@@ -43,7 +43,7 @@ export class PricedSizeRange {
           return this.from.toString();
         }
 
-        return `${this.from} - ${to}`;
+        return `${this.from} + ${to}`;
       })
       .orElse(`ab ${this.from}`);
   }
