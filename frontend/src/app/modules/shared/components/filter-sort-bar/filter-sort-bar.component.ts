@@ -21,7 +21,7 @@ import {
   take,
   takeUntil,
 } from 'rxjs';
-import { Option, someOrNone } from '../../../../util';
+import { Eq, Option, someOrNone } from '../../../../util';
 
 export type FilterId = string;
 export type FilterItemId = string;
@@ -60,15 +60,14 @@ class FilterDropdownItem implements DropdownItem {
   }
 }
 
-export class Filter {
+export class Filter implements Eq<Filter> {
   readonly id: FilterId;
   readonly label: string;
   readonly items: FilterItem[];
   readonly selectionMode: FilterSelectionMode = FilterSelectionMode.SINGLE;
   readonly itemTemplateRef: Option<TemplateRef<any>>;
 
-  private readonly selected$: BehaviorSubject<Set<FilterItemId>> =
-    new BehaviorSubject<Set<FilterItemId>>(new Set<FilterItemId>());
+  private readonly selected$: BehaviorSubject<Set<FilterItemId>>;
 
   private constructor(props: {
     id: FilterId;
@@ -76,12 +75,14 @@ export class Filter {
     items: FilterItem[];
     selectionMode: Option<FilterSelectionMode>;
     itemTemplateRef: Option<TemplateRef<any>>;
+    selected: Set<FilterItemId>;
   }) {
     this.id = props.id;
     this.label = props.label;
     this.items = props.items;
     this.selectionMode = props.selectionMode.orElse(FilterSelectionMode.SINGLE);
     this.itemTemplateRef = props.itemTemplateRef;
+    this.selected$ = new BehaviorSubject<Set<FilterItemId>>(props.selected);
   }
 
   static of(props: {
@@ -105,6 +106,7 @@ export class Filter {
       items: props.items,
       selectionMode: someOrNone(props.selectionMode),
       itemTemplateRef: someOrNone(props.itemTemplateRef),
+      selected: new Set<FilterItemId>(),
     });
   }
 
@@ -127,6 +129,42 @@ export class Filter {
 
   isActive(): boolean {
     return this.selected$.value.size > 0;
+  }
+
+  equals(other: Filter): boolean {
+    if (this.id !== other.id) {
+      return false;
+    }
+
+    if (this.items.length !== other.items.length) {
+      return false;
+    }
+
+    if (this.selected$.value.size !== other.selected$.value.size) {
+      return false;
+    }
+
+    const itemsEqual = this.items.every((item, index) => {
+      const otherItem = other.items[index];
+      return item.id === otherItem.id;
+    });
+
+    const selectedEqual = this.getSelected().every((id) =>
+      other.isSelected(id),
+    );
+
+    return itemsEqual && selectedEqual;
+  }
+
+  clone(): Filter {
+    return new Filter({
+      id: this.id,
+      label: this.label,
+      items: this.items.map((item) => ({ ...item })),
+      selectionMode: someOrNone(this.selectionMode),
+      itemTemplateRef: this.itemTemplateRef,
+      selected: new Set(this.getSelected()),
+    });
   }
 }
 
@@ -221,12 +259,12 @@ export class SortEvent {
 })
 export class FilterSortBarComponent implements OnInit, OnDestroy {
   @Input('filters')
-  set setFilters(filters: Filter[]) {
+  set setFilters(filters: Filter[] | null) {
     someOrNone(filters).ifSome((filters) => this.filters$.next(filters));
   }
 
   @Input('sortingOptions')
-  set setSortingOptions(sortingOptions: SortingOption[]) {
+  set setSortingOptions(sortingOptions: SortingOption[] | null) {
     someOrNone(sortingOptions).ifSome((sortingOptions) => {
       this.sortingOptions$.next(sortingOptions);
       this.sortBy$.next(sortingOptions[0].id);
@@ -333,7 +371,9 @@ export class FilterSortBarComponent implements OnInit, OnDestroy {
 
   private emitFilteredEvent(): void {
     this.filters$.pipe(take(1)).subscribe((filters) => {
-      const activeFilters = filters.filter((filter) => filter.isActive());
+      const activeFilters = filters
+        .filter((filter) => filter.isActive())
+        .map((filter) => filter.clone());
       this.filtered.emit(FilterEvent.of({ filters: activeFilters }));
     });
   }

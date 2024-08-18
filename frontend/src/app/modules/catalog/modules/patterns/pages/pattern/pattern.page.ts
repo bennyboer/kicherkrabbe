@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { PatternsStoreService } from '../../services';
 import { map, Observable, switchMap } from 'rxjs';
-import { Image } from '../../../../../../util';
 import { ImageSliderImage } from '../../../../../shared/modules/image-slider';
 import { Theme, ThemeService } from '../../../../../../services';
+import { PatternsService } from '../../services';
+import { environment } from '../../../../../../../environments';
+import { ImageId } from '../../model';
 
 @Component({
   selector: 'app-pattern-page',
@@ -15,7 +16,7 @@ import { Theme, ThemeService } from '../../../../../../services';
 export class PatternPage {
   protected readonly pattern$ = this.route.params.pipe(
     map((params) => params['id']),
-    switchMap((id) => this.patternsStore.getPatternById(id)),
+    switchMap((id) => this.patternsService.getPattern(id)),
   );
   protected readonly images$: Observable<ImageSliderImage[]> =
     this.pattern$.pipe(
@@ -26,12 +27,18 @@ export class PatternPage {
     .pipe(map((theme) => (theme === Theme.DARK ? 'dark' : 'light')));
 
   constructor(
-    private readonly patternsStore: PatternsStoreService,
+    private readonly patternsService: PatternsService,
     private readonly route: ActivatedRoute,
     private readonly themeService: ThemeService,
   ) {}
 
-  toImageSliderImages(images: Image[]): ImageSliderImage[] {
-    return images.map((image) => ImageSliderImage.of({ url: image.url }));
+  toImageSliderImages(images: ImageId[]): ImageSliderImage[] {
+    return images.map((imageId) =>
+      ImageSliderImage.of({ url: this.getImageUrl(imageId) }),
+    );
+  }
+
+  private getImageUrl(imageId: ImageId): string {
+    return `${environment.apiUrl}/assets/${imageId}/content`;
   }
 }

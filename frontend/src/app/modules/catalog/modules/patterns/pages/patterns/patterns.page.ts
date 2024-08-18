@@ -4,12 +4,17 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { PatternsStoreService } from '../../services';
 import {
   BehaviorSubject,
+  catchError,
   combineLatest,
+  distinctUntilChanged,
+  EMPTY,
+  filter,
+  finalize,
+  first,
   map,
-  ReplaySubject,
+  Observable,
   Subject,
   takeUntil,
 } from 'rxjs';
@@ -17,14 +22,37 @@ import {
   CardListItem,
   Filter,
   FilterSelectionMode,
+  NotificationService,
   SortingOption,
 } from '../../../../../shared';
-import { Pattern } from '../../model';
-import { CATEGORIES } from '../../model/category';
+import { Category, ImageId, Pattern } from '../../model';
+import { PatternCategoriesService, PatternsService } from '../../services';
+import { environment } from '../../../../../../../environments';
+import { Eq, validateProps } from '../../../../../../util';
 
-interface Sorting {
-  property: string;
-  ascending: boolean;
+class Sorting implements Eq<Sorting> {
+  readonly property: string;
+  readonly ascending: boolean;
+
+  private constructor(props: { property: string; ascending: boolean }) {
+    validateProps(props);
+
+    this.property = props.property;
+    this.ascending = props.ascending;
+  }
+
+  static of(props: { property: string; ascending: boolean }): Sorting {
+    return new Sorting({
+      property: props.property,
+      ascending: props.ascending,
+    });
+  }
+
+  equals(other: Sorting): boolean {
+    return (
+      this.property === other.property && this.ascending === other.ascending
+    );
+  }
 }
 
 @Component({
@@ -34,9 +62,30 @@ interface Sorting {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PatternsPage implements OnInit, OnDestroy {
-  protected readonly items$: Subject<CardListItem[]> = new ReplaySubject<
-    CardListItem[]
-  >(1);
+  protected readonly patterns$: BehaviorSubject<Pattern[]> =
+    new BehaviorSubject<Pattern[]>([]);
+  protected readonly patternsLoading$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(true);
+
+  protected readonly categories$: BehaviorSubject<Category[]> =
+    new BehaviorSubject<Category[]>([]);
+  protected readonly categoriesLoading$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(true);
+
+  protected readonly loading$: Observable<boolean> = combineLatest([
+    this.patternsLoading$,
+    this.categoriesLoading$,
+  ]).pipe(
+    map(
+      ([patternsLoading, categoriesLoading]) =>
+        patternsLoading || categoriesLoading,
+    ),
+  );
+  protected readonly items$: Observable<CardListItem[]> = this.patterns$.pipe(
+    map((patterns) =>
+      patterns.map((pattern) => this.mapPatternToItem(pattern)),
+    ),
+  );
 
   private readonly filterSizeRange = {
     from: 50,
@@ -47,27 +96,6 @@ export class PatternsPage implements OnInit, OnDestroy {
     (_, i) => this.filterSizeRange.from + i * 6,
   );
 
-  protected readonly filters: Filter[] = [
-    Filter.of({
-      id: 'category',
-      label: 'Kategorie',
-      items: CATEGORIES.map((category) => ({
-        id: category.id,
-        label: category.name,
-      })),
-      selectionMode: FilterSelectionMode.MULTIPLE,
-    }),
-    Filter.of({
-      id: 'size',
-      label: 'Größe',
-      items: this.filterSizes.map((size) => ({
-        id: size.toString(10),
-        label: size.toString(10),
-      })),
-      selectionMode: FilterSelectionMode.MULTIPLE,
-    }),
-  ];
-
   protected readonly sortingOptions: SortingOption[] = [
     SortingOption.of({
       id: 'name',
@@ -77,37 +105,76 @@ export class PatternsPage implements OnInit, OnDestroy {
     }),
   ];
 
+  protected readonly filters$: Observable<Filter[]> = this.categories$.pipe(
+    filter((categories) => categories.length > 0),
+    map((categories) => {
+      const categoryFilter = Filter.of({
+        id: 'category',
+        label: 'Kategorie',
+        items: categories.map((category) => ({
+          id: category.id,
+          label: category.name,
+        })),
+        selectionMode: FilterSelectionMode.MULTIPLE,
+      });
+
+      const sizeFilter = Filter.of({
+        id: 'size',
+        label: 'Größe',
+        items: this.filterSizes.map((size) => ({
+          id: size.toString(10),
+          label: size.toString(10),
+        })),
+        selectionMode: FilterSelectionMode.MULTIPLE,
+      });
+
+      return [categoryFilter, sizeFilter];
+    }),
+  );
+
   private readonly activeFilters$: BehaviorSubject<Filter[]> =
     new BehaviorSubject<Filter[]>([]);
   private readonly sorting$: BehaviorSubject<Sorting> =
-    new BehaviorSubject<Sorting>({
-      property: 'name',
-      ascending: true,
-    });
+    new BehaviorSubject<Sorting>(
+      Sorting.of({
+        property: 'name',
+        ascending: true,
+      }),
+    );
   private readonly destroy$: Subject<void> = new Subject<void>();
 
-  constructor(private readonly patternsStore: PatternsStoreService) {}
+  constructor(
+    private readonly patternsService: PatternsService,
+    private readonly patternCategoriesService: PatternCategoriesService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   ngOnInit(): void {
-    combineLatest([
-      this.patternsStore.getPatterns(),
-      this.sorting$,
-      this.activeFilters$,
-    ])
+    this.reloadCategories();
+
+    combineLatest([this.sorting$, this.activeFilters$])
       .pipe(
-        map(([patterns, sorting, filters]) =>
-          this.sortItems(this.filterItems(patterns, filters), sorting).map(
-            (pattern) => this.mapPatternToItem(pattern),
-          ),
-        ),
+        distinctUntilChanged(([sortingA, filtersA], [sortingB, filtersB]) => {
+          const sortingEqual = sortingA.equals(sortingB);
+          const filtersEqual =
+            filtersA.length === filtersB.length &&
+            filtersA.every((filter, index) => filter.equals(filtersB[index]));
+
+          return sortingEqual && filtersEqual;
+        }),
         takeUntil(this.destroy$),
       )
-      .subscribe((items) => this.items$.next(items));
+      .subscribe(([sorting, filters]) => this.reloadPatterns(sorting, filters));
   }
 
   ngOnDestroy(): void {
+    this.patterns$.complete();
+    this.patternsLoading$.complete();
+
+    this.categories$.complete();
+    this.categoriesLoading$.complete();
+
     this.sorting$.complete();
-    this.items$.complete();
     this.activeFilters$.complete();
 
     this.destroy$.next();
@@ -119,10 +186,12 @@ export class PatternsPage implements OnInit, OnDestroy {
   }
 
   protected updateSorting(option: SortingOption, ascending: boolean): void {
-    this.sorting$.next({
-      property: option.id,
-      ascending,
-    });
+    this.sorting$.next(
+      Sorting.of({
+        property: option.id,
+        ascending,
+      }),
+    );
   }
 
   private mapPatternToItem(pattern: Pattern): CardListItem {
@@ -130,62 +199,68 @@ export class PatternsPage implements OnInit, OnDestroy {
       title: pattern.name,
       description: `ab ${pattern.getStartingPrice().formatted()}, Größe ${pattern.getFormattedSizeRange()}`,
       link: `/catalog/patterns/${pattern.id}`,
-      imageUrl: pattern.previewImage.url ?? '',
+      imageUrl: this.getImageUrl(pattern.images[0]),
     });
   }
 
-  private sortItems(patterns: Pattern[], sorting: Sorting): Pattern[] {
-    const result = [...patterns].sort((a, b) => {
-      const property = sorting.property;
-      if (property === 'name') {
-        return this.compareByName(a, b);
-      } else {
-        throw new Error(`Unknown sort property: ${property}`);
-      }
-    });
-
-    if (!sorting.ascending) {
-      result.reverse();
-    }
-
-    return result;
+  private getImageUrl(imageId: ImageId): string {
+    return `${environment.apiUrl}/assets/${imageId}/content`;
   }
 
-  private compareByName(a: Pattern, b: Pattern): number {
-    return a.name.localeCompare(b.name, 'de-de', {
-      sensitivity: 'base',
-      numeric: true,
-    });
+  private reloadPatterns(sorting: Sorting, filters: Filter[]): void {
+    this.patternsLoading$.next(true);
+
+    const categoriesFilter = filters.find((filter) => filter.id === 'category');
+    const sizesFilter = filters.find((filter) => filter.id === 'size');
+
+    const categories: Set<string> = new Set<string>(
+      categoriesFilter?.getSelected(),
+    );
+    const sizes: Set<number> = new Set<number>(
+      sizesFilter?.getSelected().map((size) => parseInt(size, 10)),
+    );
+
+    this.patternsService
+      .getPatterns({
+        categories,
+        sizes,
+        ascending: sorting.ascending,
+        limit: 9999,
+      })
+      .pipe(
+        first(),
+        catchError((e) => {
+          this.notificationService.publish({
+            type: 'error',
+            message:
+              'Die Schnitte konnten nicht geladen werden. Bitte versuchen Sie es später erneut.',
+          });
+          return EMPTY;
+        }),
+        finalize(() => this.patternsLoading$.next(false)),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((patterns) => this.patterns$.next(patterns));
   }
 
-  private filterItems(patterns: Pattern[], filters: Filter[]): Pattern[] {
-    return patterns.filter((pattern) => this.matchesFilters(pattern, filters));
-  }
+  private reloadCategories(): void {
+    this.categoriesLoading$.next(true);
 
-  private matchesFilters(pattern: Pattern, filters: Filter[]): boolean {
-    return filters.every((filter) => this.matchesFilter(pattern, filter));
-  }
-
-  private matchesFilter(pattern: Pattern, filter: Filter): boolean {
-    const filterId = filter.id;
-    switch (filterId) {
-      case 'category':
-        return this.matchesCategoryFilter(pattern, filter);
-      case 'size':
-        return this.matchesSizeFilter(pattern, filter);
-      default:
-        throw new Error(`Unknown filter id: ${filterId}`);
-    }
-  }
-
-  private matchesCategoryFilter(pattern: Pattern, filter: Filter): boolean {
-    return [...pattern.categories]
-      .map((theme) => theme.id)
-      .some((id) => filter.isSelected(id));
-  }
-
-  private matchesSizeFilter(pattern: Pattern, filter: Filter): boolean {
-    const sizes = filter.getSelected().map((size) => parseInt(size, 10));
-    return sizes.some((size) => pattern.isAvailableInSize(size));
+    this.patternCategoriesService
+      .getCategories()
+      .pipe(
+        first(),
+        catchError((e) => {
+          this.notificationService.publish({
+            type: 'error',
+            message:
+              'Die Kategorien konnten nicht geladen werden. Bitte versuchen Sie es später erneut.',
+          });
+          return EMPTY;
+        }),
+        finalize(() => this.categoriesLoading$.next(false)),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((categories) => this.categories$.next(categories));
   }
 }

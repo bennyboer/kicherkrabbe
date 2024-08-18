@@ -1,6 +1,6 @@
 import { Money, Option, someOrNone } from '../../../../../util';
 
-export class SizeRange {
+export class PricedSizeRange {
   readonly from: number;
   readonly to: Option<number>;
   readonly unit: Option<string>;
@@ -24,11 +24,11 @@ export class SizeRange {
 
   static of(props: {
     from: number;
-    to?: number;
-    unit?: string;
+    to?: number | null;
+    unit?: string | null;
     price: Money;
-  }): SizeRange {
-    return new SizeRange({
+  }): PricedSizeRange {
+    return new PricedSizeRange({
       from: props.from,
       to: someOrNone(props.to),
       unit: someOrNone(props.unit),

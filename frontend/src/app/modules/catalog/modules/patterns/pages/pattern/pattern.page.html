@@ -14,12 +14,8 @@
         <h2>Varianten</h2>
 
         <app-accordion>
-          @for (variant of pattern.variants; track variant.id) {
+          @for (variant of pattern.variants; track variant.name) {
             <app-accordion-item [label]="variant.name">
-              @if (variant.description.isSome()) {
-                <p>{{ variant.description.orElse('') }}</p>
-              }
-
               <ng-container *ngTemplateOutlet="priceTable; context: { $implicit: variant }"></ng-container>
             </app-accordion-item>
           }
@@ -38,13 +34,15 @@
         </p>
       }
 
-      @if (pattern.attribution.isSome()) {
+      @if (pattern.attribution.hasSome()) {
         <hr>
 
         <div class="attribution">
           <p>Basierend auf dem Schnittmuster
-            <span *ngIf="pattern.originalPatternName.isSome()">&raquo;{{ pattern.originalPatternName.orElse('') }}&laquo;</span>
-            von &raquo;{{ pattern.attribution.orElse('') }}&laquo;.
+            <span *ngIf="pattern.attribution.originalPatternName.isSome()">
+              &raquo;{{ pattern.attribution.originalPatternName.orElse('') }}&laquo;
+            </span>
+            von &raquo;{{ pattern.attribution.designer.orElse('') }}&laquo;.
           </p>
         </div>
       }

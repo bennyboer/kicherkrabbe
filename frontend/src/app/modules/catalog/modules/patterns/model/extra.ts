@@ -1,18 +1,20 @@
-import { Money, someOrNone } from '../../../../../util';
+import { Money, someOrNone, validateProps } from '../../../../../util';
 
 export class PatternExtra {
   readonly name: string;
   readonly price: Money;
 
   private constructor(props: { name: string; price: Money }) {
-    this.name = someOrNone(props.name).orElseThrow('Extra name is required');
-    this.price = someOrNone(props.price).orElseThrow('Extra price is required');
+    validateProps(props);
+
+    this.name = props.name;
+    this.price = props.price;
   }
 
-  static of(props: { name: string; price: Money }): PatternExtra {
+  static of(props: { name: string; price?: Money }): PatternExtra {
     return new PatternExtra({
       name: props.name,
-      price: props.price,
+      price: someOrNone(props.price).orElse(Money.zero()),
     });
   }
 }

@@ -1,79 +1,66 @@
 import { PatternVariant } from './variant';
 import { PatternExtra } from './extra';
 import {
-  Image,
   Money,
   none,
   Option,
   some,
   someOrNone,
+  validateProps,
 } from '../../../../../util';
-import { Category } from './category';
+import { PatternAttribution } from './attribution';
+
+export type CategoryId = string;
+export type ImageId = string;
 
 export class Pattern {
   readonly id: string;
   readonly name: string;
-  readonly categories: Set<Category>;
-  readonly previewImage: Image;
-  readonly images: Image[];
+  readonly attribution: PatternAttribution;
+  readonly categories: Set<CategoryId>;
+  readonly images: ImageId[];
   readonly variants: PatternVariant[];
   readonly extras: PatternExtra[];
-  readonly originalPatternName: Option<string>;
-  readonly attribution: Option<string>;
 
   private constructor(props: {
     id: string;
     name: string;
-    categories: Set<Category>;
-    previewImage: Image;
-    images: Image[];
+    attribution: PatternAttribution;
+    categories: Set<CategoryId>;
+    images: ImageId[];
     variants: PatternVariant[];
     extras: PatternExtra[];
-    originalPatternName: Option<string>;
-    attribution: Option<string>;
   }) {
-    this.id = someOrNone(props.id).orElseThrow('Pattern ID is required');
-    this.name = someOrNone(props.name).orElseThrow('Pattern name is required');
-    this.categories = someOrNone(props.categories).orElse(new Set());
-    this.previewImage = someOrNone(props.previewImage).orElseThrow(
-      'Pattern preview image is required',
-    );
-    this.images = someOrNone(props.images).orElseThrow(
-      'Pattern images are required',
-    );
-    this.variants = someOrNone(props.variants).orElseThrow(
-      'Pattern variants are required',
-    );
-    this.extras = someOrNone(props.extras).orElseThrow(
-      'Pattern extras are required',
-    );
-    this.originalPatternName = someOrNone(props.originalPatternName).orElse(
-      none(),
-    );
-    this.attribution = someOrNone(props.attribution).orElse(none());
+    validateProps(props);
+
+    this.id = props.id;
+    this.name = props.name;
+    this.attribution = props.attribution;
+    this.categories = props.categories;
+    this.images = props.images;
+    this.variants = props.variants;
+    this.extras = props.extras;
   }
 
   static of(props: {
     id: string;
     name: string;
-    categories: Set<Category>;
-    previewImage: Image;
-    images: Image[];
-    variants: PatternVariant[];
+    attribution?: PatternAttribution;
+    categories?: Set<CategoryId>;
+    images?: ImageId[];
+    variants?: PatternVariant[];
     extras?: PatternExtra[];
-    originalPatternName?: string;
-    attribution?: string;
   }): Pattern {
     return new Pattern({
       id: props.id,
       name: props.name,
-      categories: props.categories,
-      previewImage: props.previewImage,
-      images: props.images,
-      variants: props.variants,
+      attribution: someOrNone(props.attribution).orElse(
+        PatternAttribution.of({}),
+      ),
+      categories: someOrNone(props.categories).orElse(new Set<CategoryId>()),
+      images: someOrNone(props.images).orElse([]),
+      variants: someOrNone(props.variants).orElse([]),
       extras: someOrNone(props.extras).orElse([]),
-      originalPatternName: someOrNone(props.originalPatternName),
-      attribution: someOrNone(props.attribution),
     });
   }
 

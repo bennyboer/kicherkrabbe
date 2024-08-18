@@ -1,37 +1,31 @@
-import { Money, none, Option, some, someOrNone } from '../../../../../util';
-import { SizeRange } from './size-range';
+import {
+  Money,
+  none,
+  Option,
+  some,
+  someOrNone,
+  validateProps,
+} from '../../../../../util';
+import { PricedSizeRange } from './priced-size-range';
 
 export class PatternVariant {
-  readonly id: string;
   readonly name: string;
-  readonly description: Option<string>;
-  readonly sizes: SizeRange[];
+  readonly sizes: PricedSizeRange[];
 
-  private constructor(props: {
-    id: string;
-    name: string;
-    description: Option<string>;
-    sizes: SizeRange[];
-  }) {
-    this.id = someOrNone(props.id).orElseThrow('Variant ID is required');
-    this.name = someOrNone(props.name).orElseThrow('Variant name is required');
-    this.description = props.description;
-    this.sizes = someOrNone(props.sizes).orElseThrow(
-      'Variant sizes are required',
-    );
+  private constructor(props: { name: string; sizes: PricedSizeRange[] }) {
+    validateProps(props);
+
+    this.name = props.name;
+    this.sizes = props.sizes;
   }
 
   static of(props: {
-    id: string;
     name: string;
-    description?: string;
-    sizes: SizeRange[];
+    sizes?: PricedSizeRange[];
   }): PatternVariant {
     return new PatternVariant({
-      id: props.id,
       name: props.name,
-      description: someOrNone(props.description),
-      sizes: props.sizes,
+      sizes: someOrNone(props.sizes).orElse([]),
     });
   }
 
