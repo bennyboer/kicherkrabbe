@@ -9,18 +9,33 @@ const routes: Routes = [
   },
   {
     path: 'admin',
+    title: 'Verwaltung',
     loadChildren: () =>
       import('./modules/admin/admin.module').then((m) => m.AdminModule),
   },
   {
     path: 'catalog',
+    title: 'Katalog',
     loadChildren: () =>
       import('./modules/catalog/catalog.module').then((m) => m.CatalogModule),
   },
   {
+    path: 'contact',
+    title: 'Kontakt',
+    loadChildren: () =>
+      import('./modules/contact/contact.module').then((m) => m.ContactModule),
+  },
+  {
     path: 'legal',
+    title: 'Rechtliches',
     loadChildren: () =>
       import('./modules/legal/legal.module').then((m) => m.LegalModule),
+  },
+  {
+    path: 'landing',
+    title: 'Startseiten',
+    loadChildren: () =>
+      import('./modules/landing/landing.module').then((m) => m.LandingModule),
   },
   { path: '**', component: NotFoundPage },
 ];

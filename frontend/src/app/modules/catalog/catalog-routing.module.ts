@@ -9,6 +9,7 @@ const routes: Routes = [
   },
   {
     path: 'patterns',
+    title: 'Schnitte',
     loadChildren: () =>
       import('./modules/patterns/patterns.module').then(
         (m) => m.PatternsModule,
@@ -16,6 +17,7 @@ const routes: Routes = [
   },
   {
     path: 'fabrics',
+    title: 'Stoffe',
     loadChildren: () =>
       import('./modules/fabrics/fabrics.module').then((m) => m.FabricsModule),
   },

@@ -32,11 +32,13 @@ const routes: Routes = [
       },
       {
         path: 'topics',
+        title: 'Themenverwaltung',
         loadChildren: () =>
           import('./modules/topics/topics.module').then((m) => m.TopicsModule),
       },
       {
         path: 'fabric-types',
+        title: 'Stoffartenverwaltung',
         loadChildren: () =>
           import('./modules/fabric-types/fabric-types.module').then(
             (m) => m.FabricTypesModule,
@@ -44,11 +46,13 @@ const routes: Routes = [
       },
       {
         path: 'colors',
+        title: 'Farbenverwaltung',
         loadChildren: () =>
           import('./modules/colors/colors.module').then((m) => m.ColorsModule),
       },
       {
         path: 'fabrics',
+        title: 'Stoffverwaltung',
         loadChildren: () =>
           import('./modules/fabrics/fabrics.module').then(
             (m) => m.FabricsModule,
@@ -56,6 +60,7 @@ const routes: Routes = [
       },
       {
         path: 'patterns',
+        title: 'Schnittmuster-Verwaltung',
         loadChildren: () =>
           import('./modules/patterns/patterns.module').then(
             (m) => m.PatternsModule,
@@ -63,6 +68,7 @@ const routes: Routes = [
       },
       {
         path: 'categories',
+        title: 'Kategorienverwaltung',
         loadChildren: () =>
           import('./modules/categories/categories.module').then(
             (m) => m.CategoriesModule,
@@ -72,6 +78,7 @@ const routes: Routes = [
   },
   {
     path: 'login',
+    title: 'Anmeldung für die Verwaltung',
     component: LoginPage,
   },
 ];

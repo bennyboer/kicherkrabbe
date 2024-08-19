@@ -12,6 +12,8 @@ import { NotFoundPage, StartPage } from './pages';
 import { SharedModule } from './modules/shared/shared.module';
 import { ThemeService } from './services';
 import { SortablejsModule } from 'nxt-sortablejs';
+import { TitleStrategy } from '@angular/router';
+import { RoutingTitleStrategy } from './routing-title-strategy';
 
 const COMPONENTS = [
   AppComponent,
@@ -33,7 +35,13 @@ const PAGES = [StartPage, NotFoundPage];
       handle: '.drag-handle',
     }),
   ],
-  providers: [ThemeService],
+  providers: [
+    ThemeService,
+    {
+      provide: TitleStrategy,
+      useClass: RoutingTitleStrategy,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -10,18 +10,22 @@ import {
 const routes: Routes = [
   {
     path: 'terms-and-conditions',
+    title: 'Allgemeine Geschäftsbedingungen',
     component: TermsAndConditionsPage,
   },
   {
     path: 'privacy-policy',
+    title: 'Datenschutzerklärung',
     component: PrivacyPolicyPage,
   },
   {
     path: 'imprint',
+    title: 'Impressum',
     component: ImprintPage,
   },
   {
     path: 'cancellation-policy',
+    title: 'Widerrufsbelehrung',
     component: CancellationPolicyPage,
   },
 ];
