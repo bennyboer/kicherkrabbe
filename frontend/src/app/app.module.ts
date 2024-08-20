@@ -10,7 +10,7 @@ import {
 } from './components';
 import { NotFoundPage, StartPage } from './pages';
 import { SharedModule } from './modules/shared/shared.module';
-import { ThemeService } from './services';
+import { RoutingMetadataService, ThemeService } from './services';
 import { SortablejsModule } from 'nxt-sortablejs';
 import { TitleStrategy } from '@angular/router';
 import { RoutingTitleStrategy } from './routing-title-strategy';
@@ -37,6 +37,7 @@ const PAGES = [StartPage, NotFoundPage];
   ],
   providers: [
     ThemeService,
+    RoutingMetadataService,
     {
       provide: TitleStrategy,
       useClass: RoutingTitleStrategy,

@@ -14,12 +14,18 @@ const routes: Routes = [
       import('./modules/patterns/patterns.module').then(
         (m) => m.PatternsModule,
       ),
+    data: {
+      description: 'Alle verfügbaren Schnitte für dein nächstes Unikat',
+    },
   },
   {
     path: 'fabrics',
     title: 'Stoffe',
     loadChildren: () =>
       import('./modules/fabrics/fabrics.module').then((m) => m.FabricsModule),
+    data: {
+      description: 'Stoffe aus denen dein nächstes Unikat entstehen kann',
+    },
   },
 ];
 

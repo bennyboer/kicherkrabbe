@@ -8,6 +8,10 @@ const routes: Routes = [
     title:
       'Kleine Gäste, großer Auftritt: Kinder- und Babykleidung für Hochzeiten und besondere Anlässe',
     component: WeddingPage,
+    data: {
+      description:
+        'Handgemachte Kinder- und Babykleidung für Hochzeiten und besondere Anlässe',
+    },
   },
 ];
 

@@ -24,6 +24,10 @@ const routes: Routes = [
     title: 'Kontakt',
     loadChildren: () =>
       import('./modules/contact/contact.module').then((m) => m.ContactModule),
+    data: {
+      description:
+        'Kontaktiere uns bei Fragen, Bestellungen oder Anregungen zu handgemachter Kinder- und Babykleidung',
+    },
   },
   {
     path: 'legal',
