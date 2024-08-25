@@ -17,6 +17,8 @@ public class PublishedPattern {
 
     PatternName name;
 
+    PatternAlias alias;
+
     PatternAttribution attribution;
 
     Set<PatternCategoryId> categories;
@@ -30,6 +32,7 @@ public class PublishedPattern {
     public static PublishedPattern of(
             PatternId id,
             PatternName name,
+            PatternAlias alias,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
             List<ImageId> images,
@@ -38,13 +41,14 @@ public class PublishedPattern {
     ) {
         notNull(id, "Pattern ID must be given");
         notNull(name, "Pattern name must be given");
+        notNull(alias, "Pattern alias must be given");
         notNull(attribution, "Pattern attribution must be given");
         notNull(categories, "Pattern categories must be given");
         notNull(images, "Pattern images must be given");
         notNull(variants, "Pattern variants must be given");
         notNull(extras, "Pattern extras must be given");
 
-        return new PublishedPattern(id, name, attribution, categories, images, variants, extras);
+        return new PublishedPattern(id, name, alias, attribution, categories, images, variants, extras);
     }
 
 }

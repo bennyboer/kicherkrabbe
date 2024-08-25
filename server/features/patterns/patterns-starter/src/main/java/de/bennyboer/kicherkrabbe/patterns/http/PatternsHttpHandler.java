@@ -477,6 +477,7 @@ public class PatternsHttpHandler {
 
         result.id = pattern.getId().getValue();
         result.name = pattern.getName().getValue();
+        result.alias = pattern.getAlias().getValue();
         result.attribution = toPatternAttributionDTO(pattern.getAttribution());
         result.categories = pattern.getCategories()
                 .stream()

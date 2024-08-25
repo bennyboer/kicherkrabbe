@@ -17,6 +17,8 @@ public class PublishedPatternDTO {
     String id;
 
     String name;
+    
+    String alias;
 
     PatternAttributionDTO attribution;
 

@@ -25,6 +25,8 @@ public class MongoLookupPattern {
 
     String name;
 
+    String alias;
+
     MongoLookupPatternAttribution attribution;
 
     Set<String> categories;

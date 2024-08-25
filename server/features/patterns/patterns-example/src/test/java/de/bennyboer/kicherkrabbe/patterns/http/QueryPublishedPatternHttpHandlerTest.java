@@ -28,6 +28,7 @@ public class QueryPublishedPatternHttpHandlerTest extends HttpHandlerTest {
         )).thenReturn(Mono.just(PublishedPattern.of(
                 PatternId.of("PATTERN_ID"),
                 PatternName.of("Summerdress"),
+                PatternAlias.of("summerdress"),
                 PatternAttribution.of(
                         OriginalPatternName.of("Summerdress EXTREME"),
                         PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -62,6 +63,7 @@ public class QueryPublishedPatternHttpHandlerTest extends HttpHandlerTest {
         var response = exchange.expectBody(QueryPublishedPatternResponse.class).returnResult().getResponseBody();
         assertThat(response.pattern.id).isEqualTo("PATTERN_ID");
         assertThat(response.pattern.name).isEqualTo("Summerdress");
+        assertThat(response.pattern.alias).isEqualTo("summerdress");
         assertThat(response.pattern.attribution.originalPatternName).isEqualTo("Summerdress EXTREME");
         assertThat(response.pattern.attribution.designer).isEqualTo("EXTREME PATTERNS inc.");
         assertThat(response.pattern.categories).containsExactly("DRESS_ID");
@@ -94,6 +96,7 @@ public class QueryPublishedPatternHttpHandlerTest extends HttpHandlerTest {
         )).thenReturn(Mono.just(PublishedPattern.of(
                 PatternId.of("PATTERN_ID"),
                 PatternName.of("Summerdress"),
+                PatternAlias.of("summerdress"),
                 PatternAttribution.of(
                         OriginalPatternName.of("Summerdress EXTREME"),
                         PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -127,6 +130,7 @@ public class QueryPublishedPatternHttpHandlerTest extends HttpHandlerTest {
         var response = exchange.expectBody(QueryPublishedPatternResponse.class).returnResult().getResponseBody();
         assertThat(response.pattern.id).isEqualTo("PATTERN_ID");
         assertThat(response.pattern.name).isEqualTo("Summerdress");
+        assertThat(response.pattern.alias).isEqualTo("summerdress");
         assertThat(response.pattern.attribution.originalPatternName).isEqualTo("Summerdress EXTREME");
         assertThat(response.pattern.attribution.designer).isEqualTo("EXTREME PATTERNS inc.");
         assertThat(response.pattern.categories).containsExactly("DRESS_ID");

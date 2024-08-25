@@ -126,6 +126,7 @@ public class PatternsModule {
                                 .map(pattern -> PublishedPattern.of(
                                         pattern.getId(),
                                         pattern.getName(),
+                                        pattern.getAlias(),
                                         pattern.getAttribution(),
                                         pattern.getCategories(),
                                         pattern.getImages(),
@@ -137,12 +138,16 @@ public class PatternsModule {
 
     public Mono<PublishedPattern> getPublishedPattern(String patternId, Agent agent) {
         var id = PatternId.of(patternId);
+        var alias = PatternAlias.of(patternId);
 
-        return assertAgentIsAllowedTo(agent, READ_PUBLISHED, id)
-                .then(patternLookupRepo.findPublished(id))
+        return patternLookupRepo.findByAlias(alias)
+                .delayUntil(pattern -> assertAgentIsAllowedTo(agent, READ_PUBLISHED, pattern.getId()))
+                .switchIfEmpty(assertAgentIsAllowedTo(agent, READ_PUBLISHED, id)
+                        .then(patternLookupRepo.findPublished(id)))
                 .map(pattern -> PublishedPattern.of(
                         pattern.getId(),
                         pattern.getName(),
+                        pattern.getAlias(),
                         pattern.getAttribution(),
                         pattern.getCategories(),
                         pattern.getImages(),
@@ -423,6 +428,7 @@ public class PatternsModule {
                         pattern.getVersion(),
                         pattern.isPublished(),
                         pattern.getName(),
+                        PatternAlias.fromName(pattern.getName()),
                         pattern.getAttribution(),
                         pattern.getCategories(),
                         pattern.getImages(),

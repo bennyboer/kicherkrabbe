@@ -31,6 +31,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 true,
                 PatternName.of("Summerdress"),
+                PatternAlias.of("summerdress"),
                 PatternAttribution.of(
                         OriginalPatternName.of("Summerdress EXTREME"),
                         PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -79,6 +80,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 true,
                 PatternName.of("Summerdress"),
+                PatternAlias.of("summerdress"),
                 PatternAttribution.of(
                         OriginalPatternName.of("Summerdress EXTREME"),
                         PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -115,6 +117,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 false,
                 PatternName.of("Some trousers"),
+                PatternAlias.of("some-trousers"),
                 PatternAttribution.of(
                         OriginalPatternName.of("Summerdress EXTREME"),
                         PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -156,6 +159,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 true,
                 PatternName.of("Summerdress"),
+                PatternAlias.of("summerdress"),
                 PatternAttribution.of(
                         OriginalPatternName.of("Summerdress EXTREME"),
                         PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -192,6 +196,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 false,
                 PatternName.of("Some trousers"),
+                PatternAlias.of("some-trousers"),
                 PatternAttribution.of(null, null),
                 Set.of(PatternCategoryId.of("TROUSERS_ID")),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -229,6 +234,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 true,
                 PatternName.of("Summerdress"),
+                PatternAlias.of("summerdress"),
                 PatternAttribution.of(
                         OriginalPatternName.of("Summerdress EXTREME"),
                         PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -265,6 +271,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 false,
                 PatternName.of("Some trousers"),
+                PatternAlias.of("some-trousers"),
                 PatternAttribution.of(null, null),
                 Set.of(PatternCategoryId.of("TROUSERS_ID")),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -289,6 +296,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 false,
                 PatternName.of("A little hat"),
+                PatternAlias.of("a-little-hat"),
                 PatternAttribution.of(null, null),
                 Set.of(PatternCategoryId.of("HATS_ID")),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -346,6 +354,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 true,
                 PatternName.of("Summerdress"),
+                PatternAlias.of("summerdress"),
                 PatternAttribution.of(
                         OriginalPatternName.of("Summerdress EXTREME"),
                         PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -382,6 +391,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 false,
                 PatternName.of("Some trousers"),
+                PatternAlias.of("some-trousers"),
                 PatternAttribution.of(null, null),
                 Set.of(PatternCategoryId.of("TROUSERS_ID")),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -406,6 +416,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 false,
                 PatternName.of("A little hat"),
+                PatternAlias.of("a-little-hat"),
                 PatternAttribution.of(null, null),
                 Set.of(PatternCategoryId.of("HATS_ID")),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -463,6 +474,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 true,
                 PatternName.of("Summerdress"),
+                PatternAlias.of("summerdress"),
                 PatternAttribution.of(
                         OriginalPatternName.of("Summerdress EXTREME"),
                         PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -499,6 +511,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 false,
                 PatternName.of("Some trousers"),
+                PatternAlias.of("some-trousers"),
                 PatternAttribution.of(null, null),
                 Set.of(PatternCategoryId.of("TROUSERS_ID")),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -523,6 +536,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 false,
                 PatternName.of("A little hat"),
+                PatternAlias.of("a-little-hat"),
                 PatternAttribution.of(null, null),
                 Set.of(PatternCategoryId.of("HATS_ID")),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -570,6 +584,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 true,
                 PatternName.of("Summerdress"),
+                PatternAlias.of("summerdress"),
                 PatternAttribution.of(
                         OriginalPatternName.of("Summerdress EXTREME"),
                         PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -606,6 +621,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 false,
                 PatternName.of("Some trousers"),
+                PatternAlias.of("some-trousers"),
                 PatternAttribution.of(null, null),
                 Set.of(PatternCategoryId.of("TROUSERS_ID")),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -630,6 +646,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 false,
                 PatternName.of("A little hat"),
+                PatternAlias.of("a-little-hat"),
                 PatternAttribution.of(null, null),
                 Set.of(PatternCategoryId.of("HATS_ID")),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -674,6 +691,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 true,
                 PatternName.of("C"),
+                PatternAlias.of("c"),
                 PatternAttribution.of(
                         OriginalPatternName.of("Summerdress EXTREME"),
                         PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -710,6 +728,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 false,
                 PatternName.of("B"),
+                PatternAlias.of("b"),
                 PatternAttribution.of(null, null),
                 Set.of(PatternCategoryId.of("TROUSERS_ID")),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -734,6 +753,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 true,
                 PatternName.of("A"),
+                PatternAlias.of("a"),
                 PatternAttribution.of(null, null),
                 Set.of(PatternCategoryId.of("HATS_ID")),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -900,6 +920,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 true,
                 PatternName.of("C"),
+                PatternAlias.of("c"),
                 PatternAttribution.of(
                         OriginalPatternName.of("Summerdress EXTREME"),
                         PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -936,6 +957,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 false,
                 PatternName.of("B"),
+                PatternAlias.of("b"),
                 PatternAttribution.of(null, null),
                 Set.of(categoryId2),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -960,6 +982,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 true,
                 PatternName.of("A"),
+                PatternAlias.of("a"),
                 PatternAttribution.of(null, null),
                 Set.of(categoryId3, categoryId2),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -1014,6 +1037,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 true,
                 PatternName.of("C"),
+                PatternAlias.of("c"),
                 PatternAttribution.of(
                         OriginalPatternName.of("Summerdress EXTREME"),
                         PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -1050,6 +1074,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 false,
                 PatternName.of("B"),
+                PatternAlias.of("b"),
                 PatternAttribution.of(null, null),
                 Set.of(categoryId2),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -1074,6 +1099,7 @@ public abstract class PatternLookupRepoTest {
                 Version.zero(),
                 true,
                 PatternName.of("A"),
+                PatternAlias.of("a"),
                 PatternAttribution.of(null, null),
                 Set.of(categoryId3, categoryId2),
                 List.of(ImageId.of("IMAGE_ID_3")),
@@ -1114,6 +1140,95 @@ public abstract class PatternLookupRepoTest {
         assertThat(categories).isEmpty();
     }
 
+    @Test
+    void shouldFindPatternByAlias() {
+        // given: some patterns
+        var pattern1 = LookupPattern.of(
+                PatternId.create(),
+                Version.zero(),
+                true,
+                PatternName.of("Summerdress"),
+                PatternAlias.of("summerdress"),
+                PatternAttribution.of(
+                        OriginalPatternName.of("Summerdress EXTREME"),
+                        PatternDesigner.of("EXTREME PATTERNS inc.")
+                ),
+                Set.of(PatternCategoryId.of("DRESS_ID"), PatternCategoryId.of("SKIRT_ID")),
+                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(
+                                        PricedSizeRange.of(
+                                                86,
+                                                92L,
+                                                null,
+                                                Money.euro(2900)
+                                        ),
+                                        PricedSizeRange.of(
+                                                98,
+                                                104L,
+                                                null,
+                                                Money.euro(3100)
+                                        )
+                                )
+                        )
+                ),
+                List.of(PatternExtra.of(
+                        PatternExtraName.of("Sewing instructions"),
+                        Money.euro(200)
+                )),
+                Instant.parse("2024-03-12T12:30:00.00Z")
+        );
+
+        var pattern2 = LookupPattern.of(
+                PatternId.create(),
+                Version.zero(),
+                false,
+                PatternName.of("Some trousers"),
+                PatternAlias.of("some-trousers"),
+                PatternAttribution.of(null, null),
+                Set.of(PatternCategoryId.of("TROUSERS_ID")),
+                List.of(ImageId.of("IMAGE_ID_3")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Normal"),
+                                Set.of(
+                                        PricedSizeRange.of(
+                                                86,
+                                                92L,
+                                                null,
+                                                Money.euro(2900)
+                                        )
+                                )
+                        )
+                ),
+                List.of(),
+                Instant.parse("2024-03-12T12:00:00.00Z")
+        );
+
+        update(pattern1);
+        update(pattern2);
+
+        // when: finding pattern by alias
+        var foundPattern1 = findByAlias(PatternAlias.of("summerdress"));
+
+        // then: the pattern is found by alias
+        assertThat(foundPattern1).isEqualTo(pattern1);
+        
+        // when: finding pattern by alias
+        var foundPattern2 = findByAlias(PatternAlias.of("some-trousers"));
+
+        // then: the pattern is found by alias
+        assertThat(foundPattern2).isEqualTo(pattern2);
+
+        // when: finding pattern by alias that does not exist
+        var foundPattern3 = findByAlias(PatternAlias.of("non-existing-alias"));
+
+        // then: the pattern is not found by alias
+        assertThat(foundPattern3).isNull();
+    }
+
     private List<PatternCategoryId> findUniqueCategories() {
         return repo.findUniqueCategories().collectList().block();
     }
@@ -1124,6 +1239,10 @@ public abstract class PatternLookupRepoTest {
 
     private LookupPattern findPublished(PatternId id) {
         return repo.findPublished(id).block();
+    }
+
+    private LookupPattern findByAlias(PatternAlias alias) {
+        return repo.findByAlias(alias).block();
     }
 
     private LookupPatternPage findPublished(

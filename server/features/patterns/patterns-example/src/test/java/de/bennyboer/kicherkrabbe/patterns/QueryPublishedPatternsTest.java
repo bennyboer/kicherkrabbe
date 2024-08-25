@@ -103,6 +103,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
                 .findFirst()
                 .orElseThrow();
         assertThat(pattern1.getName()).isEqualTo(PatternName.of("Summerdress"));
+        assertThat(pattern1.getAlias()).isEqualTo(PatternAlias.of("summerdress"));
         assertThat(pattern1.getImages()).containsExactly(ImageId.of("IMAGE_ID"));
         assertThat(pattern1.getCategories()).containsExactlyInAnyOrder(
                 PatternCategoryId.of("DRESS_ID")
@@ -114,6 +115,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
                 .findFirst()
                 .orElseThrow();
         assertThat(pattern2.getName()).isEqualTo(PatternName.of("Dressskirt"));
+        assertThat(pattern2.getAlias()).isEqualTo(PatternAlias.of("dressskirt"));
         assertThat(pattern2.getImages()).containsExactly(ImageId.of("IMAGE_ID"));
         assertThat(pattern2.getCategories()).containsExactlyInAnyOrder(
                 PatternCategoryId.of("SKIRT_ID")

@@ -56,6 +56,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
         // then: the published pattern is returned
         assertThat(pattern.getId()).isEqualTo(PatternId.of(patternId));
         assertThat(pattern.getName()).isEqualTo(PatternName.of("Summerdress"));
+        assertThat(pattern.getAlias()).isEqualTo(PatternAlias.of("summerdress"));
         assertThat(pattern.getAttribution()).isEqualTo(PatternAttribution.of(null, null));
         assertThat(pattern.getCategories()).containsExactly(PatternCategoryId.of("DRESS_ID"));
         assertThat(pattern.getImages()).containsExactly(ImageId.of("IMAGE_ID"));
@@ -115,6 +116,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
         // then: the published pattern is returned
         assertThat(pattern.getId()).isEqualTo(PatternId.of(patternId));
         assertThat(pattern.getName()).isEqualTo(PatternName.of("Summerdress"));
+        assertThat(pattern.getAlias()).isEqualTo(PatternAlias.of("summerdress"));
         assertThat(pattern.getAttribution()).isEqualTo(PatternAttribution.of(null, null));
         assertThat(pattern.getCategories()).containsExactly(PatternCategoryId.of("DRESS_ID"));
         assertThat(pattern.getImages()).containsExactly(ImageId.of("IMAGE_ID"));
@@ -174,6 +176,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
         // then: the published pattern is returned
         assertThat(pattern.getId()).isEqualTo(PatternId.of(patternId));
         assertThat(pattern.getName()).isEqualTo(PatternName.of("Summerdress"));
+        assertThat(pattern.getAlias()).isEqualTo(PatternAlias.of("summerdress"));
         assertThat(pattern.getAttribution()).isEqualTo(PatternAttribution.of(null, null));
         assertThat(pattern.getCategories()).containsExactly(PatternCategoryId.of("DRESS_ID"));
         assertThat(pattern.getImages()).containsExactly(ImageId.of("IMAGE_ID"));
@@ -279,6 +282,53 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
 
         // when: querying the pattern as an anonymous user
         var pattern = getPublishedPattern(patternId, Agent.anonymous());
+
+        // then: the published pattern is null
+        assertThat(pattern).isNull();
+    }
+
+    @Test
+    void shouldQueryPublishedPatternAsUserWithAlias() {
+        // given: a user is allowed to create patterns
+        allowUserToCreatePatterns("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: some categories are available
+        markCategoryAsAvailable("DRESS_ID", "Dress");
+        markCategoryAsAvailable("SKIRT_ID", "Skirt");
+
+        // and: the user creates a pattern
+        var variant = new PatternVariantDTO();
+        variant.name = "Normal";
+        var pricedSizeRange = new PricedSizeRangeDTO();
+        pricedSizeRange.from = 80;
+        pricedSizeRange.to = 86L;
+        pricedSizeRange.price = new MoneyDTO();
+        pricedSizeRange.price.amount = 1000;
+        pricedSizeRange.price.currency = "EUR";
+        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+
+        String patternId = createPattern(
+                "Summerdress",
+                new PatternAttributionDTO(),
+                Set.of("DRESS_ID"),
+                List.of("IMAGE_ID"),
+                List.of(variant),
+                List.of(),
+                agent
+        );
+
+        // and: the pattern is published
+        publishPattern(patternId, 0L, agent);
+
+        // when: the user queries the pattern with its alias
+        var pattern = getPublishedPattern("summerdress", agent);
+
+        // then: the published pattern is returned
+        assertThat(pattern.getId()).isEqualTo(PatternId.of(patternId));
+
+        // when: the user queries the pattern with an invalid alias
+        pattern = getPublishedPattern("fwejfiwefwe", agent);
 
         // then: the published pattern is null
         assertThat(pattern).isNull();

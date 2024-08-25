@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.patterns.persistence.lookup;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.EventSourcingReadModelRepo;
+import de.bennyboer.kicherkrabbe.patterns.PatternAlias;
 import de.bennyboer.kicherkrabbe.patterns.PatternCategoryId;
 import de.bennyboer.kicherkrabbe.patterns.PatternId;
 import reactor.core.publisher.Flux;
@@ -22,6 +23,8 @@ public interface PatternLookupRepo extends EventSourcingReadModelRepo<PatternId,
     Flux<LookupPattern> findByCategory(PatternCategoryId categoryId);
 
     Mono<LookupPattern> findById(PatternId internalPatternId);
+
+    Mono<LookupPattern> findByAlias(PatternAlias alias);
 
     Flux<PatternCategoryId> findUniqueCategories();
 

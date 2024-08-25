@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.patterns.persistence.lookup.mongo;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.MongoEventSourcingReadModelRepo;
+import de.bennyboer.kicherkrabbe.patterns.PatternAlias;
 import de.bennyboer.kicherkrabbe.patterns.PatternCategoryId;
 import de.bennyboer.kicherkrabbe.patterns.PatternId;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.LookupPattern;
@@ -104,6 +105,15 @@ public class MongoPatternLookupRepo
     }
 
     @Override
+    public Mono<LookupPattern> findByAlias(PatternAlias alias) {
+        Criteria criteria = where("alias").is(alias.getValue());
+        Query query = new Query(criteria);
+
+        return template.findOne(query, MongoLookupPattern.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
     public Flux<PatternCategoryId> findUniqueCategories() {
         return template.query(MongoLookupPattern.class)
                 .inCollection(collectionName)
@@ -190,8 +200,11 @@ public class MongoPatternLookupRepo
     @Override
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         IndexDefinition categoriesIndex = new Index().on("categories", ASC);
+        IndexDefinition aliasIndex = new Index().on("alias", ASC);
 
-        return indexOps.ensureIndex(categoriesIndex).then();
+        return indexOps.ensureIndex(categoriesIndex)
+                .then(indexOps.ensureIndex(aliasIndex))
+                .then();
     }
 
     private AggregationOperation transformToPage(long skip, long limit) {

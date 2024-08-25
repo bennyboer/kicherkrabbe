@@ -52,6 +52,7 @@ public class QueryPublishedPatternsHttpHandlerTest extends HttpHandlerTest {
                 List.of(PublishedPattern.of(
                         PatternId.of("PATTERN_ID"),
                         PatternName.of("Summerdress"),
+                        PatternAlias.of("summerdress"),
                         PatternAttribution.of(
                                 OriginalPatternName.of("Summerdress EXTREME"),
                                 PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -94,6 +95,7 @@ public class QueryPublishedPatternsHttpHandlerTest extends HttpHandlerTest {
         var pattern = response.patterns.get(0);
         assertThat(pattern.id).isEqualTo("PATTERN_ID");
         assertThat(pattern.name).isEqualTo("Summerdress");
+        assertThat(pattern.alias).isEqualTo("summerdress");
         assertThat(pattern.attribution.originalPatternName).isEqualTo("Summerdress EXTREME");
         assertThat(pattern.attribution.designer).isEqualTo("EXTREME PATTERNS inc.");
         assertThat(pattern.categories).containsExactly("DRESS_ID");
@@ -146,6 +148,7 @@ public class QueryPublishedPatternsHttpHandlerTest extends HttpHandlerTest {
                 List.of(PublishedPattern.of(
                         PatternId.of("PATTERN_ID"),
                         PatternName.of("Summerdress"),
+                        PatternAlias.of("summerdress"),
                         PatternAttribution.of(
                                 OriginalPatternName.of("Summerdress EXTREME"),
                                 PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -187,6 +190,7 @@ public class QueryPublishedPatternsHttpHandlerTest extends HttpHandlerTest {
         var pattern = response.patterns.get(0);
         assertThat(pattern.id).isEqualTo("PATTERN_ID");
         assertThat(pattern.name).isEqualTo("Summerdress");
+        assertThat(pattern.alias).isEqualTo("summerdress");
         assertThat(pattern.attribution.originalPatternName).isEqualTo("Summerdress EXTREME");
         assertThat(pattern.attribution.designer).isEqualTo("EXTREME PATTERNS inc.");
         assertThat(pattern.categories).containsExactly("DRESS_ID");

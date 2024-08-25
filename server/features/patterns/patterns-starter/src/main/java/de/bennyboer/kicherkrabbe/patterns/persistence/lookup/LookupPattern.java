@@ -24,6 +24,8 @@ public class LookupPattern {
 
     PatternName name;
 
+    PatternAlias alias;
+
     PatternAttribution attribution;
 
     Set<PatternCategoryId> categories;
@@ -41,6 +43,7 @@ public class LookupPattern {
             Version version,
             boolean published,
             PatternName name,
+            PatternAlias alias,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
             List<ImageId> images,
@@ -51,6 +54,7 @@ public class LookupPattern {
         notNull(id, "Pattern ID must be given");
         notNull(version, "Version must be given");
         notNull(name, "Name must be given");
+        notNull(alias, "Alias must be given");
         notNull(attribution, "Attribution must be given");
         notNull(categories, "Categories must be given");
         notNull(images, "Images must be given");
@@ -63,6 +67,7 @@ public class LookupPattern {
                 version,
                 published,
                 name,
+                alias,
                 attribution,
                 categories,
                 images,
