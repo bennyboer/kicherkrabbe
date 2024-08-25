@@ -201,7 +201,7 @@ export class PatternsPage implements OnInit, OnDestroy {
     return CardListItem.of({
       title: pattern.name,
       description: `ab ${pattern.getStartingPrice().formatted()}, Größe ${pattern.getFormattedSizeRange()}`,
-      link: `/catalog/patterns/${pattern.id}`,
+      link: `/catalog/patterns/${pattern.alias}`,
       imageUrl: this.getImageUrl(pattern.images[0]),
     });
   }
