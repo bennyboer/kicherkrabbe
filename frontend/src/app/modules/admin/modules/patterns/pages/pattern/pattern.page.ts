@@ -126,6 +126,9 @@ export class PatternPage implements OnInit, OnDestroy {
     map((valid) => !valid),
   );
   protected readonly imagesSortableConfig: any = {
+    delay: 300,
+    delayOnTouchOnly: true,
+    touchStartThreshold: 10,
     onUpdate: () => {
       this.imageIds$.next(this.imageIds$.value);
     },

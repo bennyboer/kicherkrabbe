@@ -53,6 +53,13 @@ ul.patterns-list {
       }
     }
 
+    .description {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      align-items: center;
+    }
+
     &:hover {
       background-color: var(--background-low-contrast);
     }
