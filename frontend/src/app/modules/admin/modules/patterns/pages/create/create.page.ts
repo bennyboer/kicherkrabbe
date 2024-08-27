@@ -25,6 +25,8 @@ import { ButtonSize, Chip, NotificationService } from '../../../../../shared';
 import { PatternCategoriesService, PatternsService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { someOrNone } from '../../../../../../util';
+import { ContentChange } from 'ngx-quill';
+import { Delta } from 'quill/core';
 
 @Component({
   selector: 'app-create-pattern-page',
@@ -62,6 +64,9 @@ export class CreatePage implements OnInit, OnDestroy {
     new BehaviorSubject<string>('');
   private readonly designer$: BehaviorSubject<string> =
     new BehaviorSubject<string>('');
+
+  private readonly description$: BehaviorSubject<Delta> =
+    new BehaviorSubject<Delta>(new Delta());
 
   protected readonly availableCategories$: BehaviorSubject<PatternCategory[]> =
     new BehaviorSubject<PatternCategory[]>([]);
@@ -110,6 +115,16 @@ export class CreatePage implements OnInit, OnDestroy {
   );
 
   protected readonly ButtonSize = ButtonSize;
+  protected readonly quillModules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ['bold', 'italic', 'underline', 'strike', 'link'],
+      [{ align: [] }],
+      [{ color: [] }, { background: [] }],
+      ['blockquote', { list: 'ordered' }, { list: 'bullet' }],
+      ['clean'],
+    ],
+  };
 
   constructor(
     private readonly patternsService: PatternsService,
@@ -129,6 +144,7 @@ export class CreatePage implements OnInit, OnDestroy {
     this.creating$.complete();
     this.originalPatternName$.complete();
     this.designer$.complete();
+    this.description$.complete();
     this.imageIds$.complete();
     this.imageUploadActive$.complete();
     this.availableCategories$.complete();
@@ -159,10 +175,15 @@ export class CreatePage implements OnInit, OnDestroy {
     const images = this.imageIds$.value;
     const variants = this.variants$.value;
     const extras = this.extras$.value;
+    const description =
+      this.description$.value.ops.length > 0
+        ? JSON.stringify(this.description$.value)
+        : null;
 
     this.patternsService
       .createPattern({
         name,
+        description,
         attribution,
         categories,
         images,
@@ -208,6 +229,18 @@ export class CreatePage implements OnInit, OnDestroy {
 
   updateDesigner(value: string): void {
     this.designer$.next(value.trim());
+  }
+
+  updateDescription(event: ContentChange): void {
+    const html = someOrNone(event.html)
+      .map((h) => h.trim())
+      .orElse('');
+    const isEmpty = html.length === 0;
+    if (isEmpty) {
+      this.description$.next(new Delta());
+    } else {
+      this.description$.next(event.content);
+    }
   }
 
   onImagesUploaded(imageIds: string[]): void {

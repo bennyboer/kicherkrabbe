@@ -16,6 +16,7 @@ export type ImageId = string;
 export class Pattern {
   readonly id: string;
   readonly name: string;
+  readonly description: Option<string>;
   readonly alias: string;
   readonly attribution: PatternAttribution;
   readonly categories: Set<CategoryId>;
@@ -26,6 +27,7 @@ export class Pattern {
   private constructor(props: {
     id: string;
     name: string;
+    description: Option<string>;
     alias: string;
     attribution: PatternAttribution;
     categories: Set<CategoryId>;
@@ -37,6 +39,7 @@ export class Pattern {
 
     this.id = props.id;
     this.name = props.name;
+    this.description = props.description;
     this.alias = props.alias;
     this.attribution = props.attribution;
     this.categories = props.categories;
@@ -48,6 +51,7 @@ export class Pattern {
   static of(props: {
     id: string;
     name: string;
+    description?: string | null;
     alias: string;
     attribution?: PatternAttribution;
     categories?: Set<CategoryId>;
@@ -58,6 +62,7 @@ export class Pattern {
     return new Pattern({
       id: props.id,
       name: props.name,
+      description: someOrNone(props.description),
       alias: props.alias,
       attribution: someOrNone(props.attribution).orElse(
         PatternAttribution.of({}),

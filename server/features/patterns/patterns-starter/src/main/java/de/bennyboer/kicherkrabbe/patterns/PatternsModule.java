@@ -324,7 +324,12 @@ public class PatternsModule {
     }
 
     @Transactional(propagation = MANDATORY)
-    public Mono<Long> updatePatternDescription(String patternId, long version, @Nullable String description, Agent agent) {
+    public Mono<Long> updatePatternDescription(
+            String patternId,
+            long version,
+            @Nullable String description,
+            Agent agent
+    ) {
         var internalPatternId = PatternId.of(patternId);
         var internalDescription = Optional.ofNullable(description)
                 .filter(d -> !d.isBlank())

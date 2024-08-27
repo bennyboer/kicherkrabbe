@@ -25,6 +25,18 @@
   </div>
 
   <div class="form-field">
+    <label>Beschreibung</label>
+    <div class="editor-wrapper">
+      <quill-editor theme="bubble"
+                    placeholder=""
+                    style="display: block"
+                    [modules]="quillModules"
+                    (onContentChanged)="updateDescription($event)">
+      </quill-editor>
+    </div>
+  </div>
+
+  <div class="form-field">
     <label>Kategorien</label>
     @if (loadingAvailableCategories$ | async) {
       <div class="loading-container">

@@ -14,6 +14,7 @@ import { RoutingMetadataService, ThemeService } from './services';
 import { SortablejsModule } from 'nxt-sortablejs';
 import { TitleStrategy } from '@angular/router';
 import { RoutingTitleStrategy } from './routing-title-strategy';
+import { QuillModule } from 'ngx-quill';
 
 const COMPONENTS = [
   AppComponent,
@@ -34,6 +35,7 @@ const PAGES = [StartPage, NotFoundPage];
       animation: 150,
       handle: '.drag-handle',
     }),
+    QuillModule.forRoot(),
   ],
   providers: [
     ThemeService,

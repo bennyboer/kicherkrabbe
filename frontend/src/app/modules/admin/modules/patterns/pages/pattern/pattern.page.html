@@ -59,6 +59,24 @@
       </div>
 
       <div class="form-field">
+        <label for="name">Beschreibung</label>
+        <div class="form-field-content">
+          <div class="editor-wrapper">
+            <quill-editor theme="bubble"
+                          placeholder=""
+                          style="display: block"
+                          [modules]="quillModules"
+                          (onEditorCreated)="onEditorCreated($event)"
+                          (onContentChanged)="updateDescription($event)">
+            </quill-editor>
+          </div>
+          <app-button [disabled]="cannotSaveUpdatedDescription$ | async" (click)="saveUpdatedDescription(pattern)">
+            Speichern
+          </app-button>
+        </div>
+      </div>
+
+      <div class="form-field">
         <label>Kategorien</label>
         @if (categoriesLoading$ | async) {
           <div class="loading-container">

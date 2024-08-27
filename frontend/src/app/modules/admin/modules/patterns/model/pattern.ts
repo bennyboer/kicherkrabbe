@@ -1,7 +1,7 @@
 import { PatternVariant } from './variant';
 import { PatternExtra } from './extra';
 import { PatternAttribution } from './attribution';
-import { validateProps } from '../../../../../util';
+import { Option, someOrNone, validateProps } from '../../../../../util';
 
 export type PatternId = string;
 export type PatternCategoryId = string;
@@ -12,6 +12,7 @@ export class Pattern {
   readonly version: number;
   readonly published: boolean;
   readonly name: string;
+  readonly description: Option<string>;
   readonly attribution: PatternAttribution;
   readonly categories: Set<PatternCategoryId>;
   readonly images: ImageId[];
@@ -24,6 +25,7 @@ export class Pattern {
     version: number;
     published: boolean;
     name: string;
+    description: Option<string>;
     attribution: PatternAttribution;
     categories: Set<PatternCategoryId>;
     images: ImageId[];
@@ -37,6 +39,7 @@ export class Pattern {
     this.version = props.version;
     this.published = props.published;
     this.name = props.name;
+    this.description = props.description;
     this.attribution = props.attribution;
     this.categories = props.categories;
     this.images = props.images;
@@ -50,6 +53,7 @@ export class Pattern {
     version: number;
     published: boolean;
     name: string;
+    description?: string | null;
     attribution: PatternAttribution;
     categories: Set<PatternCategoryId>;
     images: ImageId[];
@@ -62,6 +66,9 @@ export class Pattern {
       version: props.version,
       published: props.published,
       name: props.name,
+      description: someOrNone(props.description)
+        .map((d) => d.trim())
+        .filter((d) => d.length > 0),
       attribution: props.attribution,
       categories: props.categories,
       images: props.images,

@@ -33,14 +33,20 @@ public class PatternEventPayloadSerializer implements EventSerializer {
     @Override
     public Map<String, Object> serialize(Event event) {
         return switch (event) {
-            case CreatedEvent e -> Map.of(
-                    "name", e.getName().getValue(),
-                    "attribution", serializeAttribution(e.getAttribution()),
-                    "categories", serializeCategories(e.getCategories()),
-                    "images", serializeImages(e.getImages()),
-                    "variants", serializeVariants(e.getVariants()),
-                    "extras", serializeExtras(e.getExtras())
-            );
+            case CreatedEvent e -> {
+                Map<String, Object> result = new HashMap<>(Map.of(
+                        "name", e.getName().getValue(),
+                        "attribution", serializeAttribution(e.getAttribution()),
+                        "categories", serializeCategories(e.getCategories()),
+                        "images", serializeImages(e.getImages()),
+                        "variants", serializeVariants(e.getVariants()),
+                        "extras", serializeExtras(e.getExtras())
+                ));
+
+                e.getDescription().ifPresent(description -> result.put("description", description.getValue()));
+
+                yield result;
+            }
             case SnapshottedEvent e -> {
                 Map<String, Object> result = new HashMap<>(Map.of(
                         "published", e.isPublished(),
@@ -54,6 +60,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
                 ));
 
                 e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
+                e.getDescription().ifPresent(description -> result.put("description", description.getValue()));
 
                 yield result;
             }
@@ -80,7 +87,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             case DescriptionUpdatedEvent e -> {
                 Map<String, Object> result = new HashMap<>();
 
-                e.getDescription().ifPresent(description -> result.put("description", description.toString()));
+                e.getDescription().ifPresent(description -> result.put("description", description.getValue()));
 
                 yield result;
             }

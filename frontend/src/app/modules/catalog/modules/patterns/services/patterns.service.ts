@@ -48,6 +48,7 @@ interface QueryPublishedPatternResponse {
 interface PublishedPatternDTO {
   id: string;
   name: string;
+  description?: string;
   alias: string;
   attribution: PatternAttributionDTO;
   categories: string[];
@@ -144,6 +145,7 @@ export class PatternsService {
     return Pattern.of({
       id: pattern.id,
       name: pattern.name,
+      description: pattern.description,
       alias: pattern.alias,
       attribution: this.toInternalAttribution(pattern.attribution),
       categories: new Set<string>(pattern.categories),

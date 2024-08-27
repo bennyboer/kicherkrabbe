@@ -9,7 +9,6 @@ import lombok.Value;
 
 import java.util.Set;
 
-import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -25,7 +24,6 @@ public class CategoriesUpdatedEvent implements Event {
 
     public static CategoriesUpdatedEvent of(Set<PatternCategoryId> categories) {
         notNull(categories, "Categories must be given");
-        check(!categories.isEmpty(), "Categories must not be empty");
 
         return new CategoriesUpdatedEvent(categories);
     }

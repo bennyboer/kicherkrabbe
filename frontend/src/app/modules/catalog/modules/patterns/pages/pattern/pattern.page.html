@@ -10,6 +10,16 @@
     <div class="details">
       <app-price-tag class="price">{{ pattern.getFormattedPriceRange() }}</app-price-tag>
 
+      @if (pattern.description.isSome()) {
+        <div class="description">
+          <quill-view [content]="pattern.description.orElseThrow()"
+                      format="json"
+                      theme="bubble"
+                      style="display: block">
+          </quill-view>
+        </div>
+      }
+
       @if (pattern.variants.length > 1) {
         <h2>Varianten</h2>
 

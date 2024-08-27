@@ -7,7 +7,6 @@ import lombok.Value;
 
 import java.util.Set;
 
-import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -19,7 +18,6 @@ public class UpdateCategoriesCmd implements Command {
 
     public static UpdateCategoriesCmd of(Set<PatternCategoryId> categories) {
         notNull(categories, "Categories must be given");
-        check(!categories.isEmpty(), "Categories must not be empty");
 
         return new UpdateCategoriesCmd(categories);
     }

@@ -8,6 +8,13 @@
   gap: 24px;
 }
 
+.editor-wrapper {
+  background-color: white;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-sizing: border-box;
+}
+
 .form-field {
   display: flex;
   flex-direction: column;

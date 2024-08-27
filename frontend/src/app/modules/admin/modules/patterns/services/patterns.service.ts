@@ -27,6 +27,7 @@ interface PatternDTO {
   version: number;
   published: boolean;
   name: string;
+  description?: string;
   attribution: PatternAttributionDTO;
   categories: string[];
   images: string[];
@@ -82,6 +83,7 @@ interface QueryPatternsResponse {
 
 interface CreatePatternRequest {
   name: string;
+  description?: string;
   attribution: PatternAttributionDTO;
   categories: string[];
   images: string[];
@@ -117,6 +119,11 @@ interface UpdateVariantsRequest {
 interface UpdateExtrasRequest {
   version: number;
   extras: PatternExtraDTO[];
+}
+
+interface UpdateDescriptionRequest {
+  description?: string;
+  version: number;
 }
 
 interface CreatePatternResponse {
@@ -202,6 +209,7 @@ export class PatternsService implements OnDestroy {
 
   createPattern(props: {
     name: string;
+    description?: string | null;
     attribution: PatternAttribution;
     categories: PatternCategoryId[];
     images: string[];
@@ -216,6 +224,10 @@ export class PatternsService implements OnDestroy {
       variants: props.variants.map((variant) => this.toApiVariant(variant)),
       extras: props.extras.map((extra) => this.toApiExtra(extra)),
     };
+
+    someOrNone(props.description).ifSome((description) => {
+      request.description = description;
+    });
 
     return this.http
       .post<CreatePatternResponse>(
@@ -312,6 +324,25 @@ export class PatternsService implements OnDestroy {
     );
   }
 
+  updateDescription(
+    id: PatternId,
+    version: number,
+    description?: string | null,
+  ): Observable<void> {
+    const request: UpdateDescriptionRequest = {
+      version,
+    };
+
+    someOrNone(description).ifSome((value) => {
+      request.description = value;
+    });
+
+    return this.http.post<void>(
+      `${environment.apiUrl}/patterns/${id}/update/description`,
+      request,
+    );
+  }
+
   publishPattern(id: PatternId, version: number): Observable<void> {
     return this.http.post<void>(
       `${environment.apiUrl}/patterns/${id}/publish`,
@@ -371,6 +402,7 @@ export class PatternsService implements OnDestroy {
       version: pattern.version,
       published: pattern.published,
       name: pattern.name,
+      description: pattern.description,
       attribution: this.toInternalAttribution(pattern.attribution),
       categories: new Set<PatternCategoryId>(pattern.categories),
       images: pattern.images,

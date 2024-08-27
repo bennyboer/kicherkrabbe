@@ -36,6 +36,8 @@ import {
 import { Chip, NotificationService } from '../../../../../shared';
 import { Eq, none, Option, someOrNone } from '../../../../../../util';
 import { environment } from '../../../../../../../environments';
+import Quill, { Delta } from 'quill/core';
+import { ContentChange } from 'ngx-quill';
 
 @Component({
   selector: 'app-pattern-page',
@@ -91,6 +93,22 @@ export class PatternPage implements OnInit, OnDestroy {
           pattern.attribution.designer.orElse('') === designer
         );
       }),
+    );
+
+  private readonly editor$: Subject<Quill> = new ReplaySubject(1);
+  protected readonly description$: BehaviorSubject<Delta> =
+    new BehaviorSubject<Delta>(new Delta());
+  protected readonly cannotSaveUpdatedDescription$: Observable<boolean> =
+    combineLatest([
+      this.pattern$,
+      this.description$.pipe(
+        map((d) => (d.ops.length > 0 ? JSON.stringify(d) : null)),
+      ),
+    ]).pipe(
+      map(
+        ([pattern, description]) =>
+          pattern.description.orElse('') === someOrNone(description).orElse(''),
+      ),
     );
 
   protected readonly variants$: BehaviorSubject<PatternVariant[]> =
@@ -154,6 +172,17 @@ export class PatternPage implements OnInit, OnDestroy {
   );
 
   private readonly destroy$: Subject<void> = new Subject<void>();
+
+  protected readonly quillModules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ['bold', 'italic', 'underline', 'strike', 'link'],
+      [{ align: [] }],
+      [{ color: [] }, { background: [] }],
+      ['blockquote', { list: 'ordered' }, { list: 'bullet' }],
+      ['clean'],
+    ],
+  };
 
   constructor(
     private readonly patternsService: PatternsService,
@@ -247,6 +276,24 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe(([pattern, imageIds, _valid]) =>
         this.saveUpdatedImages(pattern, imageIds),
       );
+
+    combineLatest([this.editor$, this.description$])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([editor, description]) => {
+        const currentContents = editor.getContents();
+        const expectedContents = description;
+
+        if (expectedContents.ops.length === 0) {
+          return;
+        }
+
+        if (
+          JSON.stringify(currentContents) !== JSON.stringify(expectedContents)
+        ) {
+          console.log('Updating editor contents');
+          editor.setContents(description);
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -257,6 +304,8 @@ export class PatternPage implements OnInit, OnDestroy {
     this.selectedCategories$.complete();
     this.deleteConfirmationRequired$.complete();
     this.name$.complete();
+    this.editor$.complete();
+    this.description$.complete();
     this.originalPatternName$.complete();
     this.designer$.complete();
     this.variants$.complete();
@@ -316,12 +365,71 @@ export class PatternPage implements OnInit, OnDestroy {
       });
   }
 
+  saveUpdatedDescription(pattern: Pattern): void {
+    const changes$ = this.patternsService.getPatternChanges();
+
+    const description =
+      this.description$.value.ops.length > 0
+        ? JSON.stringify(this.description$.value)
+        : null;
+    this.patternsService
+      .updateDescription(pattern.id, pattern.version, description)
+      .pipe(
+        switchMap(() => {
+          return changes$.pipe(
+            filter((patterns) => patterns.has(pattern.id)),
+            first(),
+            map(() => null),
+            timeout(5000),
+            catchError((e) => {
+              console.warn('Pattern description update not confirmed', e);
+              return of(null);
+            }),
+          );
+        }),
+        takeUntil(this.destroy$),
+      )
+      .subscribe({
+        next: () => {
+          this.notificationService.publish({
+            type: 'success',
+            message: `Die Beschreibung des Schnittmusters wurde geändert`,
+          });
+          this.reloadPattern({ id: pattern.id, indicateLoading: false });
+        },
+        error: (e) => {
+          console.error(e);
+          this.notificationService.publish({
+            type: 'error',
+            message:
+              'Die Beschreibung des Schnittmusters konnte nicht geändert werden',
+          });
+        },
+      });
+  }
+
   updateOriginalPatternName(value: string): void {
     this.originalPatternName$.next(value.trim());
   }
 
   updateDesigner(value: string): void {
     this.designer$.next(value.trim());
+  }
+
+  onEditorCreated(quill: Quill): void {
+    this.editor$.next(quill);
+  }
+
+  updateDescription(event: ContentChange): void {
+    const html = someOrNone(event.html)
+      .map((h) => h.trim())
+      .orElse('');
+    const isEmpty = html.length === 0;
+    if (isEmpty) {
+      this.description$.next(new Delta());
+    } else {
+      this.description$.next(event.content);
+    }
   }
 
   publishPattern(pattern: Pattern): void {
@@ -752,6 +860,9 @@ export class PatternPage implements OnInit, OnDestroy {
         next: (pattern) => {
           this.pattern$.next(pattern);
           this.name$.next(pattern.name);
+          pattern.description.ifSome((description) =>
+            this.description$.next(new Delta(JSON.parse(description))),
+          );
           this.originalPatternName$.next(
             pattern.attribution.originalPatternName.orElse(''),
           );

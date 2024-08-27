@@ -7,6 +7,7 @@ import { AssetsModule } from '../assets/assets.module';
 import { SortablejsModule } from 'nxt-sortablejs';
 import { COMPONENTS } from './components';
 import { PatternCategoriesService, PatternsService } from './services';
+import { QuillModule } from 'ngx-quill';
 
 @NgModule({
   declarations: [...PAGES, ...COMPONENTS],
@@ -16,6 +17,7 @@ import { PatternCategoriesService, PatternsService } from './services';
     SharedModule,
     AssetsModule,
     SortablejsModule,
+    QuillModule,
   ],
   providers: [PatternsService, PatternCategoriesService],
 })

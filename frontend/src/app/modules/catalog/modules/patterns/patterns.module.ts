@@ -9,6 +9,7 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
+import { QuillModule } from 'ngx-quill';
 
 const PAGES = [PatternsPage, PatternPage];
 
@@ -19,6 +20,7 @@ const PAGES = [PatternsPage, PatternPage];
     PatternsRoutingModule,
     SharedModule,
     ImageSliderModule,
+    QuillModule,
   ],
   providers: [
     PatternsService,

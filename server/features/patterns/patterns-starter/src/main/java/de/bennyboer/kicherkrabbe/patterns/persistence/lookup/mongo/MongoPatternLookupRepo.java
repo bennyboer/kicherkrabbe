@@ -115,9 +115,13 @@ public class MongoPatternLookupRepo
 
     @Override
     public Flux<PatternCategoryId> findUniqueCategories() {
+        Criteria hasAtLeastOneCategory = where("categories").ne(Set.of());
+        Query query = new Query(hasAtLeastOneCategory);
+
         return template.query(MongoLookupPattern.class)
                 .inCollection(collectionName)
                 .distinct("categories")
+                .matching(query)
                 .as(String.class)
                 .all()
                 .map(PatternCategoryId::of);
