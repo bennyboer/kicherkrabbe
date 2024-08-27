@@ -1,11 +1,13 @@
 package de.bennyboer.kicherkrabbe.patterns;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
@@ -22,6 +24,9 @@ public class PatternDetails {
     boolean published;
 
     PatternName name;
+
+    @Nullable
+    PatternDescription description;
 
     PatternAttribution attribution;
 
@@ -40,6 +45,7 @@ public class PatternDetails {
             Version version,
             boolean published,
             PatternName name,
+            @Nullable PatternDescription description,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
             List<ImageId> images,
@@ -62,6 +68,7 @@ public class PatternDetails {
                 version,
                 published,
                 name,
+                description,
                 attribution,
                 categories,
                 images,
@@ -69,6 +76,10 @@ public class PatternDetails {
                 extras,
                 createdAt
         );
+    }
+
+    public Optional<PatternDescription> getDescription() {
+        return Optional.ofNullable(description);
     }
 
 }

@@ -39,6 +39,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                "A beautiful summer dress",
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -56,6 +57,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
         // then: the published pattern is returned
         assertThat(pattern.getId()).isEqualTo(PatternId.of(patternId));
         assertThat(pattern.getName()).isEqualTo(PatternName.of("Summerdress"));
+        assertThat(pattern.getDescription()).contains(PatternDescription.of("A beautiful summer dress"));
         assertThat(pattern.getAlias()).isEqualTo(PatternAlias.of("summerdress"));
         assertThat(pattern.getAttribution()).isEqualTo(PatternAttribution.of(null, null));
         assertThat(pattern.getCategories()).containsExactly(PatternCategoryId.of("DRESS_ID"));
@@ -99,6 +101,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -116,6 +119,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
         // then: the published pattern is returned
         assertThat(pattern.getId()).isEqualTo(PatternId.of(patternId));
         assertThat(pattern.getName()).isEqualTo(PatternName.of("Summerdress"));
+        assertThat(pattern.getDescription()).isEmpty();
         assertThat(pattern.getAlias()).isEqualTo(PatternAlias.of("summerdress"));
         assertThat(pattern.getAttribution()).isEqualTo(PatternAttribution.of(null, null));
         assertThat(pattern.getCategories()).containsExactly(PatternCategoryId.of("DRESS_ID"));
@@ -159,6 +163,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -176,6 +181,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
         // then: the published pattern is returned
         assertThat(pattern.getId()).isEqualTo(PatternId.of(patternId));
         assertThat(pattern.getName()).isEqualTo(PatternName.of("Summerdress"));
+        assertThat(pattern.getDescription()).isEmpty();
         assertThat(pattern.getAlias()).isEqualTo(PatternAlias.of("summerdress"));
         assertThat(pattern.getAttribution()).isEqualTo(PatternAttribution.of(null, null));
         assertThat(pattern.getCategories()).containsExactly(PatternCategoryId.of("DRESS_ID"));
@@ -228,6 +234,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -266,6 +273,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -310,6 +318,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),

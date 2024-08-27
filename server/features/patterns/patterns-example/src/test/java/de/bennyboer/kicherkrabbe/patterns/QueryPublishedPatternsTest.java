@@ -38,6 +38,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress",
+                "A dress for high temperatures!",
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -47,6 +48,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         );
         String patternId2 = createPattern(
                 "Dressskirt",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID"),
                 List.of("IMAGE_ID"),
@@ -103,6 +105,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
                 .findFirst()
                 .orElseThrow();
         assertThat(pattern1.getName()).isEqualTo(PatternName.of("Summerdress"));
+        assertThat(pattern1.getDescription()).contains(PatternDescription.of("A dress for high temperatures!"));
         assertThat(pattern1.getAlias()).isEqualTo(PatternAlias.of("summerdress"));
         assertThat(pattern1.getImages()).containsExactly(ImageId.of("IMAGE_ID"));
         assertThat(pattern1.getCategories()).containsExactlyInAnyOrder(
@@ -115,6 +118,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
                 .findFirst()
                 .orElseThrow();
         assertThat(pattern2.getName()).isEqualTo(PatternName.of("Dressskirt"));
+        assertThat(pattern2.getDescription()).isEmpty();
         assertThat(pattern2.getAlias()).isEqualTo(PatternAlias.of("dressskirt"));
         assertThat(pattern2.getImages()).containsExactly(ImageId.of("IMAGE_ID"));
         assertThat(pattern2.getCategories()).containsExactlyInAnyOrder(
@@ -182,6 +186,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -191,6 +196,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         );
         String patternId2 = createPattern(
                 "Dressskirt",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID"),
                 List.of("IMAGE_ID"),
@@ -283,6 +289,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -292,6 +299,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         );
         String patternId2 = createPattern(
                 "Dressskirt",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID"),
                 List.of("IMAGE_ID"),
@@ -345,6 +353,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -354,6 +363,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         );
         String patternId2 = createPattern(
                 "Dressskirt",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID"),
                 List.of("IMAGE_ID"),
@@ -444,6 +454,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress 1",
+                null,
                 new PatternAttributionDTO(),
                 Set.of(),
                 List.of("IMAGE_ID"),
@@ -454,6 +465,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId2 = createPattern(
                 "Summerdress 2",
+                null,
                 new PatternAttributionDTO(),
                 Set.of(),
                 List.of("IMAGE_ID"),
@@ -464,6 +476,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId3 = createPattern(
                 "Summerdress 3",
+                null,
                 new PatternAttributionDTO(),
                 Set.of(),
                 List.of("IMAGE_ID"),
@@ -474,6 +487,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId4 = createPattern(
                 "Summerdress 4",
+                null,
                 new PatternAttributionDTO(),
                 Set.of(),
                 List.of("IMAGE_ID"),
@@ -579,6 +593,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -588,6 +603,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         );
         String patternId2 = createPattern(
                 "Dressskirt",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID"),
                 List.of("IMAGE_ID"),

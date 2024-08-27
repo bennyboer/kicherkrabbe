@@ -16,6 +16,7 @@ import de.bennyboer.kicherkrabbe.patterns.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.UnpublishedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.attribution.AttributionUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.categories.CategoriesUpdatedEvent;
+import de.bennyboer.kicherkrabbe.patterns.update.description.DescriptionUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.extras.ExtrasUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.images.ImagesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.variants.VariantsUpdatedEvent;
@@ -76,6 +77,13 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             case ExtrasUpdatedEvent e -> Map.of(
                     "extras", serializeExtras(e.getExtras())
             );
+            case DescriptionUpdatedEvent e -> {
+                Map<String, Object> result = new HashMap<>();
+
+                e.getDescription().ifPresent(description -> result.put("description", description.toString()));
+
+                yield result;
+            }
             case CategoryRemovedEvent e -> Map.of(
                     "categoryId", e.getCategoryId().getValue()
             );
@@ -89,6 +97,9 @@ public class PatternEventPayloadSerializer implements EventSerializer {
         return switch (name.getValue()) {
             case "CREATED" -> CreatedEvent.of(
                     PatternName.of((String) payload.get("name")),
+                    payload.containsKey("description") ?
+                            PatternDescription.of((String) payload.get("description")) :
+                            null,
                     deserializeAttribution((Map<String, Object>) payload.get("attribution")),
                     deserializeCategories((List<String>) payload.get("categories")),
                     deserializeImages((List<String>) payload.get("images")),
@@ -98,6 +109,9 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             case "SNAPSHOTTED" -> SnapshottedEvent.of(
                     (boolean) payload.get("published"),
                     PatternName.of((String) payload.get("name")),
+                    payload.containsKey("description") ?
+                            PatternDescription.of((String) payload.get("description")) :
+                            null,
                     deserializeAttribution((Map<String, Object>) payload.get("attribution")),
                     deserializeCategories((List<String>) payload.get("categories")),
                     deserializeImages((List<String>) payload.get("images")),
@@ -123,6 +137,11 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             case "EXTRAS_UPDATED" -> ExtrasUpdatedEvent.of(deserializeExtras(
                     (List<Map<String, Object>>) payload.get("extras")
             ));
+            case "DESCRIPTION_UPDATED" -> DescriptionUpdatedEvent.of(
+                    payload.containsKey("description") ?
+                            PatternDescription.of((String) payload.get("description")) :
+                            null
+            );
             case "CATEGORY_REMOVED" ->
                     CategoryRemovedEvent.of(PatternCategoryId.of((String) payload.get("categoryId")));
             case "DELETED" -> DeletedEvent.of();

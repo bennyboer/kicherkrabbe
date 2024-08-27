@@ -17,9 +17,11 @@ import de.bennyboer.kicherkrabbe.patterns.rename.RenameCmd;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.UnpublishCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.attribution.UpdateAttributionCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.categories.UpdateCategoriesCmd;
+import de.bennyboer.kicherkrabbe.patterns.update.description.UpdateDescriptionCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.extras.UpdateExtrasCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.images.UpdateImagesCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.variants.UpdateVariantsCmd;
+import jakarta.annotation.Nullable;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -39,6 +41,7 @@ public class PatternService extends AggregateService<Pattern, PatternId> {
 
     public Mono<AggregateIdAndVersion<PatternId>> create(
             PatternName name,
+            PatternDescription description,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
             List<ImageId> images,
@@ -47,8 +50,9 @@ public class PatternService extends AggregateService<Pattern, PatternId> {
             Agent agent
     ) {
         PatternId id = PatternId.create();
+        var cmd = CreateCmd.of(name, description, attribution, categories, images, variants, extras);
 
-        return dispatchCommandToLatest(id, agent, CreateCmd.of(name, attribution, categories, images, variants, extras))
+        return dispatchCommandToLatest(id, agent, cmd)
                 .map(version -> AggregateIdAndVersion.of(id, version));
     }
 
@@ -87,6 +91,15 @@ public class PatternService extends AggregateService<Pattern, PatternId> {
 
     public Mono<Version> updateExtras(PatternId id, Version version, List<PatternExtra> extras, Agent agent) {
         return dispatchCommand(id, version, agent, UpdateExtrasCmd.of(extras));
+    }
+
+    public Mono<Version> updateDescription(
+            PatternId id,
+            Version version,
+            @Nullable PatternDescription description,
+            Agent agent
+    ) {
+        return dispatchCommand(id, version, agent, UpdateDescriptionCmd.of(description));
     }
 
     public Mono<Version> removeCategory(PatternId id, Version version, PatternCategoryId categoryId, Agent agent) {

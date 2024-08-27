@@ -47,6 +47,7 @@ public class QueryPatternsHttpHandlerTest extends HttpHandlerTest {
                         Version.zero(),
                         true,
                         PatternName.of("Summerdress"),
+                        PatternDescription.of("A beautiful summer dress"),
                         PatternAttribution.of(
                                 OriginalPatternName.of("Summerdress EXTREME"),
                                 PatternDesigner.of("EXTREME PATTERNS inc.")
@@ -93,6 +94,7 @@ public class QueryPatternsHttpHandlerTest extends HttpHandlerTest {
         assertThat(responsePattern.version).isEqualTo(0L);
         assertThat(responsePattern.published).isTrue();
         assertThat(responsePattern.name).isEqualTo("Summerdress");
+        assertThat(responsePattern.description).isEqualTo("A beautiful summer dress");
         assertThat(responsePattern.attribution.originalPatternName).isEqualTo("Summerdress EXTREME");
         assertThat(responsePattern.attribution.designer).isEqualTo("EXTREME PATTERNS inc.");
         assertThat(responsePattern.categories).containsExactly("DRESS_ID");

@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.patterns.http.api;
 
+import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +23,9 @@ public class PatternDTO {
     boolean published;
 
     String name;
+
+    @Nullable
+    String description;
 
     PatternAttributionDTO attribution;
 

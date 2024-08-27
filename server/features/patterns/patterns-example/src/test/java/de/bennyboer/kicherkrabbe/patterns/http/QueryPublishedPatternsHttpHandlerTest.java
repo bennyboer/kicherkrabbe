@@ -52,6 +52,7 @@ public class QueryPublishedPatternsHttpHandlerTest extends HttpHandlerTest {
                 List.of(PublishedPattern.of(
                         PatternId.of("PATTERN_ID"),
                         PatternName.of("Summerdress"),
+                        PatternDescription.of("A beautiful summer dress"),
                         PatternAlias.of("summerdress"),
                         PatternAttribution.of(
                                 OriginalPatternName.of("Summerdress EXTREME"),
@@ -95,6 +96,7 @@ public class QueryPublishedPatternsHttpHandlerTest extends HttpHandlerTest {
         var pattern = response.patterns.get(0);
         assertThat(pattern.id).isEqualTo("PATTERN_ID");
         assertThat(pattern.name).isEqualTo("Summerdress");
+        assertThat(pattern.description).isEqualTo("A beautiful summer dress");
         assertThat(pattern.alias).isEqualTo("summerdress");
         assertThat(pattern.attribution.originalPatternName).isEqualTo("Summerdress EXTREME");
         assertThat(pattern.attribution.designer).isEqualTo("EXTREME PATTERNS inc.");
@@ -148,6 +150,7 @@ public class QueryPublishedPatternsHttpHandlerTest extends HttpHandlerTest {
                 List.of(PublishedPattern.of(
                         PatternId.of("PATTERN_ID"),
                         PatternName.of("Summerdress"),
+                        null,
                         PatternAlias.of("summerdress"),
                         PatternAttribution.of(
                                 OriginalPatternName.of("Summerdress EXTREME"),

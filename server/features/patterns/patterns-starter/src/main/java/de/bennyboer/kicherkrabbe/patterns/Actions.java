@@ -26,6 +26,8 @@ public class Actions {
 
     public static final Action UPDATE_EXTRAS = Action.of("UPDATE_EXTRAS");
 
+    public static final Action UPDATE_DESCRIPTION = Action.of("UPDATE_DESCRIPTION");
+
     public static final Action DELETE = Action.of("DELETE");
 
 }

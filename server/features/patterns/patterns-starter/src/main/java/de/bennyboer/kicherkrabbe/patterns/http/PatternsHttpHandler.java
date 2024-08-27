@@ -157,6 +157,7 @@ public class PatternsHttpHandler {
         return request.bodyToMono(CreatePatternRequest.class)
                 .flatMap(req -> toAgent(request).flatMap(agent -> module.createPattern(
                         req.name,
+                        req.description,
                         req.attribution,
                         req.categories,
                         req.images,
@@ -438,6 +439,37 @@ public class PatternsHttpHandler {
                 .as(transactionalOperator::transactional);
     }
 
+    public Mono<ServerResponse> updatePatternDescription(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        String patternId = request.pathVariable("patternId");
+
+        return request.bodyToMono(UpdatePatternDescriptionRequest.class)
+                .flatMap(req -> toAgent(request).flatMap(agent -> module.updatePatternDescription(
+                        patternId,
+                        req.version,
+                        req.description,
+                        agent
+                )))
+                .map(version -> {
+                    var response = new UpdatePatternDescriptionResponse();
+                    response.version = version;
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                        CONFLICT,
+                        e.getMessage(),
+                        e
+                ))
+                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
+                        BAD_REQUEST,
+                        e.getMessage(),
+                        e
+                ))
+                .as(transactionalOperator::transactional);
+    }
+
     public Mono<ServerResponse> deletePattern(ServerRequest request) {
         var transactionalOperator = TransactionalOperator.create(transactionManager);
 
@@ -477,6 +509,9 @@ public class PatternsHttpHandler {
 
         result.id = pattern.getId().getValue();
         result.name = pattern.getName().getValue();
+        result.description = pattern.getDescription()
+                .map(PatternDescription::getValue)
+                .orElse(null);
         result.alias = pattern.getAlias().getValue();
         result.attribution = toPatternAttributionDTO(pattern.getAttribution());
         result.categories = pattern.getCategories()
@@ -506,6 +541,9 @@ public class PatternsHttpHandler {
         result.version = pattern.getVersion().getValue();
         result.published = pattern.isPublished();
         result.name = pattern.getName().getValue();
+        result.description = pattern.getDescription()
+                .map(PatternDescription::getValue)
+                .orElse(null);
         result.attribution = toPatternAttributionDTO(pattern.getAttribution());
         result.categories = pattern.getCategories()
                 .stream()

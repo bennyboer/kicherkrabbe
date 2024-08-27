@@ -4,10 +4,12 @@ import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.patterns.*;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
@@ -24,6 +26,9 @@ public class CreatedEvent implements Event {
 
     PatternName name;
 
+    @Nullable
+    PatternDescription description;
+
     PatternAttribution attribution;
 
     Set<PatternCategoryId> categories;
@@ -36,6 +41,7 @@ public class CreatedEvent implements Event {
 
     public static CreatedEvent of(
             PatternName name,
+            @Nullable PatternDescription description,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
             List<ImageId> images,
@@ -51,7 +57,7 @@ public class CreatedEvent implements Event {
         check(!images.isEmpty(), "Images must not be empty");
         check(!variants.isEmpty(), "Variants must not be empty");
 
-        return new CreatedEvent(name, attribution, categories, images, variants, extras);
+        return new CreatedEvent(name, description, attribution, categories, images, variants, extras);
     }
 
     @Override
@@ -62,6 +68,10 @@ public class CreatedEvent implements Event {
     @Override
     public Version getVersion() {
         return VERSION;
+    }
+
+    public Optional<PatternDescription> getDescription() {
+        return Optional.ofNullable(description);
     }
 
 }

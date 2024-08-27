@@ -40,6 +40,7 @@ public class QueryCategoriesUsedInPatternsTest extends PatternsModuleTest {
 
         createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID", "SKIRT_ID"),
                 List.of("IMAGE_ID"),
@@ -49,6 +50,7 @@ public class QueryCategoriesUsedInPatternsTest extends PatternsModuleTest {
         );
         createPattern(
                 "Long tight skirt with pockets",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("TROUSERS_ID"),
                 List.of("IMAGE_ID"),

@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.patterns.persistence.lookup.mongo;
 
+import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +25,9 @@ public class MongoLookupPattern {
     boolean published;
 
     String name;
+
+    @Nullable
+    String description;
 
     String alias;
 

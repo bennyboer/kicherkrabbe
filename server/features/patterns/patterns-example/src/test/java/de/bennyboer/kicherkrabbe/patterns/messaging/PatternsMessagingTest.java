@@ -187,6 +187,16 @@ public class PatternsMessagingTest extends EventListenerTest {
                 AggregateType.of("PATTERN"),
                 AggregateId.of("PATTERN_ID"),
                 Version.of(2),
+                EventName.of("DESCRIPTION_UPDATED"),
+                Version.of(1),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(2),
                 EventName.of("CATEGORY_REMOVED"),
                 Version.of(1),
                 Agent.system(),
@@ -205,7 +215,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the pattern is only updated on non-deleted events
-        verify(module, timeout(10000).times(10)).updatePatternInLookup(eq("PATTERN_ID"));
+        verify(module, timeout(10000).times(11)).updatePatternInLookup(eq("PATTERN_ID"));
     }
 
     @Test

@@ -29,6 +29,9 @@ public class SnapshottedEvent implements Event {
 
     PatternName name;
 
+    @Nullable
+    PatternDescription description;
+
     PatternAttribution attribution;
 
     Set<PatternCategoryId> categories;
@@ -47,6 +50,7 @@ public class SnapshottedEvent implements Event {
     public static SnapshottedEvent of(
             boolean published,
             PatternName name,
+            @Nullable PatternDescription description,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
             List<ImageId> images,
@@ -68,6 +72,7 @@ public class SnapshottedEvent implements Event {
         return new SnapshottedEvent(
                 published,
                 name,
+                description,
                 attribution,
                 categories,
                 images,
@@ -95,6 +100,10 @@ public class SnapshottedEvent implements Event {
 
     public Optional<Instant> getDeletedAt() {
         return Optional.ofNullable(deletedAt);
+    }
+
+    public Optional<PatternDescription> getDescription() {
+        return Optional.ofNullable(description);
     }
 
 }

@@ -28,6 +28,8 @@ import de.bennyboer.kicherkrabbe.patterns.update.attribution.AttributionUpdatedE
 import de.bennyboer.kicherkrabbe.patterns.update.attribution.UpdateAttributionCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.categories.CategoriesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.categories.UpdateCategoriesCmd;
+import de.bennyboer.kicherkrabbe.patterns.update.description.DescriptionUpdatedEvent;
+import de.bennyboer.kicherkrabbe.patterns.update.description.UpdateDescriptionCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.extras.ExtrasUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.extras.UpdateExtrasCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.images.ImagesUpdatedEvent;
@@ -63,6 +65,9 @@ public class Pattern implements Aggregate {
 
     PatternName name;
 
+    @Nullable
+    PatternDescription description;
+
     PatternAttribution attribution;
 
     Set<PatternCategoryId> categories;
@@ -85,6 +90,7 @@ public class Pattern implements Aggregate {
                 false,
                 null,
                 null,
+                null,
                 Set.of(),
                 List.of(),
                 List.of(),
@@ -102,6 +108,7 @@ public class Pattern implements Aggregate {
             case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
                     isPublished(),
                     getName(),
+                    getDescription().orElse(null),
                     getAttribution(),
                     getCategories(),
                     getImages(),
@@ -112,6 +119,7 @@ public class Pattern implements Aggregate {
             ));
             case CreateCmd c -> ApplyCommandResult.of(CreatedEvent.of(
                     c.getName(),
+                    c.getDescription().orElse(null),
                     c.getAttribution(),
                     c.getCategories(),
                     c.getImages(),
@@ -138,6 +146,9 @@ public class Pattern implements Aggregate {
             case UpdateImagesCmd c -> ApplyCommandResult.of(ImagesUpdatedEvent.of(c.getImages()));
             case UpdateVariantsCmd c -> ApplyCommandResult.of(VariantsUpdatedEvent.of(c.getVariants()));
             case UpdateExtrasCmd c -> ApplyCommandResult.of(ExtrasUpdatedEvent.of(c.getExtras()));
+            case UpdateDescriptionCmd c -> ApplyCommandResult.of(DescriptionUpdatedEvent.of(
+                    c.getDescription().orElse(null)
+            ));
             case RemoveCategoryCmd c -> ApplyCommandResult.of(CategoryRemovedEvent.of(c.getCategoryId()));
             case DeleteCmd ignored -> ApplyCommandResult.of(DeletedEvent.of());
             default -> throw new IllegalArgumentException("Unknown command " + cmd.getClass().getSimpleName());
@@ -152,6 +163,7 @@ public class Pattern implements Aggregate {
         return (switch (event) {
             case SnapshottedEvent e -> withId(id)
                     .withName(e.getName())
+                    .withDescription(e.getDescription().orElse(null))
                     .withAttribution(e.getAttribution())
                     .withCategories(e.getCategories())
                     .withImages(e.getImages())
@@ -161,6 +173,7 @@ public class Pattern implements Aggregate {
                     .withDeletedAt(e.getDeletedAt().orElse(null));
             case CreatedEvent e -> withId(id)
                     .withName(e.getName())
+                    .withDescription(e.getDescription().orElse(null))
                     .withAttribution(e.getAttribution())
                     .withCategories(e.getCategories())
                     .withImages(e.getImages())
@@ -175,6 +188,7 @@ public class Pattern implements Aggregate {
             case ImagesUpdatedEvent e -> withImages(e.getImages());
             case VariantsUpdatedEvent e -> withVariants(e.getVariants());
             case ExtrasUpdatedEvent e -> withExtras(e.getExtras());
+            case DescriptionUpdatedEvent e -> withDescription(e.getDescription().orElse(null));
             case CategoryRemovedEvent e -> {
                 Set<PatternCategoryId> updatedCategories = new HashSet<>(getCategories());
                 updatedCategories.remove(e.getCategoryId());
@@ -187,6 +201,10 @@ public class Pattern implements Aggregate {
 
     public Optional<Instant> getDeletedAt() {
         return Optional.ofNullable(deletedAt);
+    }
+
+    public Optional<PatternDescription> getDescription() {
+        return Optional.ofNullable(description);
     }
 
     public boolean isDeleted() {

@@ -45,6 +45,7 @@ public class UpdatePatternCategoriesTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -99,6 +100,7 @@ public class UpdatePatternCategoriesTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -193,6 +195,7 @@ public class UpdatePatternCategoriesTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -235,9 +238,10 @@ public class UpdatePatternCategoriesTest extends PatternsModuleTest {
         pricedSizeRange.price.amount = 1000;
         pricedSizeRange.price.currency = "EUR";
         variant.pricedSizeRanges = Set.of(pricedSizeRange);
-        
+
         String patternId = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),

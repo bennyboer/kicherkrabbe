@@ -2,11 +2,13 @@ package de.bennyboer.kicherkrabbe.patterns.persistence.lookup;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.patterns.*;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
@@ -23,6 +25,9 @@ public class LookupPattern {
     boolean published;
 
     PatternName name;
+
+    @Nullable
+    PatternDescription description;
 
     PatternAlias alias;
 
@@ -43,6 +48,7 @@ public class LookupPattern {
             Version version,
             boolean published,
             PatternName name,
+            @Nullable PatternDescription description,
             PatternAlias alias,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
@@ -67,6 +73,7 @@ public class LookupPattern {
                 version,
                 published,
                 name,
+                description,
                 alias,
                 attribution,
                 categories,
@@ -75,6 +82,10 @@ public class LookupPattern {
                 extras,
                 createdAt
         );
+    }
+
+    public Optional<PatternDescription> getDescription() {
+        return Optional.ofNullable(description);
     }
 
 }

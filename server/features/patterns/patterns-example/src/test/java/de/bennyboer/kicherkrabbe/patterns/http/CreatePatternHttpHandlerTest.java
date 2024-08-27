@@ -48,6 +48,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
 
         var request = new CreatePatternRequest();
         request.name = "Ice bear party";
+        request.description = "A party dress for ice bears";
         request.attribution = attribution;
         request.categories = Set.of("SKIRT_ID", "DRESS_ID");
         request.images = List.of("IMAGE_ID_1", "IMAGE_ID_2");
@@ -60,6 +61,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return a successful response
         when(module.createPattern(
                 request.name,
+                request.description,
                 request.attribution,
                 request.categories,
                 request.images,
@@ -127,6 +129,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return an illegal argument exception
         when(module.createPattern(
                 request.name,
+                request.description,
                 request.attribution,
                 request.categories,
                 request.images,
@@ -219,6 +222,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return a categories missing error
         when(module.createPattern(
                 request.name,
+                request.description,
                 request.attribution,
                 request.categories,
                 request.images,

@@ -1,9 +1,11 @@
 package de.bennyboer.kicherkrabbe.patterns;
 
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
@@ -16,6 +18,9 @@ public class PublishedPattern {
     PatternId id;
 
     PatternName name;
+
+    @Nullable
+    PatternDescription description;
 
     PatternAlias alias;
 
@@ -32,6 +37,7 @@ public class PublishedPattern {
     public static PublishedPattern of(
             PatternId id,
             PatternName name,
+            @Nullable PatternDescription description,
             PatternAlias alias,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
@@ -48,7 +54,11 @@ public class PublishedPattern {
         notNull(variants, "Pattern variants must be given");
         notNull(extras, "Pattern extras must be given");
 
-        return new PublishedPattern(id, name, alias, attribution, categories, images, variants, extras);
+        return new PublishedPattern(id, name, description, alias, attribution, categories, images, variants, extras);
+    }
+
+    public Optional<PatternDescription> getDescription() {
+        return Optional.ofNullable(description);
     }
 
 }

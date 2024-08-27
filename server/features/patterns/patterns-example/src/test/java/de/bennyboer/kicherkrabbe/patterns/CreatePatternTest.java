@@ -71,6 +71,7 @@ public class CreatePatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                "A nice dress for the summer",
                 attribution,
                 Set.of("DRESS_ID", "SKIRT_ID"),
                 List.of("IMAGE_ID_1", "IMAGE_ID_2"),
@@ -86,6 +87,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         assertThat(pattern.getId()).isEqualTo(PatternId.of(patternId));
         assertThat(pattern.getVersion()).isEqualTo(Version.zero());
         assertThat(pattern.getName()).isEqualTo(PatternName.of("Summerdress"));
+        assertThat(pattern.getDescription()).contains(PatternDescription.of("A nice dress for the summer"));
         assertThat(pattern.getAttribution().getOriginalPatternName()).isEqualTo(
                 Optional.of(OriginalPatternName.of("Summerdress EXTREME"))
         );
@@ -204,6 +206,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern without name; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 invalidName1,
+                null,
                 validAttribution1,
                 validCategories,
                 validImages,
@@ -215,6 +218,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern with null name; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 invalidName2,
+                null,
                 validAttribution1,
                 validCategories,
                 validImages,
@@ -226,6 +230,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern without attribution; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 validName,
+                null,
                 invalidAttribution,
                 validCategories,
                 validImages,
@@ -237,6 +242,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern with faulty categories; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 validName,
+                "",
                 validAttribution1,
                 invalidCategories1,
                 validImages,
@@ -246,6 +252,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                "",
                 validAttribution1,
                 invalidCategories2,
                 validImages,
@@ -257,6 +264,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern with faulty images; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 validName,
+                "",
                 validAttribution1,
                 validCategories,
                 invalidImages1,
@@ -266,6 +274,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                null,
                 validAttribution1,
                 validCategories,
                 invalidImages2,
@@ -275,6 +284,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                "",
                 validAttribution1,
                 validCategories,
                 invalidImages3,
@@ -286,6 +296,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern with faulty variants; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 validName,
+                null,
                 validAttribution1,
                 validCategories,
                 validImages,
@@ -295,6 +306,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                null,
                 validAttribution1,
                 validCategories,
                 validImages,
@@ -304,6 +316,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                "",
                 validAttribution1,
                 validCategories,
                 validImages,
@@ -313,6 +326,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                "",
                 validAttribution1,
                 validCategories,
                 validImages,
@@ -324,6 +338,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern with faulty extras; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 validName,
+                null,
                 validAttribution1,
                 validCategories,
                 validImages,
@@ -333,6 +348,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                null,
                 validAttribution1,
                 validCategories,
                 validImages,
@@ -364,6 +380,7 @@ public class CreatePatternTest extends PatternsModuleTest {
 
         assertThatThrownBy(() -> createPattern(
                 "Partydress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID", "MISSING_ID"),
                 List.of("IMAGE_ID"),
@@ -380,6 +397,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // and: the user creates a pattern with all categories
         createPattern(
                 "Partydress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID", "DRESS_ID", "MISSING_ID"),
                 List.of("IMAGE_ID"),
@@ -398,6 +416,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // and: the user tries to create a pattern with all categories; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 "Partydress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID", "DRESS_ID", "MISSING_ID"),
                 List.of("IMAGE_ID"),
@@ -423,6 +442,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: a user that is not allowed to create a pattern tries to create a pattern; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 "Test",
+                null,
                 new PatternAttributionDTO(),
                 Set.of(),
                 List.of("IMAGE_ID"),
@@ -454,6 +474,7 @@ public class CreatePatternTest extends PatternsModuleTest {
 
         createPattern(
                 "Partydress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -463,6 +484,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         );
         createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID"),
                 List.of("IMAGE_ID"),
@@ -472,6 +494,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         );
         createPattern(
                 "Winterdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -491,6 +514,63 @@ public class CreatePatternTest extends PatternsModuleTest {
         // and: they all have version zero
         var versions = patterns.stream().map(PatternDetails::getVersion).toList();
         assertThat(versions).allMatch(v -> v.equals(Version.zero()));
+    }
+
+    @Test
+    void shouldBeAbleToCreatePatternGivenNoDescription() {
+        // given: a user is allowed to create patterns
+        allowUserToCreatePatterns("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // when: the user creates a pattern without description
+        var attribution = new PatternAttributionDTO();
+        var pricedSizeRange = new PricedSizeRangeDTO();
+        pricedSizeRange.from = 80;
+        pricedSizeRange.to = 86L;
+        pricedSizeRange.price = new MoneyDTO();
+        pricedSizeRange.price.amount = 2900;
+        pricedSizeRange.price.currency = "EUR";
+        var variant = new PatternVariantDTO();
+        variant.name = "Short";
+        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+
+        String patternId = createPattern(
+                "Summerdress",
+                null,
+                attribution,
+                Set.of(),
+                List.of("IMAGE_ID"),
+                List.of(variant),
+                List.of(),
+                agent
+        );
+
+        // then: the pattern is created
+        var patterns = getPatterns(agent);
+        assertThat(patterns).hasSize(1);
+        var pattern = patterns.getFirst();
+        assertThat(pattern.getId()).isEqualTo(PatternId.of(patternId));
+        assertThat(pattern.getVersion()).isEqualTo(Version.zero());
+        assertThat(pattern.getDescription()).isEmpty();
+
+        // when: the user creates a pattern with an empty description
+        patternId = createPattern(
+                "Next",
+                "",
+                attribution,
+                Set.of(),
+                List.of("IMAGE_ID"),
+                List.of(variant),
+                List.of(),
+                agent
+        );
+
+        // then: the pattern is created
+        patterns = getPatterns(agent);
+        assertThat(patterns).hasSize(2);
+
+        pattern = getPattern(patternId, agent);
+        assertThat(pattern.getDescription()).isEmpty();
     }
 
 }

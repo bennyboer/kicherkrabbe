@@ -17,6 +17,7 @@ import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.inmemory.InMemoryPa
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.PermissionsRepo;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
+import jakarta.annotation.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -62,6 +63,7 @@ public class PatternsModuleTest {
 
     public String createPattern(
             String name,
+            @Nullable String description,
             PatternAttributionDTO attribution,
             Set<String> categories,
             List<String> images,
@@ -69,7 +71,16 @@ public class PatternsModuleTest {
             List<PatternExtraDTO> extras,
             Agent agent
     ) {
-        String patternId = module.createPattern(name, attribution, categories, images, variants, extras, agent).block();
+        String patternId = module.createPattern(
+                name,
+                description,
+                attribution,
+                categories,
+                images,
+                variants,
+                extras,
+                agent
+        ).block();
 
         module.updatePatternInLookup(patternId).block();
         if (agent.getType() == AgentType.USER) {
@@ -137,6 +148,12 @@ public class PatternsModuleTest {
 
     public void updatePatternExtras(String patternId, long version, List<PatternExtraDTO> extras, Agent agent) {
         module.updatePatternExtras(patternId, version, extras, agent).block();
+
+        module.updatePatternInLookup(patternId).block();
+    }
+
+    public void updatePatternDescription(String patternId, long version, @Nullable String description, Agent agent) {
+        module.updatePatternDescription(patternId, version, description, agent).block();
 
         module.updatePatternInLookup(patternId).block();
     }

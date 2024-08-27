@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.patterns.http.api.requests;
 import de.bennyboer.kicherkrabbe.patterns.http.api.PatternAttributionDTO;
 import de.bennyboer.kicherkrabbe.patterns.http.api.PatternExtraDTO;
 import de.bennyboer.kicherkrabbe.patterns.http.api.PatternVariantDTO;
+import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +19,9 @@ import static lombok.AccessLevel.PUBLIC;
 public class CreatePatternRequest {
 
     String name;
+
+    @Nullable
+    String description;
 
     PatternAttributionDTO attribution;
 

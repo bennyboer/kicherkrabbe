@@ -65,6 +65,7 @@ public class PatternsModule {
                                         pattern.getVersion(),
                                         pattern.isPublished(),
                                         pattern.getName(),
+                                        pattern.getDescription().orElse(null),
                                         pattern.getAttribution(),
                                         pattern.getCategories(),
                                         pattern.getImages(),
@@ -86,6 +87,7 @@ public class PatternsModule {
                         pattern.getVersion(),
                         pattern.isPublished(),
                         pattern.getName(),
+                        pattern.getDescription().orElse(null),
                         pattern.getAttribution(),
                         pattern.getCategories(),
                         pattern.getImages(),
@@ -126,6 +128,7 @@ public class PatternsModule {
                                 .map(pattern -> PublishedPattern.of(
                                         pattern.getId(),
                                         pattern.getName(),
+                                        pattern.getDescription().orElse(null),
                                         pattern.getAlias(),
                                         pattern.getAttribution(),
                                         pattern.getCategories(),
@@ -147,6 +150,7 @@ public class PatternsModule {
                 .map(pattern -> PublishedPattern.of(
                         pattern.getId(),
                         pattern.getName(),
+                        pattern.getDescription().orElse(null),
                         pattern.getAlias(),
                         pattern.getAttribution(),
                         pattern.getCategories(),
@@ -177,6 +181,7 @@ public class PatternsModule {
     @Transactional(propagation = MANDATORY)
     public Mono<String> createPattern(
             String name,
+            @Nullable String description,
             PatternAttributionDTO attribution,
             Set<String> categories,
             List<String> images,
@@ -195,6 +200,10 @@ public class PatternsModule {
         notNull(extras, "Extras must be given");
 
         var internalName = PatternName.of(name);
+        var internalDescription = Optional.ofNullable(description)
+                .filter(d -> !d.isBlank())
+                .map(PatternDescription::of)
+                .orElse(null);
         var internalAttribution = toInternalAttribution(attribution);
         Set<PatternCategoryId> internalCategories = toInternalCategories(categories);
         var internalImages = toInternalImages(images);
@@ -205,6 +214,7 @@ public class PatternsModule {
                 .then(assertCategoriesAvailable(internalCategories))
                 .then(patternService.create(
                         internalName,
+                        internalDescription,
                         internalAttribution,
                         internalCategories,
                         internalImages,
@@ -314,6 +324,24 @@ public class PatternsModule {
     }
 
     @Transactional(propagation = MANDATORY)
+    public Mono<Long> updatePatternDescription(String patternId, long version, @Nullable String description, Agent agent) {
+        var internalPatternId = PatternId.of(patternId);
+        var internalDescription = Optional.ofNullable(description)
+                .filter(d -> !d.isBlank())
+                .map(PatternDescription::of)
+                .orElse(null);
+
+        return assertAgentIsAllowedTo(agent, UPDATE_DESCRIPTION, internalPatternId)
+                .then(patternService.updateDescription(
+                        internalPatternId,
+                        Version.of(version),
+                        internalDescription,
+                        agent
+                ))
+                .map(Version::getValue);
+    }
+
+    @Transactional(propagation = MANDATORY)
     public Mono<Void> deletePattern(String patternId, long version, Agent agent) {
         var internalPatternId = PatternId.of(patternId);
 
@@ -389,6 +417,10 @@ public class PatternsModule {
                 .holder(holder)
                 .isAllowedTo(UPDATE_EXTRAS)
                 .on(resource);
+        var updateDescriptionPermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(UPDATE_DESCRIPTION)
+                .on(resource);
         var deletePermission = Permission.builder()
                 .holder(holder)
                 .isAllowedTo(DELETE)
@@ -405,6 +437,7 @@ public class PatternsModule {
                 updateImagesPermission,
                 updateVariantsPermission,
                 updateExtrasPermission,
+                updateDescriptionPermission,
                 deletePermission
         );
     }
@@ -428,6 +461,7 @@ public class PatternsModule {
                         pattern.getVersion(),
                         pattern.isPublished(),
                         pattern.getName(),
+                        pattern.getDescription().orElse(null),
                         PatternAlias.fromName(pattern.getName()),
                         pattern.getAttribution(),
                         pattern.getCategories(),

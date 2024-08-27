@@ -2,10 +2,12 @@ package de.bennyboer.kicherkrabbe.patterns.create;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
 import de.bennyboer.kicherkrabbe.patterns.*;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
@@ -17,6 +19,9 @@ import static lombok.AccessLevel.PRIVATE;
 public class CreateCmd implements Command {
 
     PatternName name;
+
+    @Nullable
+    PatternDescription description;
 
     PatternAttribution attribution;
 
@@ -30,6 +35,7 @@ public class CreateCmd implements Command {
 
     public static CreateCmd of(
             PatternName name,
+            @Nullable PatternDescription description,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
             List<ImageId> images,
@@ -45,7 +51,11 @@ public class CreateCmd implements Command {
         check(!images.isEmpty(), "Images must not be empty");
         check(!variants.isEmpty(), "Variants must not be empty");
 
-        return new CreateCmd(name, attribution, categories, images, variants, extras);
+        return new CreateCmd(name, description, attribution, categories, images, variants, extras);
+    }
+
+    public Optional<PatternDescription> getDescription() {
+        return Optional.ofNullable(description);
     }
 
 }

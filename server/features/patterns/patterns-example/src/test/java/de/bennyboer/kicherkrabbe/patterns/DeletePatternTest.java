@@ -41,6 +41,7 @@ public class DeletePatternTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress",
+                "Summerdress",
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
@@ -50,6 +51,7 @@ public class DeletePatternTest extends PatternsModuleTest {
         );
         String patternId2 = createPattern(
                 "Winterjacket",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("JACKET_ID"),
                 List.of("IMAGE_ID"),
@@ -91,6 +93,7 @@ public class DeletePatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
