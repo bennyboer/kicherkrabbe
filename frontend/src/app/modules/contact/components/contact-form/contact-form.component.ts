@@ -1,8 +1,21 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
-import { ContentChange } from 'ngx-quill';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { ContentChange, QuillEditorComponent } from 'ngx-quill';
 import { someOrNone } from '../../../../util';
 import { Delta } from 'quill/core';
-import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  Observable,
+  Subject,
+  takeUntil,
+} from 'rxjs';
 
 @Component({
   selector: 'app-contact-form',
@@ -10,7 +23,13 @@ import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
   styleUrls: ['./contact-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContactFormComponent implements OnDestroy {
+export class ContactFormComponent implements OnInit, OnDestroy {
+  @ViewChild(QuillEditorComponent)
+  quillEditor!: QuillEditorComponent;
+
+  private readonly submitting$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
+
   private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
     '',
   );
@@ -25,6 +44,7 @@ export class ContactFormComponent implements OnDestroy {
   protected readonly nameTooLong$: Observable<boolean> = this.name$.pipe(
     map((name) => name.length > 200),
   );
+  protected readonly nameDisabled$: Observable<boolean> = this.submitting$;
   protected readonly nameValid$: Observable<boolean> = combineLatest([
     this.nameMissing$,
     this.nameTooLong$,
@@ -46,6 +66,7 @@ export class ContactFormComponent implements OnDestroy {
   );
   protected readonly mailFormatInvalid$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
+  protected readonly mailDisabled$: Observable<boolean> = this.submitting$;
   protected readonly mailValid$: Observable<boolean> = combineLatest([
     this.mailMissing$,
     this.mailTooLong$,
@@ -67,6 +88,7 @@ export class ContactFormComponent implements OnDestroy {
   protected readonly phoneTooLong$: Observable<boolean> = this.phone$.pipe(
     map((phone) => phone.length > 100),
   );
+  protected readonly phoneDisabled$: Observable<boolean> = this.submitting$;
   protected readonly phoneValid$: Observable<boolean> = this.phoneTooLong$.pipe(
     map((tooLong) => !tooLong),
   );
@@ -84,6 +106,7 @@ export class ContactFormComponent implements OnDestroy {
   protected readonly subjectTooLong$: Observable<boolean> = this.subject$.pipe(
     map((subject) => subject.length > 200),
   );
+  protected readonly subjectDisabled$: Observable<boolean> = this.submitting$;
   protected readonly subjectValid$: Observable<boolean> = combineLatest([
     this.subjectMissing$,
     this.subjectTooLong$,
@@ -113,6 +136,24 @@ export class ContactFormComponent implements OnDestroy {
     ),
   );
 
+  protected readonly canSubmit$: Observable<boolean> = combineLatest([
+    this.nameValid$,
+    this.mailValid$,
+    this.phoneValid$,
+    this.subjectValid$,
+    this.messageValid$,
+  ]).pipe(
+    map(
+      ([nameValid, mailValid, phoneValid, subjectValid, messageValid]) =>
+        nameValid && mailValid && phoneValid && subjectValid && messageValid,
+    ),
+  );
+  protected readonly cannotSubmit$: Observable<boolean> = this.canSubmit$.pipe(
+    map((canSubmit) => !canSubmit),
+  );
+
+  private readonly destroy$: Subject<void> = new Subject<void>();
+
   protected readonly quillModules = {
     toolbar: [
       [{ header: [1, 2, false] }],
@@ -120,6 +161,14 @@ export class ContactFormComponent implements OnDestroy {
       ['clean'],
     ],
   };
+
+  ngOnInit(): void {
+    this.submitting$.pipe(takeUntil(this.destroy$)).subscribe((submitting) => {
+      if (this.quillEditor) {
+        this.quillEditor.setDisabledState(submitting);
+      }
+    });
+  }
 
   ngOnDestroy(): void {
     this.name$.complete();
@@ -138,6 +187,11 @@ export class ContactFormComponent implements OnDestroy {
     this.message$.complete();
     this.messageHtml$.complete();
     this.messageTouched$.complete();
+
+    this.submitting$.complete();
+
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   updateName(value: string): void {
@@ -190,5 +244,17 @@ export class ContactFormComponent implements OnDestroy {
     if (!this.messageTouched$.value) {
       this.messageTouched$.next(true);
     }
+  }
+
+  submit(): void {
+    const name = this.name$.value;
+    const mail = this.mail$.value;
+    const phone = this.phone$.value;
+    const subject = this.subject$.value;
+    const message = this.message$.value;
+
+    // TODO send data to backend
+    console.log(name, mail, phone, subject, message);
+    this.submitting$.next(true);
   }
 }

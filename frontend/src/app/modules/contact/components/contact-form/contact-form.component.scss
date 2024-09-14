@@ -44,3 +44,10 @@ label {
 .error {
   color: var(--red);
 }
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: flex-end;
+}
