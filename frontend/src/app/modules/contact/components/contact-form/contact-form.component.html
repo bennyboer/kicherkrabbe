@@ -1,0 +1,98 @@
+<div class="form">
+  <div class="form-field">
+    <label for="name">
+      Name
+      <span class="input-limit">
+        {{ nameLength$ | async }} / 200
+      </span>
+    </label>
+    <input #name type="text" id="name" name="name" (input)="updateName(name.value)">
+
+    @if (nameTouched$ | async) {
+      @if (nameMissing$ | async) {
+        <app-note level="error">Bitte gib einen Namen ein</app-note>
+      } @else if (nameTooLong$ | async) {
+        <app-note level="error">Der Name darf maximal 200 Zeichen lang sein</app-note>
+      }
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="mail">
+      E-Mail
+      <span class="input-limit">
+        {{ mailLength$ | async }} / 200
+      </span>
+    </label>
+    <input #mail type="email" id="mail" name="mail" required (input)="updateMail(mail.value, mail.checkValidity())">
+
+    @if (mailTouched$ | async) {
+      @if (mailMissing$ | async) {
+        <app-note level="error">Bitte gib eine E-Mail Adresse ein</app-note>
+      } @else if (mailFormatInvalid$ | async) {
+        <app-note level="error">Die E-Mail Adresse scheint ungültig zu sein</app-note>
+      } @else if (mailTooLong$ | async) {
+        <app-note level="error">Die E-Mail Adresse darf maximal 200 Zeichen lang sein</app-note>
+      }
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="phone">
+      Telefon (optional)
+      <span class="input-limit">
+        {{ phoneLength$ | async }} / 100
+      </span>
+    </label>
+    <input #phone type="tel" id="phone" name="phone" required (input)="updatePhone(phone.value)">
+
+    @if (phoneTouched$ | async) {
+      @if (phoneTooLong$ | async) {
+        <app-note level="error">Die Telefonnummer darf maximal 100 Zeichen lang sein</app-note>
+      }
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="subject">
+      Betreff
+      <span class="input-limit">
+        {{ subjectLength$ | async }} / 200
+      </span>
+    </label>
+    <input #subject type="text" id="subject" name="subject" (input)="updateSubject(subject.value)">
+
+    @if (subjectTouched$ | async) {
+      @if (subjectMissing$ | async) {
+        <app-note level="error">Bitte gib einen Betreff ein</app-note>
+      } @else if (subjectTooLong$ | async) {
+        <app-note level="error">Der Betreff darf maximal 200 Zeichen lang sein</app-note>
+      }
+    }
+  </div>
+
+  <div class="form-field">
+    <label>Nachricht</label>
+    <div class="editor-wrapper">
+      <quill-editor theme="bubble"
+                    placeholder=""
+                    style="display: block; height: 400px"
+                    [modules]="quillModules"
+                    (onContentChanged)="updateMessage($event)">
+      </quill-editor>
+    </div>
+    <app-note>Selektieren Sie Text in Ihrer Nachricht, um ihn zu formatieren.</app-note>
+
+    @if (messageTouched$ | async) {
+      @if (messageMissing$ | async) {
+        <app-note level="error">Bitte gib eine Nachricht ein</app-note>
+      } @else if (messageTooLong$ | async) {
+        <app-note level="error">Die Nachricht ist zu lang</app-note>
+      } @else if (messageHtmlTooLong$ | async) {
+        <app-note level="error">Die Nachricht ist zu lang</app-note>
+      }
+    }
+  </div>
+</div>
+
+<!-- TODO Actions -->
