@@ -1,1 +1,15 @@
-Wähle aus was du verwalten möchtest.
+<app-note>Wähle aus was du verwalten möchtest.</app-note>
+
+<ng-container *flag="'CONTACT_FORM'">
+  <ul class="cards">
+    <a routerLink="inquiries">
+      <li>
+        <label>Kontaktanfragen</label>
+        <p>
+          Es sind <strong>3</strong> neue Kontaktanfragen eingegangen.
+          <!-- TODO Load from backend (dashboard domain?) -->
+        </p>
+      </li>
+    </a>
+  </ul>
+</ng-container>

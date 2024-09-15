@@ -77,6 +77,11 @@ const CATEGORIES = ManagementItem.of({
   route: 'categories',
 });
 
+const INQUIRIES = ManagementItem.of({
+  label: 'Kontaktanfragen',
+  route: 'inquiries',
+});
+
 const ESSENTIAL_MANAGEMENT_ITEMS = [
   TOPICS,
   FABRIC_TYPES,
@@ -84,6 +89,7 @@ const ESSENTIAL_MANAGEMENT_ITEMS = [
   FABRICS,
   PATTERNS,
   CATEGORIES,
+  INQUIRIES,
 ].sort((a, b) => a.label.localeCompare(b.label));
 const MANAGEMENT_ITEMS = [DASHBOARD, ...ESSENTIAL_MANAGEMENT_ITEMS];
 
