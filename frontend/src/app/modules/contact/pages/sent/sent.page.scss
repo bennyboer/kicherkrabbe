@@ -1,0 +1,29 @@
+:host {
+  display: block;
+}
+
+h1 {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.icon {
+  font-size: 48px;
+  color: white;
+  border-radius: 100%;
+  background-color: var(--green);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 150px 0;
+  text-align: center;
+}

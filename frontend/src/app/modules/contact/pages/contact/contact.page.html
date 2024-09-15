@@ -31,5 +31,11 @@
 </ng-container>
 
 <ng-container *flag="'CONTACT_FORM'">
-  <app-contact-form *flag="'CONTACT_FORM'"></app-contact-form>
+  <app-contact-form *flag="'CONTACT_FORM'" (submitted)="sendMessage($event)"></app-contact-form>
+
+  @if (sendingFailed$ | async) {
+    <app-note level="error">
+      Beim Senden Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.
+    </app-note>
+  }
 </ng-container>

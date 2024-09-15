@@ -1,12 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   OnDestroy,
   OnInit,
+  Output,
   ViewChild,
 } from '@angular/core';
 import { ContentChange, QuillEditorComponent } from 'ngx-quill';
-import { someOrNone } from '../../../../util';
+import { Option, someOrNone, validateProps } from '../../../../util';
 import { Delta } from 'quill/core';
 import {
   BehaviorSubject,
@@ -16,6 +18,51 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
+
+export class ContactFormResult {
+  readonly name: string;
+  readonly mail: string;
+  readonly phone?: Option<string>;
+  readonly subject: string;
+  readonly message: Delta;
+  readonly cancel: () => void;
+
+  private constructor(props: {
+    name: string;
+    mail: string;
+    phone?: Option<string>;
+    subject: string;
+    message: Delta;
+    cancel: () => void;
+  }) {
+    validateProps(props);
+
+    this.name = props.name;
+    this.mail = props.mail;
+    this.phone = props.phone;
+    this.subject = props.subject;
+    this.message = props.message;
+    this.cancel = props.cancel;
+  }
+
+  static of(props: {
+    name: string;
+    mail: string;
+    phone?: string;
+    subject: string;
+    message: Delta;
+    cancel: () => void;
+  }): ContactFormResult {
+    return new ContactFormResult({
+      name: props.name,
+      mail: props.mail,
+      phone: someOrNone(props.phone),
+      subject: props.subject,
+      message: props.message,
+      cancel: props.cancel,
+    });
+  }
+}
 
 @Component({
   selector: 'app-contact-form',
@@ -27,7 +74,11 @@ export class ContactFormComponent implements OnInit, OnDestroy {
   @ViewChild(QuillEditorComponent)
   quillEditor!: QuillEditorComponent;
 
-  private readonly submitting$: BehaviorSubject<boolean> =
+  @Output()
+  submitted: EventEmitter<ContactFormResult> =
+    new EventEmitter<ContactFormResult>();
+
+  protected readonly submitting$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
 
   private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
@@ -137,6 +188,7 @@ export class ContactFormComponent implements OnInit, OnDestroy {
   );
 
   protected readonly canSubmit$: Observable<boolean> = combineLatest([
+    this.submitting$,
     this.nameValid$,
     this.mailValid$,
     this.phoneValid$,
@@ -144,8 +196,20 @@ export class ContactFormComponent implements OnInit, OnDestroy {
     this.messageValid$,
   ]).pipe(
     map(
-      ([nameValid, mailValid, phoneValid, subjectValid, messageValid]) =>
-        nameValid && mailValid && phoneValid && subjectValid && messageValid,
+      ([
+        submitting,
+        nameValid,
+        mailValid,
+        phoneValid,
+        subjectValid,
+        messageValid,
+      ]) =>
+        !submitting &&
+        nameValid &&
+        mailValid &&
+        phoneValid &&
+        subjectValid &&
+        messageValid,
     ),
   );
   protected readonly cannotSubmit$: Observable<boolean> = this.canSubmit$.pipe(
@@ -253,8 +317,18 @@ export class ContactFormComponent implements OnInit, OnDestroy {
     const subject = this.subject$.value;
     const message = this.message$.value;
 
-    // TODO send data to backend
-    console.log(name, mail, phone, subject, message);
     this.submitting$.next(true);
+    const result = ContactFormResult.of({
+      name,
+      mail,
+      phone,
+      subject,
+      message,
+      cancel: () => {
+        this.submitting$.next(false);
+      },
+    });
+
+    this.submitted.emit(result);
   }
 }

@@ -112,5 +112,14 @@
 </div>
 
 <div class="actions">
-  <app-button color="primary" (click)="submit()" [disabled]="cannotSubmit$ | async">Absenden</app-button>
+  <app-button color="primary" (click)="submit()" [disabled]="cannotSubmit$ | async">
+    @if (submitting$ | async) {
+      <span class="loading-button-text">
+            <app-loading-spinner size="16"></app-loading-spinner>
+            <span>Wird gesendet...</span>
+          </span>
+    } @else {
+      Absenden
+    }
+  </app-button>
 </div>
