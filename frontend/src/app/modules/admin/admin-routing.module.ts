@@ -75,11 +75,11 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'inquiries',
-        title: 'Kontaktanfragen',
+        path: 'mailbox',
+        title: 'Postfach',
         loadChildren: () =>
-          import('./modules/inquiries/inquiries.module').then(
-            (m) => m.InquiriesModule,
+          import('./modules/inquiries/mailbox.module').then(
+            (m) => m.MailboxModule,
           ),
       },
     ],

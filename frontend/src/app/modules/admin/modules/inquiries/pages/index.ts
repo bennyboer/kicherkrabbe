@@ -1,5 +1,5 @@
-import { InquiriesPage } from './inquiries/inquiries.page';
+import { MailboxPage } from './inquiries/mailbox.page';
 
-export { InquiriesPage };
+export { MailboxPage };
 
-export const PAGES = [InquiriesPage];
+export const PAGES = [MailboxPage];

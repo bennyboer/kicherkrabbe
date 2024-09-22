@@ -1,0 +1,27 @@
+<ng-container *unlessFlag="'CONTACT_FORM'">
+  <app-note>Hier entsteht in Kürze das Postfach.</app-note>
+</ng-container>
+
+<ng-container *flag="'CONTACT_FORM'">
+  <ul class="mails">
+    @for (mail of mails; track mail.id) {
+      <a [routerLink]="mail.id">
+        <li>
+          <span class="prefix">
+            @if (mail.unread) {
+              <span class="unread-indicator"></span>
+            }
+          </span>
+            <span class="content">
+            <span class="subject">{{ mail.subject }}</span>
+            <span class="sender">
+              <span class="name">{{ mail.sender.name }}</span>
+              <span class="mail">{{ mail.sender.mail }}</span>
+            </span>
+            <span class="date">{{ mail.receivedAt | date: "medium" }}</span>
+          </span>
+        </li>
+      </a>
+    }
+  </ul>
+</ng-container>
