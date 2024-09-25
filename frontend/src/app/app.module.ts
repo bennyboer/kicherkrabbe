@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -15,6 +15,8 @@ import { SortablejsModule } from 'nxt-sortablejs';
 import { TitleStrategy } from '@angular/router';
 import { RoutingTitleStrategy } from './routing-title-strategy';
 import { QuillModule } from 'ngx-quill';
+import { registerLocaleData } from '@angular/common';
+import de from '@angular/common/locales/de';
 
 const COMPONENTS = [
   AppComponent,
@@ -38,6 +40,7 @@ const PAGES = [StartPage, NotFoundPage];
     QuillModule.forRoot(),
   ],
   providers: [
+    { provide: LOCALE_ID, useValue: 'de-DE' },
     ThemeService,
     RoutingMetadataService,
     {
@@ -47,4 +50,8 @@ const PAGES = [StartPage, NotFoundPage];
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    registerLocaleData(de);
+  }
+}

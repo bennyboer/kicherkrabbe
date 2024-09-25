@@ -1,0 +1,60 @@
+<ng-container *unlessFlag="'CONTACT_FORM'">
+  <app-note>Hier entsteht in Kürze das Postfach.</app-note>
+</ng-container>
+
+<ng-container *flag="'CONTACT_FORM'">
+  <div class="action-bar">
+    <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)"/>
+    <app-dropdown #statusDropdown
+                  label="Status"
+                  [items]="statusDropdownItems$ | async"
+                  [showSelectionIndicator]="true"
+                  (selectionChanged)="updateSelectedStatus(statusDropdown, $event)">
+      <ng-template let-item>
+        <span>{{ item.label }}</span>
+      </ng-template>
+
+      <div header class="dropdown-header">
+        <app-button-column [rounded]="false">
+          <app-button (click)="clearStatusSelection(statusDropdown)">Zurücksetzen</app-button>
+        </app-button-column>
+      </div>
+    </app-dropdown>
+  </div>
+
+  <table class="mails-table">
+    <colgroup>
+      <col span="1" style="width: 32px">
+      <col span="1" style="width: auto">
+      <col class="sender" span="1" style="width: 200px">
+      <col class="date" span="1" style="width: 140px">
+    </colgroup>
+    <thead>
+    <tr>
+      <th></th>
+      <th class="subject">Betreff</th>
+      <th class="sender">Absender</th>
+      <th class="date">Datum</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (mail of mails; track mail.id) {
+        <a class="table-row" [routerLink]="mail.id">
+          <td>
+            @if (mail.unread) {
+              <span class="unread-indicator"></span>
+            }
+          </td>
+          <td class="subject" [class.unread]="mail.unread" [title]="mail.subject">{{ mail.subject }}</td>
+          <td class="sender" title="{{ mail.sender.name }} ({{ mail.sender.mail }})">
+            <div class="sender-details">
+              <span class="name">{{ mail.sender.name }}</span>
+              <span class="mail">{{ mail.sender.mail }}</span>
+            </div>
+          </td>
+          <td class="date" [title]="mail.receivedAt | date: 'full'">{{ mail.receivedAt | date: "short" }}</td>
+        </a>
+      }
+    </tbody>
+  </table>
+</ng-container>

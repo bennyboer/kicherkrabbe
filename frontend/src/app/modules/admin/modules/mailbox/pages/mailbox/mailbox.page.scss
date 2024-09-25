@@ -1,0 +1,136 @@
+:host {
+  display: block;
+}
+
+.action-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.unread-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary-2);
+  display: block;
+  margin-right: 8px;
+}
+
+table.mails-table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  width: 100%;
+
+  a.table-row {
+    display: table-row;
+    text-decoration: none;
+    color: inherit;
+    vertical-align: middle;
+    transition: background-color 0.2s ease-out;
+
+    &:hover {
+      background-color: var(--background-low-contrast);
+    }
+
+    &:last-child {
+      td {
+        border-bottom: none;
+      }
+    }
+  }
+
+  th {
+    user-select: none;
+    padding: 8px 16px;
+    font-weight: normal;
+    font-size: 0.8em;
+    color: rgba(var(--text-rgb), 0.7);
+    border-bottom: 4px solid var(--background-low-contrast);
+
+    &.subject {
+      text-align: left;
+    }
+
+    &.date {
+      text-align: right;
+    }
+  }
+
+  td {
+    cursor: pointer;
+    padding: 16px 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid var(--background-low-contrast);
+
+    &.subject {
+      white-space: normal;
+
+      &.unread {
+        font-weight: bold;
+      }
+    }
+
+    &.sender {
+      text-align: center;
+
+      .sender-details {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: center;
+        justify-content: center;
+
+        .name {
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-size: 0.9em;
+        }
+
+        .mail {
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-size: 0.7em;
+          color: rgba(var(--text-rgb), 0.7);
+        }
+      }
+    }
+
+    &.date {
+      font-size: 0.8em;
+      text-align: right;
+    }
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  table.mails-table {
+    col {
+      &.sender, &.date {
+        display: none;
+      }
+    }
+
+    thead {
+      display: none;
+    }
+
+    th {
+      &.sender, &.date {
+        display: none;
+      }
+    }
+
+    td {
+      &.sender, &.date {
+        display: none;
+      }
+    }
+  }
+}

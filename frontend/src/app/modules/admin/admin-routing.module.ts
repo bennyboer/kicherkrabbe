@@ -78,7 +78,7 @@ const routes: Routes = [
         path: 'mailbox',
         title: 'Postfach',
         loadChildren: () =>
-          import('./modules/inquiries/mailbox.module').then(
+          import('./modules/mailbox/mailbox.module').then(
             (m) => m.MailboxModule,
           ),
       },
