@@ -1,5 +1,5 @@
-import { someOrNone } from './option';
 import { Eq } from './equals';
+import { someOrNone } from '../modules/shared/modules/option';
 
 export class Currency implements Eq<Currency> {
   readonly name: string;

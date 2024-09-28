@@ -14,7 +14,6 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
-import { none, Option, some, someOrNone } from '../../../../../../util';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FabricsService } from '../../services';
 import {
@@ -30,6 +29,12 @@ import {
   FabricTypeAvailability,
 } from '../../model';
 import { environment } from '../../../../../../../environments';
+import {
+  none,
+  Option,
+  some,
+  someOrNone,
+} from '../../../../../shared/modules/option';
 
 @Component({
   selector: 'app-fabric-details-page',

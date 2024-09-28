@@ -1,10 +1,5 @@
-import {
-  Eq,
-  Money,
-  Option,
-  someOrNone,
-  validateProps,
-} from '../../../../../util';
+import { Eq, Money, validateProps } from '../../../../../util';
+import { Option, someOrNone } from '../../../../shared/modules/option';
 
 export class PricedSizeRange implements Eq<PricedSizeRange> {
   readonly id: string;

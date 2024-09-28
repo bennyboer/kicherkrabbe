@@ -29,9 +29,9 @@
 <ng-template #descriptionTemplate let-item>
   <div class="description">
     <div class="title">{{ item.title }}</div>
-    @if (item.content.isSome()) {
+    @if (item.content | ifSome; as content) {
       <div class="availability-status">
-        @if (item.content.orElseThrow().inStock) {
+        @if ($any(content).inStock) {
           <span class="in-stock-badge"></span> Auf Lager
         } @else {
           <span class="out-of-stock-badge"></span> Nachbestellbar

@@ -1,12 +1,11 @@
+import { Money, validateProps } from '../../../../../util';
+import { PricedSizeRange } from './priced-size-range';
 import {
-  Money,
   none,
   Option,
   some,
   someOrNone,
-  validateProps,
-} from '../../../../../util';
-import { PricedSizeRange } from './priced-size-range';
+} from '../../../../shared/modules/option';
 
 export class PatternVariant {
   readonly name: string;

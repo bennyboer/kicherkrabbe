@@ -3,9 +3,9 @@
     <a [routerLink]="item.link">
       <li class="card-list-item">
         <div class="upper-content">
-          @if (template.isSome()) {
+          @if (template | ifSome; as tmpl) {
             <div>
-              <ng-container *ngTemplateOutlet="template.orElseThrow(); context: { $implicit: item }"></ng-container>
+              <ng-container *ngTemplateOutlet="tmpl; context: { $implicit: item }"></ng-container>
             </div>
           } @else {
             <div class="image">
@@ -14,13 +14,13 @@
           }
         </div>
         <div class="content">
-          @if (descriptionTemplate.isSome()) {
-            <ng-container *ngTemplateOutlet="descriptionTemplate.orElseThrow(); context: { $implicit: item }">
+          @if (descriptionTemplate | ifSome; as tmpl) {
+            <ng-container *ngTemplateOutlet="tmpl; context: { $implicit: item }">
             </ng-container>
           } @else {
             <div class="title">{{ item.title }}</div>
-            @if (item.description.isSome()) {
-              <div class="description">{{ item.description.orElse('') }}</div>
+            @if (item.description | ifSome; as description) {
+              <div class="description">{{ description }}</div>
             }
           }
         </div>

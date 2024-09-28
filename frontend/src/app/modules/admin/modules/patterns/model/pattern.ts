@@ -1,7 +1,8 @@
 import { PatternVariant } from './variant';
 import { PatternExtra } from './extra';
 import { PatternAttribution } from './attribution';
-import { Option, someOrNone, validateProps } from '../../../../../util';
+import { validateProps } from '../../../../../util';
+import { Option, someOrNone } from '../../../../shared/modules/option';
 
 export type PatternId = string;
 export type PatternCategoryId = string;

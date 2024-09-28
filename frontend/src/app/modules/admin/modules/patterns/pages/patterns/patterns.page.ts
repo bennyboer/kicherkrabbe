@@ -18,7 +18,6 @@ import {
   takeUntil,
   tap,
 } from 'rxjs';
-import { someOrNone } from '../../../../../../util';
 import { PatternCategoriesService, PatternsService } from '../../services';
 import {
   DropdownComponent,
@@ -27,6 +26,7 @@ import {
   NotificationService,
 } from '../../../../../shared';
 import { Pattern, PatternCategory } from '../../model';
+import { someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
   selector: 'app-patterns-page',

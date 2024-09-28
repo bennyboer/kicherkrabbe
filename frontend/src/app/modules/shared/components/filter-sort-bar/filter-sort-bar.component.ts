@@ -21,7 +21,8 @@ import {
   take,
   takeUntil,
 } from 'rxjs';
-import { Eq, Option, someOrNone } from '../../../../util';
+import { Eq } from '../../../../util';
+import { Option, someOrNone } from '../../modules/option';
 
 export type FilterId = string;
 export type FilterItemId = string;

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { someOrNone } from '../../../util';
 import { environment } from '../../../../environments';
+import { someOrNone } from '../modules/option';
 
 export enum Flag {
   TEST = 'TEST',

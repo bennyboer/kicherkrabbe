@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
 import { Title } from '@angular/platform-browser';
-import { someOrNone } from './util';
+import { someOrNone } from './modules/shared/modules/option';
 
 @Injectable()
 export class RoutingTitleStrategy extends TitleStrategy {

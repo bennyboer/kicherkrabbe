@@ -8,7 +8,7 @@ import {
   Output,
 } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { someOrNone } from '../../../../util';
+import { someOrNone } from '../../modules/option';
 
 @Component({
   selector: 'app-checkbox',

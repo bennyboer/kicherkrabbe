@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { someOrNone } from '../../../util';
+import { someOrNone } from '../modules/option';
 
 export type NotificationType = 'info' | 'success' | 'error' | 'warn';
 

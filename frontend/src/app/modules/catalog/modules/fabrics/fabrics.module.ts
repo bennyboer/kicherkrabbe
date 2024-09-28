@@ -9,6 +9,7 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { OptionModule } from '../../../shared/modules/option';
 
 const PAGES = [FabricsPage, FabricPage];
 
@@ -19,6 +20,7 @@ const PAGES = [FabricsPage, FabricPage];
     FabricsRoutingModule,
     SharedModule,
     InfiniteScrollDirective,
+    OptionModule,
   ],
   providers: [
     RemoteFabricsService,

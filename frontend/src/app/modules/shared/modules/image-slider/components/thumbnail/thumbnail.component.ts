@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { ImageSliderImage } from '../../models';
 import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
-import { someOrNone } from '../../../../../../util';
+import { someOrNone } from '../../../option';
 
 @Component({
   selector: 'app-image-slider-thumbnail',

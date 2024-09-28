@@ -1,5 +1,6 @@
 import { CategoryGroup } from './category-group';
-import { someOrNone, validateProps } from '../../../../../util';
+import { validateProps } from '../../../../../util';
+import { someOrNone } from '../../../../shared/modules/option';
 
 export type CategoryId = string;
 

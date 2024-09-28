@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
 import { NgxColorsTriggerDirective } from 'ngx-colors';
-import { someOrNone } from '../../../../util';
+import { someOrNone } from '../../modules/option';
 
 export interface ColorPickerColor {
   red: number;

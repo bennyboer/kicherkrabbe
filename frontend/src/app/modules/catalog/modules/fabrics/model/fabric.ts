@@ -1,5 +1,6 @@
-import { Image, someOrNone } from '../../../../../util';
+import { Image } from '../../../../../util';
 import { Availability } from './availability';
+import { someOrNone } from '../../../../shared/modules/option';
 
 type ColorId = string;
 type ThemeId = string;

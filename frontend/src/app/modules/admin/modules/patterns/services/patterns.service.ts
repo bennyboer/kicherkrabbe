@@ -1,13 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { filter, map, Observable, Subject, takeUntil } from 'rxjs';
-import {
-  Currency,
-  Money,
-  none,
-  Option,
-  some,
-  someOrNone,
-} from '../../../../../util';
+import { Currency, Money } from '../../../../../util';
 import { SSE } from 'sse.js';
 import { HttpClient } from '@angular/common/http';
 import { AdminAuthService } from '../../../services';
@@ -21,6 +14,12 @@ import {
   PatternVariant,
   PricedSizeRange,
 } from '../model';
+import {
+  none,
+  Option,
+  some,
+  someOrNone,
+} from '../../../../shared/modules/option';
 
 interface PatternDTO {
   id: string;

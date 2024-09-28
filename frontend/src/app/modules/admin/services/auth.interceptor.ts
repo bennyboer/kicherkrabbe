@@ -25,7 +25,7 @@ export class AuthInterceptor implements HttpInterceptor {
     return this.authService.getToken().pipe(
       map((token) =>
         token
-          .map((token) =>
+          .map((token: string) =>
             req.clone({
               setHeaders: {
                 Authorization: `Bearer ${token}`,

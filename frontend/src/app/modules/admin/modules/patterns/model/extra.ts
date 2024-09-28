@@ -1,4 +1,5 @@
-import { Eq, Money, someOrNone, validateProps } from '../../../../../util';
+import { Eq, Money, validateProps } from '../../../../../util';
+import { someOrNone } from '../../../../shared/modules/option';
 
 export class PatternExtra implements Eq<PatternExtra> {
   readonly name: string;

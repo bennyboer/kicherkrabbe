@@ -1,4 +1,5 @@
-import { Money, Option, someOrNone } from '../../../../../util';
+import { Money } from '../../../../../util';
+import { Option, someOrNone } from '../../../../shared/modules/option';
 
 export class PricedSizeRange {
   readonly from: number;

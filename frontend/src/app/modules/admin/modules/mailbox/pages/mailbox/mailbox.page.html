@@ -22,39 +22,49 @@
     </app-dropdown>
   </div>
 
-  <table class="mails-table">
-    <colgroup>
-      <col span="1" style="width: 32px">
-      <col span="1" style="width: auto">
-      <col class="sender" span="1" style="width: 200px">
-      <col class="date" span="1" style="width: 140px">
-    </colgroup>
-    <thead>
-    <tr>
-      <th></th>
-      <th class="subject">Betreff</th>
-      <th class="sender">Absender</th>
-      <th class="date">Datum</th>
-    </tr>
-    </thead>
-    <tbody>
-      @for (mail of mails; track mail.id) {
-        <a class="table-row" [routerLink]="mail.id">
-          <td>
-            @if (mail.unread) {
-              <span class="unread-indicator"></span>
+  <app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+  @if (mailsLoaded$ | async) {
+    @if (mails$ | async; as mails) {
+      @if (mails.length === 0) {
+        <app-note level="info">Keine Mails vorhanden.</app-note>
+      } @else {
+        <table class="mails-table">
+          <colgroup>
+            <col span="1" style="width: 32px">
+            <col span="1" style="width: auto">
+            <col class="sender" span="1" style="width: 200px">
+            <col class="date" span="1" style="width: 140px">
+          </colgroup>
+          <thead>
+          <tr>
+            <th></th>
+            <th class="subject">Betreff</th>
+            <th class="sender">Absender</th>
+            <th class="date">Datum</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (mail of mails; track mail.id) {
+              <a class="table-row" [routerLink]="mail.id">
+                <td>
+                  @if (mail.isUnread()) {
+                    <span class="unread-indicator"></span>
+                  }
+                </td>
+                <td class="subject" [class.unread]="mail.isUnread()" [title]="mail.subject">{{ mail.subject }}</td>
+                <td class="sender" title="{{ mail.sender.name }} ({{ mail.sender.mail }})">
+                  <div class="sender-details">
+                    <span class="name">{{ mail.sender.name }}</span>
+                    <span class="mail">{{ mail.sender.mail }}</span>
+                  </div>
+                </td>
+                <td class="date" [title]="mail.receivedAt | date: 'full'">{{ mail.receivedAt | date: "short" }}</td>
+              </a>
             }
-          </td>
-          <td class="subject" [class.unread]="mail.unread" [title]="mail.subject">{{ mail.subject }}</td>
-          <td class="sender" title="{{ mail.sender.name }} ({{ mail.sender.mail }})">
-            <div class="sender-details">
-              <span class="name">{{ mail.sender.name }}</span>
-              <span class="mail">{{ mail.sender.mail }}</span>
-            </div>
-          </td>
-          <td class="date" [title]="mail.receivedAt | date: 'full'">{{ mail.receivedAt | date: "short" }}</td>
-        </a>
+          </tbody>
+        </table>
       }
-    </tbody>
-  </table>
+    }
+  }
 </ng-container>

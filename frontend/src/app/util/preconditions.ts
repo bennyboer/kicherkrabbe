@@ -1,17 +1,17 @@
-import { Option } from './option';
+import { someOrNone } from '../modules/shared/modules/option';
 
 interface Props {
   [key: string]: unknown;
 }
 
 export const validateProps = (props?: Props) => {
-  return Option.someOrNone(props)
+  return someOrNone(props)
     .map((p) => {
       for (const entry of Object.entries(p)) {
         const key = entry[0];
         const value = entry[1];
 
-        if (Option.someOrNone(value).isNone()) {
+        if (someOrNone(value).isNone()) {
           throw Error(`Property ${key} is required`);
         }
       }

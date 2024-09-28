@@ -26,7 +26,7 @@ import {
 } from '../../../../../shared';
 import { Color, Fabric, Theme } from '../../model';
 import { RemoteFabricsService } from '../../services';
-import { none, Option, some } from '../../../../../../util';
+import { none, Option, some } from '../../../../../shared/modules/option';
 
 interface Sorting {
   property: string;

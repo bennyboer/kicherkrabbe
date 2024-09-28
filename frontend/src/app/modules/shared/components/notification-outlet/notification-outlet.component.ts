@@ -14,7 +14,7 @@ import {
   takeUntil,
   timer,
 } from 'rxjs';
-import { none, Option, some } from '../../../../util';
+import { none, Option, some } from '../../modules/option';
 
 @Component({
   selector: 'app-notification-outlet',

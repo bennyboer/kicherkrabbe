@@ -1,8 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, map, Observable, Subject, takeUntil } from 'rxjs';
-import { none, Option, some, someOrNone } from '../../../util';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments';
+import { none, Option, some, someOrNone } from '../../shared/modules/option';
 
 interface UseCredentialsRequest {
   name: string;

@@ -1,4 +1,5 @@
-import { Option, someOrNone, validateProps } from '../../../../../util';
+import { validateProps } from '../../../../../util';
+import { Option, someOrNone } from '../../../../shared/modules/option';
 
 export class PatternAttribution {
   readonly originalPatternName: Option<string>;

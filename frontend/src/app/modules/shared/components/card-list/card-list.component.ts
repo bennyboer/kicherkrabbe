@@ -4,7 +4,7 @@ import {
   Input,
   TemplateRef,
 } from '@angular/core';
-import { none, Option, someOrNone } from '../../../../util';
+import { none, Option, someOrNone } from '../../modules/option';
 
 export class CardListItem {
   readonly title: string;

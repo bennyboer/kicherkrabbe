@@ -10,7 +10,8 @@ import {
 } from '../model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../../environments';
-import { Image, someOrNone } from '../../../../../util';
+import { Image } from '../../../../../util';
+import { someOrNone } from '../../../../shared/modules/option';
 
 interface FabricsAvailabilityFilterDTO {
   active: boolean;

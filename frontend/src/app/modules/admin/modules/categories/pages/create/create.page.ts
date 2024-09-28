@@ -15,7 +15,6 @@ import {
   timeout,
 } from 'rxjs';
 import { CategoryGroup, CategoryGroupType, GROUPS, NONE } from '../../model';
-import { someOrNone } from '../../../../../../util';
 import {
   DropdownComponent,
   DropdownItem,
@@ -23,6 +22,7 @@ import {
   NotificationService,
 } from '../../../../../shared';
 import { ActivatedRoute, Router } from '@angular/router';
+import { someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
   selector: 'app-create-page',

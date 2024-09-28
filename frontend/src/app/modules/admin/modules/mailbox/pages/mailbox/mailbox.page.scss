@@ -7,7 +7,6 @@
   flex-direction: row;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
 }
 
 .unread-indicator {
@@ -23,6 +22,7 @@ table.mails-table {
   table-layout: fixed;
   border-collapse: collapse;
   width: 100%;
+  margin-top: 16px;
 
   a.table-row {
     display: table-row;

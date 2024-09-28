@@ -7,8 +7,9 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
-import { Option, Point, someOrNone } from '../../../util';
+import { Point } from '../../../util';
 import { Overlay, OverlayId } from '../models';
+import { Option, someOrNone } from '../modules/option';
 
 interface OverlayLookup {
   [key: string]: Overlay;

@@ -1,11 +1,16 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { filter, map, Observable, Subject, takeUntil, tap } from 'rxjs';
-import { none, Option, some, someOrNone } from '../../../../../util';
+import { filter, map, Observable, Subject, takeUntil } from 'rxjs';
 import { SSE } from 'sse.js';
 import { HttpClient } from '@angular/common/http';
 import { AdminAuthService } from '../../../services';
 import { environment } from '../../../../../../environments';
 import { Category, CategoryGroup, CategoryId, CLOTHING, NONE } from '../model';
+import {
+  none,
+  Option,
+  some,
+  someOrNone,
+} from '../../../../shared/modules/option';
 
 interface CategoryDTO {
   id: string;

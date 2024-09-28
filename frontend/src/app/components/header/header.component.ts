@@ -16,9 +16,9 @@ import {
   takeUntil,
   throttleTime,
 } from 'rxjs';
-import { none, Option, some } from '../../util';
 import { NavigationEnd, Router } from '@angular/router';
 import { ButtonSize } from '../../modules/shared';
+import { none, Option, some } from '../../modules/shared/modules/option';
 
 @Component({
   selector: 'app-header',

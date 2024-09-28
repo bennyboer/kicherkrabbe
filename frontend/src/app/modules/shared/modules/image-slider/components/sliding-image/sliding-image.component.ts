@@ -33,7 +33,7 @@ import {
   tap,
   toArray,
 } from 'rxjs';
-import { none, Option, some, someOrNone } from '../../../../../../util';
+import { none, Option, some, someOrNone } from '../../../option';
 
 const LOADING_ANIMATION_DURATION_MS = 2000;
 const easeInOut = (progress: number) =>

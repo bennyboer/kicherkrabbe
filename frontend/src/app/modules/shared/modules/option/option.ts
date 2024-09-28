@@ -1,3 +1,5 @@
+import { Eq } from '../../../../util';
+
 export const some = <T>(value: T | null | undefined) => Option.some(value);
 export const someOrNone = <T>(value: T | null | undefined) =>
   Option.someOrNone(value);
@@ -152,9 +154,20 @@ export class Option<T> {
     }
 
     if (this.isSome() && option.isSome()) {
-      return this.orElseThrow() === option.orElseThrow();
+      const a = this.orElseThrow();
+      const b = option.orElseThrow();
+
+      if (Option.isEqualsType(a) && Option.isEqualsType(b)) {
+        return a.equals(b);
+      } else {
+        return a === b;
+      }
     }
 
     return false;
+  }
+
+  private static isEqualsType<T>(value: any): value is Eq<T> {
+    return 'equals' in value;
   }
 }

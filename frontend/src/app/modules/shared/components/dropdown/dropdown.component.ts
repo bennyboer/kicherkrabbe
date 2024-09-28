@@ -21,17 +21,10 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
-import {
-  none,
-  Option,
-  Point,
-  Rect,
-  Size,
-  some,
-  someOrNone,
-} from '../../../../util';
+import { Point, Rect, Size } from '../../../../util';
 import { OverlayRef, OverlayService } from '../../services';
 import { ButtonSize as ButtonSize } from '../button/button.component';
+import { none, Option, some, someOrNone } from '../../modules/option';
 
 export type DropdownItemId = string;
 

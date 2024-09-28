@@ -8,15 +8,10 @@ import {
 } from '@angular/core';
 import { PricedSizeRange } from '../../model';
 import { BehaviorSubject } from 'rxjs';
-import {
-  Money,
-  none,
-  Option,
-  someOrNone,
-  validateProps,
-} from '../../../../../../util';
+import { Money, validateProps } from '../../../../../../util';
 import { ButtonSize } from '../../../../../shared';
 import currency from 'currency.js';
+import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
 class EditablePricedSizeRange {
   readonly size: PricedSizeRange;

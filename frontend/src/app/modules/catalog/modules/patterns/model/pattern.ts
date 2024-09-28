@@ -1,14 +1,13 @@
 import { PatternVariant } from './variant';
 import { PatternExtra } from './extra';
+import { Money, validateProps } from '../../../../../util';
+import { PatternAttribution } from './attribution';
 import {
-  Money,
   none,
   Option,
   some,
   someOrNone,
-  validateProps,
-} from '../../../../../util';
-import { PatternAttribution } from './attribution';
+} from '../../../../shared/modules/option';
 
 export type CategoryId = string;
 export type ImageId = string;
@@ -145,7 +144,9 @@ export class Pattern {
   }
 
   private getLargestSize(): Option<number> {
-    const sizes = this.variants.map((variant) => variant.getLargestSize());
+    const sizes: Option<number>[] = this.variants.map((variant) =>
+      variant.getLargestSize(),
+    );
 
     if (sizes.length === 0) {
       return none();

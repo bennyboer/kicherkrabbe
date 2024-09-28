@@ -8,7 +8,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ContentChange, QuillEditorComponent } from 'ngx-quill';
-import { Option, someOrNone, validateProps } from '../../../../util';
+import { validateProps } from '../../../../util';
 import { Delta } from 'quill/core';
 import {
   BehaviorSubject,
@@ -18,6 +18,7 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
+import { Option, someOrNone } from '../../../shared/modules/option';
 
 export class ContactFormResult {
   readonly name: string;

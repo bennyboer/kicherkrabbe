@@ -29,8 +29,8 @@ import {
   FabricType,
   FabricTypeAvailability,
 } from '../../model';
-import { none, Option, some } from '../../../../../../util';
 import { environment } from '../../../../../../../environments';
+import { none, Option, some } from '../../../../../shared/modules/option';
 
 @Component({
   selector: 'app-create-fabric-page',

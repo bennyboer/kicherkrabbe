@@ -12,12 +12,17 @@ import {
   takeUntil,
   tap,
 } from 'rxjs';
-import { none, Option, some, someOrNone } from '../../../../../util';
 import { SSE } from 'sse.js';
 import { HttpClient } from '@angular/common/http';
 import { AdminAuthService } from '../../../services';
 import { environment } from '../../../../../../environments';
 import { FabricType } from '../model';
+import {
+  none,
+  Option,
+  some,
+  someOrNone,
+} from '../../../../shared/modules/option';
 
 interface FabricTypeDTO {
   id: string;

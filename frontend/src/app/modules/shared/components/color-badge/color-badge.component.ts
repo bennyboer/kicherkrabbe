@@ -11,7 +11,7 @@ import {
   RendererStyleFlags2,
 } from '@angular/core';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
-import { someOrNone } from '../../../../util';
+import { someOrNone } from '../../modules/option';
 
 export interface ColorBadgeColor {
   red: number;

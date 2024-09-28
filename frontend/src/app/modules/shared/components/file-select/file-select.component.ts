@@ -19,7 +19,7 @@ import {
   take,
   takeUntil,
 } from 'rxjs';
-import { none, Option, someOrNone } from '../../../../util';
+import { none, Option, someOrNone } from '../../modules/option';
 
 @Component({
   selector: 'app-file-select',

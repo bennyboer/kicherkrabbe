@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { MailboxPage, MailPage } from './pages';
+import { DeletePage, MailboxPage, MailPage } from './pages';
 
 const routes: Routes = [
   {
@@ -9,7 +9,16 @@ const routes: Routes = [
   },
   {
     path: ':mailId',
-    component: MailPage,
+    children: [
+      {
+        path: '',
+        component: MailPage,
+      },
+      {
+        path: 'delete',
+        component: DeletePage,
+      },
+    ],
   },
 ];
 

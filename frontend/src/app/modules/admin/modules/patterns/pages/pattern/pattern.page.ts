@@ -34,10 +34,11 @@ import {
   PatternVariant,
 } from '../../model';
 import { Chip, NotificationService } from '../../../../../shared';
-import { Eq, none, Option, someOrNone } from '../../../../../../util';
+import { Eq } from '../../../../../../util';
 import { environment } from '../../../../../../../environments';
 import Quill, { Delta } from 'quill/core';
 import { ContentChange } from 'ngx-quill';
+import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
   selector: 'app-pattern-page',

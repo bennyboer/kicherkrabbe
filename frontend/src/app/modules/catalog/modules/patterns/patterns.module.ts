@@ -10,6 +10,7 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { QuillModule } from 'ngx-quill';
+import { OptionModule } from '../../../shared/modules/option';
 
 const PAGES = [PatternsPage, PatternPage];
 
@@ -21,6 +22,7 @@ const PAGES = [PatternsPage, PatternPage];
     SharedModule,
     ImageSliderModule,
     QuillModule,
+    OptionModule,
   ],
   providers: [
     PatternsService,

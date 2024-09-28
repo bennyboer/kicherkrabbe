@@ -8,8 +8,9 @@ import {
   PatternVariant,
   PricedSizeRange,
 } from '../model';
-import { Currency, Money, someOrNone } from '../../../../../util';
+import { Currency, Money } from '../../../../../util';
 import { environment } from '../../../../../../environments';
+import { someOrNone } from '../../../../shared/modules/option';
 
 interface PatternsSortDTO {
   property: PatternsSortPropertyDTO;

@@ -10,8 +10,9 @@ import {
 import { ButtonSize } from '../../../../../shared';
 import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
 import { PatternExtra } from '../../model';
-import { Money, someOrNone, validateProps } from '../../../../../../util';
+import { Money, validateProps } from '../../../../../../util';
 import currency from 'currency.js';
+import { someOrNone } from '../../../../../shared/modules/option';
 
 class EditablePatternExtra {
   readonly id: string;

@@ -8,11 +8,11 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
-import { none, Option, someOrNone } from '../../../../../../util';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from '../../../../../shared';
 import { FabricTypesService } from '../../services';
 import { FabricType } from '../../model';
+import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
   selector: 'app-fabric-type-details-page',

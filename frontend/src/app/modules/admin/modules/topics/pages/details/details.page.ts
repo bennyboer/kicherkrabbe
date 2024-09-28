@@ -10,9 +10,9 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
-import { none, Option, someOrNone } from '../../../../../../util';
 import { Topic } from '../../model';
 import { NotificationService } from '../../../../../shared';
+import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
   selector: 'app-topic-details',

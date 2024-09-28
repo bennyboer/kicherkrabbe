@@ -1,4 +1,4 @@
-import { someOrNone } from './option';
+import { someOrNone } from '../modules/shared/modules/option';
 
 export class Image {
   readonly url: string;

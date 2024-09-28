@@ -10,8 +10,8 @@ import {
 } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
 import { ImageSliderImage } from '../../models';
-import { someOrNone } from '../../../../../../util';
 import { SlidingImageComponent } from '../sliding-image/sliding-image.component';
+import { someOrNone } from '../../../option';
 
 @Component({
   selector: 'app-image-slider',

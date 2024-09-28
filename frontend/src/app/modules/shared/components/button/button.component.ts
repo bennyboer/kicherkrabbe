@@ -13,9 +13,9 @@ import {
   Output,
   Renderer2,
 } from '@angular/core';
-import { none, Option, some, someOrNone } from '../../../../util';
 import { Subject, takeUntil } from 'rxjs';
 import { ButtonId, ButtonRegistry } from './button-registry';
+import { none, Option, some, someOrNone } from '../../modules/option';
 
 export enum ButtonSize {
   SMALL = 'SMALL',

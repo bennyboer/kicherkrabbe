@@ -20,8 +20,9 @@ import {
   DropdownItemId,
 } from '../../../shared';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { Option, validateProps } from '../../../../util';
+import { validateProps } from '../../../../util';
 import { AdminAuthService } from '../../services';
+import { someOrNone } from '../../../shared/modules/option';
 
 class ManagementItem {
   readonly label: string;
@@ -124,7 +125,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
 
     route$.pipe(takeUntil(this.destroy$)).subscribe((route) => {
-      Option.someOrNone(
+      someOrNone(
         this.managementItems$.value.find((item) => item.route === route),
       ).ifSome((item) => this.selectedManagementItem$.next(item));
     });

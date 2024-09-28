@@ -9,7 +9,7 @@ import {
 } from 'rxjs';
 import { AdminAuthService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { someOrNone } from '../../../../util';
+import { someOrNone } from '../../../shared/modules/option';
 
 @Component({
   selector: 'app-login-page',

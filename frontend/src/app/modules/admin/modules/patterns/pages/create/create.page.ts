@@ -24,9 +24,9 @@ import {
 import { ButtonSize, Chip, NotificationService } from '../../../../../shared';
 import { PatternCategoriesService, PatternsService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { someOrNone } from '../../../../../../util';
 import { ContentChange } from 'ngx-quill';
 import { Delta } from 'quill/core';
+import { someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
   selector: 'app-create-pattern-page',

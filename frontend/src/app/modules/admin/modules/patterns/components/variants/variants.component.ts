@@ -16,8 +16,9 @@ import {
   takeUntil,
 } from 'rxjs';
 import { PatternVariant, PricedSizeRange } from '../../model';
-import { someOrNone, validateProps } from '../../../../../../util';
+import { validateProps } from '../../../../../../util';
 import { ButtonSize } from '../../../../../shared';
+import { someOrNone } from '../../../../../shared/modules/option';
 
 class EditablePatternVariant {
   readonly variant: PatternVariant;
