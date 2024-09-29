@@ -32,31 +32,35 @@ export class CheckboxComponent implements OnDestroy {
     someOrNone(value).ifSome((p) => this.passive$.next(p));
   }
 
+  @Input({ transform: booleanAttribute })
+  set disabled(value: boolean) {
+    someOrNone(value).ifSome((d) => this.disabled$.next(d));
+  }
+
   @Output()
   checkedChanges: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   protected readonly id: string = crypto.randomUUID();
   private readonly label$: Subject<string> = new ReplaySubject<string>(1);
-  private readonly checked$: BehaviorSubject<boolean> =
+  protected readonly checked$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
   private readonly passive$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
+  protected readonly disabled$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
 
   ngOnDestroy(): void {
     this.label$.complete();
     this.checked$.complete();
     this.passive$.complete();
-  }
-
-  isChecked(): Observable<boolean> {
-    return this.checked$.asObservable();
+    this.disabled$.complete();
   }
 
   getLabel(): Observable<string> {
     return this.label$.asObservable();
   }
 
-  protected onCheckboxClicked(event: MouseEvent): void {
+  protected onCheckboxClicked(_event: MouseEvent): void {
     const isPassive = this.passive$.value;
 
     if (!isPassive) {

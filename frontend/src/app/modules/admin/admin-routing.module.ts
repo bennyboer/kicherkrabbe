@@ -82,6 +82,14 @@ const routes: Routes = [
             (m) => m.MailboxModule,
           ),
       },
+      {
+        path: 'inquiries',
+        title: 'Kontaktanfragen',
+        loadChildren: () =>
+          import('./modules/inquiries/inquiries.module').then(
+            (m) => m.InquiriesModule,
+          ),
+      },
     ],
   },
   {

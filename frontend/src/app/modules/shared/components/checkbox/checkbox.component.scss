@@ -36,4 +36,8 @@ input[type="checkbox"] {
   &:hover {
     background-color: var(--background-low-contrast);
   }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 }

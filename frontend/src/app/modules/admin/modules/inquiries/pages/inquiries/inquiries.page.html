@@ -1,0 +1,74 @@
+<app-note>
+  Hier kannst du Einstellungen zu den Kontaktanfragen vornehmen.
+  Die Anfragen selbst findest du in deinem <a routerLink="../mailbox">Postfach</a>.
+</app-note>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (statsLoaded$ | async) {
+  <!-- TODO Stats über die Anfragen in den letzten Stunden/Tagen/Wochen/Monaten? -->
+}
+
+@if (settingsLoaded$ | async) {
+  <div class="form">
+    <div class="form-field">
+      <app-checkbox label="Kontaktformular aktivieren"
+                    [checked]="contactFormEnabled$ | async"
+                    [disabled]="updatingContactFormEnabled$ | async"
+                    (checkedChanges)="toggleContactFormEnabled()">
+        Kontaktformular aktivieren
+      </app-checkbox>
+    </div>
+
+    <div class="form-field">
+      <label for="rate-limit-for-mail">Erlaubte Anfragen je E-Mail Adresse je 24 Stunden</label>
+      <div class="input-with-action">
+        <input #rateLimitForMail
+               type="text"
+               id="rate-limit-for-mail"
+               [disabled]="updatingRateLimitForMail$ | async"
+               [value]="rateLimitForMail$ | async"
+               (input)="updatePendingRateLimitForMail(rateLimitForMail.value)"
+               (keydown.enter)="updateRateLimitForMail(rateLimitForMail.value)">
+        <app-button [disabled]="cannotUpdateRateLimitForMail$ | async"
+                    (click)="updateRateLimitForMail(rateLimitForMail.value)">
+          Speichern
+        </app-button>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="rate-limit-for-ip">Erlaubte Anfragen je IP-Adresse je 24 Stunden</label>
+      <div class="input-with-action">
+        <input #rateLimitForIp
+               type="text"
+               id="rate-limit-for-ip"
+               [disabled]="updatingRateLimitForIp$ | async"
+               [value]="rateLimitForIp$ | async"
+               (input)="updatePendingRateLimitForIp(rateLimitForIp.value)"
+               (keydown.enter)="updateRateLimitForIp(rateLimitForIp.value)">
+        <app-button [disabled]="cannotUpdateRateLimitForIp$ | async"
+                    (click)="updateRateLimitForIp(rateLimitForIp.value)">
+          Speichern
+        </app-button>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="rate-limit-per-day">Insgesamt erlaubte Anfragen je 24 Stunden</label>
+      <div class="input-with-action">
+        <input #rateLimitPerDay
+               type="text"
+               id="rate-limit-per-day"
+               [disabled]="updatingRateLimitPerDay$ | async"
+               [value]="rateLimitPerDay$ | async"
+               (input)="updatePendingRateLimitPerDay(rateLimitPerDay.value)"
+               (keydown.enter)="updateRateLimitPerDay(rateLimitPerDay.value)">
+        <app-button [disabled]="cannotUpdateRateLimitPerDay$ | async"
+                    (click)="updateRateLimitPerDay(rateLimitPerDay.value)">
+          Speichern
+        </app-button>
+      </div>
+    </div>
+  </div>
+}

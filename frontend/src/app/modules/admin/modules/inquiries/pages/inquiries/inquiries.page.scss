@@ -1,0 +1,36 @@
+:host {
+  display: block;
+}
+
+label {
+  font-size: 0.8em;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-left: 2px solid var(--background-low-contrast);
+  padding-left: 12px;
+
+  & > input {
+    width: 100%;
+  }
+
+  .input-with-action {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+
+    & > input {
+      flex: 1 1 auto;
+    }
+  }
+}
