@@ -291,7 +291,6 @@ export class PatternPage implements OnInit, OnDestroy {
         if (
           JSON.stringify(currentContents) !== JSON.stringify(expectedContents)
         ) {
-          console.log('Updating editor contents');
           editor.setContents(description);
         }
       });

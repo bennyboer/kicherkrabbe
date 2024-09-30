@@ -168,6 +168,10 @@ export class Option<T> {
   }
 
   private static isEqualsType<T>(value: any): value is Eq<T> {
-    return 'equals' in value;
+    try {
+      return 'equals' in value;
+    } catch (e) {
+      return false;
+    }
   }
 }
