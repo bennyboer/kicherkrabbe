@@ -12,6 +12,7 @@ dependencies {
     implementation project(':features:fabric-types:fabric-types-starter')
     implementation project(':features:fabrics:fabrics-starter')
     implementation project(':features:frontend')
+    implementation project(':features:inquiries:inquiries-starter')
     implementation project(':features:patterns:patterns-starter')
     implementation project(':features:topics:topics-starter')
     implementation project(':features:users:users-starter')

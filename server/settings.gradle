@@ -99,3 +99,8 @@ include('features:categories:categories-example')
 include('features:patterns:patterns-core')
 include('features:patterns:patterns-starter')
 include('features:patterns:patterns-example')
+
+// Inquiries
+include('features:inquiries:inquiries-core')
+include('features:inquiries:inquiries-starter')
+include('features:inquiries:inquiries-example')
