@@ -1,6 +1,6 @@
-package de.bennyboer.kicherkrabbe.inquiries.http.api.requests;
+package de.bennyboer.kicherkrabbe.inquiries.api.requests;
 
-import de.bennyboer.kicherkrabbe.inquiries.http.api.SenderDTO;
+import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;

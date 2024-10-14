@@ -1,4 +1,4 @@
-package de.bennyboer.kicherkrabbe.inquiries.http.api;
+package de.bennyboer.kicherkrabbe.inquiries.api;
 
 import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;

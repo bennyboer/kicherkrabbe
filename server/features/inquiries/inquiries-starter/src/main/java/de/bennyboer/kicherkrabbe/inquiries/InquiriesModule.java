@@ -1,7 +1,8 @@
 package de.bennyboer.kicherkrabbe.inquiries;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
-import de.bennyboer.kicherkrabbe.inquiries.http.api.SenderDTO;
+import de.bennyboer.kicherkrabbe.inquiries.api.InquiryDTO;
+import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
 import reactor.core.publisher.Mono;
 
 public class InquiriesModule {
@@ -15,6 +16,12 @@ public class InquiriesModule {
         // TODO Check if we are not disabled, otherwise throw InquiriesDisabledException
         // TODO Check if we are not rate limited (see inquiries settings), otherwise throw TooManyRequestsException
 
+        return Mono.empty(); // TODO
+    }
+
+    public Mono<InquiryDTO> getInquiryByRequestId(String requestId, Agent agent) {
+        // TODO Check whether the caller has the permission to see the inquiry (no one really has, but we should
+        //  check anyway)
         return Mono.empty(); // TODO
     }
 

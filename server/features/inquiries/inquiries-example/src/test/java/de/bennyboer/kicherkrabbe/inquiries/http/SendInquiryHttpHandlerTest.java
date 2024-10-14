@@ -3,8 +3,8 @@ package de.bennyboer.kicherkrabbe.inquiries.http;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.inquiries.InquiriesDisabledException;
 import de.bennyboer.kicherkrabbe.inquiries.TooManyRequestsException;
-import de.bennyboer.kicherkrabbe.inquiries.http.api.SenderDTO;
-import de.bennyboer.kicherkrabbe.inquiries.http.api.requests.SendInquiryRequest;
+import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
+import de.bennyboer.kicherkrabbe.inquiries.api.requests.SendInquiryRequest;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 

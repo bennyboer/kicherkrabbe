@@ -5,7 +5,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.inquiries.InquiriesDisabledException;
 import de.bennyboer.kicherkrabbe.inquiries.InquiriesModule;
 import de.bennyboer.kicherkrabbe.inquiries.TooManyRequestsException;
-import de.bennyboer.kicherkrabbe.inquiries.http.api.requests.SendInquiryRequest;
+import de.bennyboer.kicherkrabbe.inquiries.api.requests.SendInquiryRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.reactive.TransactionalOperator;
