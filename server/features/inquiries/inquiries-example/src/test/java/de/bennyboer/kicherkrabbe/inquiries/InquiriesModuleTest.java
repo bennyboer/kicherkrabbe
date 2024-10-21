@@ -24,4 +24,12 @@ public class InquiriesModuleTest {
         return module.getInquiryByRequestId(requestId, agent).block();
     }
 
+    public void disableSendingInquiries() {
+        // TODO
+    }
+
+    public void enableSendingInquiries() {
+        // TODO
+    }
+
 }
