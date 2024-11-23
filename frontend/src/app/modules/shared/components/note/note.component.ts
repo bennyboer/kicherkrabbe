@@ -14,5 +14,5 @@ import {
 export class NoteComponent {
   @HostBinding('class')
   @Input()
-  level: 'info' | 'success' | 'warn' | 'error' = 'info';
+  level: 'info' | 'success' | 'warn' | 'error' | 'highlight' = 'info';
 }

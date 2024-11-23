@@ -17,10 +17,16 @@
 
   &.warn {
     background-color: var(--yellow);
+    color: black;
   }
 
   &.error {
     background-color: var(--primary-1);
     color: white;
+  }
+
+  &.highlight {
+    background-color: #E2A2FF;
+    color: black;
   }
 }
