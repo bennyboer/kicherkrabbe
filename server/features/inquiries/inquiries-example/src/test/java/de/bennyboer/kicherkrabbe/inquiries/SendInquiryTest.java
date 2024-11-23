@@ -717,6 +717,12 @@ public class SendInquiryTest extends InquiriesModuleTest {
         assertThat(inquiry).isNotNull();
     }
 
+    @Test
+    void shouldRefuseToSendInquiryWhenSendingMoreThanNInquiriesWithinACertainTimeFrame() {
+        // given: there will be a maximum of 2 inquiries per e-mail address within 24 hours
+        setMaximumInquiriesPerEmailPerTimeFrame(2, );
+    }
+
     // TODO test that we wont accept n inquiries from the same e-mail address within a certain time frame
 
     // TODO test that we wont accept n inquiries from the same IP address within a certain time frame
