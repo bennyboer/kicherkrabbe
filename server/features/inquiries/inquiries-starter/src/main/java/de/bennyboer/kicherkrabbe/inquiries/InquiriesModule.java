@@ -3,11 +3,21 @@ package de.bennyboer.kicherkrabbe.inquiries;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.inquiries.api.InquiryDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
+import jakarta.annotation.Nullable;
 import reactor.core.publisher.Mono;
+
+import java.time.Duration;
 
 public class InquiriesModule {
 
-    public Mono<Void> sendInquiry(String requestId, SenderDTO sender, String subject, String message, Agent agent) {
+    public Mono<Void> sendInquiry(
+            String requestId,
+            SenderDTO sender,
+            String subject,
+            String message,
+            Agent agent,
+            @Nullable String ipAddress
+    ) {
         // TODO Validate input (sanitize message, subject, sender name, sender mail, sender phone)
         // TODO Check if inputs are in required format (mail)
         // TODO Check if inputs are within limits (message, subject, name, mail, phone length)
@@ -25,4 +35,24 @@ public class InquiriesModule {
         return Mono.empty(); // TODO
     }
 
+    public Mono<Void> setSendingInquiriesEnabled(boolean enabled, Agent agent) {
+        // TODO Check whether caller has permission
+        return Mono.empty(); // TODO
+    }
+
+    public Mono<Void> setMaximumInquiriesPerEmailPerTimeFrame(int count, Duration duration, Agent agent) {
+        // TODO Check whether caller has permission
+        return Mono.empty(); // TODO
+    }
+
+    public Mono<Void> setMaximumInquiriesPerIPAddressPerTimeFrame(int count, Duration duration, Agent agent) {
+        // TODO Check whether caller has permission
+        return Mono.empty(); // TODO
+    }
+
+    public Mono<Void> setMaximumInquiriesPerTimeFrame(int count, Duration duration, Agent agent) {
+        // TODO Check whether caller has permission
+        return Mono.empty(); // TODO
+    }
+    
 }

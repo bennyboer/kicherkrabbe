@@ -14,6 +14,9 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
+import java.net.InetSocketAddress;
+import java.util.Optional;
+
 import static org.springframework.http.HttpStatus.*;
 
 @AllArgsConstructor
@@ -25,6 +28,9 @@ public class InquiriesHttpHandler {
 
     public Mono<ServerResponse> sendInquiry(ServerRequest request) {
         var transactionalOperator = TransactionalOperator.create(transactionManager);
+        var ipAddress = Optional.ofNullable(request.exchange().getRequest().getRemoteAddress())
+                .map(InetSocketAddress::getHostString)
+                .orElse(null);
 
         return request.bodyToMono(SendInquiryRequest.class)
                 .flatMap(req -> toAgent(request).flatMap(agent -> module.sendInquiry(
@@ -32,7 +38,8 @@ public class InquiriesHttpHandler {
                         req.sender,
                         req.subject,
                         req.message,
-                        agent
+                        agent,
+                        ipAddress
                 )))
                 .then(ServerResponse.ok().build())
                 .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(

@@ -5,8 +5,10 @@ import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.requests.SendInquiryRequest;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import java.time.Duration;
+import java.time.Instant;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class SendInquiryTest extends InquiriesModuleTest {
 
@@ -718,17 +720,248 @@ public class SendInquiryTest extends InquiriesModuleTest {
     }
 
     @Test
-    void shouldRefuseToSendInquiryWhenSendingMoreThanNInquiriesWithinACertainTimeFrame() {
-        // given: there will be a maximum of 2 inquiries per e-mail address within 24 hours
-        setMaximumInquiriesPerEmailPerTimeFrame(2, );
+    void shouldRefuseToSendInquiryWhenSendingMoreThanNInquiriesWithTheSameEMailWithinACertainTimeFrame() {
+        // given: there is a maximum of 2 inquiries per e-mail address within 24 hours
+        setMaximumInquiriesPerEmailPerTimeFrame(2, Duration.ofHours(24));
+
+        // and: we are at a fixed point in time
+        setTime(Instant.parse("2024-03-12T12:30:00Z"));
+
+        // and: a inquiry is sent
+        var sender = new SenderDTO();
+        sender.name = "John Doe";
+        sender.mail = "john.doe+test@example.de";
+        sender.phone = "+49 1234 5678 9999";
+        sendInquiry(
+                "REQUEST_ID_1",
+                sender,
+                "Test inquiry 1",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        );
+
+        // and: another inquiry is sent 5 minutes later
+        setTime(Instant.parse("2024-03-12T12:35:00Z"));
+        sendInquiry(
+                "REQUEST_ID_2",
+                sender,
+                "Test inquiry 2",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        );
+
+        // when: another inquiry is sent 5 minutes later; then: the inquiry sending is refused
+        setTime(Instant.parse("2024-03-12T12:40:00Z"));
+        assertThatThrownBy(() -> sendInquiry(
+                "REQUEST_ID_3",
+                sender,
+                "Test inquiry 3",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        )).isInstanceOf(TooManyRequestsException.class);
+
+        // when: another inquiry is sent with another e-mail address; then: the inquiry sending is accepted
+        var otherSender = new SenderDTO();
+        otherSender.name = "Jane Doe";
+        otherSender.mail = "jane.doe+test@example.de";
+        otherSender.phone = "+49 1234 5678 9999";
+        assertThatNoException().isThrownBy(() -> sendInquiry(
+                "REQUEST_ID_4",
+                otherSender,
+                "Test inquiry 4",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        ));
+
+        // when: another inquiry is sent 23 hours later; then: the inquiry sending is denied as well
+        setTime(Instant.parse("2024-03-13T11:30:00Z"));
+        assertThatThrownBy(() -> sendInquiry(
+                "REQUEST_ID_5",
+                sender,
+                "Test inquiry 5",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        )).isInstanceOf(TooManyRequestsException.class);
+
+        // when: another inquiry is sent 24 hours later; then: the inquiry sending is accepted
+        setTime(Instant.parse("2024-03-13T12:30:00Z"));
+        assertThatNoException().isThrownBy(() -> sendInquiry(
+                "REQUEST_ID_6",
+                sender,
+                "Test inquiry 6",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        ));
     }
 
-    // TODO test that we wont accept n inquiries from the same e-mail address within a certain time frame
+    @Test
+    void shouldRefuseToSendInquiryWhenSendingMoreThanNInquiriesWithinACertainTimeFrameFromTheSameIPAddress() {
+        // given: there is a maximum of 2 inquiries per IP address within 24 hours
+        setMaximumInquiriesPerIPAddressPerTimeFrame(2, Duration.ofHours(24));
 
-    // TODO test that we wont accept n inquiries from the same IP address within a certain time frame
+        // and: we are at a fixed point in time
+        setTime(Instant.parse("2024-03-12T12:30:00Z"));
 
-    // TODO test that we wont acdept n inquiries in general within a certain time frame
+        // and: a inquiry is sent
+        var sender = new SenderDTO();
+        sender.name = "John Doe";
+        sender.mail = "john.doe+test@example.de";
+        sender.phone = "+49 1234 5678 9999";
+        sendInquiry(
+                "REQUEST_ID_1",
+                sender,
+                "Test inquiry 1",
+                "This is a test inquiry!",
+                Agent.anonymous(),
+                "159.185.44.88"
+        );
 
+        // and: another inquiry is sent 5 minutes later
+        setTime(Instant.parse("2024-03-12T12:35:00Z"));
+        sendInquiry(
+                "REQUEST_ID_2",
+                sender,
+                "Test inquiry 2",
+                "This is a test inquiry!",
+                Agent.anonymous(),
+                "159.185.44.88"
+        );
+
+        // when: another inquiry is sent 5 minutes later; then: the inquiry sending is refused
+        setTime(Instant.parse("2024-03-12T12:40:00Z"));
+        assertThatThrownBy(() -> sendInquiry(
+                "REQUEST_ID_3",
+                sender,
+                "Test inquiry 3",
+                "This is a test inquiry!",
+                Agent.anonymous(),
+                "159.185.44.88"
+        )).isInstanceOf(TooManyRequestsException.class);
+
+        // when: another inquiry is sent with another IP address; then: the inquiry sending is accepted
+        assertThatNoException().isThrownBy(() -> sendInquiry(
+                "REQUEST_ID_4",
+                sender,
+                "Test inquiry 4",
+                "This is a test inquiry!",
+                Agent.anonymous(),
+                "98.249.119.114"
+        ));
+
+        // when: another inquiry is sent 23 hours later; then: the inquiry sending is denied as well
+        setTime(Instant.parse("2024-03-13T11:30:00Z"));
+        assertThatThrownBy(() -> sendInquiry(
+                "REQUEST_ID_5",
+                sender,
+                "Test inquiry 5",
+                "This is a test inquiry!",
+                Agent.anonymous(),
+                "159.185.44.88"
+        )).isInstanceOf(TooManyRequestsException.class);
+
+        // when: another inquiry is sent 24 hours later; then: the inquiry sending is accepted
+        setTime(Instant.parse("2024-03-13T12:30:00Z"));
+        assertThatNoException().isThrownBy(() -> sendInquiry(
+                "REQUEST_ID_6",
+                sender,
+                "Test inquiry 6",
+                "This is a test inquiry!",
+                Agent.anonymous(),
+                "159.185.44.88"
+        ));
+    }
+
+    @Test
+    void shouldRefuseToSendInquiryWhenSendingMoreThanNInquiriesWithinACertainTimeFrame() {
+        // given: there is a maximum of 5 inquiries within 24 hours
+        setMaximumInquiriesPerTimeFrame(2, Duration.ofHours(24));
+
+        // and: we are at a fixed point in time
+        setTime(Instant.parse("2024-03-12T12:30:00Z"));
+
+        // and: a inquiry is sent
+        var sender = new SenderDTO();
+        sender.name = "John Doe";
+        sender.mail = "john.doe+test@example.de";
+        sender.phone = "+49 1234 5678 9999";
+        sendInquiry(
+                "REQUEST_ID_1",
+                sender,
+                "Test inquiry 1",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        );
+
+        // and: another inquiry is sent 5 minutes later
+        setTime(Instant.parse("2024-03-12T12:35:00Z"));
+        sendInquiry(
+                "REQUEST_ID_2",
+                sender,
+                "Test inquiry 2",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        );
+
+        // when: another inquiry is sent 5 minutes later
+        setTime(Instant.parse("2024-03-12T12:40:00Z"));
+        sendInquiry(
+                "REQUEST_ID_3",
+                sender,
+                "Test inquiry 3",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        );
+
+        // and: another inquiry is sent 5 minutes later
+        setTime(Instant.parse("2024-03-12T12:45:00Z"));
+        sendInquiry(
+                "REQUEST_ID_4",
+                sender,
+                "Test inquiry 4",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        );
+
+        // and: another inquiry is sent 5 minutes later
+        setTime(Instant.parse("2024-03-12T12:50:00Z"));
+        sendInquiry(
+                "REQUEST_ID_5",
+                sender,
+                "Test inquiry 5",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        );
+
+        // when: another inquiry is sent 5 minutes later; then: the inquiry sending is refused
+        setTime(Instant.parse("2024-03-12T12:55:00Z"));
+        assertThatThrownBy(() -> sendInquiry(
+                "REQUEST_ID_6",
+                sender,
+                "Test inquiry 6",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        )).isInstanceOf(TooManyRequestsException.class);
+
+        // when: another inquiry is sent 23 hours later; then: the inquiry sending is denied as well
+        setTime(Instant.parse("2024-03-13T11:30:00Z"));
+        assertThatThrownBy(() -> sendInquiry(
+                "REQUEST_ID_7",
+                sender,
+                "Test inquiry 7",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        )).isInstanceOf(TooManyRequestsException.class);
+
+        // when: another inquiry is sent 24 hours later; then: the inquiry sending is accepted
+        setTime(Instant.parse("2024-03-13T12:30:00Z"));
+        assertThatNoException().isThrownBy(() -> sendInquiry(
+                "REQUEST_ID_8",
+                sender,
+                "Test inquiry 8",
+                "This is a test inquiry!",
+                Agent.anonymous()
+        ));
+    }
 
 }
 

@@ -8,6 +8,8 @@ import de.bennyboer.kicherkrabbe.inquiries.api.requests.SendInquiryRequest;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 public class SendInquiryHttpHandlerTest extends HttpHandlerTest {
@@ -26,11 +28,12 @@ public class SendInquiryHttpHandlerTest extends HttpHandlerTest {
 
         // and: the module is configured to return a successful response
         when(module.sendInquiry(
-                request.requestId,
-                request.sender,
-                request.subject,
-                request.message,
-                Agent.anonymous()
+                eq(request.requestId),
+                eq(request.sender),
+                eq(request.subject),
+                eq(request.message),
+                eq(Agent.anonymous()),
+                any()
         )).thenReturn(Mono.empty());
 
         // when: posting the request
@@ -59,11 +62,12 @@ public class SendInquiryHttpHandlerTest extends HttpHandlerTest {
 
         // and: the module is configured to return an illegal argument exception
         when(module.sendInquiry(
-                request.requestId,
-                request.sender,
-                request.subject,
-                request.message,
-                Agent.anonymous()
+                eq(request.requestId),
+                eq(request.sender),
+                eq(request.subject),
+                eq(request.message),
+                eq(Agent.anonymous()),
+                any()
         )).thenReturn(Mono.error(new IllegalArgumentException("Invalid request")));
 
         // when: posting the request
@@ -89,11 +93,12 @@ public class SendInquiryHttpHandlerTest extends HttpHandlerTest {
 
         // and: the module is configured to return a forbidden response
         when(module.sendInquiry(
-                request.requestId,
-                request.sender,
-                request.subject,
-                request.message,
-                Agent.anonymous()
+                eq(request.requestId),
+                eq(request.sender),
+                eq(request.subject),
+                eq(request.message),
+                eq(Agent.anonymous()),
+                any()
         )).thenReturn(Mono.error(new InquiriesDisabledException()));
 
         // when: posting the request
@@ -119,11 +124,12 @@ public class SendInquiryHttpHandlerTest extends HttpHandlerTest {
 
         // and: the module is configured to return a too many requests response
         when(module.sendInquiry(
-                request.requestId,
-                request.sender,
-                request.subject,
-                request.message,
-                Agent.anonymous()
+                eq(request.requestId),
+                eq(request.sender),
+                eq(request.subject),
+                eq(request.message),
+                eq(Agent.anonymous()),
+                any()
         )).thenReturn(Mono.error(new TooManyRequestsException()));
 
         // when: posting the request
