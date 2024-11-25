@@ -50,7 +50,7 @@ public class PublishedPattern {
     ) {
         notNull(id, "Pattern ID must be given");
         notNull(name, "Pattern name must be given");
-        //        notNull(number, "Pattern number must be given"); // TODO Enforce after all patterns have a number
+        notNull(number, "Pattern number must be given");
         notNull(alias, "Pattern alias must be given");
         notNull(attribution, "Pattern attribution must be given");
         notNull(categories, "Pattern categories must be given");

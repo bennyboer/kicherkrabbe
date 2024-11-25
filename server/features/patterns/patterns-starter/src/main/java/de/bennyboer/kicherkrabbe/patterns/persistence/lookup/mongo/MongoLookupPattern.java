@@ -25,8 +25,7 @@ public class MongoLookupPattern {
     boolean published;
 
     String name;
-    
-    @Nullable // TODO Remove after all patterns have a number
+
     String number;
 
     @Nullable

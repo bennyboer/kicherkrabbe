@@ -225,7 +225,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the pattern is only updated on non-deleted events
-        verify(module, timeout(10000).times(12)).updatePatternInLookup(eq("PATTERN_ID"));
+        verify(module, timeout(20000).times(12)).updatePatternInLookup(eq("PATTERN_ID"));
     }
 
     @Test

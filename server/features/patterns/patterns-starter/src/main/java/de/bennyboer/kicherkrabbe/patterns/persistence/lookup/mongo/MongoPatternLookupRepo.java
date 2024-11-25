@@ -216,13 +216,11 @@ public class MongoPatternLookupRepo
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         IndexDefinition categoriesIndex = new Index().on("categories", ASC);
         IndexDefinition aliasIndex = new Index().on("alias", ASC);
-        //        IndexDefinition numberIndex = new Index().on("number", ASC).unique(); // TODO Enforce unique
-        //         numbers after all patterns have a number
+        IndexDefinition numberIndex = new Index().on("number", ASC).unique();
 
         return indexOps.ensureIndex(categoriesIndex)
                 .then(indexOps.ensureIndex(aliasIndex))
-                //                .then(indexOps.ensureIndex(numberIndex)) // TODO Enforce unique numbers after all
-                //                 patterns have a number
+                .then(indexOps.ensureIndex(numberIndex))
                 .then();
     }
 

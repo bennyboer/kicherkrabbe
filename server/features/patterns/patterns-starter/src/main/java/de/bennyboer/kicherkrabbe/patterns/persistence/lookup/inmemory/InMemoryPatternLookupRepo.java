@@ -150,9 +150,7 @@ public class InMemoryPatternLookupRepo
     @Override
     public Mono<LookupPattern> findByNumber(PatternNumber number) {
         return getAll()
-                .filter(pattern -> Optional.ofNullable(pattern.getNumber())
-                        .map(n -> n.equals(number))
-                        .orElse(false)) // TODO Simplify after all patterns have a number
+                .filter(pattern -> pattern.getNumber().equals(number))
                 .singleOrEmpty();
     }
 

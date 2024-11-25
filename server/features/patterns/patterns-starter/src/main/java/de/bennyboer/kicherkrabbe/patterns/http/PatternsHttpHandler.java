@@ -161,7 +161,7 @@ public class PatternsHttpHandler {
                 .flatMap(req -> toAgent(request).flatMap(agent -> module.createPattern(
                         req.name,
                         Optional.ofNullable(req.number).orElse("S-" + UUID.randomUUID()),
-                        // TODO Remove ofNullable after all patterns have a number
+                        // TODO Remove ofNullable after the frontend supports number input
                         req.description,
                         req.attribution,
                         req.categories,
@@ -557,9 +557,7 @@ public class PatternsHttpHandler {
 
         result.id = pattern.getId().getValue();
         result.name = pattern.getName().getValue();
-        result.number = Optional.ofNullable(pattern.getNumber())
-                .map(PatternNumber::getValue)
-                .orElse(null); // TODO Remove after all patterns have a number
+        result.number = pattern.getNumber().getValue();
         result.description = pattern.getDescription()
                 .map(PatternDescription::getValue)
                 .orElse(null);
@@ -592,9 +590,7 @@ public class PatternsHttpHandler {
         result.version = pattern.getVersion().getValue();
         result.published = pattern.isPublished();
         result.name = pattern.getName().getValue();
-        result.number = Optional.ofNullable(pattern.getNumber())
-                .map(PatternNumber::getValue)
-                .orElse(null); // TODO Remove after all patterns have a number
+        result.number = pattern.getNumber().getValue();
         result.description = pattern.getDescription()
                 .map(PatternDescription::getValue)
                 .orElse(null);

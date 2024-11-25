@@ -20,9 +20,7 @@ public class MongoLookupPatternSerializer implements ReadModelSerializer<LookupP
         result.version = readModel.getVersion().getValue();
         result.published = readModel.isPublished();
         result.name = readModel.getName().getValue();
-        result.number = Optional.ofNullable(readModel.getNumber())
-                .map(PatternNumber::getValue)
-                .orElse(null); // TODO Remove ofNullable after all patterns have a number
+        result.number = readModel.getNumber().getValue();
         result.description = readModel.getDescription()
                 .map(PatternDescription::getValue)
                 .orElse(null);
@@ -95,9 +93,7 @@ public class MongoLookupPatternSerializer implements ReadModelSerializer<LookupP
         var version = Version.of(serialized.version);
         var published = serialized.published;
         var name = PatternName.of(serialized.name);
-        var number = Optional.ofNullable(serialized.number)
-                .map(PatternNumber::of)
-                .orElse(null); // TODO Remove ofNullable after all patterns have a number
+        var number = PatternNumber.of(serialized.number);
         var description = Optional.ofNullable(serialized.description)
                 .map(PatternDescription::of)
                 .orElse(null);

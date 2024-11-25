@@ -67,7 +67,6 @@ public class Pattern implements Aggregate {
 
     PatternName name;
 
-    @Nullable // TODO Remove after all patterns have a number
     PatternNumber number;
 
     @Nullable

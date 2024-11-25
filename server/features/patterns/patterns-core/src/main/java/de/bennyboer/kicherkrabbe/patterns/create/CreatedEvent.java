@@ -52,7 +52,7 @@ public class CreatedEvent implements Event {
             List<PatternExtra> extras
     ) {
         notNull(name, "Pattern name must be given");
-        //        notNull(number, "Pattern number must be given"); // TODO Enable after all patterns have a number
+        notNull(number, "Pattern number must be given");
         notNull(attribution, "Attribution must be given");
         notNull(categories, "Categories must be given");
         notNull(images, "Images must be given");

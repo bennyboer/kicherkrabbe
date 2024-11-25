@@ -23,7 +23,10 @@ import de.bennyboer.kicherkrabbe.patterns.update.number.NumberUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.variants.VariantsUpdatedEvent;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PatternEventPayloadSerializer implements EventSerializer {
@@ -34,6 +37,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             case CreatedEvent e -> {
                 Map<String, Object> result = new HashMap<>(Map.of(
                         "name", e.getName().getValue(),
+                        "number", e.getNumber().getValue(),
                         "attribution", serializeAttribution(e.getAttribution()),
                         "categories", serializeCategories(e.getCategories()),
                         "images", serializeImages(e.getImages()),
@@ -42,10 +46,6 @@ public class PatternEventPayloadSerializer implements EventSerializer {
                 ));
 
                 e.getDescription().ifPresent(description -> result.put("description", description.getValue()));
-                Optional.ofNullable(e.getNumber()).ifPresent(number -> result.put(
-                        "number",
-                        number.getValue()
-                )); // TODO Refactor after all patterns have a number
 
                 yield result;
             }
@@ -53,6 +53,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
                 Map<String, Object> result = new HashMap<>(Map.of(
                         "published", e.isPublished(),
                         "name", e.getName().getValue(),
+                        "number", e.getNumber().getValue(),
                         "attribution", serializeAttribution(e.getAttribution()),
                         "categories", serializeCategories(e.getCategories()),
                         "images", serializeImages(e.getImages()),
@@ -63,10 +64,6 @@ public class PatternEventPayloadSerializer implements EventSerializer {
 
                 e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
                 e.getDescription().ifPresent(description -> result.put("description", description.getValue()));
-                Optional.ofNullable(e.getNumber()).ifPresent(number -> result.put(
-                        "number",
-                        number.getValue()
-                )); // TODO Refactor after all patterns have a number
 
                 yield result;
             }
@@ -113,9 +110,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
         return switch (name.getValue()) {
             case "CREATED" -> CreatedEvent.of(
                     PatternName.of((String) payload.get("name")),
-                    payload.containsKey("number") ?
-                            PatternNumber.of((String) payload.get("number")) :
-                            null, // TODO Refactor after all patterns have a number
+                    PatternNumber.of((String) payload.get("number")),
                     payload.containsKey("description") ?
                             PatternDescription.of((String) payload.get("description")) :
                             null,
@@ -128,9 +123,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             case "SNAPSHOTTED" -> SnapshottedEvent.of(
                     (boolean) payload.get("published"),
                     PatternName.of((String) payload.get("name")),
-                    payload.containsKey("number") ?
-                            PatternNumber.of((String) payload.get("number")) :
-                            null, // TODO Refactor after all patterns have a number
+                    PatternNumber.of((String) payload.get("number")),
                     payload.containsKey("description") ?
                             PatternDescription.of((String) payload.get("description")) :
                             null,

@@ -20,7 +20,6 @@ public class CreatePatternRequest {
 
     String name;
 
-    @Nullable // TODO Remove after all patterns have a number
     String number;
 
     @Nullable
