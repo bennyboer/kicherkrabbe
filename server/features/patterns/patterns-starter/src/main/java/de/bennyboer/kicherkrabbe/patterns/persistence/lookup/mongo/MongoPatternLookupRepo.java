@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.Mongo
 import de.bennyboer.kicherkrabbe.patterns.PatternAlias;
 import de.bennyboer.kicherkrabbe.patterns.PatternCategoryId;
 import de.bennyboer.kicherkrabbe.patterns.PatternId;
+import de.bennyboer.kicherkrabbe.patterns.PatternNumber;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.LookupPattern;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.LookupPatternPage;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.PatternLookupRepo;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
 
 public class MongoPatternLookupRepo
         extends MongoEventSourcingReadModelRepo<PatternId, LookupPattern, MongoLookupPattern>
@@ -89,7 +91,7 @@ public class MongoPatternLookupRepo
     @Override
     public Flux<LookupPattern> findByCategory(PatternCategoryId categoryId) {
         Criteria criteria = where("categories").is(categoryId.getValue());
-        Query query = new Query(criteria);
+        Query query = query(criteria);
 
         return template.find(query, MongoLookupPattern.class, collectionName)
                 .map(serializer::deserialize);
@@ -98,7 +100,7 @@ public class MongoPatternLookupRepo
     @Override
     public Mono<LookupPattern> findById(PatternId internalPatternId) {
         Criteria criteria = where("_id").is(internalPatternId.getValue());
-        Query query = new Query(criteria);
+        Query query = query(criteria);
 
         return template.findOne(query, MongoLookupPattern.class, collectionName)
                 .map(serializer::deserialize);
@@ -107,7 +109,7 @@ public class MongoPatternLookupRepo
     @Override
     public Mono<LookupPattern> findByAlias(PatternAlias alias) {
         Criteria criteria = where("alias").is(alias.getValue());
-        Query query = new Query(criteria);
+        Query query = query(criteria);
 
         return template.findOne(query, MongoLookupPattern.class, collectionName)
                 .map(serializer::deserialize);
@@ -116,7 +118,7 @@ public class MongoPatternLookupRepo
     @Override
     public Flux<PatternCategoryId> findUniqueCategories() {
         Criteria hasAtLeastOneCategory = where("categories").ne(Set.of());
-        Query query = new Query(hasAtLeastOneCategory);
+        Query query = query(hasAtLeastOneCategory);
 
         return template.query(MongoLookupPattern.class)
                 .inCollection(collectionName)
@@ -131,7 +133,7 @@ public class MongoPatternLookupRepo
     public Mono<LookupPattern> findPublished(PatternId id) {
         Criteria criteria = where("_id").is(id.getValue())
                 .and("published").is(true);
-        Query query = new Query(criteria);
+        Query query = query(criteria);
 
         return template.findOne(query, MongoLookupPattern.class, collectionName)
                 .map(serializer::deserialize);
@@ -197,6 +199,15 @@ public class MongoPatternLookupRepo
     }
 
     @Override
+    public Mono<LookupPattern> findByNumber(PatternNumber number) {
+        Criteria criteria = where("number").is(number.getValue());
+        Query query = query(criteria);
+
+        return template.findOne(query, MongoLookupPattern.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
     protected String stringifyId(PatternId patternId) {
         return patternId.getValue();
     }
@@ -205,9 +216,13 @@ public class MongoPatternLookupRepo
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         IndexDefinition categoriesIndex = new Index().on("categories", ASC);
         IndexDefinition aliasIndex = new Index().on("alias", ASC);
+        //        IndexDefinition numberIndex = new Index().on("number", ASC).unique(); // TODO Enforce unique
+        //         numbers after all patterns have a number
 
         return indexOps.ensureIndex(categoriesIndex)
                 .then(indexOps.ensureIndex(aliasIndex))
+                //                .then(indexOps.ensureIndex(numberIndex)) // TODO Enforce unique numbers after all
+                //                 patterns have a number
                 .then();
     }
 

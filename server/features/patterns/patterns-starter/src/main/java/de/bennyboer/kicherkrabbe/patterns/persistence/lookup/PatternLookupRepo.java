@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.EventSourci
 import de.bennyboer.kicherkrabbe.patterns.PatternAlias;
 import de.bennyboer.kicherkrabbe.patterns.PatternCategoryId;
 import de.bennyboer.kicherkrabbe.patterns.PatternId;
+import de.bennyboer.kicherkrabbe.patterns.PatternNumber;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -38,5 +39,7 @@ public interface PatternLookupRepo extends EventSourcingReadModelRepo<PatternId,
             long skip,
             long limit
     );
+
+    Mono<LookupPattern> findByNumber(PatternNumber number);
 
 }

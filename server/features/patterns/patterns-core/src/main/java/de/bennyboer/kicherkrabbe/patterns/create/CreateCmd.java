@@ -20,6 +20,8 @@ public class CreateCmd implements Command {
 
     PatternName name;
 
+    PatternNumber number;
+
     @Nullable
     PatternDescription description;
 
@@ -35,6 +37,7 @@ public class CreateCmd implements Command {
 
     public static CreateCmd of(
             PatternName name,
+            PatternNumber number,
             @Nullable PatternDescription description,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
@@ -43,6 +46,7 @@ public class CreateCmd implements Command {
             List<PatternExtra> extras
     ) {
         notNull(name, "Pattern name must be given");
+        notNull(number, "Pattern number must be given");
         notNull(attribution, "Attribution must be given");
         notNull(categories, "Categories must be given");
         notNull(images, "Images must be given");
@@ -51,7 +55,16 @@ public class CreateCmd implements Command {
         check(!images.isEmpty(), "Images must not be empty");
         check(!variants.isEmpty(), "Variants must not be empty");
 
-        return new CreateCmd(name, description, attribution, categories, images, variants, extras);
+        return new CreateCmd(
+                name,
+                number,
+                description,
+                attribution,
+                categories,
+                images,
+                variants,
+                extras
+        );
     }
 
     public Optional<PatternDescription> getDescription() {

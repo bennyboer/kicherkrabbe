@@ -34,6 +34,8 @@ import de.bennyboer.kicherkrabbe.patterns.update.extras.ExtrasUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.extras.UpdateExtrasCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.images.ImagesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.images.UpdateImagesCmd;
+import de.bennyboer.kicherkrabbe.patterns.update.number.NumberUpdatedEvent;
+import de.bennyboer.kicherkrabbe.patterns.update.number.UpdateNumberCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.variants.UpdateVariantsCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.variants.VariantsUpdatedEvent;
 import jakarta.annotation.Nullable;
@@ -65,6 +67,9 @@ public class Pattern implements Aggregate {
 
     PatternName name;
 
+    @Nullable // TODO Remove after all patterns have a number
+    PatternNumber number;
+
     @Nullable
     PatternDescription description;
 
@@ -91,6 +96,7 @@ public class Pattern implements Aggregate {
                 null,
                 null,
                 null,
+                null,
                 Set.of(),
                 List.of(),
                 List.of(),
@@ -108,6 +114,7 @@ public class Pattern implements Aggregate {
             case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
                     isPublished(),
                     getName(),
+                    getNumber(),
                     getDescription().orElse(null),
                     getAttribution(),
                     getCategories(),
@@ -119,6 +126,7 @@ public class Pattern implements Aggregate {
             ));
             case CreateCmd c -> ApplyCommandResult.of(CreatedEvent.of(
                     c.getName(),
+                    c.getNumber(),
                     c.getDescription().orElse(null),
                     c.getAttribution(),
                     c.getCategories(),
@@ -141,6 +149,7 @@ public class Pattern implements Aggregate {
                 yield ApplyCommandResult.of(UnpublishedEvent.of());
             }
             case RenameCmd c -> ApplyCommandResult.of(RenamedEvent.of(c.getName()));
+            case UpdateNumberCmd c -> ApplyCommandResult.of(NumberUpdatedEvent.of(c.getNumber()));
             case UpdateAttributionCmd c -> ApplyCommandResult.of(AttributionUpdatedEvent.of(c.getAttribution()));
             case UpdateCategoriesCmd c -> ApplyCommandResult.of(CategoriesUpdatedEvent.of(c.getCategories()));
             case UpdateImagesCmd c -> ApplyCommandResult.of(ImagesUpdatedEvent.of(c.getImages()));
@@ -163,6 +172,7 @@ public class Pattern implements Aggregate {
         return (switch (event) {
             case SnapshottedEvent e -> withId(id)
                     .withName(e.getName())
+                    .withNumber(e.getNumber())
                     .withDescription(e.getDescription().orElse(null))
                     .withAttribution(e.getAttribution())
                     .withCategories(e.getCategories())
@@ -173,6 +183,7 @@ public class Pattern implements Aggregate {
                     .withDeletedAt(e.getDeletedAt().orElse(null));
             case CreatedEvent e -> withId(id)
                     .withName(e.getName())
+                    .withNumber(e.getNumber())
                     .withDescription(e.getDescription().orElse(null))
                     .withAttribution(e.getAttribution())
                     .withCategories(e.getCategories())
@@ -183,6 +194,7 @@ public class Pattern implements Aggregate {
             case PublishedEvent ignored -> withPublished(true);
             case UnpublishedEvent ignored -> withPublished(false);
             case RenamedEvent e -> withName(e.getName());
+            case NumberUpdatedEvent e -> withNumber(e.getNumber());
             case AttributionUpdatedEvent e -> withAttribution(e.getAttribution());
             case CategoriesUpdatedEvent e -> withCategories(e.getCategories());
             case ImagesUpdatedEvent e -> withImages(e.getImages());

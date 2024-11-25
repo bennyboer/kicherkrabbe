@@ -26,6 +26,8 @@ public class CreatedEvent implements Event {
 
     PatternName name;
 
+    PatternNumber number;
+
     @Nullable
     PatternDescription description;
 
@@ -41,6 +43,7 @@ public class CreatedEvent implements Event {
 
     public static CreatedEvent of(
             PatternName name,
+            PatternNumber number,
             @Nullable PatternDescription description,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
@@ -49,6 +52,7 @@ public class CreatedEvent implements Event {
             List<PatternExtra> extras
     ) {
         notNull(name, "Pattern name must be given");
+        //        notNull(number, "Pattern number must be given"); // TODO Enable after all patterns have a number
         notNull(attribution, "Attribution must be given");
         notNull(categories, "Categories must be given");
         notNull(images, "Images must be given");
@@ -57,7 +61,16 @@ public class CreatedEvent implements Event {
         check(!images.isEmpty(), "Images must not be empty");
         check(!variants.isEmpty(), "Variants must not be empty");
 
-        return new CreatedEvent(name, description, attribution, categories, images, variants, extras);
+        return new CreatedEvent(
+                name,
+                number,
+                description,
+                attribution,
+                categories,
+                images,
+                variants,
+                extras
+        );
     }
 
     @Override

@@ -21,6 +21,9 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.stream.Collectors.toSet;
 import static org.springframework.http.HttpStatus.*;
@@ -157,6 +160,8 @@ public class PatternsHttpHandler {
         return request.bodyToMono(CreatePatternRequest.class)
                 .flatMap(req -> toAgent(request).flatMap(agent -> module.createPattern(
                         req.name,
+                        Optional.ofNullable(req.number).orElse("S-" + UUID.randomUUID()),
+                        // TODO Remove ofNullable after all patterns have a number
                         req.description,
                         req.attribution,
                         req.categories,
@@ -181,6 +186,12 @@ public class PatternsHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(NumberAlreadyInUseError.class, e -> ServerResponse.status(PRECONDITION_FAILED)
+                        .bodyValue(Map.of(
+                                "reason", "NUMBER_ALREADY_IN_USE",
+                                "patternId", e.getConflictingPatternId().getValue(),
+                                "number", e.getNumber().getValue()
+                        )))
                 .as(transactionalOperator::transactional);
     }
 
@@ -470,6 +481,43 @@ public class PatternsHttpHandler {
                 .as(transactionalOperator::transactional);
     }
 
+    public Mono<ServerResponse> updatePatternNumber(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        String patternId = request.pathVariable("patternId");
+
+        return request.bodyToMono(UpdatePatternNumberRequest.class)
+                .flatMap(req -> toAgent(request).flatMap(agent -> module.updatePatternNumber(
+                        patternId,
+                        req.version,
+                        req.number,
+                        agent
+                )))
+                .map(version -> {
+                    var response = new UpdatePatternNumberResponse();
+                    response.version = version;
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                        CONFLICT,
+                        e.getMessage(),
+                        e
+                ))
+                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
+                        BAD_REQUEST,
+                        e.getMessage(),
+                        e
+                ))
+                .onErrorResume(NumberAlreadyInUseError.class, e -> ServerResponse.status(PRECONDITION_FAILED)
+                        .bodyValue(Map.of(
+                                "reason", "NUMBER_ALREADY_IN_USE",
+                                "patternId", e.getConflictingPatternId().getValue(),
+                                "number", e.getNumber().getValue()
+                        )))
+                .as(transactionalOperator::transactional);
+    }
+
     public Mono<ServerResponse> deletePattern(ServerRequest request) {
         var transactionalOperator = TransactionalOperator.create(transactionManager);
 
@@ -509,6 +557,9 @@ public class PatternsHttpHandler {
 
         result.id = pattern.getId().getValue();
         result.name = pattern.getName().getValue();
+        result.number = Optional.ofNullable(pattern.getNumber())
+                .map(PatternNumber::getValue)
+                .orElse(null); // TODO Remove after all patterns have a number
         result.description = pattern.getDescription()
                 .map(PatternDescription::getValue)
                 .orElse(null);
@@ -541,6 +592,9 @@ public class PatternsHttpHandler {
         result.version = pattern.getVersion().getValue();
         result.published = pattern.isPublished();
         result.name = pattern.getName().getValue();
+        result.number = Optional.ofNullable(pattern.getNumber())
+                .map(PatternNumber::getValue)
+                .orElse(null); // TODO Remove after all patterns have a number
         result.description = pattern.getDescription()
                 .map(PatternDescription::getValue)
                 .orElse(null);

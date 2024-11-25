@@ -63,6 +63,7 @@ public class PatternsModuleTest {
 
     public String createPattern(
             String name,
+            String number,
             @Nullable String description,
             PatternAttributionDTO attribution,
             Set<String> categories,
@@ -73,6 +74,7 @@ public class PatternsModuleTest {
     ) {
         String patternId = module.createPattern(
                 name,
+                number,
                 description,
                 attribution,
                 categories,
@@ -154,6 +156,12 @@ public class PatternsModuleTest {
 
     public void updatePatternDescription(String patternId, long version, @Nullable String description, Agent agent) {
         module.updatePatternDescription(patternId, version, description, agent).block();
+
+        module.updatePatternInLookup(patternId).block();
+    }
+
+    public void updatePatternNumber(String patternId, long version, String number, Agent agent) {
+        module.updatePatternNumber(patternId, version, number, agent).block();
 
         module.updatePatternInLookup(patternId).block();
     }

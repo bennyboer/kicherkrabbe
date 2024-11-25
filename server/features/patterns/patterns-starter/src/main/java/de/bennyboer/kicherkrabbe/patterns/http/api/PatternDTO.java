@@ -24,6 +24,8 @@ public class PatternDTO {
 
     String name;
 
+    String number;
+
     @Nullable
     String description;
 

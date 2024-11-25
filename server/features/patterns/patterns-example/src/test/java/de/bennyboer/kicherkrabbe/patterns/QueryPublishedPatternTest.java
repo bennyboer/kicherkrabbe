@@ -39,6 +39,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 "A beautiful summer dress",
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
@@ -101,6 +102,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
@@ -163,6 +165,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
@@ -234,6 +237,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
@@ -273,6 +277,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
@@ -318,6 +323,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),

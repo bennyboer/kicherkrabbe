@@ -19,13 +19,11 @@ import de.bennyboer.kicherkrabbe.patterns.update.categories.CategoriesUpdatedEve
 import de.bennyboer.kicherkrabbe.patterns.update.description.DescriptionUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.extras.ExtrasUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.images.ImagesUpdatedEvent;
+import de.bennyboer.kicherkrabbe.patterns.update.number.NumberUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.variants.VariantsUpdatedEvent;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PatternEventPayloadSerializer implements EventSerializer {
@@ -44,6 +42,10 @@ public class PatternEventPayloadSerializer implements EventSerializer {
                 ));
 
                 e.getDescription().ifPresent(description -> result.put("description", description.getValue()));
+                Optional.ofNullable(e.getNumber()).ifPresent(number -> result.put(
+                        "number",
+                        number.getValue()
+                )); // TODO Refactor after all patterns have a number
 
                 yield result;
             }
@@ -61,6 +63,10 @@ public class PatternEventPayloadSerializer implements EventSerializer {
 
                 e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
                 e.getDescription().ifPresent(description -> result.put("description", description.getValue()));
+                Optional.ofNullable(e.getNumber()).ifPresent(number -> result.put(
+                        "number",
+                        number.getValue()
+                )); // TODO Refactor after all patterns have a number
 
                 yield result;
             }
@@ -91,6 +97,9 @@ public class PatternEventPayloadSerializer implements EventSerializer {
 
                 yield result;
             }
+            case NumberUpdatedEvent e -> Map.of(
+                    "number", e.getNumber().getValue()
+            );
             case CategoryRemovedEvent e -> Map.of(
                     "categoryId", e.getCategoryId().getValue()
             );
@@ -104,6 +113,9 @@ public class PatternEventPayloadSerializer implements EventSerializer {
         return switch (name.getValue()) {
             case "CREATED" -> CreatedEvent.of(
                     PatternName.of((String) payload.get("name")),
+                    payload.containsKey("number") ?
+                            PatternNumber.of((String) payload.get("number")) :
+                            null, // TODO Refactor after all patterns have a number
                     payload.containsKey("description") ?
                             PatternDescription.of((String) payload.get("description")) :
                             null,
@@ -116,6 +128,9 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             case "SNAPSHOTTED" -> SnapshottedEvent.of(
                     (boolean) payload.get("published"),
                     PatternName.of((String) payload.get("name")),
+                    payload.containsKey("number") ?
+                            PatternNumber.of((String) payload.get("number")) :
+                            null, // TODO Refactor after all patterns have a number
                     payload.containsKey("description") ?
                             PatternDescription.of((String) payload.get("description")) :
                             null,
@@ -149,6 +164,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
                             PatternDescription.of((String) payload.get("description")) :
                             null
             );
+            case "NUMBER_UPDATED" -> NumberUpdatedEvent.of(PatternNumber.of((String) payload.get("number")));
             case "CATEGORY_REMOVED" ->
                     CategoryRemovedEvent.of(PatternCategoryId.of((String) payload.get("categoryId")));
             case "DELETED" -> DeletedEvent.of();

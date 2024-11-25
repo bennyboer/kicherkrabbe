@@ -2,8 +2,7 @@ package de.bennyboer.kicherkrabbe.patterns.http;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.patterns.CategoriesMissingError;
-import de.bennyboer.kicherkrabbe.patterns.PatternCategoryId;
+import de.bennyboer.kicherkrabbe.patterns.*;
 import de.bennyboer.kicherkrabbe.patterns.http.api.*;
 import de.bennyboer.kicherkrabbe.patterns.http.api.requests.CreatePatternRequest;
 import de.bennyboer.kicherkrabbe.patterns.http.api.responses.CreatePatternResponse;
@@ -48,6 +47,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
 
         var request = new CreatePatternRequest();
         request.name = "Ice bear party";
+        request.number = "S-M-ICE-1";
         request.description = "A party dress for ice bears";
         request.attribution = attribution;
         request.categories = Set.of("SKIRT_ID", "DRESS_ID");
@@ -61,6 +61,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return a successful response
         when(module.createPattern(
                 request.name,
+                request.number,
                 request.description,
                 request.attribution,
                 request.categories,
@@ -117,6 +118,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
 
         var request = new CreatePatternRequest();
         request.name = "Ice bear party";
+        request.number = "S-M-ICE-1";
         request.attribution = attribution;
         request.categories = Set.of("SKIRT_ID", "DRESS_ID");
         request.images = List.of();
@@ -129,6 +131,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return an illegal argument exception
         when(module.createPattern(
                 request.name,
+                request.number,
                 request.description,
                 request.attribution,
                 request.categories,
@@ -210,6 +213,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
 
         var request = new CreatePatternRequest();
         request.name = "Ice bear party";
+        request.number = "S-M-ICE-1";
         request.attribution = attribution;
         request.categories = Set.of("SKIRT_ID", "DRESS_ID");
         request.images = List.of();
@@ -222,6 +226,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return a categories missing error
         when(module.createPattern(
                 request.name,
+                request.number,
                 request.description,
                 request.attribution,
                 request.categories,
@@ -240,6 +245,82 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
 
         // then: the response is precondition failed
         exchange.expectStatus().isEqualTo(412);
+    }
+
+    @Test
+    void shouldRespondWithPreconditionFailedOnNumberAlreadyInUseError() {
+        // given: a request to create a pattern with a number that is already in use
+        var attribution = new PatternAttributionDTO();
+        attribution.originalPatternName = "Summerdress EXTREME";
+        attribution.designer = "EXTREME PATTERNS inc.";
+
+        var pricedSizeRange = new PricedSizeRangeDTO();
+        pricedSizeRange.from = 80;
+        pricedSizeRange.to = 86L;
+        pricedSizeRange.price = new MoneyDTO();
+        pricedSizeRange.price.amount = 1000;
+        pricedSizeRange.price.currency = "EUR";
+
+        var variant1 = new PatternVariantDTO();
+        variant1.name = "Short";
+        variant1.pricedSizeRanges = Set.of(pricedSizeRange);
+
+        var variant2 = new PatternVariantDTO();
+        variant2.name = "Long";
+        variant2.pricedSizeRanges = Set.of(pricedSizeRange);
+
+        var extra = new PatternExtraDTO();
+        extra.name = "Pocket";
+        extra.price = new MoneyDTO();
+        extra.price.amount = 200;
+        extra.price.currency = "EUR";
+
+        var request = new CreatePatternRequest();
+        request.name = "Ice bear party";
+        request.number = "S-M-ICE-1";
+        request.attribution = attribution;
+        request.categories = Set.of("SKIRT_ID", "DRESS_ID");
+        request.images = List.of();
+        request.variants = List.of(variant1, variant2);
+        request.extras = List.of(extra);
+
+        // and: having a valid token for a user
+        var token = createTokenForUser("USER_ID");
+
+        // and: the module is configured to return a categories missing error
+        when(module.createPattern(
+                request.name,
+                request.number,
+                request.description,
+                request.attribution,
+                request.categories,
+                request.images,
+                request.variants,
+                request.extras,
+                Agent.user(AgentId.of("USER_ID"))
+        )).thenReturn(Mono.error(new NumberAlreadyInUseError(
+                PatternId.of("PATTERN_ID"),
+                PatternNumber.of("S-M-ICE-1")
+        )));
+
+        // when: posting the request
+        var exchange = client.post()
+                .uri("/api/patterns/create")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        // then: the response is precondition failed
+        exchange.expectStatus().isEqualTo(412);
+
+        // and: the response contains the reason for the error
+        exchange.expectBody().jsonPath("$.reason").isEqualTo("NUMBER_ALREADY_IN_USE");
+
+        // and: the response contains the number that is already in use
+        exchange.expectBody().jsonPath("$.number").isEqualTo("S-M-ICE-1");
+
+        // and: the response contains the ID of the pattern that uses the number
+        exchange.expectBody().jsonPath("$.patternId").isEqualTo("PATTERN_ID");
     }
 
 }

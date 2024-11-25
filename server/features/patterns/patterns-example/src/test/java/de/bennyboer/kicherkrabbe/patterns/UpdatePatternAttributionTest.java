@@ -43,6 +43,7 @@ public class UpdatePatternAttributionTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 attribution,
                 Set.of("DRESS_ID"),
@@ -105,6 +106,7 @@ public class UpdatePatternAttributionTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),

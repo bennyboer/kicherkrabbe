@@ -29,6 +29,8 @@ public class SnapshottedEvent implements Event {
 
     PatternName name;
 
+    PatternNumber number;
+
     @Nullable
     PatternDescription description;
 
@@ -50,6 +52,7 @@ public class SnapshottedEvent implements Event {
     public static SnapshottedEvent of(
             boolean published,
             PatternName name,
+            PatternNumber number,
             @Nullable PatternDescription description,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
@@ -60,6 +63,7 @@ public class SnapshottedEvent implements Event {
             @Nullable Instant deletedAt
     ) {
         notNull(name, "Pattern name must be given");
+        notNull(number, "Pattern number must be given");
         notNull(attribution, "Attribution must be given");
         notNull(categories, "Categories must be given");
         notNull(images, "Images must be given");
@@ -72,6 +76,7 @@ public class SnapshottedEvent implements Event {
         return new SnapshottedEvent(
                 published,
                 name,
+                number,
                 description,
                 attribution,
                 categories,

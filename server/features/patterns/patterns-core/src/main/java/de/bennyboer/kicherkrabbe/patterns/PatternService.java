@@ -20,6 +20,7 @@ import de.bennyboer.kicherkrabbe.patterns.update.categories.UpdateCategoriesCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.description.UpdateDescriptionCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.extras.UpdateExtrasCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.images.UpdateImagesCmd;
+import de.bennyboer.kicherkrabbe.patterns.update.number.UpdateNumberCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.variants.UpdateVariantsCmd;
 import jakarta.annotation.Nullable;
 import reactor.core.publisher.Mono;
@@ -41,7 +42,8 @@ public class PatternService extends AggregateService<Pattern, PatternId> {
 
     public Mono<AggregateIdAndVersion<PatternId>> create(
             PatternName name,
-            PatternDescription description,
+            PatternNumber number,
+            @Nullable PatternDescription description,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
             List<ImageId> images,
@@ -49,8 +51,17 @@ public class PatternService extends AggregateService<Pattern, PatternId> {
             List<PatternExtra> extras,
             Agent agent
     ) {
-        PatternId id = PatternId.create();
-        var cmd = CreateCmd.of(name, description, attribution, categories, images, variants, extras);
+        var id = PatternId.create();
+        var cmd = CreateCmd.of(
+                name,
+                number,
+                description,
+                attribution,
+                categories,
+                images,
+                variants,
+                extras
+        );
 
         return dispatchCommandToLatest(id, agent, cmd)
                 .map(version -> AggregateIdAndVersion.of(id, version));
@@ -66,6 +77,10 @@ public class PatternService extends AggregateService<Pattern, PatternId> {
 
     public Mono<Version> rename(PatternId id, Version version, PatternName name, Agent agent) {
         return dispatchCommand(id, version, agent, RenameCmd.of(name));
+    }
+
+    public Mono<Version> updateNumber(PatternId id, Version version, PatternNumber number, Agent agent) {
+        return dispatchCommand(id, version, agent, UpdateNumberCmd.of(number));
     }
 
     public Mono<Version> updateAttribution(PatternId id, Version version, PatternAttribution attribution, Agent agent) {

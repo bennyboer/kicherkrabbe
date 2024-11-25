@@ -53,6 +53,7 @@ public class PatternsHttpConfig {
                                                 .andRoute(POST("/variants"), handler::updatePatternVariants)
                                                 .andRoute(POST("/extras"), handler::updatePatternExtras)
                                                 .andRoute(POST("/description"), handler::updatePatternDescription)
+                                                .andRoute(POST("/number"), handler::updatePatternNumber)
                                 ))
         );
     }

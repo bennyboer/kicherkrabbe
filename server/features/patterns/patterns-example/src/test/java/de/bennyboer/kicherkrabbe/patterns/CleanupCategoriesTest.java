@@ -40,6 +40,7 @@ public class CleanupCategoriesTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 "A nice dress for the summer",
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID", "SKIRT_ID"),
@@ -50,6 +51,7 @@ public class CleanupCategoriesTest extends PatternsModuleTest {
         );
         String patternId2 = createPattern(
                 "Jacket",
+                "S-J-DEF-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("JACKET_ID", "DRESS_ID"),
@@ -60,6 +62,7 @@ public class CleanupCategoriesTest extends PatternsModuleTest {
         );
         String patternId3 = createPattern(
                 "Leatherbelt",
+                "S-B-LEA-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("BELT_ID"),
