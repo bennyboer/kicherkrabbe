@@ -627,4 +627,58 @@ public class CreatePatternTest extends PatternsModuleTest {
         assertThat(pattern.getDescription()).isEmpty();
     }
 
+    @Test
+    void shouldNotCreatePatternNumberWhenTheNumberIsAlreadyInUse() {
+        // given: a user is allowed to create patterns
+        allowUserToCreatePatterns("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: some categories are available
+        markCategoryAsAvailable("DRESS_ID", "Dress");
+        markCategoryAsAvailable("SKIRT_ID", "Skirt");
+
+        // and: the user creates a pattern
+        var variant = new PatternVariantDTO();
+        variant.name = "Normal";
+        var pricedSizeRange = new PricedSizeRangeDTO();
+        pricedSizeRange.from = 80;
+        pricedSizeRange.to = 86L;
+        pricedSizeRange.price = new MoneyDTO();
+        pricedSizeRange.price.amount = 1000;
+        pricedSizeRange.price.currency = "EUR";
+        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+
+        String patternId = createPattern(
+                "Summerdress",
+                "S-D-SUM-1",
+                null,
+                new PatternAttributionDTO(),
+                Set.of("DRESS_ID"),
+                List.of("IMAGE_ID"),
+                List.of(variant),
+                List.of(),
+                agent
+        );
+
+        // when: the user tries to create a pattern with the same number; then: an error is raised
+        assertThatThrownBy(() -> createPattern(
+                "Summerdress",
+                "S-D-SUM-1",
+                null,
+                new PatternAttributionDTO(),
+                Set.of("DRESS_ID"),
+                List.of("IMAGE_ID"),
+                List.of(variant),
+                List.of(),
+                agent
+        )).matches(e -> {
+            if (e.getCause() instanceof NumberAlreadyInUseError numberAlreadyInUseError) {
+                return numberAlreadyInUseError.getConflictingPatternId().equals(PatternId.of(patternId))
+                        && numberAlreadyInUseError.getNumber().equals(PatternNumber.of("S-D-SUM-1"));
+            }
+
+            return false;
+        });
+    }
+
 }

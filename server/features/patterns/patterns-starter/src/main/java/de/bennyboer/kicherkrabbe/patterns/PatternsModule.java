@@ -219,6 +219,7 @@ public class PatternsModule {
 
         return assertAgentIsAllowedTo(agent, CREATE)
                 .then(assertCategoriesAvailable(internalCategories))
+                .then(assertPatternNumberIsNotAlreadyInUse(internalNumber))
                 .then(patternService.create(
                         internalName,
                         internalNumber,
