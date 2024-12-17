@@ -20,6 +20,7 @@ public class MongoLookupPatternSerializer implements ReadModelSerializer<LookupP
         result.version = readModel.getVersion().getValue();
         result.published = readModel.isPublished();
         result.name = readModel.getName().getValue();
+        result.number = readModel.getNumber().getValue();
         result.description = readModel.getDescription()
                 .map(PatternDescription::getValue)
                 .orElse(null);
@@ -92,6 +93,7 @@ public class MongoLookupPatternSerializer implements ReadModelSerializer<LookupP
         var version = Version.of(serialized.version);
         var published = serialized.published;
         var name = PatternName.of(serialized.name);
+        var number = PatternNumber.of(serialized.number);
         var description = Optional.ofNullable(serialized.description)
                 .map(PatternDescription::of)
                 .orElse(null);
@@ -146,6 +148,7 @@ public class MongoLookupPatternSerializer implements ReadModelSerializer<LookupP
                 version,
                 published,
                 name,
+                number,
                 description,
                 alias,
                 attribution,

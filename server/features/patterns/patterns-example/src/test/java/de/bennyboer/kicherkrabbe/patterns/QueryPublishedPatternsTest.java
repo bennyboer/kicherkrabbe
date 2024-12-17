@@ -38,6 +38,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 "A dress for high temperatures!",
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
@@ -48,6 +49,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         );
         String patternId2 = createPattern(
                 "Dressskirt",
+                "S-S-DRE-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID"),
@@ -186,6 +188,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
@@ -196,6 +199,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         );
         String patternId2 = createPattern(
                 "Dressskirt",
+                "S-S-DRE-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID"),
@@ -289,6 +293,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
@@ -299,6 +304,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         );
         String patternId2 = createPattern(
                 "Dressskirt",
+                "S-S-DRE-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID"),
@@ -353,6 +359,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
@@ -363,6 +370,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         );
         String patternId2 = createPattern(
                 "Dressskirt",
+                "S-S-DRE-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID"),
@@ -454,6 +462,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress 1",
+                "S-D-SUM-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of(),
@@ -465,6 +474,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId2 = createPattern(
                 "Summerdress 2",
+                "S-D-SUM-2",
                 null,
                 new PatternAttributionDTO(),
                 Set.of(),
@@ -476,6 +486,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId3 = createPattern(
                 "Summerdress 3",
+                "S-D-SUM-3",
                 null,
                 new PatternAttributionDTO(),
                 Set.of(),
@@ -487,6 +498,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId4 = createPattern(
                 "Summerdress 4",
+                "S-D-SUM-4",
                 null,
                 new PatternAttributionDTO(),
                 Set.of(),
@@ -593,6 +605,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
 
         String patternId1 = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
@@ -603,6 +616,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         );
         String patternId2 = createPattern(
                 "Dressskirt",
+                "S-S-DRE-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID"),

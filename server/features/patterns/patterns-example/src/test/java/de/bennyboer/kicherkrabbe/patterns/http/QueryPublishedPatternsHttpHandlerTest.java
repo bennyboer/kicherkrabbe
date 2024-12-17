@@ -52,6 +52,7 @@ public class QueryPublishedPatternsHttpHandlerTest extends HttpHandlerTest {
                 List.of(PublishedPattern.of(
                         PatternId.of("PATTERN_ID"),
                         PatternName.of("Summerdress"),
+                        PatternNumber.of("S-D-SUM-1"),
                         PatternDescription.of("A beautiful summer dress"),
                         PatternAlias.of("summerdress"),
                         PatternAttribution.of(
@@ -150,6 +151,7 @@ public class QueryPublishedPatternsHttpHandlerTest extends HttpHandlerTest {
                 List.of(PublishedPattern.of(
                         PatternId.of("PATTERN_ID"),
                         PatternName.of("Summerdress"),
+                        PatternNumber.of("S-D-SUM-1"),
                         null,
                         PatternAlias.of("summerdress"),
                         PatternAttribution.of(

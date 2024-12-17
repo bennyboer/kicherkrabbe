@@ -20,6 +20,8 @@ public class CreatePatternRequest {
 
     String name;
 
+    String number;
+
     @Nullable
     String description;
 

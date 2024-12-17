@@ -19,6 +19,7 @@ import de.bennyboer.kicherkrabbe.patterns.update.categories.CategoriesUpdatedEve
 import de.bennyboer.kicherkrabbe.patterns.update.description.DescriptionUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.extras.ExtrasUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.images.ImagesUpdatedEvent;
+import de.bennyboer.kicherkrabbe.patterns.update.number.NumberUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.variants.VariantsUpdatedEvent;
 
 import java.time.Instant;
@@ -36,6 +37,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             case CreatedEvent e -> {
                 Map<String, Object> result = new HashMap<>(Map.of(
                         "name", e.getName().getValue(),
+                        "number", e.getNumber().getValue(),
                         "attribution", serializeAttribution(e.getAttribution()),
                         "categories", serializeCategories(e.getCategories()),
                         "images", serializeImages(e.getImages()),
@@ -51,6 +53,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
                 Map<String, Object> result = new HashMap<>(Map.of(
                         "published", e.isPublished(),
                         "name", e.getName().getValue(),
+                        "number", e.getNumber().getValue(),
                         "attribution", serializeAttribution(e.getAttribution()),
                         "categories", serializeCategories(e.getCategories()),
                         "images", serializeImages(e.getImages()),
@@ -91,6 +94,9 @@ public class PatternEventPayloadSerializer implements EventSerializer {
 
                 yield result;
             }
+            case NumberUpdatedEvent e -> Map.of(
+                    "number", e.getNumber().getValue()
+            );
             case CategoryRemovedEvent e -> Map.of(
                     "categoryId", e.getCategoryId().getValue()
             );
@@ -104,6 +110,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
         return switch (name.getValue()) {
             case "CREATED" -> CreatedEvent.of(
                     PatternName.of((String) payload.get("name")),
+                    PatternNumber.of((String) payload.get("number")),
                     payload.containsKey("description") ?
                             PatternDescription.of((String) payload.get("description")) :
                             null,
@@ -116,6 +123,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             case "SNAPSHOTTED" -> SnapshottedEvent.of(
                     (boolean) payload.get("published"),
                     PatternName.of((String) payload.get("name")),
+                    PatternNumber.of((String) payload.get("number")),
                     payload.containsKey("description") ?
                             PatternDescription.of((String) payload.get("description")) :
                             null,
@@ -149,6 +157,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
                             PatternDescription.of((String) payload.get("description")) :
                             null
             );
+            case "NUMBER_UPDATED" -> NumberUpdatedEvent.of(PatternNumber.of((String) payload.get("number")));
             case "CATEGORY_REMOVED" ->
                     CategoryRemovedEvent.of(PatternCategoryId.of((String) payload.get("categoryId")));
             case "DELETED" -> DeletedEvent.of();

@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.inmemory.In
 import de.bennyboer.kicherkrabbe.patterns.PatternAlias;
 import de.bennyboer.kicherkrabbe.patterns.PatternCategoryId;
 import de.bennyboer.kicherkrabbe.patterns.PatternId;
+import de.bennyboer.kicherkrabbe.patterns.PatternNumber;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.LookupPattern;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.LookupPatternPage;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.PatternLookupRepo;
@@ -144,6 +145,13 @@ public class InMemoryPatternLookupRepo
                             .collectList()
                             .map(results -> LookupPatternPage.of(skip, limit, total, results));
                 });
+    }
+
+    @Override
+    public Mono<LookupPattern> findByNumber(PatternNumber number) {
+        return getAll()
+                .filter(pattern -> pattern.getNumber().equals(number))
+                .singleOrEmpty();
     }
 
 }

@@ -44,18 +44,21 @@
         </p>
       }
 
-      @if (pattern.attribution.hasSome()) {
-        <hr>
+      <hr>
 
-        <div class="attribution">
-          <p>Basierend auf dem Schnittmuster
-            <span *ngIf="pattern.attribution.originalPatternName.isSome()">
+      <p class="other-details">
+        <strong>Hersteller</strong>: Jenny Michel, Weststr. 23 &#189;, 84416 Taufkirchen (Vils), <a
+        href="mailto:info@kicherkrabbe.com">info&commat;kicherkrabbe.com</a><br>
+        <strong>Schnitt-Nr</strong>: &raquo;{{ pattern.number }}&laquo;
+        @if (pattern.attribution.hasSome()) {
+          <br>
+          Basierend auf dem Schnittmuster
+          <span *ngIf="pattern.attribution.originalPatternName.isSome()">
               &raquo;{{ pattern.attribution.originalPatternName.orElse('') }}&laquo;
             </span>
-            von &raquo;{{ pattern.attribution.designer.orElse('') }}&laquo;.
-          </p>
-        </div>
-      }
+          von &raquo;{{ pattern.attribution.designer.orElse('') }}&laquo;.
+        }
+      </p>
     </div>
   </div>
 }

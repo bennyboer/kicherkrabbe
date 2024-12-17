@@ -17,10 +17,10 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class RenamePatternTest extends PatternsModuleTest {
+public class UpdatePatternNumberTest extends PatternsModuleTest {
 
     @Test
-    void shouldRenamePatternAsUser() {
+    void shouldUpdatePatternNumberAsUser() {
         // given: a user is allowed to create patterns
         allowUserToCreatePatterns("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
@@ -52,22 +52,23 @@ public class RenamePatternTest extends PatternsModuleTest {
                 agent
         );
 
-        // when: the user renames the pattern
-        renamePattern(patternId, 0L, "New name", agent);
+        // when: the user updates the pattern number
+        updatePatternNumber(patternId, 0L, "S-D-SUM-2", agent);
 
-        // then: the pattern is renamed
+        // then: the pattern number is updated
         var patterns = getPatterns(agent);
         assertThat(patterns).hasSize(1);
         var pattern = patterns.getFirst();
         assertThat(pattern.getId()).isEqualTo(PatternId.of(patternId));
         assertThat(pattern.getVersion()).isEqualTo(Version.of(1));
-        assertThat(pattern.getName()).isEqualTo(PatternName.of("New name"));
+        assertThat(pattern.getNumber()).isEqualTo(PatternNumber.of("S-D-SUM-2"));
     }
 
     @Test
-    void shouldNotBeAbleToRenamePatternGivenAnInvalidName() {
-        String invalidName1 = "";
-        String invalidName2 = null;
+    void shouldNotBeAbleToUpdatePatternNumberGivenAnInvalidName() {
+        String invalidNumber1 = "";
+        String invalidNumber2 = null;
+        String invalidNumber3 = "P-383";
 
         // given: a user is allowed to create patterns
         allowUserToCreatePatterns("USER_ID");
@@ -100,36 +101,45 @@ public class RenamePatternTest extends PatternsModuleTest {
                 agent
         );
 
-        // when: the user tries to rename the pattern with an invalid name; then: an error is raised
-        assertThatThrownBy(() -> renamePattern(
+        // when: the user tries to update the pattern with an invalid number; then: an error is raised
+        assertThatThrownBy(() -> updatePatternNumber(
                 patternId,
                 0L,
-                invalidName1,
+                invalidNumber1,
                 agent
         )).isInstanceOf(IllegalArgumentException.class);
 
-        // when: the user tries to rename the pattern with an invalid name; then: an error is raised
-        assertThatThrownBy(() -> renamePattern(
+        // when: the user tries to update the pattern with an invalid number; then: an error is raised
+        assertThatThrownBy(() -> updatePatternNumber(
                 patternId,
                 0L,
-                invalidName2,
+                invalidNumber2,
+                agent
+        )).isInstanceOf(IllegalArgumentException.class);
+
+        // when: the user tries to update the pattern with an invalid number; then: an error is raised
+        assertThatThrownBy(() -> updatePatternNumber(
+                patternId,
+                0L,
+                invalidNumber3,
                 agent
         )).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void shouldNotRenamePatternWhenUserIsNotAllowed() {
-        // when: a user that is not allowed to rename a pattern tries to rename a pattern; then: an error is raised
-        assertThatThrownBy(() -> renamePattern(
+    void shouldNotUpdatePatternNumberWhenUserIsNotAllowed() {
+        // when: a user that is not allowed to update a patterns number tries to update a pattern number; then: an
+        // error is raised
+        assertThatThrownBy(() -> updatePatternNumber(
                 "PATTERN_ID",
                 0L,
-                "Test",
+                "S-D-SUM-2",
                 Agent.user(AgentId.of("USER_ID"))
         )).matches(e -> e.getCause() instanceof MissingPermissionError);
     }
 
     @Test
-    void shouldNotRenamePatternGivenAnOutdatedVersion() {
+    void shouldNotUpdatePatternNumberGivenAnOutdatedVersion() {
         // given: a user that is allowed to create patterns
         allowUserToCreatePatterns("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
@@ -161,16 +171,78 @@ public class RenamePatternTest extends PatternsModuleTest {
                 agent
         );
 
-        // and: the pattern is renamed
-        renamePattern(patternId, 0L, "New name", agent);
+        // and: the pattern number is updated
+        updatePatternNumber(patternId, 0L, "S-D-SUM-2", agent);
 
-        // when: the user tries to rename the pattern with an outdated version
-        assertThatThrownBy(() -> renamePattern(
+        // when: the user tries to update the pattern number with an outdated version
+        assertThatThrownBy(() -> updatePatternNumber(
                 patternId,
                 0L,
-                "New name",
+                "S-D-SUM-3",
                 agent
         )).matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
+    void shouldNotUpdatePatternNumberWhenTheNumberIsAlreadyInUse() {
+        // given: a user that is allowed to create patterns
+        allowUserToCreatePatterns("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: some categories are available
+        markCategoryAsAvailable("SKIRT_ID", "Skirt");
+        markCategoryAsAvailable("TROUSERS_ID", "Trousers");
+
+        // and: the user creates a pattern
+        var variant = new PatternVariantDTO();
+        variant.name = "Normal";
+        var pricedSizeRange = new PricedSizeRangeDTO();
+        pricedSizeRange.from = 80;
+        pricedSizeRange.to = 86L;
+        pricedSizeRange.price = new MoneyDTO();
+        pricedSizeRange.price.amount = 1000;
+        pricedSizeRange.price.currency = "EUR";
+        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+
+        String patternId1 = createPattern(
+                "Summerdress 1",
+                "S-D-SUM-1",
+                null,
+                new PatternAttributionDTO(),
+                Set.of("SKIRT_ID"),
+                List.of("IMAGE_ID"),
+                List.of(variant),
+                List.of(),
+                agent
+        );
+
+        // and: the user creates another pattern
+        String patternId2 = createPattern(
+                "Summerdress 2",
+                "S-D-SUM-2",
+                null,
+                new PatternAttributionDTO(),
+                Set.of("SKIRT_ID"),
+                List.of("IMAGE_ID"),
+                List.of(variant),
+                List.of(),
+                agent
+        );
+
+        // when: the user tries to update the pattern number with a number that is already in use
+        assertThatThrownBy(() -> updatePatternNumber(
+                patternId1,
+                0L,
+                "S-D-SUM-2",
+                agent
+        )).matches(e -> {
+            if (e.getCause() instanceof NumberAlreadyInUseError numberAlreadyInUseError) {
+                return numberAlreadyInUseError.getConflictingPatternId().equals(PatternId.of(patternId2))
+                        && numberAlreadyInUseError.getNumber().equals(PatternNumber.of("S-D-SUM-2"));
+            }
+
+            return false;
+        });
     }
 
 }

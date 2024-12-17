@@ -71,6 +71,7 @@ public class CreatePatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 "A nice dress for the summer",
                 attribution,
                 Set.of("DRESS_ID", "SKIRT_ID"),
@@ -151,6 +152,10 @@ public class CreatePatternTest extends PatternsModuleTest {
         String invalidName1 = "";
         String invalidName2 = null;
 
+        String validNumber = "S-D-SUM-1";
+        String invalidNumber1 = "";
+        String invalidNumber2 = "P-22";
+
         var validAttribution1 = new PatternAttributionDTO();
         validAttribution1.originalPatternName = "Summerdress EXTREME";
         validAttribution1.designer = "EXTREME PATTERNS";
@@ -206,6 +211,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern without name; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 invalidName1,
+                validNumber,
                 null,
                 validAttribution1,
                 validCategories,
@@ -218,6 +224,33 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern with null name; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 invalidName2,
+                validNumber,
+                null,
+                validAttribution1,
+                validCategories,
+                validImages,
+                List.of(validVariant),
+                List.of(validExtra),
+                agent
+        )).isInstanceOf(IllegalArgumentException.class);
+
+        // when: the user tries to create a pattern without number; then: an error is raised
+        assertThatThrownBy(() -> createPattern(
+                validName,
+                invalidNumber1,
+                null,
+                validAttribution1,
+                validCategories,
+                validImages,
+                List.of(validVariant),
+                List.of(validExtra),
+                agent
+        )).isInstanceOf(IllegalArgumentException.class);
+
+        // when: the user tries to create a pattern with an invalid number; then: an error is raised
+        assertThatThrownBy(() -> createPattern(
+                validName,
+                invalidNumber2,
                 null,
                 validAttribution1,
                 validCategories,
@@ -230,6 +263,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern without attribution; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 validName,
+                validNumber,
                 null,
                 invalidAttribution,
                 validCategories,
@@ -242,6 +276,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern with faulty categories; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 validName,
+                validNumber,
                 "",
                 validAttribution1,
                 invalidCategories1,
@@ -252,6 +287,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                validNumber,
                 "",
                 validAttribution1,
                 invalidCategories2,
@@ -264,6 +300,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern with faulty images; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 validName,
+                validNumber,
                 "",
                 validAttribution1,
                 validCategories,
@@ -274,6 +311,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                validNumber,
                 null,
                 validAttribution1,
                 validCategories,
@@ -284,6 +322,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                validNumber,
                 "",
                 validAttribution1,
                 validCategories,
@@ -296,6 +335,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern with faulty variants; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 validName,
+                validNumber,
                 null,
                 validAttribution1,
                 validCategories,
@@ -306,6 +346,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                validNumber,
                 null,
                 validAttribution1,
                 validCategories,
@@ -316,6 +357,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                validNumber,
                 "",
                 validAttribution1,
                 validCategories,
@@ -326,6 +368,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                validNumber,
                 "",
                 validAttribution1,
                 validCategories,
@@ -338,6 +381,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user tries to create a pattern with faulty extras; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 validName,
+                validNumber,
                 null,
                 validAttribution1,
                 validCategories,
@@ -348,6 +392,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         )).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> createPattern(
                 validName,
+                validNumber,
                 null,
                 validAttribution1,
                 validCategories,
@@ -380,6 +425,7 @@ public class CreatePatternTest extends PatternsModuleTest {
 
         assertThatThrownBy(() -> createPattern(
                 "Partydress",
+                "S-D-PAR-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID", "MISSING_ID"),
@@ -397,6 +443,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // and: the user creates a pattern with all categories
         createPattern(
                 "Partydress",
+                "S-D-PAR-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID", "DRESS_ID", "MISSING_ID"),
@@ -416,6 +463,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // and: the user tries to create a pattern with all categories; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 "Partydress",
+                "S-D-PAR-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID", "DRESS_ID", "MISSING_ID"),
@@ -442,6 +490,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: a user that is not allowed to create a pattern tries to create a pattern; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 "Test",
+                "S-D-TEST-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of(),
@@ -474,6 +523,7 @@ public class CreatePatternTest extends PatternsModuleTest {
 
         createPattern(
                 "Partydress",
+                "S-D-PAR-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
@@ -484,6 +534,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         );
         createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("SKIRT_ID"),
@@ -494,6 +545,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         );
         createPattern(
                 "Winterdress",
+                "S-D-WIN-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("DRESS_ID"),
@@ -536,6 +588,7 @@ public class CreatePatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 attribution,
                 Set.of(),
@@ -556,6 +609,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         // when: the user creates a pattern with an empty description
         patternId = createPattern(
                 "Next",
+                "S-D-NXT-1",
                 "",
                 attribution,
                 Set.of(),
@@ -571,6 +625,60 @@ public class CreatePatternTest extends PatternsModuleTest {
 
         pattern = getPattern(patternId, agent);
         assertThat(pattern.getDescription()).isEmpty();
+    }
+
+    @Test
+    void shouldNotCreatePatternNumberWhenTheNumberIsAlreadyInUse() {
+        // given: a user is allowed to create patterns
+        allowUserToCreatePatterns("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: some categories are available
+        markCategoryAsAvailable("DRESS_ID", "Dress");
+        markCategoryAsAvailable("SKIRT_ID", "Skirt");
+
+        // and: the user creates a pattern
+        var variant = new PatternVariantDTO();
+        variant.name = "Normal";
+        var pricedSizeRange = new PricedSizeRangeDTO();
+        pricedSizeRange.from = 80;
+        pricedSizeRange.to = 86L;
+        pricedSizeRange.price = new MoneyDTO();
+        pricedSizeRange.price.amount = 1000;
+        pricedSizeRange.price.currency = "EUR";
+        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+
+        String patternId = createPattern(
+                "Summerdress",
+                "S-D-SUM-1",
+                null,
+                new PatternAttributionDTO(),
+                Set.of("DRESS_ID"),
+                List.of("IMAGE_ID"),
+                List.of(variant),
+                List.of(),
+                agent
+        );
+
+        // when: the user tries to create a pattern with the same number; then: an error is raised
+        assertThatThrownBy(() -> createPattern(
+                "Summerdress",
+                "S-D-SUM-1",
+                null,
+                new PatternAttributionDTO(),
+                Set.of("DRESS_ID"),
+                List.of("IMAGE_ID"),
+                List.of(variant),
+                List.of(),
+                agent
+        )).matches(e -> {
+            if (e.getCause() instanceof NumberAlreadyInUseError numberAlreadyInUseError) {
+                return numberAlreadyInUseError.getConflictingPatternId().equals(PatternId.of(patternId))
+                        && numberAlreadyInUseError.getNumber().equals(PatternNumber.of("S-D-SUM-1"));
+            }
+
+            return false;
+        });
     }
 
 }

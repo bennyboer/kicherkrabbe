@@ -25,6 +25,8 @@ public class PatternDetails {
 
     PatternName name;
 
+    PatternNumber number;
+
     @Nullable
     PatternDescription description;
 
@@ -45,6 +47,7 @@ public class PatternDetails {
             Version version,
             boolean published,
             PatternName name,
+            PatternNumber number,
             @Nullable PatternDescription description,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
@@ -55,6 +58,7 @@ public class PatternDetails {
     ) {
         notNull(id, "Pattern ID must be given");
         notNull(version, "Version must be given");
+        notNull(number, "Number must be given");
         notNull(name, "Name must be given");
         notNull(attribution, "Attribution must be given");
         notNull(categories, "Categories must be given");
@@ -68,6 +72,7 @@ public class PatternDetails {
                 version,
                 published,
                 name,
+                number,
                 description,
                 attribution,
                 categories,

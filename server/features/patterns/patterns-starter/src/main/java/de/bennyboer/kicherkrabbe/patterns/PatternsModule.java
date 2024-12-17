@@ -65,6 +65,7 @@ public class PatternsModule {
                                         pattern.getVersion(),
                                         pattern.isPublished(),
                                         pattern.getName(),
+                                        pattern.getNumber(),
                                         pattern.getDescription().orElse(null),
                                         pattern.getAttribution(),
                                         pattern.getCategories(),
@@ -87,6 +88,7 @@ public class PatternsModule {
                         pattern.getVersion(),
                         pattern.isPublished(),
                         pattern.getName(),
+                        pattern.getNumber(),
                         pattern.getDescription().orElse(null),
                         pattern.getAttribution(),
                         pattern.getCategories(),
@@ -128,6 +130,7 @@ public class PatternsModule {
                                 .map(pattern -> PublishedPattern.of(
                                         pattern.getId(),
                                         pattern.getName(),
+                                        pattern.getNumber(),
                                         pattern.getDescription().orElse(null),
                                         pattern.getAlias(),
                                         pattern.getAttribution(),
@@ -150,6 +153,7 @@ public class PatternsModule {
                 .map(pattern -> PublishedPattern.of(
                         pattern.getId(),
                         pattern.getName(),
+                        pattern.getNumber(),
                         pattern.getDescription().orElse(null),
                         pattern.getAlias(),
                         pattern.getAttribution(),
@@ -181,6 +185,7 @@ public class PatternsModule {
     @Transactional(propagation = MANDATORY)
     public Mono<String> createPattern(
             String name,
+            String number,
             @Nullable String description,
             PatternAttributionDTO attribution,
             Set<String> categories,
@@ -191,6 +196,7 @@ public class PatternsModule {
     ) {
         notNull(name, "Pattern name must be given");
         check(!name.isBlank(), "Pattern name must not be blank");
+        notNull(number, "Pattern number must be given");
         notNull(attribution, "Attribution must be given");
         notNull(categories, "Categories must be given");
         notNull(images, "Images must be given");
@@ -200,6 +206,7 @@ public class PatternsModule {
         notNull(extras, "Extras must be given");
 
         var internalName = PatternName.of(name);
+        var internalNumber = PatternNumber.of(number);
         var internalDescription = Optional.ofNullable(description)
                 .filter(d -> !d.isBlank())
                 .map(PatternDescription::of)
@@ -212,8 +219,10 @@ public class PatternsModule {
 
         return assertAgentIsAllowedTo(agent, CREATE)
                 .then(assertCategoriesAvailable(internalCategories))
+                .then(assertPatternNumberIsNotAlreadyInUse(internalNumber))
                 .then(patternService.create(
                         internalName,
+                        internalNumber,
                         internalDescription,
                         internalAttribution,
                         internalCategories,
@@ -347,6 +356,17 @@ public class PatternsModule {
     }
 
     @Transactional(propagation = MANDATORY)
+    public Mono<Long> updatePatternNumber(String patternId, long version, String number, Agent agent) {
+        var internalPatternId = PatternId.of(patternId);
+        var internalNumber = PatternNumber.of(number);
+
+        return assertAgentIsAllowedTo(agent, UPDATE_NUMBER, internalPatternId)
+                .then(assertPatternNumberIsNotAlreadyInUse(internalNumber))
+                .then(patternService.updateNumber(internalPatternId, Version.of(version), internalNumber, agent))
+                .map(Version::getValue);
+    }
+
+    @Transactional(propagation = MANDATORY)
     public Mono<Void> deletePattern(String patternId, long version, Agent agent) {
         var internalPatternId = PatternId.of(patternId);
 
@@ -426,6 +446,10 @@ public class PatternsModule {
                 .holder(holder)
                 .isAllowedTo(UPDATE_DESCRIPTION)
                 .on(resource);
+        var updateNumberPermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(UPDATE_NUMBER)
+                .on(resource);
         var deletePermission = Permission.builder()
                 .holder(holder)
                 .isAllowedTo(DELETE)
@@ -443,6 +467,7 @@ public class PatternsModule {
                 updateVariantsPermission,
                 updateExtrasPermission,
                 updateDescriptionPermission,
+                updateNumberPermission,
                 deletePermission
         );
     }
@@ -466,6 +491,7 @@ public class PatternsModule {
                         pattern.getVersion(),
                         pattern.isPublished(),
                         pattern.getName(),
+                        pattern.getNumber(),
                         pattern.getDescription().orElse(null),
                         PatternAlias.fromName(pattern.getName()),
                         pattern.getAttribution(),
@@ -690,6 +716,12 @@ public class PatternsModule {
         Money price = toInternalMoney(extra.price);
 
         return PatternExtra.of(name, price);
+    }
+
+    private Mono<Void> assertPatternNumberIsNotAlreadyInUse(PatternNumber number) {
+        return patternLookupRepo.findByNumber(number)
+                .map(LookupPattern::getId)
+                .flatMap(foundId -> Mono.error(new NumberAlreadyInUseError(foundId, number)));
     }
 
 }

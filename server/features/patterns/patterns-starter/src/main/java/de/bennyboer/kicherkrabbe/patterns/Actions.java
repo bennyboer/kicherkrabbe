@@ -28,6 +28,8 @@ public class Actions {
 
     public static final Action UPDATE_DESCRIPTION = Action.of("UPDATE_DESCRIPTION");
 
+    public static final Action UPDATE_NUMBER = Action.of("UPDATE_NUMBER");
+
     public static final Action DELETE = Action.of("DELETE");
 
 }

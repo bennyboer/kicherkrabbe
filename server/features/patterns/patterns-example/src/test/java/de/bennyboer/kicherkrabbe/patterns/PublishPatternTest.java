@@ -42,6 +42,7 @@ public class PublishPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Underwear",
+                "S-U-DEF-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("UNDERWEAR_ID"),
@@ -85,6 +86,7 @@ public class PublishPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Jeans",
+                "S-T-JEA-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("TROUSERS_ID"),
@@ -137,6 +139,7 @@ public class PublishPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Jeans",
+                "S-T-JEA-1",
                 null,
                 new PatternAttributionDTO(),
                 Set.of("TROUSERS_ID"),

@@ -26,6 +26,8 @@ public class MongoLookupPattern {
 
     String name;
 
+    String number;
+
     @Nullable
     String description;
 

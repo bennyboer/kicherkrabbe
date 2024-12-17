@@ -47,6 +47,7 @@ public class QueryPatternsHttpHandlerTest extends HttpHandlerTest {
                         Version.zero(),
                         true,
                         PatternName.of("Summerdress"),
+                        PatternNumber.of("S-D-SUM-1"),
                         PatternDescription.of("A beautiful summer dress"),
                         PatternAttribution.of(
                                 OriginalPatternName.of("Summerdress EXTREME"),

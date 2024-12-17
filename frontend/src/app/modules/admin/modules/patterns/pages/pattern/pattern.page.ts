@@ -1,11 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { PatternCategoriesService, PatternsService } from '../../services';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit,} from "@angular/core";
+import {ActivatedRoute, Router} from "@angular/router";
+import {PatternCategoriesService, PatternsService} from "../../services";
 import {
   BehaviorSubject,
   catchError,
@@ -22,7 +17,7 @@ import {
   switchMap,
   takeUntil,
   timeout,
-} from 'rxjs';
+} from "rxjs";
 import {
   ImageId,
   Pattern,
@@ -32,18 +27,18 @@ import {
   PatternExtra,
   PatternId,
   PatternVariant,
-} from '../../model';
-import { Chip, NotificationService } from '../../../../../shared';
-import { Eq } from '../../../../../../util';
-import { environment } from '../../../../../../../environments';
-import Quill, { Delta } from 'quill/core';
-import { ContentChange } from 'ngx-quill';
-import { none, Option, someOrNone } from '../../../../../shared/modules/option';
+} from "../../model";
+import {Chip, NotificationService} from "../../../../../shared";
+import {Eq} from "../../../../../../util";
+import {environment} from "../../../../../../../environments";
+import Quill, {Delta} from "quill/core";
+import {ContentChange} from "ngx-quill";
+import {none, Option, someOrNone} from "../../../../../shared/modules/option";
 
 @Component({
-  selector: 'app-pattern-page',
-  templateUrl: './pattern.page.html',
-  styleUrls: ['./pattern.page.scss'],
+  selector: "app-pattern-page",
+  templateUrl: "./pattern.page.html",
+  styleUrls: ["./pattern.page.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PatternPage implements OnInit, OnDestroy {
@@ -61,7 +56,7 @@ export class PatternPage implements OnInit, OnDestroy {
     new BehaviorSubject<PatternCategoryId[]>([]);
 
   protected readonly name$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+    new BehaviorSubject<string>("");
   private readonly nameValid$: Observable<boolean> = this.name$.pipe(
     map((name) => name.length > 0),
   );
@@ -77,10 +72,26 @@ export class PatternPage implements OnInit, OnDestroy {
       map(([valid, changed]) => !valid || !changed),
     );
 
+  protected readonly number$: BehaviorSubject<string> = new BehaviorSubject<string>("S-");
+  protected readonly numberValid$: Observable<boolean> = this.number$.pipe(
+    map((number) => number.length > 0 && number.startsWith("S-")),
+  );
+  protected readonly numberError$: Observable<boolean> = this.numberValid$.pipe(
+    map((valid) => !valid),
+  );
+  private readonly numberChanged$: Observable<boolean> = combineLatest([
+    this.pattern$,
+    this.number$,
+  ]).pipe(map(([pattern, number]) => pattern.number !== number));
+  protected readonly cannotSaveUpdatedNumber$: Observable<boolean> =
+    combineLatest([this.numberValid$, this.numberChanged$]).pipe(
+      map(([valid, changed]) => !valid || !changed),
+    );
+
   protected readonly originalPatternName$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+    new BehaviorSubject<string>("");
   protected readonly designer$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+    new BehaviorSubject<string>("");
   protected readonly cannotSaveUpdatedAttribution$: Observable<boolean> =
     combineLatest([
       this.pattern$,
@@ -89,9 +100,9 @@ export class PatternPage implements OnInit, OnDestroy {
     ]).pipe(
       map(([pattern, originalPatternName, designer]) => {
         return (
-          pattern.attribution.originalPatternName.orElse('') ===
-            originalPatternName &&
-          pattern.attribution.designer.orElse('') === designer
+          pattern.attribution.originalPatternName.orElse("") ===
+          originalPatternName &&
+          pattern.attribution.designer.orElse("") === designer
         );
       }),
     );
@@ -108,7 +119,7 @@ export class PatternPage implements OnInit, OnDestroy {
     ]).pipe(
       map(
         ([pattern, description]) =>
-          pattern.description.orElse('') === someOrNone(description).orElse(''),
+          pattern.description.orElse("") === someOrNone(description).orElse(""),
       ),
     );
 
@@ -176,12 +187,12 @@ export class PatternPage implements OnInit, OnDestroy {
 
   protected readonly quillModules = {
     toolbar: [
-      [{ header: [1, 2, false] }],
-      ['bold', 'italic', 'underline', 'strike', 'link'],
-      [{ align: [] }],
-      [{ color: [] }, { background: [] }],
-      ['blockquote', { list: 'ordered' }, { list: 'bullet' }],
-      ['clean'],
+      [{header: [1, 2, false]}],
+      ["bold", "italic", "underline", "strike", "link"],
+      [{align: []}],
+      [{color: []}, {background: []}],
+      ["blockquote", {list: "ordered"}, {list: "bullet"}],
+      ["clean"],
     ],
   };
 
@@ -191,14 +202,15 @@ export class PatternPage implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly notificationService: NotificationService,
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.reloadAvailableCategories();
 
     this.route.params
       .pipe(
-        map((params) => params['id']),
+        map((params) => params["id"]),
         takeUntil(this.destroy$),
       )
       .subscribe((id) => this.patternId$.next(someOrNone(id)));
@@ -209,7 +221,7 @@ export class PatternPage implements OnInit, OnDestroy {
         map((id) => id.orElseThrow()),
         takeUntil(this.destroy$),
       )
-      .subscribe((id) => this.reloadPattern({ id }));
+      .subscribe((id) => this.reloadPattern({id}));
 
     combineLatest([
       this.pattern$,
@@ -340,7 +352,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn('Pattern update not confirmed', e);
+              console.warn("Pattern update not confirmed", e);
               return of(null);
             }),
           );
@@ -350,17 +362,68 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: 'success',
+            type: "success",
             message: `Der Name des Schnittmusters wurde zu „${name}“ geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
+          this.reloadPattern({id: pattern.id, indicateLoading: false});
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
-            message: 'Der Name des Schnittmusters konnte nicht geändert werden',
+            type: "error",
+            message: "Der Name des Schnittmusters konnte nicht geändert werden",
           });
+        },
+      });
+  }
+
+  updateNumber(value: string): void {
+    this.number$.next(value);
+  }
+
+  saveUpdatedNumber(pattern: Pattern): void {
+    const changes$ = this.patternsService.getPatternChanges();
+
+    const number = this.number$.value;
+    this.patternsService
+      .updatePatternNumber(pattern.id, pattern.version, number)
+      .pipe(
+        switchMap(() => {
+          return changes$.pipe(
+            filter((patterns) => patterns.has(pattern.id)),
+            first(),
+            map(() => null),
+            timeout(5000),
+            catchError((e) => {
+              console.warn("Pattern update not confirmed", e);
+              return of(null);
+            }),
+          );
+        }),
+        takeUntil(this.destroy$),
+      )
+      .subscribe({
+        next: () => {
+          this.notificationService.publish({
+            type: "success",
+            message: `Die Nummber des Schnittmusters wurde zu „${number}“ geändert`,
+          });
+          this.reloadPattern({id: pattern.id, indicateLoading: false});
+        },
+        error: (e) => {
+          const reason = e?.error?.reason;
+          if (reason === "NUMBER_ALREADY_IN_USE") {
+            this.notificationService.publish({
+              type: "error",
+              message: "Die Nummer des Schnittmusters ist bereits vergeben",
+            });
+          } else {
+            console.error(e);
+            this.notificationService.publish({
+              type: "error",
+              message: "Die Nummer des Schnittmusters konnte nicht geändert werden",
+            });
+          }
         },
       });
   }
@@ -382,7 +445,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn('Pattern description update not confirmed', e);
+              console.warn("Pattern description update not confirmed", e);
               return of(null);
             }),
           );
@@ -392,17 +455,17 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: 'success',
+            type: "success",
             message: `Die Beschreibung des Schnittmusters wurde geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
+          this.reloadPattern({id: pattern.id, indicateLoading: false});
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
+            type: "error",
             message:
-              'Die Beschreibung des Schnittmusters konnte nicht geändert werden',
+              "Die Beschreibung des Schnittmusters konnte nicht geändert werden",
           });
         },
       });
@@ -423,7 +486,7 @@ export class PatternPage implements OnInit, OnDestroy {
   updateDescription(event: ContentChange): void {
     const html = someOrNone(event.html)
       .map((h) => h.trim())
-      .orElse('');
+      .orElse("");
     const isEmpty = html.length === 0;
     if (isEmpty) {
       this.description$.next(new Delta());
@@ -445,7 +508,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn('Pattern publish not confirmed', e);
+              console.warn("Pattern publish not confirmed", e);
               return of(null);
             }),
           );
@@ -455,16 +518,16 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: 'success',
-            message: 'Das Schnittmuster wurde veröffentlicht',
+            type: "success",
+            message: "Das Schnittmuster wurde veröffentlicht",
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
+          this.reloadPattern({id: pattern.id, indicateLoading: false});
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
-            message: 'Das Schnittmuster konnte nicht veröffentlicht werden',
+            type: "error",
+            message: "Das Schnittmuster konnte nicht veröffentlicht werden",
           });
         },
       });
@@ -483,7 +546,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn('Pattern unpublish not confirmed', e);
+              console.warn("Pattern unpublish not confirmed", e);
               return of(null);
             }),
           );
@@ -493,17 +556,17 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: 'success',
-            message: 'Die Veröffentlichung des Schnittmusters wurde aufgehoben',
+            type: "success",
+            message: "Die Veröffentlichung des Schnittmusters wurde aufgehoben",
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
+          this.reloadPattern({id: pattern.id, indicateLoading: false});
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
+            type: "error",
             message:
-              'Die Veröffentlichung des Schnittmusters konnte nicht aufgehoben werden',
+              "Die Veröffentlichung des Schnittmusters konnte nicht aufgehoben werden",
           });
         },
       });
@@ -535,7 +598,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn('Pattern attribution update not confirmed', e);
+              console.warn("Pattern attribution update not confirmed", e);
               return of(null);
             }),
           );
@@ -545,17 +608,17 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: 'success',
+            type: "success",
             message: `Der Originalname und der Designer des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
+          this.reloadPattern({id: pattern.id, indicateLoading: false});
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
+            type: "error",
             message:
-              'Der Originalname und der Designer des Schnittmusters konnten nicht geändert werden',
+              "Der Originalname und der Designer des Schnittmusters konnten nicht geändert werden",
           });
         },
       });
@@ -577,7 +640,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn('Pattern category update not confirmed', e);
+              console.warn("Pattern category update not confirmed", e);
               return of(null);
             }),
           );
@@ -587,17 +650,17 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: 'success',
+            type: "success",
             message: `Die Kategorien des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
+          this.reloadPattern({id: pattern.id, indicateLoading: false});
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
+            type: "error",
             message:
-              'Die Kategorien des Schnittmusters konnten nicht geändert werden',
+              "Die Kategorien des Schnittmusters konnten nicht geändert werden",
           });
         },
       });
@@ -616,7 +679,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn('Pattern variants update not confirmed', e);
+              console.warn("Pattern variants update not confirmed", e);
               return of(null);
             }),
           );
@@ -626,17 +689,17 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: 'success',
+            type: "success",
             message: `Die Varianten des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
+          this.reloadPattern({id: pattern.id, indicateLoading: false});
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
+            type: "error",
             message:
-              'Die Varianten des Schnittmusters konnten nicht geändert werden',
+              "Die Varianten des Schnittmusters konnten nicht geändert werden",
           });
         },
       });
@@ -655,7 +718,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn('Pattern extras update not confirmed', e);
+              console.warn("Pattern extras update not confirmed", e);
               return of(null);
             }),
           );
@@ -665,17 +728,17 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: 'success',
+            type: "success",
             message: `Die Extras des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
+          this.reloadPattern({id: pattern.id, indicateLoading: false});
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
+            type: "error",
             message:
-              'Die Extras des Schnittmusters konnten nicht geändert werden',
+              "Die Extras des Schnittmusters konnten nicht geändert werden",
           });
         },
       });
@@ -694,7 +757,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn('Pattern images update not confirmed', e);
+              console.warn("Pattern images update not confirmed", e);
               return of(null);
             }),
           );
@@ -704,17 +767,17 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: 'success',
+            type: "success",
             message: `Die Bilder des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
+          this.reloadPattern({id: pattern.id, indicateLoading: false});
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
+            type: "error",
             message:
-              'Die Bilder des Schnittmusters konnten nicht geändert werden',
+              "Die Bilder des Schnittmusters konnten nicht geändert werden",
           });
         },
       });
@@ -733,7 +796,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn('Pattern deletion not confirmed', e);
+              console.warn("Pattern deletion not confirmed", e);
               return of(null);
             }),
           );
@@ -743,16 +806,16 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: 'success',
-            message: 'Das Schnittmuster wurde gelöscht',
+            type: "success",
+            message: "Das Schnittmuster wurde gelöscht",
           });
-          this.router.navigate(['..'], { relativeTo: this.route });
+          this.router.navigate([".."], {relativeTo: this.route});
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
-            message: 'Das Schnittmuster konnte nicht gelöscht werden',
+            type: "error",
+            message: "Das Schnittmuster konnte nicht gelöscht werden",
           });
         },
       });
@@ -805,7 +868,7 @@ export class PatternPage implements OnInit, OnDestroy {
       .filter((category) => !!category);
 
     result.sort((a, b) =>
-      a.name.localeCompare(b.name, 'de-de', {
+      a.name.localeCompare(b.name, "de-de", {
         numeric: true,
       }),
     );
@@ -860,13 +923,14 @@ export class PatternPage implements OnInit, OnDestroy {
         next: (pattern) => {
           this.pattern$.next(pattern);
           this.name$.next(pattern.name);
+          this.number$.next(pattern.number);
           pattern.description.ifSome((description) =>
             this.description$.next(new Delta(JSON.parse(description))),
           );
           this.originalPatternName$.next(
-            pattern.attribution.originalPatternName.orElse(''),
+            pattern.attribution.originalPatternName.orElse(""),
           );
-          this.designer$.next(pattern.attribution.designer.orElse(''));
+          this.designer$.next(pattern.attribution.designer.orElse(""));
           this.selectedCategories$.next(Array.from(pattern.categories));
 
           if (!this.areArraysEqual(pattern.variants, this.variants$.value)) {
@@ -886,8 +950,8 @@ export class PatternPage implements OnInit, OnDestroy {
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
-            message: 'Das Schnittmuster konnte nicht geladen werden',
+            type: "error",
+            message: "Das Schnittmuster konnte nicht geladen werden",
           });
         },
       });
@@ -903,9 +967,9 @@ export class PatternPage implements OnInit, OnDestroy {
         catchError((e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
+            type: "error",
             message:
-              'Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neuzuladen.',
+              "Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neuzuladen.",
           });
           return [];
         }),

@@ -46,6 +46,7 @@ public class QueryPatternTest extends PatternsModuleTest {
 
         String patternId = createPattern(
                 "Summerdress",
+                "S-D-SUM-1",
                 null,
                 attribution,
                 Set.of("DRESS_ID"),

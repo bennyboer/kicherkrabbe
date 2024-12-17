@@ -1,8 +1,8 @@
-import { PatternVariant } from './variant';
-import { PatternExtra } from './extra';
-import { PatternAttribution } from './attribution';
-import { validateProps } from '../../../../../util';
-import { Option, someOrNone } from '../../../../shared/modules/option';
+import {PatternVariant} from "./variant";
+import {PatternExtra} from "./extra";
+import {PatternAttribution} from "./attribution";
+import {validateProps} from "../../../../../util";
+import {Option, someOrNone} from "../../../../shared/modules/option";
 
 export type PatternId = string;
 export type PatternCategoryId = string;
@@ -13,6 +13,7 @@ export class Pattern {
   readonly version: number;
   readonly published: boolean;
   readonly name: string;
+  readonly number: string;
   readonly description: Option<string>;
   readonly attribution: PatternAttribution;
   readonly categories: Set<PatternCategoryId>;
@@ -26,6 +27,7 @@ export class Pattern {
     version: number;
     published: boolean;
     name: string;
+    number: string;
     description: Option<string>;
     attribution: PatternAttribution;
     categories: Set<PatternCategoryId>;
@@ -40,6 +42,7 @@ export class Pattern {
     this.version = props.version;
     this.published = props.published;
     this.name = props.name;
+    this.number = props.number;
     this.description = props.description;
     this.attribution = props.attribution;
     this.categories = props.categories;
@@ -54,6 +57,7 @@ export class Pattern {
     version: number;
     published: boolean;
     name: string;
+    number: string;
     description?: string | null;
     attribution: PatternAttribution;
     categories: Set<PatternCategoryId>;
@@ -67,6 +71,7 @@ export class Pattern {
       version: props.version,
       published: props.published,
       name: props.name,
+      number: props.number,
       description: someOrNone(props.description)
         .map((d) => d.trim())
         .filter((d) => d.length > 0),

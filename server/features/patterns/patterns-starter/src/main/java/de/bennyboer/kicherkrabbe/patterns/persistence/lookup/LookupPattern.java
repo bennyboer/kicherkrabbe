@@ -26,6 +26,8 @@ public class LookupPattern {
 
     PatternName name;
 
+    PatternNumber number;
+
     @Nullable
     PatternDescription description;
 
@@ -48,6 +50,7 @@ public class LookupPattern {
             Version version,
             boolean published,
             PatternName name,
+            PatternNumber number,
             @Nullable PatternDescription description,
             PatternAlias alias,
             PatternAttribution attribution,
@@ -60,6 +63,7 @@ public class LookupPattern {
         notNull(id, "Pattern ID must be given");
         notNull(version, "Version must be given");
         notNull(name, "Name must be given");
+        notNull(number, "Number must be given");
         notNull(alias, "Alias must be given");
         notNull(attribution, "Attribution must be given");
         notNull(categories, "Categories must be given");
@@ -73,6 +77,7 @@ public class LookupPattern {
                 version,
                 published,
                 name,
+                number,
                 description,
                 alias,
                 attribution,

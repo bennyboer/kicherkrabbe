@@ -32,6 +32,7 @@ public class PatternServiceTest {
     void shouldCreatePattern() {
         // given: some details to create a pattern for
         var name = PatternName.of("Sommerkleid");
+        var number = PatternNumber.of("S-D-SUM-1");
         var description = PatternDescription.of("Ein sommerliches Kleid für heiße Tage.");
         var attribution = PatternAttribution.of(
                 OriginalPatternName.of("Sommerkleid EXTREME"),
@@ -73,6 +74,7 @@ public class PatternServiceTest {
         // when: creating a pattern
         var id = create(
                 name,
+                number,
                 description,
                 attribution,
                 categories,
@@ -99,6 +101,7 @@ public class PatternServiceTest {
     void shouldCreatePatternWithMinimalData() {
         // given: some minimal details to create a pattern for
         var name = PatternName.of("Sommerkleid");
+        var number = PatternNumber.of("S-D-SUM-1");
         var images = List.of(ImageId.of("IMAGE_ID_1"));
         var variants = List.of(PatternVariant.of(
                 PatternVariantName.of("Kurze Variante"),
@@ -110,6 +113,7 @@ public class PatternServiceTest {
         // when: creating a pattern
         var id = create(
                 name,
+                number,
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -137,6 +141,7 @@ public class PatternServiceTest {
         // when: creating a pattern without images; then: an error is raised
         assertThatThrownBy(() -> create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -154,6 +159,7 @@ public class PatternServiceTest {
         // when: creating a pattern without variants; then: an error is raised
         assertThatThrownBy(() -> create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -168,6 +174,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -195,6 +202,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -215,10 +223,67 @@ public class PatternServiceTest {
     }
 
     @Test
+    void shouldUpdateNumber() {
+        // given: a pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
+                null,
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+
+        // when: updating the number
+        var updatedVersion = updateNumber(id, Version.zero(), PatternNumber.of("S-D-SUM-2"));
+
+        // then: the number is updated
+        var pattern = get(id);
+        assertThat(pattern.getId()).isEqualTo(id);
+        assertThat(pattern.getVersion()).isEqualTo(updatedVersion);
+        assertThat(pattern.getNumber()).isEqualTo(PatternNumber.of("S-D-SUM-2"));
+    }
+
+    @Test
+    void shouldNotUpdateNumberGivenAnOutdatedVersion() {
+        // given: a pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
+                null,
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+
+        // and: the pattern is renamed
+        rename(id, Version.zero(), PatternName.of("Sommerkleid 2024"));
+
+        // when: updating the number with an outdated version; then: an error is raised
+        assertThatThrownBy(() -> updateNumber(id, Version.zero(), PatternNumber.of("S-D-SUM-2")))
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
     void shouldDeletePattern() {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -244,6 +309,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -270,6 +336,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(PatternCategoryId.of("CATEGORY_ID_1")),
@@ -306,6 +373,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(PatternCategoryId.of("CATEGORY_ID_1")),
@@ -335,6 +403,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -375,6 +444,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -407,6 +477,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -445,6 +516,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -477,6 +549,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -539,6 +612,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -583,6 +657,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -638,6 +713,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -681,6 +757,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -709,6 +786,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -735,6 +813,7 @@ public class PatternServiceTest {
         // given: a published pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -764,6 +843,7 @@ public class PatternServiceTest {
         // given: a published pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -791,6 +871,7 @@ public class PatternServiceTest {
         // given: a published pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -815,6 +896,7 @@ public class PatternServiceTest {
         // given: an unpublished pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -837,6 +919,7 @@ public class PatternServiceTest {
     void shouldRestoreFromSnapshot() {
         // given: a pattern
         var name = PatternName.of("Sommerkleid");
+        var number = PatternNumber.of("S-D-SUM-1");
         var description = PatternDescription.of("Ein sommerliches Kleid für heiße Tage.");
         var attribution = PatternAttribution.of(
                 OriginalPatternName.of("Sommerkleid EXTREME"),
@@ -876,6 +959,7 @@ public class PatternServiceTest {
         );
         var id = create(
                 name,
+                number,
                 description,
                 attribution,
                 categories,
@@ -921,6 +1005,7 @@ public class PatternServiceTest {
         // given: a pattern
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(),
@@ -960,6 +1045,7 @@ public class PatternServiceTest {
         // given: a pattern with two categories
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(PatternCategoryId.of("CATEGORY_ID_1"), PatternCategoryId.of("CATEGORY_ID_2")),
@@ -995,6 +1081,7 @@ public class PatternServiceTest {
         // given: a pattern with two categories
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(PatternCategoryId.of("CATEGORY_ID_1"), PatternCategoryId.of("CATEGORY_ID_2")),
@@ -1019,6 +1106,7 @@ public class PatternServiceTest {
         // given: a pattern with existing description
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 PatternDescription.of("Ein sommerliches Kleid für heiße Tage."),
                 PatternAttribution.empty(),
                 Set.of(PatternCategoryId.of("CATEGORY_ID_1"), PatternCategoryId.of("CATEGORY_ID_2")),
@@ -1050,6 +1138,7 @@ public class PatternServiceTest {
         // given: a pattern with existing description
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 PatternDescription.of("Ein sommerliches Kleid für heiße Tage."),
                 PatternAttribution.empty(),
                 Set.of(PatternCategoryId.of("CATEGORY_ID_1"), PatternCategoryId.of("CATEGORY_ID_2")),
@@ -1076,6 +1165,7 @@ public class PatternServiceTest {
         // given: a pattern without description
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 null,
                 PatternAttribution.empty(),
                 Set.of(PatternCategoryId.of("CATEGORY_ID_1"), PatternCategoryId.of("CATEGORY_ID_2")),
@@ -1106,6 +1196,7 @@ public class PatternServiceTest {
         // given: a pattern with existing description
         var id = create(
                 PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
                 PatternDescription.of("Ein sommerliches Kleid für heiße Tage."),
                 PatternAttribution.empty(),
                 Set.of(PatternCategoryId.of("CATEGORY_ID_1"), PatternCategoryId.of("CATEGORY_ID_2")),
@@ -1134,6 +1225,7 @@ public class PatternServiceTest {
 
     private PatternId create(
             PatternName name,
+            PatternNumber number,
             @Nullable PatternDescription description,
             PatternAttribution attribution,
             Set<PatternCategoryId> categories,
@@ -1143,6 +1235,7 @@ public class PatternServiceTest {
     ) {
         return patternService.create(
                 name,
+                number,
                 description,
                 attribution,
                 categories,
@@ -1187,6 +1280,10 @@ public class PatternServiceTest {
 
     private Version updateDescription(PatternId id, Version version, @Nullable PatternDescription description) {
         return patternService.updateDescription(id, version, description, Agent.system()).block();
+    }
+
+    private Version updateNumber(PatternId id, Version version, PatternNumber number) {
+        return patternService.updateNumber(id, version, number, Agent.system()).block();
     }
 
     private Version removeCategory(PatternId id, Version version, PatternCategoryId categoryId) {
