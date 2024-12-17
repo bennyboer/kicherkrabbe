@@ -1,10 +1,10 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { filter, map, Observable, Subject, takeUntil } from 'rxjs';
-import { Currency, Money } from '../../../../../util';
-import { SSE } from 'sse.js';
-import { HttpClient } from '@angular/common/http';
-import { AdminAuthService } from '../../../services';
-import { environment } from '../../../../../../environments';
+import {Injectable, OnDestroy} from "@angular/core";
+import {filter, map, Observable, Subject, takeUntil} from "rxjs";
+import {Currency, Money} from "../../../../../util";
+import {SSE} from "sse.js";
+import {HttpClient} from "@angular/common/http";
+import {AdminAuthService} from "../../../services";
+import {environment} from "../../../../../../environments";
 import {
   Pattern,
   PatternAttribution,
@@ -13,19 +13,15 @@ import {
   PatternId,
   PatternVariant,
   PricedSizeRange,
-} from '../model';
-import {
-  none,
-  Option,
-  some,
-  someOrNone,
-} from '../../../../shared/modules/option';
+} from "../model";
+import {none, Option, some, someOrNone,} from "../../../../shared/modules/option";
 
 interface PatternDTO {
   id: string;
   version: number;
   published: boolean;
   name: string;
+  number: string;
   description?: string;
   attribution: PatternAttributionDTO;
   categories: string[];
@@ -82,6 +78,7 @@ interface QueryPatternsResponse {
 
 interface CreatePatternRequest {
   name: string;
+  number: string;
   description?: string;
   attribution: PatternAttributionDTO;
   categories: string[];
@@ -93,6 +90,11 @@ interface CreatePatternRequest {
 interface RenamePatternRequest {
   version: number;
   name: string;
+}
+
+interface UpdatePatternNumberRequest {
+  version: number;
+  number: string;
 }
 
 interface UpdateImagesRequest {
@@ -168,7 +170,7 @@ export class PatternsService implements OnDestroy {
     this.makeSureEventStreamIsOpen();
 
     return this.events$.pipe(
-      filter((event) => event.type !== 'CREATED'),
+      filter((event) => event.type !== "CREATED"),
       map((event) => new Set<PatternId>(event.affected)),
     );
   }
@@ -185,7 +187,7 @@ export class PatternsService implements OnDestroy {
     skip?: number;
     limit?: number;
   }): Observable<Pattern[]> {
-    const searchTerm = someOrNone(props.searchTerm).orElse('');
+    const searchTerm = someOrNone(props.searchTerm).orElse("");
     const categories = someOrNone(props.categories).orElse([]);
     const skip = someOrNone(props.skip).orElse(0);
     const limit = someOrNone(props.limit).orElse(100);
@@ -208,6 +210,7 @@ export class PatternsService implements OnDestroy {
 
   createPattern(props: {
     name: string;
+    number: string;
     description?: string | null;
     attribution: PatternAttribution;
     categories: PatternCategoryId[];
@@ -217,6 +220,7 @@ export class PatternsService implements OnDestroy {
   }): Observable<PatternId> {
     const request: CreatePatternRequest = {
       name: props.name,
+      number: props.number,
       attribution: this.toApiAttribution(props.attribution),
       categories: props.categories,
       images: props.images,
@@ -241,10 +245,19 @@ export class PatternsService implements OnDestroy {
     version: number,
     name: string,
   ): Observable<void> {
-    const request: RenamePatternRequest = { version, name };
+    const request: RenamePatternRequest = {version, name};
 
     return this.http.post<void>(
       `${environment.apiUrl}/patterns/${id}/rename`,
+      request,
+    );
+  }
+
+  updatePatternNumber(id: PatternId, version: number, number: string): Observable<void> {
+    const request: UpdatePatternNumberRequest = {version, number};
+
+    return this.http.post<void>(
+      `${environment.apiUrl}/patterns/${id}/update/number`,
       request,
     );
   }
@@ -254,7 +267,7 @@ export class PatternsService implements OnDestroy {
     version: number,
     images: string[],
   ): Observable<void> {
-    const request: UpdateImagesRequest = { version, images };
+    const request: UpdateImagesRequest = {version, images};
 
     return this.http.post<void>(
       `${environment.apiUrl}/patterns/${id}/update/images`,
@@ -283,7 +296,7 @@ export class PatternsService implements OnDestroy {
     version: number,
     categories: PatternCategoryId[],
   ): Observable<void> {
-    const request: UpdateCategoriesRequest = { version, categories };
+    const request: UpdateCategoriesRequest = {version, categories};
 
     return this.http.post<void>(
       `${environment.apiUrl}/patterns/${id}/update/categories`,
@@ -347,7 +360,7 @@ export class PatternsService implements OnDestroy {
       `${environment.apiUrl}/patterns/${id}/publish`,
       {},
       {
-        params: { version: version.toString() },
+        params: {version: version.toString()},
       },
     );
   }
@@ -357,14 +370,14 @@ export class PatternsService implements OnDestroy {
       `${environment.apiUrl}/patterns/${id}/unpublish`,
       {},
       {
-        params: { version: version.toString() },
+        params: {version: version.toString()},
       },
     );
   }
 
   deletePattern(id: string, version: number): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/patterns/${id}`, {
-      params: { version: version.toString() },
+      params: {version: version.toString()},
     });
   }
 
@@ -378,7 +391,7 @@ export class PatternsService implements OnDestroy {
     const token = this.authService.getCurrentToken().orElseThrow();
 
     const sse = new SSE(`${environment.apiUrl}/patterns/changes`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {Authorization: `Bearer ${token}`},
     });
     sse.onmessage = (event) => {
       const change = JSON.parse(event.data);
@@ -401,6 +414,7 @@ export class PatternsService implements OnDestroy {
       version: pattern.version,
       published: pattern.published,
       name: pattern.name,
+      number: pattern.number,
       description: pattern.description,
       attribution: this.toInternalAttribution(pattern.attribution),
       categories: new Set<PatternCategoryId>(pattern.categories),
@@ -454,7 +468,7 @@ export class PatternsService implements OnDestroy {
 
   private toInternalCurrency(currency: string): Currency {
     switch (currency) {
-      case 'EUR':
+      case "EUR":
         return Currency.euro();
       default:
         throw new Error(`Unknown currency: ${currency}`);
@@ -508,7 +522,7 @@ export class PatternsService implements OnDestroy {
 
   private toApiCurrency(currency: Currency): string {
     if (currency.equals(Currency.euro())) {
-      return 'EUR';
+      return "EUR";
     }
 
     throw new Error(`Unknown currency: ${currency}`);
@@ -520,4 +534,5 @@ export class PatternsService implements OnDestroy {
       price: this.toApiMoney(extra.price),
     };
   }
+
 }

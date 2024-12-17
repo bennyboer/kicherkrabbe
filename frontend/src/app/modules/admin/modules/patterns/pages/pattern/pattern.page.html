@@ -34,6 +34,26 @@
         }
       </div>
 
+      <div class="form-field">
+        <label for="number">Nummer</label>
+        <div class="form-field-content">
+          <input #number
+                 id="number"
+                 type="text"
+                 placeholder="z.B. S-123"
+                 [class.error]="numberError$ | async"
+                 [value]="number$ | async"
+                 (input)="updateNumber(number.value)"
+                 (keydown.enter)="saveUpdatedNumber(pattern)">
+          <app-button [disabled]="cannotSaveUpdatedNumber$ | async" (click)="saveUpdatedNumber(pattern)">
+            Speichern
+          </app-button>
+        </div>
+        @if (numberError$ | async) {
+          <span class="error">Bitte gib eine Nummer ein, die mit "S-" beginnt.</span>
+        }
+      </div>
+
       <div class="columns">
         <div class="form-field">
           <label for="originalPatternName">Originalname des Schnitts (optional)</label>

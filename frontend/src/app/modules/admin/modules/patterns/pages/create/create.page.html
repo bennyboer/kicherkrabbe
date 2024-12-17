@@ -10,6 +10,20 @@
     }
   </div>
 
+  <div class="form-field">
+    <label for="name">Nummer</label>
+    <input #number
+           id="number"
+           type="text"
+           placeholder="z.B. S-123"
+           [value]="number$ | async"
+           [class.error]="numberError$ | async"
+           (input)="updateNumber(number.value)">
+    @if (numberError$ | async) {
+      <span class="error">Bitte gib eine Nummer ein, die mit "S-" beginnt.</span>
+    }
+  </div>
+
   <div class="two-columns">
     <div class="form-field">
       <label for="originalPatternName">Originalname des Schnitts (optional)</label>

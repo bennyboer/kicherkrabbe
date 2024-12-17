@@ -1,16 +1,10 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
-import {
-  Pattern,
-  PatternAttribution,
-  PatternExtra,
-  PatternVariant,
-  PricedSizeRange,
-} from '../model';
-import { Currency, Money } from '../../../../../util';
-import { environment } from '../../../../../../environments';
-import { someOrNone } from '../../../../shared/modules/option';
+import {Injectable} from "@angular/core";
+import {HttpClient} from "@angular/common/http";
+import {map, Observable} from "rxjs";
+import {Pattern, PatternAttribution, PatternExtra, PatternVariant, PricedSizeRange,} from "../model";
+import {Currency, Money} from "../../../../../util";
+import {environment} from "../../../../../../environments";
+import {someOrNone} from "../../../../shared/modules/option";
 
 interface PatternsSortDTO {
   property: PatternsSortPropertyDTO;
@@ -18,12 +12,12 @@ interface PatternsSortDTO {
 }
 
 enum PatternsSortPropertyDTO {
-  ALPHABETICAL = 'ALPHABETICAL',
+  ALPHABETICAL = "ALPHABETICAL",
 }
 
 enum PatternsSortDirectionDTO {
-  ASCENDING = 'ASCENDING',
-  DESCENDING = 'DESCENDING',
+  ASCENDING = "ASCENDING",
+  DESCENDING = "DESCENDING",
 }
 
 interface QueryPublishedPatternsRequest {
@@ -49,6 +43,7 @@ interface QueryPublishedPatternResponse {
 interface PublishedPatternDTO {
   id: string;
   name: string;
+  number: string;
   description?: string;
   alias: string;
   attribution: PatternAttributionDTO;
@@ -87,7 +82,8 @@ interface PatternExtraDTO {
 
 @Injectable()
 export class PatternsService {
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {
+  }
 
   getPatterns(props: {
     searchTerm?: string;
@@ -101,7 +97,7 @@ export class PatternsService {
       searchTerm: someOrNone(props.searchTerm)
         .map((s) => s.trim())
         .filter((s) => s.length > 0)
-        .orElse(''),
+        .orElse(""),
       categories: someOrNone(props.categories)
         .map((c) => Array.from(c))
         .orElse([]),
@@ -146,6 +142,7 @@ export class PatternsService {
     return Pattern.of({
       id: pattern.id,
       name: pattern.name,
+      number: pattern.number,
       description: pattern.description,
       alias: pattern.alias,
       attribution: this.toInternalAttribution(pattern.attribution),
@@ -199,7 +196,7 @@ export class PatternsService {
 
   private toInternalCurrency(currency: string): Currency {
     switch (currency) {
-      case 'EUR':
+      case "EUR":
         return Currency.euro();
       default:
         throw new Error(`Unknown currency: ${currency}`);

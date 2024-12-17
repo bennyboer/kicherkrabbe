@@ -1,42 +1,23 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  catchError,
-  combineLatest,
-  delay,
-  finalize,
-  first,
-  map,
-  Observable,
-} from 'rxjs';
-import { environment } from '../../../../../../../environments';
-import {
-  PatternAttribution,
-  PatternCategory,
-  PatternExtra,
-  PatternVariant,
-} from '../../model';
-import { ButtonSize, Chip, NotificationService } from '../../../../../shared';
-import { PatternCategoriesService, PatternsService } from '../../services';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ContentChange } from 'ngx-quill';
-import { Delta } from 'quill/core';
-import { someOrNone } from '../../../../../shared/modules/option';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit,} from "@angular/core";
+import {BehaviorSubject, catchError, combineLatest, delay, finalize, first, map, Observable,} from "rxjs";
+import {environment} from "../../../../../../../environments";
+import {PatternAttribution, PatternCategory, PatternExtra, PatternVariant,} from "../../model";
+import {ButtonSize, Chip, NotificationService} from "../../../../../shared";
+import {PatternCategoriesService, PatternsService} from "../../services";
+import {ActivatedRoute, Router} from "@angular/router";
+import {ContentChange} from "ngx-quill";
+import {Delta} from "quill/core";
+import {someOrNone} from "../../../../../shared/modules/option";
 
 @Component({
-  selector: 'app-create-pattern-page',
-  templateUrl: './create.page.html',
-  styleUrls: ['./create.page.scss'],
+  selector: "app-create-pattern-page",
+  templateUrl: "./create.page.html",
+  styleUrls: ["./create.page.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreatePage implements OnInit, OnDestroy {
   private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
-    '',
+    "",
   );
   private readonly nameTouched$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
@@ -47,6 +28,15 @@ export class CreatePage implements OnInit, OnDestroy {
     this.nameTouched$,
     this.nameValid$,
   ]).pipe(map(([touched, valid]) => touched && !valid));
+
+  protected readonly number$: BehaviorSubject<string> = new BehaviorSubject<string>("S-");
+  private readonly numberTouched$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly numberValid$: Observable<boolean> = this.number$.pipe(
+    map((number) => number.trim().length > 0 && number.startsWith("S-")),
+  );
+  protected readonly numberError$: Observable<boolean> = this.numberValid$.pipe(
+    map((valid) => !valid),
+  );
 
   protected readonly imageIds$: BehaviorSubject<string[]> = new BehaviorSubject<
     string[]
@@ -61,9 +51,9 @@ export class CreatePage implements OnInit, OnDestroy {
   );
 
   private readonly originalPatternName$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+    new BehaviorSubject<string>("");
   private readonly designer$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+    new BehaviorSubject<string>("");
 
   private readonly description$: BehaviorSubject<Delta> =
     new BehaviorSubject<Delta>(new Delta());
@@ -104,25 +94,26 @@ export class CreatePage implements OnInit, OnDestroy {
 
   protected readonly cannotSubmit$: Observable<boolean> = combineLatest([
     this.nameValid$,
+    this.numberValid$,
     this.variantsValid$,
     this.extrasValid$,
     this.imagesValid$,
   ]).pipe(
     map(
-      ([name, variants, extras, images]) =>
-        !name || !variants || !extras || !images,
+      ([name, number, variants, extras, images]) =>
+        !name || !number || !variants || !extras || !images,
     ),
   );
 
   protected readonly ButtonSize = ButtonSize;
   protected readonly quillModules = {
     toolbar: [
-      [{ header: [1, 2, false] }],
-      ['bold', 'italic', 'underline', 'strike', 'link'],
-      [{ align: [] }],
-      [{ color: [] }, { background: [] }],
-      ['blockquote', { list: 'ordered' }, { list: 'bullet' }],
-      ['clean'],
+      [{header: [1, 2, false]}],
+      ["bold", "italic", "underline", "strike", "link"],
+      [{align: []}],
+      [{color: []}, {background: []}],
+      ["blockquote", {list: "ordered"}, {list: "bullet"}],
+      ["clean"],
     ],
   };
 
@@ -132,7 +123,8 @@ export class CreatePage implements OnInit, OnDestroy {
     private readonly notificationService: NotificationService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.reloadAvailableCategories();
@@ -141,6 +133,8 @@ export class CreatePage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.name$.complete();
     this.nameTouched$.complete();
+    this.number$.complete();
+    this.numberTouched$.complete();
     this.creating$.complete();
     this.originalPatternName$.complete();
     this.designer$.complete();
@@ -159,6 +153,7 @@ export class CreatePage implements OnInit, OnDestroy {
     this.creating$.next(true);
 
     const name = this.name$.value;
+    const number = this.number$.value;
     const originalPatternName = someOrNone(this.originalPatternName$.value)
       .map((n) => n.trim())
       .filter((n) => n.length > 0)
@@ -183,6 +178,7 @@ export class CreatePage implements OnInit, OnDestroy {
     this.patternsService
       .createPattern({
         name,
+        number,
         description,
         attribution,
         categories,
@@ -195,9 +191,9 @@ export class CreatePage implements OnInit, OnDestroy {
         catchError((e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
+            type: "error",
             message:
-              'Das Schnittmuster konnte nicht erstellt werden. Bitte versuche es erneut.',
+              "Das Schnittmuster konnte nicht erstellt werden. Bitte versuche es erneut.",
           });
           return [];
         }),
@@ -206,10 +202,10 @@ export class CreatePage implements OnInit, OnDestroy {
       )
       .subscribe((patternId) => {
         this.notificationService.publish({
-          type: 'success',
-          message: 'Das Schnittmuster wurde erfolgreich erstellt.',
+          type: "success",
+          message: "Das Schnittmuster wurde erfolgreich erstellt.",
         });
-        this.router.navigate(['..', patternId], {
+        this.router.navigate(["..", patternId], {
           relativeTo: this.route,
         });
       });
@@ -220,6 +216,14 @@ export class CreatePage implements OnInit, OnDestroy {
 
     if (!this.nameTouched$.value) {
       this.nameTouched$.next(true);
+    }
+  }
+
+  updateNumber(value: string): void {
+    this.number$.next(value.trim());
+
+    if (!this.numberTouched$.value) {
+      this.numberTouched$.next(true);
     }
   }
 
@@ -234,7 +238,7 @@ export class CreatePage implements OnInit, OnDestroy {
   updateDescription(event: ContentChange): void {
     const html = someOrNone(event.html)
       .map((h) => h.trim())
-      .orElse('');
+      .orElse("");
     const isEmpty = html.length === 0;
     if (isEmpty) {
       this.description$.next(new Delta());
@@ -311,9 +315,9 @@ export class CreatePage implements OnInit, OnDestroy {
         catchError((e) => {
           console.error(e);
           this.notificationService.publish({
-            type: 'error',
+            type: "error",
             message:
-              'Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neuzuladen.',
+              "Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neuzuladen.",
           });
           return [];
         }),

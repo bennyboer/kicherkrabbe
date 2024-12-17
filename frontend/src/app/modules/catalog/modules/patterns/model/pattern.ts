@@ -1,13 +1,8 @@
-import { PatternVariant } from './variant';
-import { PatternExtra } from './extra';
-import { Money, validateProps } from '../../../../../util';
-import { PatternAttribution } from './attribution';
-import {
-  none,
-  Option,
-  some,
-  someOrNone,
-} from '../../../../shared/modules/option';
+import {PatternVariant} from "./variant";
+import {PatternExtra} from "./extra";
+import {Money, validateProps} from "../../../../../util";
+import {PatternAttribution} from "./attribution";
+import {none, Option, some, someOrNone,} from "../../../../shared/modules/option";
 
 export type CategoryId = string;
 export type ImageId = string;
@@ -15,6 +10,7 @@ export type ImageId = string;
 export class Pattern {
   readonly id: string;
   readonly name: string;
+  readonly number: string;
   readonly description: Option<string>;
   readonly alias: string;
   readonly attribution: PatternAttribution;
@@ -26,6 +22,7 @@ export class Pattern {
   private constructor(props: {
     id: string;
     name: string;
+    number: string;
     description: Option<string>;
     alias: string;
     attribution: PatternAttribution;
@@ -38,6 +35,7 @@ export class Pattern {
 
     this.id = props.id;
     this.name = props.name;
+    this.number = props.number;
     this.description = props.description;
     this.alias = props.alias;
     this.attribution = props.attribution;
@@ -50,6 +48,7 @@ export class Pattern {
   static of(props: {
     id: string;
     name: string;
+    number: string;
     description?: string | null;
     alias: string;
     attribution?: PatternAttribution;
@@ -61,6 +60,7 @@ export class Pattern {
     return new Pattern({
       id: props.id,
       name: props.name,
+      number: props.number,
       description: someOrNone(props.description),
       alias: props.alias,
       attribution: someOrNone(props.attribution).orElse(
@@ -81,7 +81,7 @@ export class Pattern {
       return startingPrice.formatted();
     }
 
-    return `${startingPrice.formatted({ withSymbol: false })} - ${endingPrice.formatted()}`;
+    return `${startingPrice.formatted({withSymbol: false})} - ${endingPrice.formatted()}`;
   }
 
   getStartingPrice(): Money {
@@ -116,7 +116,7 @@ export class Pattern {
 
     const sizeUnit = this.getSizeUnit()
       .map((unit) => ` ${unit}`)
-      .orElse('');
+      .orElse("");
 
     return largestSize
       .map((l) => {
@@ -161,7 +161,7 @@ export class Pattern {
 
   private getSizeUnit(): Option<string> {
     const units = this.variants.flatMap((variant) =>
-      variant.sizes.map((size) => size.unit.orElse('')),
+      variant.sizes.map((size) => size.unit.orElse("")),
     );
 
     if (units.length === 0) {
