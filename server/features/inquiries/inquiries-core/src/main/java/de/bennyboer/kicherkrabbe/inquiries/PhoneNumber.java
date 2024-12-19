@@ -16,7 +16,7 @@ public class PhoneNumber {
     public static PhoneNumber of(String value) {
         notNull(value, "Phone number must be given");
         check(!value.isBlank(), "Phone number must not be blank");
-        check(value.length() <= 100, "Phone number must not exceed 100 characters");
+        check(value.length() <= 30, "Phone number must not exceed 30 characters");
         check(value.matches("[0-9+ ]+"), "Phone number must only contain digits, '+' and spaces");
 
         return new PhoneNumber(value);

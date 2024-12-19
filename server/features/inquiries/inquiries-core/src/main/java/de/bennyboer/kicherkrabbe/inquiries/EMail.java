@@ -18,7 +18,7 @@ public class EMail {
         notNull(value, "E-Mail must be given");
         check(!value.isBlank(), "E-Mail must not be blank");
         check(EmailValidator.getInstance().isValid(value), "E-Mail must be valid");
-        check(value.length() <= 200, "E-Mail must not exceed 200 characters");
+        check(value.length() <= 70, "E-Mail must not exceed 70 characters");
 
         return new EMail(value);
     }

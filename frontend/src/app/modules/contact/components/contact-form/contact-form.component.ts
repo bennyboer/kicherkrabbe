@@ -1,24 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
-import { ContentChange, QuillEditorComponent } from 'ngx-quill';
-import { validateProps } from '../../../../util';
-import { Delta } from 'quill/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-  Subject,
-  takeUntil,
-} from 'rxjs';
-import { Option, someOrNone } from '../../../shared/modules/option';
+import {ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild,} from "@angular/core";
+import {ContentChange, QuillEditorComponent} from "ngx-quill";
+import {validateProps} from "../../../../util";
+import {Delta} from "quill/core";
+import {BehaviorSubject, combineLatest, map, Observable, Subject, takeUntil,} from "rxjs";
+import {Option, someOrNone} from "../../../shared/modules/option";
 
 export class ContactFormResult {
   readonly name: string;
@@ -66,9 +51,9 @@ export class ContactFormResult {
 }
 
 @Component({
-  selector: 'app-contact-form',
-  templateUrl: './contact-form.component.html',
-  styleUrls: ['./contact-form.component.scss'],
+  selector: "app-contact-form",
+  templateUrl: "./contact-form.component.html",
+  styleUrls: ["./contact-form.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactFormComponent implements OnInit, OnDestroy {
@@ -83,7 +68,7 @@ export class ContactFormComponent implements OnInit, OnDestroy {
     new BehaviorSubject<boolean>(false);
 
   private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
-    '',
+    "",
   );
   protected readonly nameTouched$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
@@ -103,7 +88,7 @@ export class ContactFormComponent implements OnInit, OnDestroy {
   ]).pipe(map(([missing, tooLong]) => !missing && !tooLong));
 
   private readonly mail$: BehaviorSubject<string> = new BehaviorSubject<string>(
-    '',
+    "",
   );
   protected readonly mailTouched$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
@@ -114,7 +99,7 @@ export class ContactFormComponent implements OnInit, OnDestroy {
     map((mail) => mail.length === 0),
   );
   protected readonly mailTooLong$: Observable<boolean> = this.mail$.pipe(
-    map((mail) => mail.length > 200),
+    map((mail) => mail.length > 70),
   );
   protected readonly mailFormatInvalid$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
@@ -131,14 +116,14 @@ export class ContactFormComponent implements OnInit, OnDestroy {
   );
 
   private readonly phone$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+    new BehaviorSubject<string>("");
   protected readonly phoneTouched$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
   protected readonly phoneLength$: Observable<number> = this.phone$.pipe(
     map((phone) => phone.length),
   );
   protected readonly phoneTooLong$: Observable<boolean> = this.phone$.pipe(
-    map((phone) => phone.length > 100),
+    map((phone) => phone.length > 30),
   );
   protected readonly phoneDisabled$: Observable<boolean> = this.submitting$;
   protected readonly phoneValid$: Observable<boolean> = this.phoneTooLong$.pipe(
@@ -146,7 +131,7 @@ export class ContactFormComponent implements OnInit, OnDestroy {
   );
 
   private readonly subject$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+    new BehaviorSubject<string>("");
   protected readonly subjectTouched$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
   protected readonly subjectLength$: Observable<number> = this.subject$.pipe(
@@ -167,7 +152,7 @@ export class ContactFormComponent implements OnInit, OnDestroy {
   private readonly message$: BehaviorSubject<Delta> =
     new BehaviorSubject<Delta>(new Delta());
   protected readonly messageHtml$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+    new BehaviorSubject<string>("");
   protected readonly messageTouched$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
   protected readonly messageMissing$: Observable<boolean> = this.message$.pipe(
@@ -198,13 +183,13 @@ export class ContactFormComponent implements OnInit, OnDestroy {
   ]).pipe(
     map(
       ([
-        submitting,
-        nameValid,
-        mailValid,
-        phoneValid,
-        subjectValid,
-        messageValid,
-      ]) =>
+         submitting,
+         nameValid,
+         mailValid,
+         phoneValid,
+         subjectValid,
+         messageValid,
+       ]) =>
         !submitting &&
         nameValid &&
         mailValid &&
@@ -221,9 +206,9 @@ export class ContactFormComponent implements OnInit, OnDestroy {
 
   protected readonly quillModules = {
     toolbar: [
-      [{ header: [1, 2, false] }],
-      ['bold', 'italic', 'underline'],
-      ['clean'],
+      [{header: [1, 2, false]}],
+      ["bold", "italic", "underline"],
+      ["clean"],
     ],
   };
 
@@ -296,7 +281,7 @@ export class ContactFormComponent implements OnInit, OnDestroy {
   updateMessage(event: ContentChange): void {
     const html = someOrNone(event.html)
       .map((h) => h.trim())
-      .orElse('');
+      .orElse("");
     this.messageHtml$.next(html);
 
     const isEmpty = html.length === 0;

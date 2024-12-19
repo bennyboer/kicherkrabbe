@@ -25,7 +25,7 @@ public class SettingsServiceTest {
     @Test
     void shouldInitSettings() {
         // when: initializing the settings
-        var id = init();
+        var id = init(SettingsId.of("SETTINGS_ID"));
 
         // then: the settings are initialized
         var settings = get(id);
@@ -38,7 +38,7 @@ public class SettingsServiceTest {
     @Test
     void shouldEnableInquiries() {
         // given: initialized settings
-        var id = init();
+        var id = init(SettingsId.of("SETTINGS_ID"));
 
         // when: enabling inquiries
         var version = enable(id, Version.zero());
@@ -52,7 +52,7 @@ public class SettingsServiceTest {
     @Test
     void shouldNotEnableInquiriesGivenAnOutdatedVersion() {
         // given: initialized settings
-        var id = init();
+        var id = init(SettingsId.of("SETTINGS_ID"));
         enable(id, Version.zero());
 
         // when: enabling inquiries with an outdated version; then: an error is raised
@@ -63,7 +63,7 @@ public class SettingsServiceTest {
     @Test
     void shouldDisableInquiries() {
         // given: enabled inquiries
-        var id = init();
+        var id = init(SettingsId.of("SETTINGS_ID"));
         var version = enable(id, Version.zero());
 
         // when: disabling inquiries
@@ -78,7 +78,7 @@ public class SettingsServiceTest {
     @Test
     void shouldNotDisableInquiriesGivenAnOutdatedVersion() {
         // given: enabled inquiries
-        var id = init();
+        var id = init(SettingsId.of("SETTINGS_ID"));
         enable(id, Version.zero());
 
         // when: disabling inquiries with an outdated version; then: an error is raised
@@ -89,7 +89,7 @@ public class SettingsServiceTest {
     @Test
     void shouldUpdateRateLimits() {
         // given: initialized settings
-        var id = init();
+        var id = init(SettingsId.of("SETTINGS_ID"));
 
         // when: updating the rate limits
         var version = updateRateLimits(
@@ -115,7 +115,7 @@ public class SettingsServiceTest {
     @Test
     void shouldNotUpdateRateLimitsGivenAnOutdatedVersion() {
         // given: initialized settings
-        var id = init();
+        var id = init(SettingsId.of("SETTINGS_ID"));
         enable(id, Version.zero());
 
         // when: updating the rate limits with an outdated version; then: an error is raised
@@ -127,7 +127,7 @@ public class SettingsServiceTest {
     @Test
     void shouldSnapshotEvery100Events() {
         // given: some settings
-        var id = init();
+        var id = init(SettingsId.of("SETTINGS_ID"));
 
         // when: updating the rate limits 200 times
         var version = Version.zero();
@@ -162,8 +162,8 @@ public class SettingsServiceTest {
         assertThat(snapshotEvents.getLast().getMetadata().getAggregateVersion()).isEqualTo(Version.of(200));
     }
 
-    private SettingsId init() {
-        return settingsService.init(Agent.system()).block().getId();
+    private SettingsId init(SettingsId id) {
+        return settingsService.init(id, Agent.system()).block().getId();
     }
 
     private Settings get(SettingsId id) {

@@ -20,6 +20,8 @@ public class RateLimit {
     public static RateLimit of(long maxRequests, Duration duration) {
         check(maxRequests > 0, "Max requests must be greater than 0");
         notNull(duration, "Duration must be given");
+        check(duration.isPositive(), "Duration must be positive");
+        check(duration.compareTo(Duration.ofDays(30)) <= 0, "Duration must not be greater than 30 days");
 
         return new RateLimit(maxRequests, duration);
     }

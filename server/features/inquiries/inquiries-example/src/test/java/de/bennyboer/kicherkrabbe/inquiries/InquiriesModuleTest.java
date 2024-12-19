@@ -1,15 +1,24 @@
 package de.bennyboer.kicherkrabbe.inquiries;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.inquiries.api.InquiryDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
+import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.InquiryLookupRepo;
+import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.inmemory.InMemoryInquiryLookupRepo;
+import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.RequestRepo;
+import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.inmemory.InMemoryRequestRepo;
 import de.bennyboer.kicherkrabbe.inquiries.settings.SettingsService;
+import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
+import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
 import de.bennyboer.kicherkrabbe.testing.time.TestClock;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 
 public class InquiriesModuleTest {
 
@@ -27,7 +36,25 @@ public class InquiriesModuleTest {
             new LoggingEventPublisher()
     );
 
-    private final InquiriesModule module = config.inquiriesModule(inquiryService, settingsService);
+    private final InquiryLookupRepo inquiryLookupRepo = new InMemoryInquiryLookupRepo();
+
+    private final RequestRepo requestRepo = new InMemoryRequestRepo();
+
+    private final PermissionsService permissionsService = new PermissionsService(
+            new InMemoryPermissionsRepo(),
+            event -> Mono.empty()
+    );
+
+    private final InquiriesModule module = config.inquiriesModule(
+            inquiryService,
+            settingsService,
+            inquiryLookupRepo,
+            requestRepo,
+            permissionsService,
+            Optional.of(clock)
+    );
+
+    protected final String loggedInUserId = "USER_ID";
 
     public void sendInquiry(
             String requestId,
@@ -36,14 +63,7 @@ public class InquiriesModuleTest {
             String message,
             Agent agent
     ) {
-        module.sendInquiry(
-                requestId,
-                sender,
-                subject,
-                message,
-                agent,
-                "127.0.0.1"
-        ).block();
+        sendInquiry(requestId, sender, subject, message, agent, "127.0.0.1");
     }
 
     public void sendInquiry(
@@ -54,7 +74,7 @@ public class InquiriesModuleTest {
             Agent agent,
             String ipAddress
     ) {
-        module.sendInquiry(
+        var id = module.sendInquiry(
                 requestId,
                 sender,
                 subject,
@@ -62,6 +82,9 @@ public class InquiriesModuleTest {
                 agent,
                 ipAddress
         ).block();
+
+        updateInquiryInLookup(id);
+        allowSystemToReadAndDeleteInquiry(id);
     }
 
     public InquiryDTO getInquiryByRequestId(String requestId, Agent agent) {
@@ -73,23 +96,40 @@ public class InquiriesModuleTest {
     }
 
     public void disableSendingInquiries() {
-        module.setSendingInquiriesEnabled(false, Agent.system()).block();
+        module.setSendingInquiriesEnabled(false, Agent.user(AgentId.of(loggedInUserId))).block();
     }
 
     public void enableSendingInquiries() {
-        module.setSendingInquiriesEnabled(true, Agent.system()).block();
+        module.setSendingInquiriesEnabled(true, Agent.user(AgentId.of(loggedInUserId))).block();
+    }
+
+    public void allowAnonymousUserToSendInquiries() {
+        module.allowAnonymousUserToSendInquiries().block();
+    }
+
+    public void allowUserToManageInquiries(String userId) {
+        module.allowUserToManageInquiries(userId).block();
     }
 
     public void setMaximumInquiriesPerEmailPerTimeFrame(int count, Duration duration) {
-        module.setMaximumInquiriesPerEmailPerTimeFrame(count, duration, Agent.system()).block();
+        module.setMaximumInquiriesPerEmailPerTimeFrame(count, duration, Agent.user(AgentId.of(loggedInUserId))).block();
     }
 
     public void setMaximumInquiriesPerIPAddressPerTimeFrame(int count, Duration duration) {
-        module.setMaximumInquiriesPerIPAddressPerTimeFrame(count, duration, Agent.system()).block();
+        module.setMaximumInquiriesPerIPAddressPerTimeFrame(count, duration, Agent.user(AgentId.of(loggedInUserId)))
+                .block();
     }
 
     public void setMaximumInquiriesPerTimeFrame(int count, Duration duration) {
-        module.setMaximumInquiriesPerTimeFrame(count, duration, Agent.system()).block();
+        module.setMaximumInquiriesPerTimeFrame(count, duration, Agent.user(AgentId.of(loggedInUserId))).block();
+    }
+
+    private void updateInquiryInLookup(String inquiryId) {
+        module.updateInquiryInLookup(inquiryId).block();
+    }
+
+    private void allowSystemToReadAndDeleteInquiry(String inquiryId) {
+        module.allowSystemToReadAndDeleteInquiry(inquiryId).block();
     }
 
 }

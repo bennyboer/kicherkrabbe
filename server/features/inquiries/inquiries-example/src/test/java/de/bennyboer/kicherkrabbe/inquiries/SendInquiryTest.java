@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.inquiries;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.requests.SendInquiryRequest;
+import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -23,6 +24,12 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.sender.phone = "+49 1234 5678 9999";
         request.subject = "Test inquiry";
         request.message = "This is a test inquiry!";
+
+        // and: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
 
         // and: sending inquiries is enabled
         enableSendingInquiries();
@@ -48,6 +55,34 @@ public class SendInquiryTest extends InquiriesModuleTest {
     }
 
     @Test
+    void shouldRefuseToSendInquiryWhenThePermissionIsMissing() {
+        // given: a request to send an inquiry
+        var request = new SendInquiryRequest();
+        request.requestId = "REQUEST_ID";
+        request.sender = new SenderDTO();
+        request.sender.name = "John Doe";
+        request.sender.mail = "john.doe+test@example.com";
+        request.sender.phone = "+49 1234 5678 9999";
+        request.subject = "Test inquiry";
+        request.message = "This is a test inquiry!";
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
+
+        // when: sending the inquiry; then: the inquiry sending is refused
+        assertThatThrownBy(() -> sendInquiry(
+                request.requestId,
+                request.sender,
+                request.subject,
+                request.message,
+                Agent.anonymous()
+        )).matches(e -> e.getCause() instanceof MissingPermissionError);
+    }
+
+    @Test
     void shouldRefuseToSendInquiryWhenRequestIdHasAlreadyBeenSeen() {
         // given: a request to send an inquiry
         var request = new SendInquiryRequest();
@@ -58,6 +93,15 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.sender.phone = "+49 1234 5678 9999";
         request.subject = "Test inquiry";
         request.message = "This is a test inquiry!";
+
+        // and: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
 
         // and: the inquiry has already been sent
         sendInquiry(
@@ -75,7 +119,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
                 request.subject,
                 request.message,
                 Agent.anonymous()
-        )).isInstanceOf(TooManyRequestsException.class);
+        )).matches(e -> e.getCause() instanceof TooManyRequestsException);
     }
 
     @Test
@@ -84,12 +128,22 @@ public class SendInquiryTest extends InquiriesModuleTest {
         var request = new SendInquiryRequest();
         request.requestId = "REQUEST_ID";
         request.sender = new SenderDTO();
-        request.sender.name = "John Doe with a really long name that exceeds the maximum length of 128 characters. "
-                + "Here are some fill words that make it longer.";
+        request.sender.name = "John Doe with a really long name that exceeds the maximum length of 200 characters. "
+                + "Here are some fill words that make it longer. Here are some fill words that make it longer. Here "
+                + "are some fill words that make it longer.";
         request.sender.mail = "john.doe+test@example.com";
         request.sender.phone = "+49 1234 5678 9999";
         request.subject = "Test inquiry";
         request.message = "This is a test inquiry!";
+
+        // and: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
 
         // when: sending the inquiry; then: the inquiry sending is refused
         assertThatThrownBy(() -> sendInquiry(
@@ -105,7 +159,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         assertThat(inquiry).isNull();
 
         // when: shorting the sender name and sending the inquiry again
-        request.sender.name = "John Doe with a really long name that exceeds the maximum length of 128 characters. "
+        request.sender.name = "John Doe with a really long name that exceeds the maximum length of 200 characters. "
                 + "Here are some fill words that make it long.";
         sendInquiry(
                 request.requestId,
@@ -131,6 +185,15 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.sender.phone = "+49 1234 5678 9999";
         request.subject = "Test inquiry";
         request.message = "This is a test inquiry!";
+
+        // and: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
 
         // when: sending the inquiry; then: the inquiry sending is refused
         assertThatThrownBy(() -> sendInquiry(
@@ -181,12 +244,19 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.requestId = "REQUEST_ID";
         request.sender = new SenderDTO();
         request.sender.name = "John Doe";
-        request.sender.mail = "john"
-                +
-                ".doeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee+test@example.com";
+        request.sender.mail = "john.doeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee+test@kicherkrabbe.com";
         request.sender.phone = "+49 1234 5678 9999";
         request.subject = "Test inquiry";
         request.message = "This is a test inquiry!";
+
+        // and: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
 
         // when: sending the inquiry; then: the inquiry sending is refused
         assertThatThrownBy(() -> sendInquiry(
@@ -202,9 +272,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         assertThat(inquiry).isNull();
 
         // when: shorting the sender mail and sending the inquiry again
-        request.sender.mail = "john"
-                +
-                ".doeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee+test@example.com";
+        request.sender.mail = "john.doeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee+test@kicherkrabbe.com";
         sendInquiry(
                 request.requestId,
                 request.sender,
@@ -229,6 +297,15 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.sender.phone = "+49 1234 5678 9999";
         request.subject = "Test inquiry";
         request.message = "This is a test inquiry!";
+
+        // and: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
 
         // when: sending the inquiry; then: the inquiry sending is refused
         assertThatThrownBy(() -> sendInquiry(
@@ -367,6 +444,15 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.subject = "Test inquiry";
         request.message = "This is a test inquiry!";
 
+        // and: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
+
         // when: sending the inquiry; then: the inquiry sending is refused
         assertThatThrownBy(() -> sendInquiry(
                 request.requestId,
@@ -381,7 +467,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         assertThat(inquiry).isNull();
 
         // when: shorting the sender phone and sending the inquiry again
-        request.sender.phone = "+49 1234 5678 9999 3289423842283";
+        request.sender.phone = "+49 1234 5678 9999 32894238422";
         sendInquiry(
                 request.requestId,
                 request.sender,
@@ -406,6 +492,15 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.sender.phone = "My phone number";
         request.subject = "Test inquiry";
         request.message = "This is a test inquiry!";
+
+        // and: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
 
         // when: sending the inquiry; then: the inquiry sending is refused
         assertThatThrownBy(() -> sendInquiry(
@@ -472,10 +567,19 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.sender.name = "John Doe";
         request.sender.mail = "john.doe+test@example.de";
         request.sender.phone = "+49 1234 5678 9999";
-        request.subject = "This is a subject that exceeds the maximum length of 256 characters. Here are some fill "
+        request.subject = "This is a subject that exceeds the maximum length of 200 characters. Here are some fill "
                 + "words that make it longer and longer and longer and longer and longer and longer and longer and "
                 + "longer and longer and longer and longer and longer and longer and longer!";
         request.message = "This is a test inquiry!";
+
+        // and: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
 
         // when: sending the inquiry; then: the inquiry sending is refused
         assertThatThrownBy(() -> sendInquiry(
@@ -491,9 +595,8 @@ public class SendInquiryTest extends InquiriesModuleTest {
         assertThat(inquiry).isNull();
 
         // when: shorting the subject and sending the inquiry again
-        request.subject = "This is a subject that exceeds the maximum length of 256 characters. Here are some fill "
-                + "words that make it longer and longer and longer and longer and longer and longer and longer and "
-                + "longer and longer and longer and longer and longer and longer and longer";
+        request.subject = "This is a subject that exceeds the maximum length of 200 characters. Here are some fill "
+                + "words that make it longer and longer and longer and longer and longer and longer and longer";
         sendInquiry(
                 request.requestId,
                 request.sender,
@@ -518,6 +621,15 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.sender.phone = "+49 1234 5678 9999";
         request.subject = "This is a subject with an invalid character: <script>alert('XSS');</script>";
         request.message = "This is a test inquiry!";
+
+        // and: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
 
         // when: sending the inquiry; then: the inquiry sending is refused
         assertThatThrownBy(() -> sendInquiry(
@@ -587,6 +699,15 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.subject = "Test inquiry";
         request.message = "This is a message that is way too long to fathom!!".repeat(200) + "!";
 
+        // and: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
+
         // when: sending the inquiry; then: the inquiry sending is refused
         assertThatThrownBy(() -> sendInquiry(
                 request.requestId,
@@ -626,6 +747,15 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.sender.phone = "+49 1234 5678 9999";
         request.subject = "Test inquiry";
         request.message = "This is a message with an invalid character: <script>alert('XSS');</script>";
+
+        // and: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
 
         // when: sending the inquiry; then: the inquiry sending is refused
         assertThatThrownBy(() -> sendInquiry(
@@ -695,6 +825,12 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.subject = "Test inquiry";
         request.message = "This is a test inquiry!";
 
+        // and: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
         // and: sending inquiries is disabled
         disableSendingInquiries();
 
@@ -705,7 +841,8 @@ public class SendInquiryTest extends InquiriesModuleTest {
                 request.subject,
                 request.message,
                 Agent.anonymous()
-        )).isInstanceOf(InquiriesDisabledException.class);
+        )).matches(e -> e.getCause() instanceof InquiriesDisabledException);
+
 
         // when: enabling sending inquiries and sending the inquiry again
         enableSendingInquiries();
@@ -724,8 +861,21 @@ public class SendInquiryTest extends InquiriesModuleTest {
 
     @Test
     void shouldRefuseToSendInquiryWhenSendingMoreThanNInquiriesWithTheSameEMailWithinACertainTimeFrame() {
-        // given: there is a maximum of 2 inquiries per e-mail address within 24 hours
+        // given: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: there is a maximum of 2 inquiries per e-mail address within 24 hours
         setMaximumInquiriesPerEmailPerTimeFrame(2, Duration.ofHours(24));
+
+        // and: the other rate limits are effectively disabled by setting their maximum to 999
+        setMaximumInquiriesPerTimeFrame(999, Duration.ofHours(24));
+        setMaximumInquiriesPerIPAddressPerTimeFrame(999, Duration.ofHours(24));
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
 
         // and: we are at a fixed point in time
         setTime(Instant.parse("2024-03-12T12:30:00Z"));
@@ -761,7 +911,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
                 "Test inquiry 3",
                 "This is a test inquiry!",
                 Agent.anonymous()
-        )).isInstanceOf(TooManyRequestsException.class);
+        )).matches(e -> e.getCause() instanceof TooManyRequestsException);
 
         // when: another inquiry is sent with another e-mail address; then: the inquiry sending is accepted
         var otherSender = new SenderDTO();
@@ -784,7 +934,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
                 "Test inquiry 5",
                 "This is a test inquiry!",
                 Agent.anonymous()
-        )).isInstanceOf(TooManyRequestsException.class);
+        )).matches(e -> e.getCause() instanceof TooManyRequestsException);
 
         // when: another inquiry is sent 24 hours later; then: the inquiry sending is accepted
         setTime(Instant.parse("2024-03-13T12:30:00Z"));
@@ -799,8 +949,21 @@ public class SendInquiryTest extends InquiriesModuleTest {
 
     @Test
     void shouldRefuseToSendInquiryWhenSendingMoreThanNInquiriesWithinACertainTimeFrameFromTheSameIPAddress() {
-        // given: there is a maximum of 2 inquiries per IP address within 24 hours
+        // given: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: there is a maximum of 2 inquiries per IP address within 24 hours
         setMaximumInquiriesPerIPAddressPerTimeFrame(2, Duration.ofHours(24));
+
+        // and: the other rate limits are effectively disabled by setting their maximum to 999
+        setMaximumInquiriesPerEmailPerTimeFrame(999, Duration.ofHours(24));
+        setMaximumInquiriesPerTimeFrame(999, Duration.ofHours(24));
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
 
         // and: we are at a fixed point in time
         setTime(Instant.parse("2024-03-12T12:30:00Z"));
@@ -839,7 +1002,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
                 "This is a test inquiry!",
                 Agent.anonymous(),
                 "159.185.44.88"
-        )).isInstanceOf(TooManyRequestsException.class);
+        )).matches(e -> e.getCause() instanceof TooManyRequestsException);
 
         // when: another inquiry is sent with another IP address; then: the inquiry sending is accepted
         assertThatNoException().isThrownBy(() -> sendInquiry(
@@ -860,7 +1023,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
                 "This is a test inquiry!",
                 Agent.anonymous(),
                 "159.185.44.88"
-        )).isInstanceOf(TooManyRequestsException.class);
+        )).matches(e -> e.getCause() instanceof TooManyRequestsException);
 
         // when: another inquiry is sent 24 hours later; then: the inquiry sending is accepted
         setTime(Instant.parse("2024-03-13T12:30:00Z"));
@@ -876,8 +1039,21 @@ public class SendInquiryTest extends InquiriesModuleTest {
 
     @Test
     void shouldRefuseToSendInquiryWhenSendingMoreThanNInquiriesWithinACertainTimeFrame() {
-        // given: there is a maximum of 5 inquiries within 24 hours
-        setMaximumInquiriesPerTimeFrame(2, Duration.ofHours(24));
+        // given: anonymous users are allowed to send inquiries
+        allowAnonymousUserToSendInquiries();
+
+        // and: the currently logged in user is able to manage inquiries
+        allowUserToManageInquiries(loggedInUserId);
+
+        // and: there is a maximum of 5 inquiries within 24 hours
+        setMaximumInquiriesPerTimeFrame(5, Duration.ofHours(24));
+
+        // and: the other rate limits are effectively disabled by setting their maximum to 999
+        setMaximumInquiriesPerEmailPerTimeFrame(999, Duration.ofHours(24));
+        setMaximumInquiriesPerIPAddressPerTimeFrame(999, Duration.ofHours(24));
+
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
 
         // and: we are at a fixed point in time
         setTime(Instant.parse("2024-03-12T12:30:00Z"));
@@ -943,7 +1119,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
                 "Test inquiry 6",
                 "This is a test inquiry!",
                 Agent.anonymous()
-        )).isInstanceOf(TooManyRequestsException.class);
+        )).matches(e -> e.getCause() instanceof TooManyRequestsException);
 
         // when: another inquiry is sent 23 hours later; then: the inquiry sending is denied as well
         setTime(Instant.parse("2024-03-13T11:30:00Z"));
@@ -953,7 +1129,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
                 "Test inquiry 7",
                 "This is a test inquiry!",
                 Agent.anonymous()
-        )).isInstanceOf(TooManyRequestsException.class);
+        )).matches(e -> e.getCause() instanceof TooManyRequestsException);
 
         // when: another inquiry is sent 24 hours later; then: the inquiry sending is accepted
         setTime(Instant.parse("2024-03-13T12:30:00Z"));

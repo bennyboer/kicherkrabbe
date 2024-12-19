@@ -21,7 +21,7 @@
     <label for="mail">
       E-Mail
       <span class="input-limit">
-        {{ mailLength$ | async }} / 200
+        {{ mailLength$ | async }} / 70
       </span>
     </label>
     <input #mail
@@ -38,7 +38,7 @@
       } @else if (mailFormatInvalid$ | async) {
         <app-note level="error">Die E-Mail Adresse scheint ungültig zu sein</app-note>
       } @else if (mailTooLong$ | async) {
-        <app-note level="error">Die E-Mail Adresse darf maximal 200 Zeichen lang sein</app-note>
+        <app-note level="error">Die E-Mail Adresse darf maximal 70 Zeichen lang sein</app-note>
       }
     }
   </div>
@@ -47,7 +47,7 @@
     <label for="phone">
       Telefon (optional)
       <span class="input-limit">
-        {{ phoneLength$ | async }} / 100
+        {{ phoneLength$ | async }} / 30
       </span>
     </label>
     <input #phone
@@ -59,7 +59,7 @@
 
     @if (phoneTouched$ | async) {
       @if (phoneTooLong$ | async) {
-        <app-note level="error">Die Telefonnummer darf maximal 100 Zeichen lang sein</app-note>
+        <app-note level="error">Die Telefonnummer darf maximal 30 Zeichen lang sein</app-note>
       }
     }
   </div>

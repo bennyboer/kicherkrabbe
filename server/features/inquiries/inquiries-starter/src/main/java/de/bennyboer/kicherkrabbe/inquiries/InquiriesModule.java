@@ -3,30 +3,80 @@ package de.bennyboer.kicherkrabbe.inquiries;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.inquiries.api.InquiryDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
-import de.bennyboer.kicherkrabbe.inquiries.settings.Settings;
-import de.bennyboer.kicherkrabbe.inquiries.settings.SettingsId;
-import de.bennyboer.kicherkrabbe.inquiries.settings.SettingsService;
+import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.InquiryLookupRepo;
+import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.LookupInquiry;
+import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.Request;
+import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.RequestRepo;
+import de.bennyboer.kicherkrabbe.inquiries.settings.*;
+import de.bennyboer.kicherkrabbe.inquiries.transformers.LookupInquiryTransformer;
+import de.bennyboer.kicherkrabbe.permissions.*;
 import jakarta.annotation.Nullable;
-import lombok.AllArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
+import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
+import static de.bennyboer.kicherkrabbe.inquiries.Actions.*;
 
-@AllArgsConstructor
 public class InquiriesModule {
 
-    private static final SettingsId DEFAULT_SETTINGS = SettingsId.of("DEFAULT");
+    private static final SettingsId DEFAULT_SETTINGS_ID = SettingsId.of("DEFAULT");
 
     private final InquiryService inquiryService;
 
     private final SettingsService settingsService;
 
-    public Mono<Void> sendInquiry(
+    private final InquiryLookupRepo inquiryLookupRepo;
+
+    private final RequestRepo requestRepo;
+
+    private final PermissionsService permissionsService;
+
+    private final Clock clock;
+
+    public InquiriesModule(
+            InquiryService inquiryService,
+            SettingsService settingsService,
+            InquiryLookupRepo inquiryLookupRepo,
+            RequestRepo requestRepo,
+            PermissionsService permissionsService,
+            Clock clock
+    ) {
+        this.inquiryService = inquiryService;
+        this.settingsService = settingsService;
+        this.inquiryLookupRepo = inquiryLookupRepo;
+        this.requestRepo = requestRepo;
+        this.permissionsService = permissionsService;
+        this.clock = clock;
+    }
+
+    private boolean isInitialized = false;
+
+    @EventListener(ContextRefreshedEvent.class)
+    public void onApplicationEvent(ContextRefreshedEvent ignoredEvent) {
+        if (isInitialized) {
+            return;
+        }
+        isInitialized = true;
+
+        initialize()
+                .subscribeOn(Schedulers.boundedElastic())
+                .subscribe();
+    }
+
+    public Mono<Void> initialize() {
+        return allowAnonymousUserToSendInquiries();
+    }
+
+    public Mono<String> sendInquiry(
             String requestId,
             SenderDTO sender,
             String subject,
@@ -36,21 +86,21 @@ public class InquiriesModule {
     ) {
         var internalRequestId = RequestId.of(requestId);
 
-        var senderName = SenderName.of(sanitizeInput(sender.name));
-        var mail = EMail.of(sanitizeInput(sender.mail));
+        var senderName = SenderName.of(assertInputSafe(sender.name));
+        var mail = EMail.of(assertInputSafe(sender.mail));
         var phone = Optional.ofNullable(sender.phone)
-                .map(this::sanitizeInput)
+                .map(this::assertInputSafe)
                 .map(PhoneNumber::of)
                 .orElse(null);
 
         var internalSender = Sender.of(senderName, mail, phone);
-        var internalSubject = Subject.of(sanitizeInput(subject));
-        var internalMessage = Message.of(sanitizeInput(message));
+        var internalSubject = Subject.of(assertInputSafe(subject));
+        var internalMessage = Message.of(assertInputSafe(message));
 
         var fingerprint = Fingerprint.of(ipAddress);
 
-        // TODO Permission Check
-        return assertRequestIdNotSeen(internalRequestId)
+        return assertAgentIsAllowedTo(agent, SEND)
+                .then(assertRequestIdNotSeen(internalRequestId))
                 .then(assertInquiriesEnabled())
                 .then(assertNotRateLimited(mail, ipAddress))
                 .then(inquiryService.send(
@@ -61,18 +111,24 @@ public class InquiriesModule {
                         fingerprint,
                         agent
                 ))
-                .then();
+                .delayUntil(ignored -> requestRepo.insert(Request.of(
+                        internalRequestId,
+                        mail,
+                        ipAddress,
+                        clock.instant()
+                )))
+                .map(idAndVersion -> idAndVersion.getId().getValue());
     }
 
     public Mono<InquiryDTO> getInquiryByRequestId(String requestId, Agent agent) {
-        // TODO Check whether the caller has the permission to see the inquiry (no one really has, but we should
-        //  check anyway)
-        return Mono.empty(); // TODO
+        return inquiryLookupRepo.findByRequestId(RequestId.of(requestId))
+                .delayUntil(inquiry -> assertAgentIsAllowedTo(agent, READ, inquiry.getId()))
+                .map(LookupInquiryTransformer::toApi);
     }
 
     public Mono<Void> setSendingInquiriesEnabled(boolean enabled, Agent agent) {
-        // TODO Permission Check
-        return getSettings(agent)
+        return assertAgentIsAllowedTo(agent, ENABLE_OR_DISABLE_INQUIRIES)
+                .then(getSettings())
                 .flatMap(settings -> {
                     if (enabled) {
                         return settingsService.enable(settings.getId(), settings.getVersion(), agent);
@@ -84,30 +140,206 @@ public class InquiriesModule {
     }
 
     public Mono<Void> setMaximumInquiriesPerEmailPerTimeFrame(int count, Duration duration, Agent agent) {
-        // TODO Check whether caller has permission
-        return Mono.empty(); // TODO
+        return assertAgentIsAllowedTo(agent, UPDATE_RATE_LIMITS)
+                .then(getSettings())
+                .flatMap(settings -> {
+                    RateLimits rateLimits = settings.getRateLimits();
+
+                    var updatedPerMailRateLimit = RateLimit.of(count, duration);
+                    var updatedRateLimits = RateLimits.of(
+                            updatedPerMailRateLimit,
+                            rateLimits.getPerIp(),
+                            rateLimits.getOverall()
+                    );
+
+                    return settingsService.updateRateLimits(
+                            settings.getId(),
+                            settings.getVersion(),
+                            updatedRateLimits,
+                            agent
+                    );
+                })
+                .then();
     }
 
     public Mono<Void> setMaximumInquiriesPerIPAddressPerTimeFrame(int count, Duration duration, Agent agent) {
-        // TODO Check whether caller has permission
-        return Mono.empty(); // TODO
+        return assertAgentIsAllowedTo(agent, UPDATE_RATE_LIMITS)
+                .then(getSettings())
+                .flatMap(settings -> {
+                    RateLimits rateLimits = settings.getRateLimits();
+
+                    var updatedPerIpRateLimit = RateLimit.of(count, duration);
+                    var updatedRateLimits = RateLimits.of(
+                            rateLimits.getPerMail(),
+                            updatedPerIpRateLimit,
+                            rateLimits.getOverall()
+                    );
+
+                    return settingsService.updateRateLimits(
+                            settings.getId(),
+                            settings.getVersion(),
+                            updatedRateLimits,
+                            agent
+                    );
+                })
+                .then();
     }
 
     public Mono<Void> setMaximumInquiriesPerTimeFrame(int count, Duration duration, Agent agent) {
-        // TODO Check whether caller has permission
-        return Mono.empty(); // TODO
+        return assertAgentIsAllowedTo(agent, UPDATE_RATE_LIMITS)
+                .then(getSettings())
+                .flatMap(settings -> {
+                    RateLimits rateLimits = settings.getRateLimits();
+
+                    var updatedOverallRateLimit = RateLimit.of(count, duration);
+                    var updatedRateLimits = RateLimits.of(
+                            rateLimits.getPerMail(),
+                            rateLimits.getPerIp(),
+                            updatedOverallRateLimit
+                    );
+
+                    return settingsService.updateRateLimits(
+                            settings.getId(),
+                            settings.getVersion(),
+                            updatedRateLimits,
+                            agent
+                    );
+                })
+                .then();
+    }
+
+    public Mono<Void> updateInquiryInLookup(String inquiryId) {
+        return inquiryService.getOrThrow(InquiryId.of(inquiryId))
+                .flatMap(inquiry -> inquiryLookupRepo.update(LookupInquiry.of(
+                        inquiry.getId(),
+                        inquiry.getVersion(),
+                        inquiry.getRequestId(),
+                        inquiry.getSender(),
+                        inquiry.getSubject(),
+                        inquiry.getMessage(),
+                        inquiry.getFingerprint(),
+                        inquiry.getCreatedAt()
+                )));
+    }
+
+    public Mono<Void> removeInquiryFromLookup(String inquiryId) {
+        return inquiryLookupRepo.remove(InquiryId.of(inquiryId));
+    }
+
+    public Mono<Void> allowSystemToReadAndDeleteInquiry(String inquiryId) {
+        var resource = Resource.of(getResourceType(), ResourceId.of(inquiryId));
+        var systemHolder = Holder.group(HolderId.system());
+
+        var readInquiry = Permission.builder()
+                .holder(systemHolder)
+                .isAllowedTo(READ)
+                .on(resource);
+        var deleteInquiry = Permission.builder()
+                .holder(systemHolder)
+                .isAllowedTo(DELETE)
+                .on(resource);
+
+        return permissionsService.addPermissions(readInquiry, deleteInquiry);
+    }
+
+    public Mono<Void> allowAnonymousUserToSendInquiries() {
+        var anonymousHolder = Holder.group(HolderId.anonymous());
+
+        var sendInquiriesPermissions = Permission.builder()
+                .holder(anonymousHolder)
+                .isAllowedTo(SEND)
+                .onType(getResourceType());
+
+        return permissionsService.addPermission(sendInquiriesPermissions);
+    }
+
+    public Mono<Void> allowUserToManageInquiries(String userId) {
+        var userHolder = Holder.user(HolderId.of(userId));
+
+        var enableOrDisableInquiriesPermissions = Permission.builder()
+                .holder(userHolder)
+                .isAllowedTo(ENABLE_OR_DISABLE_INQUIRIES)
+                .onType(getResourceType());
+        var updateRateLimitsPermissions = Permission.builder()
+                .holder(userHolder)
+                .isAllowedTo(UPDATE_RATE_LIMITS)
+                .onType(getResourceType());
+
+        return permissionsService.addPermissions(
+                enableOrDisableInquiriesPermissions,
+                updateRateLimitsPermissions
+        );
+    }
+
+    public Mono<Void> removePermissionsForUser(String userId) {
+        var userHolder = Holder.user(HolderId.of(userId));
+
+        return permissionsService.removePermissionsByHolder(userHolder);
+    }
+
+    public Mono<Void> removePermissions(String inquiryId) {
+        var resource = Resource.of(getResourceType(), ResourceId.of(inquiryId));
+
+        return permissionsService.removePermissionsByResource(resource);
     }
 
     private Mono<Void> assertRequestIdNotSeen(RequestId requestId) {
-        return Mono.empty(); // TODO Check if we haven't seen requestId before, otherwise throw TooManyRequestsException
+        return requestRepo.findById(requestId)
+                .flatMap(request -> Mono.error(new TooManyRequestsException()));
     }
 
     private Mono<Void> assertNotRateLimited(EMail mail, @Nullable String ipAddress) {
-        return Mono.empty(); // TODO Check if the mail or IP address is rate limited
+        return getSettings()
+                .map(Settings::getRateLimits)
+                .delayUntil(rateLimits -> assertNotOverallRateLimited(rateLimits.getOverall()))
+                .delayUntil(rateLimits -> assertNotRateLimitedByMail(mail, rateLimits.getPerMail()))
+                .delayUntil(rateLimits -> Optional.ofNullable(ipAddress)
+                        .map(ip -> assertNotRateLimitedByIpAddress(ip, rateLimits.getPerIp()))
+                        .orElse(Mono.empty()))
+                .then();
+    }
+
+    private Mono<Void> assertNotOverallRateLimited(RateLimit rateLimit) {
+        Instant since = clock.instant().minus(rateLimit.getDuration());
+
+        return requestRepo.countRecent(since)
+                .flatMap(count -> {
+                    if (count >= rateLimit.getMaxRequests()) {
+                        return Mono.error(new TooManyRequestsException());
+                    }
+
+                    return Mono.empty();
+                });
+    }
+
+    private Mono<Void> assertNotRateLimitedByMail(EMail mail, RateLimit rateLimit) {
+        Instant since = clock.instant().minus(rateLimit.getDuration());
+
+        return requestRepo.countRecentByMail(mail, since)
+                .flatMap(count -> {
+                    if (count >= rateLimit.getMaxRequests()) {
+                        return Mono.error(new TooManyRequestsException());
+                    }
+
+                    return Mono.empty();
+                });
+    }
+
+    private Mono<Void> assertNotRateLimitedByIpAddress(String ipAddress, RateLimit rateLimit) {
+        Instant since = clock.instant().minus(rateLimit.getDuration());
+
+        return requestRepo.countRecentByIpAddress(ipAddress, since)
+                .flatMap(count -> {
+                    if (count >= rateLimit.getMaxRequests()) {
+                        return Mono.error(new TooManyRequestsException());
+                    }
+
+                    return Mono.empty();
+                });
     }
 
     private Mono<Void> assertInquiriesEnabled() {
-        return getSettings(Agent.system())
+        return getSettings()
                 .flatMap(settings -> {
                     if (settings.isDisabled()) {
                         return Mono.error(new InquiriesDisabledException());
@@ -117,16 +349,57 @@ public class InquiriesModule {
                 });
     }
 
-    private Mono<Settings> getSettings(Agent agent) {
-        return settingsService.get(DEFAULT_SETTINGS)
-                .switchIfEmpty(settingsService.init(agent)
+    private Mono<Settings> getSettings() {
+        return settingsService.get(DEFAULT_SETTINGS_ID)
+                .switchIfEmpty(settingsService.init(DEFAULT_SETTINGS_ID, Agent.system())
                         .flatMap(idAndVersion -> settingsService.get(idAndVersion.getId())));
     }
 
-    private String sanitizeInput(String input) {
+    private String assertInputSafe(String input) {
         notNull(input, "Input must be given");
 
-        return Jsoup.clean(input, Safelist.basic());
+        var sanitized = Jsoup.clean(input, Safelist.basic());
+        if (!input.equals(sanitized)) {
+            throw new IllegalArgumentException("Input seems to be unsafe and is thus rejected");
+        }
+
+        return input;
+    }
+
+    private Mono<Void> assertAgentIsAllowedTo(Agent agent, Action action) {
+        return assertAgentIsAllowedTo(agent, action, null);
+    }
+
+    private Mono<Void> assertAgentIsAllowedTo(Agent agent, Action action, @Nullable InquiryId inquiryId) {
+        Permission permission = toPermission(agent, action, inquiryId);
+        return permissionsService.assertHasPermission(permission);
+    }
+
+    private Permission toPermission(Agent agent, Action action, @Nullable InquiryId inquiryId) {
+        Holder holder = toHolder(agent);
+        var resourceType = getResourceType();
+
+        Permission.Builder permissionBuilder = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(action);
+
+        return Optional.ofNullable(inquiryId)
+                .map(id -> permissionBuilder.on(Resource.of(resourceType, ResourceId.of(inquiryId.getValue()))))
+                .orElseGet(() -> permissionBuilder.onType(resourceType));
+    }
+
+    private Holder toHolder(Agent agent) {
+        if (agent.isSystem()) {
+            return Holder.group(HolderId.system());
+        } else if (agent.isAnonymous()) {
+            return Holder.group(HolderId.anonymous());
+        } else {
+            return Holder.user(HolderId.of(agent.getId().getValue()));
+        }
+    }
+
+    private ResourceType getResourceType() {
+        return ResourceType.of("INQUIRY");
     }
 
 }
