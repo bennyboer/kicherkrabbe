@@ -21,6 +21,10 @@ public class SenderName {
         return new SenderName(value);
     }
 
+    public SenderName anonymize() {
+        return SenderName.of("ANONYMIZED");
+    }
+
     @Override
     public String toString() {
         return "SenderName(%s)".formatted(value);

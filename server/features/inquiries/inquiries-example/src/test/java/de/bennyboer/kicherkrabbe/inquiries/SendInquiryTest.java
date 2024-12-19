@@ -24,6 +24,9 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.subject = "Test inquiry";
         request.message = "This is a test inquiry!";
 
+        // and: sending inquiries is enabled
+        enableSendingInquiries();
+
         // when: sending the inquiry
         sendInquiry(
                 request.requestId,

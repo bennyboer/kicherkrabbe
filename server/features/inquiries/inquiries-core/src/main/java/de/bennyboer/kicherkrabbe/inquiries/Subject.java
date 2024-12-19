@@ -21,6 +21,10 @@ public class Subject {
         return new Subject(value);
     }
 
+    public Subject anonymize() {
+        return Subject.of("ANONYMIZED");
+    }
+
     @Override
     public String toString() {
         return "Subject(%s)".formatted(value);

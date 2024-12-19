@@ -21,6 +21,10 @@ public class Message {
         return new Message(value);
     }
 
+    public Message anonymize() {
+        return Message.of("ANONYMIZED");
+    }
+
     @Override
     public String toString() {
         return "Message(%s)".formatted(value);

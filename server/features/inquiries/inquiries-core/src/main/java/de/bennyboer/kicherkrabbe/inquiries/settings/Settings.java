@@ -74,4 +74,8 @@ public class Settings implements Aggregate {
         }).withVersion(version);
     }
 
+    public boolean isDisabled() {
+        return !isEnabled();
+    }
+
 }

@@ -3,9 +3,7 @@ package de.bennyboer.kicherkrabbe.inquiries.snapshot;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
-import de.bennyboer.kicherkrabbe.inquiries.Message;
-import de.bennyboer.kicherkrabbe.inquiries.Sender;
-import de.bennyboer.kicherkrabbe.inquiries.Subject;
+import de.bennyboer.kicherkrabbe.inquiries.*;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -24,11 +22,15 @@ public class SnapshottedEvent implements Event {
 
     public static final Version VERSION = Version.zero();
 
+    RequestId requestId;
+
     Sender sender;
 
     Subject subject;
 
     Message message;
+
+    Fingerprint fingerprint;
 
     Instant createdAt;
 
@@ -36,18 +38,22 @@ public class SnapshottedEvent implements Event {
     Instant deletedAt;
 
     public static SnapshottedEvent of(
+            RequestId requestId,
             Sender sender,
             Subject subject,
             Message message,
+            Fingerprint fingerprint,
             Instant createdAt,
             @Nullable Instant deletedAt
     ) {
+        notNull(requestId, "Request ID must be given");
         notNull(sender, "Sender must be given");
         notNull(subject, "Subject must be given");
         notNull(message, "Message must be given");
+        notNull(fingerprint, "Fingerprint must be given");
         notNull(createdAt, "Created at must be given");
 
-        return new SnapshottedEvent(sender, subject, message, createdAt, deletedAt);
+        return new SnapshottedEvent(requestId, sender, subject, message, fingerprint, createdAt, deletedAt);
     }
 
     @Override

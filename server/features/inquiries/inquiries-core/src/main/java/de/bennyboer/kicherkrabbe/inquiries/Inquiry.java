@@ -36,11 +36,15 @@ public class Inquiry implements Aggregate {
 
     Version version;
 
+    RequestId requestId;
+
     Sender sender;
 
     Subject subject;
 
     Message message;
+
+    Fingerprint fingerprint;
 
     Instant createdAt;
 
@@ -48,7 +52,17 @@ public class Inquiry implements Aggregate {
     Instant deletedAt;
 
     public static Inquiry init() {
-        return new Inquiry(null, Version.zero(), null, null, null, Instant.now(), null);
+        return new Inquiry(
+                null,
+                Version.zero(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                Instant.now(),
+                null
+        );
     }
 
     @Override
@@ -57,13 +71,21 @@ public class Inquiry implements Aggregate {
 
         return switch (cmd) {
             case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
+                    getRequestId(),
                     getSender(),
                     getSubject(),
                     getMessage(),
+                    getFingerprint(),
                     getCreatedAt(),
                     getDeletedAt().orElse(null)
             ));
-            case SendCmd c -> ApplyCommandResult.of(SentEvent.of(c.getSender(), c.getSubject(), c.getMessage()));
+            case SendCmd c -> ApplyCommandResult.of(SentEvent.of(
+                    c.getRequestId(),
+                    c.getSender(),
+                    c.getSubject(),
+                    c.getMessage(),
+                    c.getFingerprint()
+            ));
             case DeleteCmd ignored -> ApplyCommandResult.of(DeletedEvent.of());
             default -> throw new IllegalArgumentException("Unknown command " + cmd.getClass().getSimpleName());
         };
@@ -76,17 +98,25 @@ public class Inquiry implements Aggregate {
 
         return (switch (event) {
             case SnapshottedEvent e -> withId(id)
+                    .withRequestId(e.getRequestId())
                     .withSender(e.getSender())
                     .withSubject(e.getSubject())
                     .withMessage(e.getMessage())
+                    .withFingerprint(e.getFingerprint())
                     .withCreatedAt(e.getCreatedAt())
                     .withDeletedAt(e.getDeletedAt().orElse(null));
             case SentEvent e -> withId(id)
+                    .withRequestId(e.getRequestId())
                     .withSender(e.getSender())
                     .withSubject(e.getSubject())
                     .withMessage(e.getMessage())
+                    .withFingerprint(e.getFingerprint())
                     .withCreatedAt(metadata.getDate());
-            case DeletedEvent ignored -> withDeletedAt(metadata.getDate());
+            case DeletedEvent ignored -> withSender(getSender().anonymize())
+                    .withSubject(getSubject().anonymize())
+                    .withMessage(getMessage().anonymize())
+                    .withFingerprint(getFingerprint().anonymize())
+                    .withDeletedAt(metadata.getDate());
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());
         }).withVersion(version);
     }

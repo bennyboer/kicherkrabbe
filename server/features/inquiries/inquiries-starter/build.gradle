@@ -1,3 +1,5 @@
 dependencies {
     api project(':features:inquiries:inquiries-core')
+
+    implementation 'org.jsoup:jsoup:1.18.3'
 }

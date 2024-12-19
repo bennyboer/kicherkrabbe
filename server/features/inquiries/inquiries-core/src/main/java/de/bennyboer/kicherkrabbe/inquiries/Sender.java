@@ -4,6 +4,7 @@ import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Value;
+import lombok.With;
 
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import static lombok.AccessLevel.NONE;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
+@With(PRIVATE)
 @AllArgsConstructor(access = PRIVATE)
 public class Sender {
 
@@ -32,6 +34,12 @@ public class Sender {
 
     public Optional<PhoneNumber> getPhone() {
         return Optional.ofNullable(phone);
+    }
+
+    public Sender anonymize() {
+        return withName(getName().anonymize())
+                .withMail(getMail().anonymize())
+                .withPhone(null);
     }
 
     @Override

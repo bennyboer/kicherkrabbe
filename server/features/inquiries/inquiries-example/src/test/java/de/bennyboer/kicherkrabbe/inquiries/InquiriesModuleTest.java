@@ -1,8 +1,11 @@
 package de.bennyboer.kicherkrabbe.inquiries;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.inquiries.api.InquiryDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
+import de.bennyboer.kicherkrabbe.inquiries.settings.SettingsService;
 import de.bennyboer.kicherkrabbe.testing.time.TestClock;
 
 import java.time.Duration;
@@ -14,7 +17,17 @@ public class InquiriesModuleTest {
 
     private final InquiriesModuleConfig config = new InquiriesModuleConfig();
 
-    private final InquiriesModule module = config.inquiriesModule();
+    private final InquiryService inquiryService = new InquiryService(
+            new InMemoryEventSourcingRepo(),
+            new LoggingEventPublisher()
+    );
+
+    private final SettingsService settingsService = new SettingsService(
+            new InMemoryEventSourcingRepo(),
+            new LoggingEventPublisher()
+    );
+
+    private final InquiriesModule module = config.inquiriesModule(inquiryService, settingsService);
 
     public void sendInquiry(
             String requestId,

@@ -28,4 +28,8 @@ public class EMail {
         return "EMail(%s)".formatted(value);
     }
 
+    public EMail anonymize() {
+        return EMail.of("anonymized@kicherkrabbe.com");
+    }
+
 }
