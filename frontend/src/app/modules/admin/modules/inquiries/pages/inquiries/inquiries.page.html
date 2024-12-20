@@ -3,7 +3,9 @@
   Die Anfragen selbst findest du in deinem <a routerLink="../mailbox">Postfach</a>.
 </app-note>
 
-<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+<div class="loading-container">
+  <app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+</div>
 
 @if (statsLoaded$ | async) {
   <!-- TODO Stats über die Anfragen in den letzten Stunden/Tagen/Wochen/Monaten? -->
@@ -16,7 +18,6 @@
                     [checked]="contactFormEnabled$ | async"
                     [disabled]="updatingContactFormEnabled$ | async"
                     (checkedChanges)="toggleContactFormEnabled()">
-        Kontaktformular aktivieren
       </app-checkbox>
     </div>
 

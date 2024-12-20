@@ -19,6 +19,8 @@ import {
   takeUntil,
 } from 'rxjs';
 import { NotificationService } from '../../../../../shared';
+import { InquiriesService } from '../../services';
+import { RateLimit, RateLimits } from '../../models';
 
 @Component({
   selector: 'app-inquiries-page',
@@ -108,7 +110,10 @@ export class InquiriesPage implements OnInit, OnDestroy {
 
   private readonly destroy$: Subject<void> = new Subject<void>();
 
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(
+    private readonly notificationService: NotificationService,
+    private readonly inquiriesService: InquiriesService,
+  ) {}
 
   ngOnInit(): void {
     this.reloadStats();
@@ -145,9 +150,12 @@ export class InquiriesPage implements OnInit, OnDestroy {
 
     const isActivating = !this.contactFormEnabled$.value;
 
-    of(null)
+    const action$ = isActivating
+      ? this.inquiriesService.enableInquiries()
+      : this.inquiriesService.disableInquiries();
+
+    action$
       .pipe(
-        delay(400),
         first(),
         catchError((e) => {
           console.error('Failed to toggle contact form enabled', e);
@@ -201,10 +209,15 @@ export class InquiriesPage implements OnInit, OnDestroy {
 
     this.updatingRateLimitForMail$.next(true);
 
-    // TODO Implement backend update
-    of(null)
+    const rateLimits = RateLimits.of({
+      perMail: RateLimit.fullDay(rateLimitNumber),
+      perIp: RateLimit.fullDay(this.rateLimitForIp$.value),
+      overall: RateLimit.fullDay(this.rateLimitPerDay$.value),
+    });
+
+    this.inquiriesService
+      .updateRateLimits(rateLimits)
       .pipe(
-        delay(400),
         first(),
         catchError((e) => {
           console.error('Failed to update rate limit for mail', e);
@@ -254,10 +267,15 @@ export class InquiriesPage implements OnInit, OnDestroy {
 
     this.updatingRateLimitForIp$.next(true);
 
-    // TODO Implement backend update
-    of(null)
+    const rateLimits = RateLimits.of({
+      perMail: RateLimit.fullDay(this.rateLimitForMail$.value),
+      perIp: RateLimit.fullDay(rateLimitNumber),
+      overall: RateLimit.fullDay(this.rateLimitPerDay$.value),
+    });
+
+    this.inquiriesService
+      .updateRateLimits(rateLimits)
       .pipe(
-        delay(400),
         first(),
         catchError((e) => {
           console.error('Failed to update rate limit for IP', e);
@@ -307,10 +325,15 @@ export class InquiriesPage implements OnInit, OnDestroy {
 
     this.updatingRateLimitPerDay$.next(true);
 
-    // TODO Implement backend update
-    of(null)
+    const rateLimits = RateLimits.of({
+      perMail: RateLimit.fullDay(this.rateLimitForMail$.value),
+      perIp: RateLimit.fullDay(this.rateLimitForIp$.value),
+      overall: RateLimit.fullDay(rateLimitNumber),
+    });
+
+    this.inquiriesService
+      .updateRateLimits(rateLimits)
       .pipe(
-        delay(400),
         first(),
         catchError((e) => {
           console.error('Failed to update rate limit per day', e);
@@ -336,10 +359,9 @@ export class InquiriesPage implements OnInit, OnDestroy {
   private reloadSettings(): void {
     this.loadingSettings$.next(true);
 
-    // TODO Implement backend query
-    of(null)
+    this.inquiriesService
+      .getSettings()
       .pipe(
-        delay(400),
         first(),
         catchError((e) => {
           console.error('Failed to load settings', e);
@@ -356,17 +378,18 @@ export class InquiriesPage implements OnInit, OnDestroy {
         }),
         takeUntil(this.destroy$),
       )
-      .subscribe(() => {
-        this.contactFormEnabled$.next(true);
+      .subscribe((settings) => {
+        this.contactFormEnabled$.next(settings.enabled);
 
-        this.rateLimitForMail$.next(2);
-        this.pendingRateLimitForMail$.next(2);
+        const rateLimits = settings.rateLimits;
+        this.rateLimitForMail$.next(rateLimits.perMail.maxRequests);
+        this.pendingRateLimitForMail$.next(rateLimits.perMail.maxRequests);
 
-        this.rateLimitForIp$.next(2);
-        this.pendingRateLimitForIp$.next(2);
+        this.rateLimitForIp$.next(rateLimits.perIp.maxRequests);
+        this.pendingRateLimitForIp$.next(rateLimits.perIp.maxRequests);
 
-        this.rateLimitPerDay$.next(20);
-        this.pendingRateLimitPerDay$.next(20);
+        this.rateLimitPerDay$.next(rateLimits.overall.maxRequests);
+        this.pendingRateLimitPerDay$.next(rateLimits.overall.maxRequests);
       });
   }
 
