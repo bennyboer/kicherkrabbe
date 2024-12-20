@@ -3,6 +3,8 @@ package de.bennyboer.kicherkrabbe.inquiries;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.inquiries.api.InquiryDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
+import de.bennyboer.kicherkrabbe.inquiries.api.requests.UpdateRateLimitsRequest;
+import de.bennyboer.kicherkrabbe.inquiries.api.responses.QuerySettingsResponse;
 import de.bennyboer.kicherkrabbe.inquiries.api.responses.QueryStatusResponse;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.InquiryLookupRepo;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.LookupInquiry;
@@ -10,6 +12,7 @@ import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.Request;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.RequestRepo;
 import de.bennyboer.kicherkrabbe.inquiries.settings.*;
 import de.bennyboer.kicherkrabbe.inquiries.transformers.LookupInquiryTransformer;
+import de.bennyboer.kicherkrabbe.inquiries.transformers.RateLimitsTransformer;
 import de.bennyboer.kicherkrabbe.permissions.*;
 import jakarta.annotation.Nullable;
 import org.jsoup.Jsoup;
@@ -86,6 +89,31 @@ public class InquiriesModule {
                     response.enabled = enabled;
                     return response;
                 });
+    }
+
+    public Mono<QuerySettingsResponse> getSettings(Agent agent) {
+        return assertAgentIsAllowedTo(agent, QUERY_SETTINGS)
+                .then(getSettings())
+                .map(settings -> {
+                    var response = new QuerySettingsResponse();
+                    response.enabled = settings.isEnabled();
+                    response.rateLimits = RateLimitsTransformer.toApi(settings.getRateLimits());
+                    return response;
+                });
+    }
+
+    public Mono<Void> updateRateLimits(UpdateRateLimitsRequest request, Agent agent) {
+        RateLimits rateLimits = RateLimitsTransformer.toInternal(request.rateLimits);
+
+        return assertAgentIsAllowedTo(agent, UPDATE_RATE_LIMITS)
+                .then(getSettings())
+                .flatMap(settings -> settingsService.updateRateLimits(
+                        settings.getId(),
+                        settings.getVersion(),
+                        rateLimits,
+                        agent
+                ))
+                .then();
     }
 
     public Mono<String> sendInquiry(
@@ -272,6 +300,10 @@ public class InquiriesModule {
     public Mono<Void> allowUserToManageInquiries(String userId) {
         var userHolder = Holder.user(HolderId.of(userId));
 
+        var querySettingsPermission = Permission.builder()
+                .holder(userHolder)
+                .isAllowedTo(QUERY_SETTINGS)
+                .onType(getResourceType());
         var enableOrDisableInquiriesPermissions = Permission.builder()
                 .holder(userHolder)
                 .isAllowedTo(ENABLE_OR_DISABLE_INQUIRIES)
@@ -282,6 +314,7 @@ public class InquiriesModule {
                 .onType(getResourceType());
 
         return permissionsService.addPermissions(
+                querySettingsPermission,
                 enableOrDisableInquiriesPermissions,
                 updateRateLimitsPermissions
         );

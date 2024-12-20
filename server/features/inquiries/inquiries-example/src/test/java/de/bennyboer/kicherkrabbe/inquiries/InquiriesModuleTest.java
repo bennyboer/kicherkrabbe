@@ -6,11 +6,14 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublish
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.inquiries.api.InquiryDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
+import de.bennyboer.kicherkrabbe.inquiries.api.requests.UpdateRateLimitsRequest;
+import de.bennyboer.kicherkrabbe.inquiries.api.responses.QuerySettingsResponse;
 import de.bennyboer.kicherkrabbe.inquiries.api.responses.QueryStatusResponse;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.InquiryLookupRepo;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.inmemory.InMemoryInquiryLookupRepo;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.RequestRepo;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.inmemory.InMemoryRequestRepo;
+import de.bennyboer.kicherkrabbe.inquiries.settings.RateLimits;
 import de.bennyboer.kicherkrabbe.inquiries.settings.SettingsService;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
@@ -61,6 +64,10 @@ public class InquiriesModuleTest {
         return module.getStatus(agent).block();
     }
 
+    public QuerySettingsResponse getSettings(Agent agent) {
+        return module.getSettings(agent).block();
+    }
+
     public void sendInquiry(
             String requestId,
             SenderDTO sender,
@@ -101,11 +108,23 @@ public class InquiriesModuleTest {
     }
 
     public void disableSendingInquiries() {
-        module.setSendingInquiriesEnabled(false, Agent.user(AgentId.of(loggedInUserId))).block();
+        disableSendingInquiries(Agent.user(AgentId.of(loggedInUserId)));
+    }
+
+    public void disableSendingInquiries(Agent agent) {
+        module.setSendingInquiriesEnabled(false, agent).block();
     }
 
     public void enableSendingInquiries() {
-        module.setSendingInquiriesEnabled(true, Agent.user(AgentId.of(loggedInUserId))).block();
+        enableSendingInquiries(Agent.user(AgentId.of(loggedInUserId)));
+    }
+
+    public void enableSendingInquiries(Agent agent) {
+        module.setSendingInquiriesEnabled(true, agent).block();
+    }
+
+    public void updateRateLimits(UpdateRateLimitsRequest request, Agent agent) {
+        module.updateRateLimits(request, agent).block();
     }
 
     public void allowAnonymousUserToQueryStatusAndSendInquiries() {

@@ -34,6 +34,13 @@ public class InquiriesHttpConfig {
                 path("/api/inquiries"),
                 route(POST("/send"), handler::sendInquiry)
                         .andRoute(GET("/status"), handler::getStatus)
+                        .andNest(
+                                path("/settings"),
+                                route(GET(""), handler::getSettings)
+                                        .andRoute(POST("/enable"), handler::enable)
+                                        .andRoute(POST("/disable"), handler::disable)
+                                        .andRoute(POST("/rate-limits"), handler::updateRateLimits)
+                        )
         );
     }
 

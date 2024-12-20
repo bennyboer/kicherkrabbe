@@ -8,6 +8,8 @@ public class Actions {
 
     public static final Action READ = Action.of("READ");
 
+    public static final Action QUERY_SETTINGS = Action.of("QUERY_SETTINGS");
+
     public static final Action QUERY_STATUS = Action.of("QUERY_STATUS");
 
     public static final Action ENABLE_OR_DISABLE_INQUIRIES = Action.of("ENABLE_OR_DISABLE_INQUIRIES");

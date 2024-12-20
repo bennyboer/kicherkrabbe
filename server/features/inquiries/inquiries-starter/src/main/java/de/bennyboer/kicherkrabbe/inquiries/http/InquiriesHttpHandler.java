@@ -6,6 +6,8 @@ import de.bennyboer.kicherkrabbe.inquiries.InquiriesDisabledException;
 import de.bennyboer.kicherkrabbe.inquiries.InquiriesModule;
 import de.bennyboer.kicherkrabbe.inquiries.TooManyRequestsException;
 import de.bennyboer.kicherkrabbe.inquiries.api.requests.SendInquiryRequest;
+import de.bennyboer.kicherkrabbe.inquiries.api.requests.UpdateRateLimitsRequest;
+import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.reactive.TransactionalOperator;
@@ -70,6 +72,43 @@ public class InquiriesHttpHandler {
         return toAgent(request)
                 .flatMap(module::getStatus)
                 .flatMap(status -> ServerResponse.ok().bodyValue(status));
+    }
+
+    public Mono<ServerResponse> getSettings(ServerRequest request) {
+        return toAgent(request)
+                .flatMap(module::getSettings)
+                .flatMap(settings -> ServerResponse.ok().bodyValue(settings))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
+    }
+
+    public Mono<ServerResponse> enable(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        return toAgent(request)
+                .flatMap(agent -> module.setSendingInquiriesEnabled(true, agent))
+                .then(ServerResponse.ok().build())
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
+                .as(transactionalOperator::transactional);
+    }
+
+    public Mono<ServerResponse> disable(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        return toAgent(request)
+                .flatMap(agent -> module.setSendingInquiriesEnabled(false, agent))
+                .then(ServerResponse.ok().build())
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
+                .as(transactionalOperator::transactional);
+    }
+
+    public Mono<ServerResponse> updateRateLimits(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        return request.bodyToMono(UpdateRateLimitsRequest.class)
+                .flatMap(req -> toAgent(request).flatMap(agent -> module.updateRateLimits(req, agent)))
+                .then(ServerResponse.ok().build())
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
+                .as(transactionalOperator::transactional);
     }
 
     private Mono<Agent> toAgent(ServerRequest request) {
