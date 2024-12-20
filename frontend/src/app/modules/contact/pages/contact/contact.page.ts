@@ -8,7 +8,7 @@ import { ContactFormResult } from '../../components';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, finalize, map, Observable } from 'rxjs';
 import { InquiriesService } from '../../services';
-import { InquiriesStatus } from '../../models';
+import { InquiriesStatus, Sender } from '../../models';
 
 @Component({
   selector: 'app-contact-page',
@@ -25,8 +25,12 @@ export class ContactPage implements OnInit, OnDestroy {
     );
   protected readonly loadedInquiriesStatus$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
+  protected readonly sending$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
   protected readonly sendingFailed$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
+  private readonly requestId$: BehaviorSubject<string> =
+    new BehaviorSubject<string>(crypto.randomUUID());
 
   protected readonly loading$: Observable<boolean> =
     this.loadingInquiriesStatus$.asObservable();
@@ -48,22 +52,41 @@ export class ContactPage implements OnInit, OnDestroy {
     this.loadingInquiriesStatus$.complete();
     this.inquiriesStatus$.complete();
     this.loadedInquiriesStatus$.complete();
+    this.requestId$.complete();
+    this.sending$.complete();
   }
 
   sendMessage(result: ContactFormResult): void {
+    if (this.sending$.value) {
+      return;
+    }
+    this.sending$.next(true);
     this.sendingFailed$.next(false);
 
-    // TODO Send to backend
-    console.log(result);
-    setTimeout(() => {
-      const isFailure = Math.random() < 0.5;
-      if (isFailure) {
-        this.sendingFailed$.next(true);
-        result.cancel();
-      } else {
-        this.router.navigate(['sent'], { relativeTo: this.route });
-      }
-    }, 3000);
+    const requestId = this.requestId$.value;
+
+    this.inquiriesService
+      .send({
+        requestId,
+        sender: Sender.of({
+          name: result.name,
+          mail: result.mail,
+          phone: result.phone
+            ?.filter((phone) => phone.trim().length > 0)
+            .orElseNull(),
+        }),
+        subject: result.subject,
+        message: JSON.stringify(result.message),
+      })
+      .pipe(finalize(() => this.sending$.next(false)))
+      .subscribe({
+        next: () => this.router.navigate(['sent'], { relativeTo: this.route }),
+        error: () => {
+          this.sendingFailed$.next(true);
+          result.cancel();
+          this.requestId$.next(crypto.randomUUID());
+        },
+      });
   }
 
   private reloadInquiriesStatus(): void {

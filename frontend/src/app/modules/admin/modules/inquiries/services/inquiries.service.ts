@@ -2,7 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../../../../../environments';
-import { RateLimit, RateLimits, Settings } from '../models';
+import {
+  DateRange,
+  RateLimit,
+  RateLimits,
+  Settings,
+  Statistics,
+} from '../models';
 
 interface QuerySettingsResponse {
   enabled: boolean;
@@ -22,6 +28,20 @@ interface RateLimitDTO {
 
 interface UpdateRateLimitsRequest {
   rateLimits: RateLimitsDTO;
+}
+
+interface RequestStatisticsDTO {
+  dateRange: DateRangeDTO;
+  totalRequests: number;
+}
+
+interface DateRangeDTO {
+  from: string;
+  to: string;
+}
+
+interface QueryStatisticsResponse {
+  statistics: RequestStatisticsDTO[];
 }
 
 @Injectable()
@@ -85,5 +105,25 @@ export class InquiriesService {
       `${environment.apiUrl}/inquiries/settings/rate-limits`,
       request,
     );
+  }
+
+  getStatistics(): Observable<Statistics[]> {
+    return this.http
+      .get<QueryStatisticsResponse>(
+        `${environment.apiUrl}/inquiries/statistics`,
+      )
+      .pipe(
+        map((response) =>
+          response.statistics.map((statistics) =>
+            Statistics.of({
+              dateRange: DateRange.of({
+                from: new Date(statistics.dateRange.from),
+                to: new Date(statistics.dateRange.to),
+              }),
+              totalRequests: statistics.totalRequests,
+            }),
+          ),
+        ),
+      );
   }
 }

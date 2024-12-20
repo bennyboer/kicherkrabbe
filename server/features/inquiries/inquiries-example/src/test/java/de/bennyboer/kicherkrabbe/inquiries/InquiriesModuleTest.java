@@ -7,13 +7,13 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMem
 import de.bennyboer.kicherkrabbe.inquiries.api.InquiryDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.requests.UpdateRateLimitsRequest;
+import de.bennyboer.kicherkrabbe.inquiries.api.responses.QueryRequestStatisticsResponse;
 import de.bennyboer.kicherkrabbe.inquiries.api.responses.QuerySettingsResponse;
 import de.bennyboer.kicherkrabbe.inquiries.api.responses.QueryStatusResponse;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.InquiryLookupRepo;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.inmemory.InMemoryInquiryLookupRepo;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.RequestRepo;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.inmemory.InMemoryRequestRepo;
-import de.bennyboer.kicherkrabbe.inquiries.settings.RateLimits;
 import de.bennyboer.kicherkrabbe.inquiries.settings.SettingsService;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
@@ -26,7 +26,7 @@ import java.util.Optional;
 
 public class InquiriesModuleTest {
 
-    private final TestClock clock = new TestClock();
+    protected final TestClock clock = new TestClock();
 
     private final InquiriesModuleConfig config = new InquiriesModuleConfig();
 
@@ -66,6 +66,10 @@ public class InquiriesModuleTest {
 
     public QuerySettingsResponse getSettings(Agent agent) {
         return module.getSettings(agent).block();
+    }
+
+    public QueryRequestStatisticsResponse getRequestStatistics(Instant from, Instant to, Agent agent) {
+        return module.getRequestStatistics(from, to, agent).block();
     }
 
     public void sendInquiry(

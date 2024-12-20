@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.inquiries.EMail;
 import de.bennyboer.kicherkrabbe.inquiries.RequestId;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.Request;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.RequestRepo;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
@@ -51,6 +52,13 @@ public class InMemoryRequestRepo
         return getAll()
                 .filter(request -> request.getCreatedAt().isAfter(since))
                 .count();
+    }
+
+    @Override
+    public Flux<Request> findInTimeFrame(Instant from, Instant to) {
+        return getAll()
+                .filter(request -> !request.getCreatedAt().isBefore(from))
+                .filter(request -> request.getCreatedAt().isBefore(to));
     }
 
 }

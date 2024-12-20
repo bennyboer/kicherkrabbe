@@ -8,13 +8,11 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
-  delay,
   EMPTY,
   finalize,
   first,
   map,
   Observable,
-  of,
   Subject,
   takeUntil,
 } from 'rxjs';
@@ -396,10 +394,9 @@ export class InquiriesPage implements OnInit, OnDestroy {
   private reloadStats(): void {
     this.loadingStats$.next(true);
 
-    // TODO Implement stats backend query
-    of(null)
+    this.inquiriesService
+      .getStatistics()
       .pipe(
-        delay(400),
         first(),
         catchError((e) => {
           console.error('Failed to load stats', e);
@@ -416,6 +413,6 @@ export class InquiriesPage implements OnInit, OnDestroy {
         }),
         takeUntil(this.destroy$),
       )
-      .subscribe(); // TODO Implement stats
+      .subscribe(console.log); // TODO Implement stats
   }
 }

@@ -175,6 +175,58 @@ public abstract class RequestRepoTest {
         assertThat(count).isEqualTo(1);
     }
 
+    @Test
+    void shouldFindRequestsInTimeFrame() {
+        // given: some requests
+        var request1 = Request.of(
+                RequestId.of("REQUEST_ID_1"),
+                EMail.of("john.doe@kicherkrabbe.com"),
+                null,
+                Instant.parse("2024-03-11T12:30:00.00Z")
+        );
+        var request2 = Request.of(
+                RequestId.of("REQUEST_ID_2"),
+                EMail.of("jane.doe@kicherkrabbe.com"),
+                "192.168.1.1",
+                Instant.parse("2024-03-12T13:30:00.00Z")
+        );
+        var request3 = Request.of(
+                RequestId.of("REQUEST_ID_3"),
+                EMail.of("max.mustermann@kicherkrabbe.com"),
+                "192.168.1.2",
+                Instant.parse("2024-03-12T14:30:00.00Z")
+        );
+        var request4 = Request.of(
+                RequestId.of("REQUEST_ID_4"),
+                EMail.of("max.mustermann@kicherkrabbe.com"),
+                "192.168.1.2",
+                Instant.parse("2024-03-13T14:45:00.00Z")
+        );
+
+        insert(request1);
+        insert(request2);
+        insert(request3);
+        insert(request4);
+
+        // when: finding requests in time frame
+        var requests = repo.findInTimeFrame(
+                Instant.parse("2024-03-12T00:00:00.00Z"),
+                Instant.parse("2024-03-15T00:00:00.00Z")
+        ).collectList().block();
+
+        // then: the requests are correct
+        assertThat(requests).containsExactlyInAnyOrder(request2, request3, request4);
+
+        // when: finding requests in time frame with another time frame
+        requests = repo.findInTimeFrame(
+                Instant.parse("2024-03-11T00:00:00.00Z"),
+                Instant.parse("2024-03-12T00:00:00.00Z")
+        ).collectList().block();
+
+        // then: the requests are correct
+        assertThat(requests).containsExactlyInAnyOrder(request1);
+    }
+
     private void insert(Request request) {
         repo.insert(request).block();
     }

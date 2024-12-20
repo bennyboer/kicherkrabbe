@@ -9,6 +9,9 @@ import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+import java.time.Clock;
+import java.util.Optional;
+
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
@@ -23,9 +26,10 @@ public class InquiriesHttpConfig {
     @Bean
     public InquiriesHttpHandler inquiriesHttpHandler(
             InquiriesModule module,
-            ReactiveTransactionManager transactionManager
+            ReactiveTransactionManager transactionManager,
+            Optional<Clock> clock
     ) {
-        return new InquiriesHttpHandler(module, transactionManager);
+        return new InquiriesHttpHandler(module, transactionManager, clock.orElse(Clock.systemUTC()));
     }
 
     @Bean
@@ -34,6 +38,7 @@ public class InquiriesHttpConfig {
                 path("/api/inquiries"),
                 route(POST("/send"), handler::sendInquiry)
                         .andRoute(GET("/status"), handler::getStatus)
+                        .andRoute(GET("/statistics"), handler::getStatistics)
                         .andNest(
                                 path("/settings"),
                                 route(GET(""), handler::getSettings)

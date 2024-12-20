@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.index.ReactiveIndexOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -69,6 +70,15 @@ public class MongoRequestRepo
         Query query = query(criteria);
 
         return template.count(query, MongoRequest.class, collectionName);
+    }
+
+    @Override
+    public Flux<Request> findInTimeFrame(Instant from, Instant to) {
+        Criteria criteria = where("createdAt").gte(from).lt(to);
+        Query query = query(criteria);
+
+        return template.find(query, MongoRequest.class, collectionName)
+                .map(serializer::deserialize);
     }
 
     @Override

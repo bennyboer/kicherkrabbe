@@ -10,6 +10,8 @@ public class Actions {
 
     public static final Action QUERY_SETTINGS = Action.of("QUERY_SETTINGS");
 
+    public static final Action QUERY_STATISTICS = Action.of("QUERY_STATISTICS");
+
     public static final Action QUERY_STATUS = Action.of("QUERY_STATUS");
 
     public static final Action ENABLE_OR_DISABLE_INQUIRIES = Action.of("ENABLE_OR_DISABLE_INQUIRIES");

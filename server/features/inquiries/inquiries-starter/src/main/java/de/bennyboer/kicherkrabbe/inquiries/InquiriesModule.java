@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.inquiries.api.InquiryDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.requests.UpdateRateLimitsRequest;
+import de.bennyboer.kicherkrabbe.inquiries.api.responses.QueryRequestStatisticsResponse;
 import de.bennyboer.kicherkrabbe.inquiries.api.responses.QuerySettingsResponse;
 import de.bennyboer.kicherkrabbe.inquiries.api.responses.QueryStatusResponse;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.InquiryLookupRepo;
@@ -13,6 +14,7 @@ import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.RequestRepo;
 import de.bennyboer.kicherkrabbe.inquiries.settings.*;
 import de.bennyboer.kicherkrabbe.inquiries.transformers.LookupInquiryTransformer;
 import de.bennyboer.kicherkrabbe.inquiries.transformers.RateLimitsTransformer;
+import de.bennyboer.kicherkrabbe.inquiries.transformers.RequestStatisticsTransformer;
 import de.bennyboer.kicherkrabbe.permissions.*;
 import jakarta.annotation.Nullable;
 import org.jsoup.Jsoup;
@@ -98,6 +100,22 @@ public class InquiriesModule {
                     var response = new QuerySettingsResponse();
                     response.enabled = settings.isEnabled();
                     response.rateLimits = RateLimitsTransformer.toApi(settings.getRateLimits());
+                    return response;
+                });
+    }
+
+    public Mono<QueryRequestStatisticsResponse> getRequestStatistics(
+            Instant from,
+            Instant to,
+            Agent agent
+    ) {
+        return assertAgentIsAllowedTo(agent, QUERY_STATISTICS)
+                .thenMany(requestRepo.findInTimeFrame(from, to))
+                .reduce(RequestStatisticsBuilder.init(), RequestStatisticsBuilder::count)
+                .map(RequestStatisticsBuilder::build)
+                .map(statistics -> {
+                    var response = new QueryRequestStatisticsResponse();
+                    response.statistics = RequestStatisticsTransformer.toApi(statistics);
                     return response;
                 });
     }
@@ -304,6 +322,10 @@ public class InquiriesModule {
                 .holder(userHolder)
                 .isAllowedTo(QUERY_SETTINGS)
                 .onType(getResourceType());
+        var queryStatisticsPermission = Permission.builder()
+                .holder(userHolder)
+                .isAllowedTo(QUERY_STATISTICS)
+                .onType(getResourceType());
         var enableOrDisableInquiriesPermissions = Permission.builder()
                 .holder(userHolder)
                 .isAllowedTo(ENABLE_OR_DISABLE_INQUIRIES)
@@ -315,6 +337,7 @@ public class InquiriesModule {
 
         return permissionsService.addPermissions(
                 querySettingsPermission,
+                queryStatisticsPermission,
                 enableOrDisableInquiriesPermissions,
                 updateRateLimitsPermissions
         );

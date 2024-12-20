@@ -17,8 +17,11 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.net.InetSocketAddress;
+import java.time.Clock;
+import java.time.Instant;
 import java.util.Optional;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static org.springframework.http.HttpStatus.*;
 
 @AllArgsConstructor
@@ -27,6 +30,8 @@ public class InquiriesHttpHandler {
     private final InquiriesModule module;
 
     private final ReactiveTransactionManager transactionManager;
+
+    private final Clock clock;
 
     public Mono<ServerResponse> sendInquiry(ServerRequest request) {
         var transactionalOperator = TransactionalOperator.create(transactionManager);
@@ -109,6 +114,20 @@ public class InquiriesHttpHandler {
                 .then(ServerResponse.ok().build())
                 .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
+    }
+
+    public Mono<ServerResponse> getStatistics(ServerRequest request) {
+        Instant from = request.queryParam("from")
+                .map(Instant::parse)
+                .orElse(clock.instant().minus(29, DAYS).truncatedTo(DAYS));
+        Instant to = request.queryParam("to")
+                .map(Instant::parse)
+                .orElse(clock.instant().truncatedTo(DAYS).plus(1, DAYS));
+
+        return toAgent(request)
+                .flatMap(agent -> module.getRequestStatistics(from, to, agent))
+                .flatMap(stats -> ServerResponse.ok().bodyValue(stats))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
     }
 
     private Mono<Agent> toAgent(ServerRequest request) {
