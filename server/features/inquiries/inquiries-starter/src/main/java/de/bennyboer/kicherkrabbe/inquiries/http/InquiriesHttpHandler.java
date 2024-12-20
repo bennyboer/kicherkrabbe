@@ -42,22 +42,34 @@ public class InquiriesHttpHandler {
                         ipAddress
                 )))
                 .then(ServerResponse.ok().build())
-                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
-                        BAD_REQUEST,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(TooManyRequestsException.class, e -> new ResponseStatusException(
-                        TOO_MANY_REQUESTS,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(InquiriesDisabledException.class, e -> new ResponseStatusException(
-                        FORBIDDEN,
-                        e.getMessage(),
-                        e
-                ))
+                .onErrorMap(
+                        IllegalArgumentException.class, e -> new ResponseStatusException(
+                                BAD_REQUEST,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        TooManyRequestsException.class, e -> new ResponseStatusException(
+                                TOO_MANY_REQUESTS,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        InquiriesDisabledException.class, e -> new ResponseStatusException(
+                                FORBIDDEN,
+                                e.getMessage(),
+                                e
+                        )
+                )
                 .as(transactionalOperator::transactional);
+    }
+
+    public Mono<ServerResponse> getStatus(ServerRequest request) {
+        return toAgent(request)
+                .flatMap(module::getStatus)
+                .flatMap(status -> ServerResponse.ok().bodyValue(status));
     }
 
     private Mono<Agent> toAgent(ServerRequest request) {

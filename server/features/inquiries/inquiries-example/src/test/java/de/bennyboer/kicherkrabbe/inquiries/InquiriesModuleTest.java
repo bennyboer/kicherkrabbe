@@ -6,6 +6,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublish
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.inquiries.api.InquiryDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
+import de.bennyboer.kicherkrabbe.inquiries.api.responses.QueryStatusResponse;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.InquiryLookupRepo;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.inmemory.InMemoryInquiryLookupRepo;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.RequestRepo;
@@ -56,6 +57,10 @@ public class InquiriesModuleTest {
 
     protected final String loggedInUserId = "USER_ID";
 
+    public QueryStatusResponse getStatus(Agent agent) {
+        return module.getStatus(agent).block();
+    }
+
     public void sendInquiry(
             String requestId,
             SenderDTO sender,
@@ -103,8 +108,8 @@ public class InquiriesModuleTest {
         module.setSendingInquiriesEnabled(true, Agent.user(AgentId.of(loggedInUserId))).block();
     }
 
-    public void allowAnonymousUserToSendInquiries() {
-        module.allowAnonymousUserToSendInquiries().block();
+    public void allowAnonymousUserToQueryStatusAndSendInquiries() {
+        module.allowAnonymousUserToQueryStatusAndSendInquiries().block();
     }
 
     public void allowUserToManageInquiries(String userId) {

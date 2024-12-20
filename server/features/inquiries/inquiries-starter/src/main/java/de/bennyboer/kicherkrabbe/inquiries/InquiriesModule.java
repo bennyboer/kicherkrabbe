@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.inquiries;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.inquiries.api.InquiryDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
+import de.bennyboer.kicherkrabbe.inquiries.api.responses.QueryStatusResponse;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.InquiryLookupRepo;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.lookup.LookupInquiry;
 import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.Request;
@@ -73,7 +74,18 @@ public class InquiriesModule {
     }
 
     public Mono<Void> initialize() {
-        return allowAnonymousUserToSendInquiries();
+        return allowAnonymousUserToQueryStatusAndSendInquiries();
+    }
+
+    public Mono<QueryStatusResponse> getStatus(Agent agent) {
+        return assertAgentIsAllowedTo(agent, QUERY_STATUS)
+                .then(getSettings())
+                .map(Settings::isEnabled)
+                .map(enabled -> {
+                    var response = new QueryStatusResponse();
+                    response.enabled = enabled;
+                    return response;
+                });
     }
 
     public Mono<String> sendInquiry(
@@ -242,15 +254,19 @@ public class InquiriesModule {
         return permissionsService.addPermissions(readInquiry, deleteInquiry);
     }
 
-    public Mono<Void> allowAnonymousUserToSendInquiries() {
+    public Mono<Void> allowAnonymousUserToQueryStatusAndSendInquiries() {
         var anonymousHolder = Holder.group(HolderId.anonymous());
 
-        var sendInquiriesPermissions = Permission.builder()
+        var sendInquiriesPermission = Permission.builder()
                 .holder(anonymousHolder)
                 .isAllowedTo(SEND)
                 .onType(getResourceType());
+        var queryStatusPermission = Permission.builder()
+                .holder(anonymousHolder)
+                .isAllowedTo(QUERY_STATUS)
+                .onType(getResourceType());
 
-        return permissionsService.addPermission(sendInquiriesPermissions);
+        return permissionsService.addPermissions(sendInquiriesPermission, queryStatusPermission);
     }
 
     public Mono<Void> allowUserToManageInquiries(String userId) {

@@ -26,7 +26,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.message = "This is a test inquiry!";
 
         // and: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -95,7 +95,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.message = "This is a test inquiry!";
 
         // and: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -137,7 +137,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.message = "This is a test inquiry!";
 
         // and: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -187,7 +187,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.message = "This is a test inquiry!";
 
         // and: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -250,7 +250,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.message = "This is a test inquiry!";
 
         // and: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -299,7 +299,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.message = "This is a test inquiry!";
 
         // and: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -445,7 +445,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.message = "This is a test inquiry!";
 
         // and: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -494,7 +494,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.message = "This is a test inquiry!";
 
         // and: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -573,7 +573,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.message = "This is a test inquiry!";
 
         // and: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -623,7 +623,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.message = "This is a test inquiry!";
 
         // and: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -700,7 +700,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.message = "This is a message that is way too long to fathom!!".repeat(200) + "!";
 
         // and: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -749,7 +749,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.message = "This is a message with an invalid character: <script>alert('XSS');</script>";
 
         // and: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -826,7 +826,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
         request.message = "This is a test inquiry!";
 
         // and: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -862,7 +862,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
     @Test
     void shouldRefuseToSendInquiryWhenSendingMoreThanNInquiriesWithTheSameEMailWithinACertainTimeFrame() {
         // given: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -950,7 +950,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
     @Test
     void shouldRefuseToSendInquiryWhenSendingMoreThanNInquiriesWithinACertainTimeFrameFromTheSameIPAddress() {
         // given: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
@@ -1040,7 +1040,7 @@ public class SendInquiryTest extends InquiriesModuleTest {
     @Test
     void shouldRefuseToSendInquiryWhenSendingMoreThanNInquiriesWithinACertainTimeFrame() {
         // given: anonymous users are allowed to send inquiries
-        allowAnonymousUserToSendInquiries();
+        allowAnonymousUserToQueryStatusAndSendInquiries();
 
         // and: the currently logged in user is able to manage inquiries
         allowUserToManageInquiries(loggedInUserId);
