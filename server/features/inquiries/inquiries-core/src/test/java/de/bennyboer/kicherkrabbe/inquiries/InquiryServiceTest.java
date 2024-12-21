@@ -6,6 +6,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.inquiries.snapshot.SnapshottedEvent;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,16 +65,7 @@ public class InquiryServiceTest {
 
         // then: the inquiry is deleted
         var inquiry = get(id);
-        assertThat(inquiry.isDeleted()).isTrue();
-        assertThat(inquiry.getVersion()).isEqualTo(version);
-
-        // and: the inquiry is anonymized
-        assertThat(inquiry.getSender().getName()).isEqualTo(SenderName.of("ANONYMIZED"));
-        assertThat(inquiry.getSender().getMail()).isEqualTo(EMail.of("anonymized@kicherkrabbe.com"));
-        assertThat(inquiry.getSender().getPhone()).isEmpty();
-        assertThat(inquiry.getSubject().getValue()).isEqualTo("ANONYMIZED");
-        assertThat(inquiry.getMessage().getValue()).isEqualTo("ANONYMIZED");
-        assertThat(inquiry.getFingerprint().getIpAddress()).isEmpty();
+        assertThat(inquiry).isNull();
 
         // and: the inquiries events are collapsed to a single snapshot event
         var events = repo.findEventsByAggregateIdAndType(AggregateId.of(id.getValue()), Inquiry.TYPE, Version.zero())
@@ -82,6 +74,15 @@ public class InquiryServiceTest {
         assertThat(events).hasSize(1);
         var event = events.getFirst();
         assertThat(event.getMetadata().isSnapshot()).isTrue();
+
+        // and: the snapshot event is anonymized
+        var snapshot = (SnapshottedEvent) event.getEvent();
+        assertThat(snapshot.getSender().getName()).isEqualTo(SenderName.of("ANONYMIZED"));
+        assertThat(snapshot.getSender().getMail()).isEqualTo(EMail.of("anonymized@kicherkrabbe.com"));
+        assertThat(snapshot.getSender().getPhone()).isEmpty();
+        assertThat(snapshot.getSubject().getValue()).isEqualTo("ANONYMIZED");
+        assertThat(snapshot.getMessage().getValue()).isEqualTo("ANONYMIZED");
+        assertThat(snapshot.getFingerprint().getIpAddress()).isEmpty();
     }
 
     private InquiryId send(

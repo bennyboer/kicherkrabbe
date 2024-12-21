@@ -104,3 +104,8 @@ include('features:patterns:patterns-example')
 include('features:inquiries:inquiries-core')
 include('features:inquiries:inquiries-starter')
 include('features:inquiries:inquiries-example')
+
+// Mailbox
+include('features:mailbox:mailbox-core')
+include('features:mailbox:mailbox-starter')
+include('features:mailbox:mailbox-example')
