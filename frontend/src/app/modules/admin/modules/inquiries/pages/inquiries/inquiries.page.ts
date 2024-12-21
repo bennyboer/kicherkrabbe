@@ -371,7 +371,11 @@ export class InquiriesPage implements OnInit, OnDestroy {
   }
 
   toYLabels(stats: Statistics[]): string[] {
-    const maxRequests = Math.max(...stats.map((s) => s.totalRequests));
+    let maxRequests = Math.max(...stats.map((s) => s.totalRequests));
+    if (maxRequests === 0) {
+      maxRequests = 3;
+    }
+
     return Array.from({ length: maxRequests + 1 }, (_, i) => i.toString());
   }
 
