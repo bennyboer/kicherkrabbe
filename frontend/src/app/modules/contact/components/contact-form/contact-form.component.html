@@ -111,6 +111,15 @@
   </div>
 </div>
 
+<div class="notes">
+  <p>
+    Ihre Eingaben werden verschlüsselt übertragen.
+    Wir verwenden Ihre Daten ausschließlich zur Bearbeitung der Anfrage.
+    Weitere Informationen finden Sie in unserer <a href="/legal/privacy-policy" target="_blank">Datenschutzerklärung</a>.
+    Wenn Sie auf „Absenden“ klicken, stimmen Sie der Verarbeitung Ihrer Daten zu.
+  </p>
+</div>
+
 <div class="actions">
   <app-button color="primary" (click)="submit()" [disabled]="cannotSubmit$ | async">
     @if (submitting$ | async) {
