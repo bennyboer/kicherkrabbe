@@ -6,6 +6,16 @@ label {
   font-size: 0.8em;
 }
 
+.stats-container {
+  width: 100%;
+  height: 200px;
+  padding-bottom: 32px;
+}
+
+.statistics {
+  margin-top: 32px;
+}
+
 .form {
   display: flex;
   flex-direction: column;
@@ -38,3 +48,4 @@ label {
 .loading-container {
   padding-bottom: 8px;
 }
+

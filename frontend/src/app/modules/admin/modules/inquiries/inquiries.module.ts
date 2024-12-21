@@ -8,9 +8,15 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
+import { LineGraphModule } from '../../../shared/modules/line-graph';
 
 @NgModule({
-  imports: [CommonModule, InquiriesRoutingModule, SharedModule],
+  imports: [
+    CommonModule,
+    InquiriesRoutingModule,
+    SharedModule,
+    LineGraphModule,
+  ],
   declarations: [...PAGES],
   providers: [provideHttpClient(withInterceptorsFromDi()), ...SERVICES],
 })

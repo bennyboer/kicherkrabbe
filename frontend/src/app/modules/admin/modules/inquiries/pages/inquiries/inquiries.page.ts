@@ -18,7 +18,7 @@ import {
 } from 'rxjs';
 import { NotificationService } from '../../../../../shared';
 import { InquiriesService } from '../../services';
-import { RateLimit, RateLimits } from '../../models';
+import { RateLimit, RateLimits, Statistics } from '../../models';
 
 @Component({
   selector: 'app-inquiries-page',
@@ -31,6 +31,8 @@ export class InquiriesPage implements OnInit, OnDestroy {
     new BehaviorSubject<boolean>(true);
   protected readonly statsLoaded$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
+  protected readonly stats$: BehaviorSubject<Statistics[]> =
+    new BehaviorSubject<Statistics[]>([]);
   private readonly loadingSettings$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(true);
   protected readonly settingsLoaded$: BehaviorSubject<boolean> =
@@ -121,6 +123,8 @@ export class InquiriesPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.loadingStats$.complete();
     this.statsLoaded$.complete();
+    this.stats$.complete();
+
     this.loadingSettings$.complete();
     this.settingsLoaded$.complete();
 
@@ -354,6 +358,38 @@ export class InquiriesPage implements OnInit, OnDestroy {
       .subscribe(() => this.rateLimitPerDay$.next(rateLimitNumber));
   }
 
+  toXLabels(_stats: Statistics[]): string[] {
+    const maxDate = new Date(new Date().toDateString());
+
+    const dates = Array.from({ length: 30 }, (_, i) => {
+      return new Date(maxDate.getTime() - i * 24 * 60 * 60 * 1000);
+    });
+
+    dates.sort((a, b) => a.getTime() - b.getTime());
+
+    return dates.map((d) => d.toLocaleDateString());
+  }
+
+  toYLabels(stats: Statistics[]): string[] {
+    const maxRequests = Math.max(...stats.map((s) => s.totalRequests));
+    return Array.from({ length: maxRequests + 1 }, (_, i) => i.toString());
+  }
+
+  toData(stats: Statistics[]): number[] {
+    const maxDate = new Date(new Date().toDateString());
+    const data = Array.from({ length: 30 }, () => 0);
+
+    for (const stat of stats) {
+      const date = stat.dateRange.from;
+      const daysAgo = Math.floor(
+        (maxDate.getTime() - date.getTime()) / (24 * 60 * 60 * 1000),
+      );
+      data[data.length - 1 - daysAgo] = stat.totalRequests;
+    }
+
+    return data;
+  }
+
   private reloadSettings(): void {
     this.loadingSettings$.next(true);
 
@@ -413,6 +449,10 @@ export class InquiriesPage implements OnInit, OnDestroy {
         }),
         takeUntil(this.destroy$),
       )
-      .subscribe(console.log); // TODO Implement stats
+      .subscribe((stats) => this.stats$.next(stats));
+  }
+
+  toTotalInquiries(stats: Statistics[]): number {
+    return stats.reduce((acc, s) => acc + s.totalRequests, 0);
   }
 }

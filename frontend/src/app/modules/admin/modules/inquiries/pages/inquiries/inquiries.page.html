@@ -7,10 +7,6 @@
   <app-loading-bar [visible]="loading$ | async"></app-loading-bar>
 </div>
 
-@if (statsLoaded$ | async) {
-  <!-- TODO Stats über die Anfragen in den letzten Stunden/Tagen/Wochen/Monaten? -->
-}
-
 @if (settingsLoaded$ | async) {
   <div class="form">
     <div class="form-field">
@@ -71,5 +67,27 @@
         </app-button>
       </div>
     </div>
+  </div>
+}
+
+@if (statsLoaded$ | async) {
+  <div class="statistics">
+    <hr>
+    <h3>Anfragen in den letzten 30 Tagen</h3>
+
+    @if (stats$ | async; as stats) {
+      <p>
+        Insgesamt wurden {{ toTotalInquiries(stats) }} Anfragen in den letzten 30 Tagen gestellt.
+      </p>
+
+      <div class="stats-container">
+        <app-line-graph [xLabels]="toXLabels(stats)"
+                        [yLabels]="toYLabels(stats)"
+                        [maxVisibleYLabels]="5"
+                        [maxVisibleXLabels]="30"
+                        [data]="toData(stats)">
+        </app-line-graph>
+      </div>
+    }
   </div>
 }
