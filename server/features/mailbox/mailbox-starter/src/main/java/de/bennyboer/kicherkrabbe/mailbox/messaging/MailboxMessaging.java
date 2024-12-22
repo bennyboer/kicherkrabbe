@@ -36,7 +36,7 @@ public class MailboxMessaging {
     }
 
     @Bean
-    public EventListener onUserDeletedRemoveInquiriesPermissionsMsgListener(
+    public EventListener onUserDeletedRemoveMailPermissionsMsgListener(
             EventListenerFactory factory,
             MailboxModule module
     ) {
