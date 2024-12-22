@@ -81,6 +81,10 @@ public class PermissionsService {
         return permissionsRepo.findPermissionsByHolderAndResourceTypeAndAction(holder, resourceType, action);
     }
 
+    public Flux<Permission> findPermissionsByResourceTypeAndAction(ResourceType resourceType, Action action) {
+        return permissionsRepo.findPermissionsByResourceTypeAndAction(resourceType, action);
+    }
+
     public Mono<Void> removePermissions(Permission... permissions) {
         return permissionsRepo.removePermissions(permissions)
                 .collect(Collectors.toSet())

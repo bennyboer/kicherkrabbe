@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.time.Instant;
+import java.util.Optional;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static lombok.AccessLevel.PRIVATE;
@@ -64,6 +65,14 @@ public class SnapshottedEvent implements Event {
                 readAt,
                 deletedAt
         );
+    }
+
+    public Optional<Instant> getReadAt() {
+        return Optional.ofNullable(readAt);
+    }
+
+    public Optional<Instant> getDeletedAt() {
+        return Optional.ofNullable(deletedAt);
     }
 
     @Override

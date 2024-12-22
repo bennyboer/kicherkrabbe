@@ -55,8 +55,8 @@ public class MongoInquiryLookupRepo
     }
 
     @Override
-    protected String stringifyId(InquiryId colorId) {
-        return colorId.getValue();
+    protected String stringifyId(InquiryId inquiryId) {
+        return inquiryId.getValue();
     }
 
 }

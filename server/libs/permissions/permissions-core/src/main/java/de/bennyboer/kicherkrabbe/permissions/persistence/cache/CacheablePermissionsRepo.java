@@ -75,6 +75,11 @@ public class CacheablePermissionsRepo implements PermissionsRepo {
     }
 
     @Override
+    public Flux<Permission> findPermissionsByResourceTypeAndAction(ResourceType resourceType, Action action) {
+        return delegate.findPermissionsByResourceTypeAndAction(resourceType, action);
+    }
+
+    @Override
     public Flux<Permission> removeByHolder(Holder holder) {
         return delegate.removeByHolder(holder)
                 .doOnNext(cache::invalidate);

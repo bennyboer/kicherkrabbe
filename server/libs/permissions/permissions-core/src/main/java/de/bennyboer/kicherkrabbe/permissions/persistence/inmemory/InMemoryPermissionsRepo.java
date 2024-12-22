@@ -67,6 +67,13 @@ public class InMemoryPermissionsRepo implements PermissionsRepo {
     }
 
     @Override
+    public Flux<Permission> findPermissionsByResourceTypeAndAction(ResourceType resourceType, Action action) {
+        return Flux.fromIterable(permissions)
+                .filter(permission -> permission.getResource().getType().equals(resourceType)
+                        && permission.getAction().equals(action));
+    }
+
+    @Override
     public Flux<Permission> removeByHolder(Holder holder) {
         return removeBy(permission -> permission.getHolder().equals(holder));
     }

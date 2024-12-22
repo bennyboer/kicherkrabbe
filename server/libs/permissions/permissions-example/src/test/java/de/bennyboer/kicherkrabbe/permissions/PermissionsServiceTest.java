@@ -35,10 +35,12 @@ public abstract class PermissionsServiceTest {
     @BeforeEach
     void setup() {
         permissionsRepo = createRepo();
-        service = new PermissionsService(permissionsRepo, event -> {
+        service = new PermissionsService(
+                permissionsRepo, event -> {
             seenEvents.add(event);
             return Mono.empty();
-        });
+        }
+        );
     }
 
     @Test
@@ -404,6 +406,64 @@ public abstract class PermissionsServiceTest {
                         .holder(holder1)
                         .isAllowedTo(action1)
                         .on(resource1));
+    }
+
+    @Test
+    void shouldFindPermissionsByResourceTypeAndAction() {
+        var holder1 = Holder.user(HolderId.of("USER_ID_1"));
+        var holder2 = Holder.user(HolderId.of("USER_ID_2"));
+
+        var resource1 = Resource.of(ResourceType.of("RESOURCE_TYPE_1"), ResourceId.of("RESOURCE_ID_1"));
+        var resource2 = Resource.of(ResourceType.of("RESOURCE_TYPE_2"), ResourceId.of("RESOURCE_ID_2"));
+        var resource3 = Resource.of(ResourceType.of("RESOURCE_TYPE_1"), ResourceId.of("RESOURCE_ID_3"));
+
+        var action1 = Action.of("ACTION_1");
+        var action2 = Action.of("ACTION_2");
+
+        // given: some permissions
+        Set<Permission> permissions = Set.of(
+                Permission.builder()
+                        .holder(holder1)
+                        .isAllowedTo(action1)
+                        .on(resource1),
+                Permission.builder()
+                        .holder(holder1)
+                        .isAllowedTo(action2)
+                        .on(resource1),
+                Permission.builder()
+                        .holder(holder1)
+                        .isAllowedTo(action2)
+                        .on(resource2),
+                Permission.builder()
+                        .holder(holder2)
+                        .isAllowedTo(action2)
+                        .on(resource2),
+                Permission.builder()
+                        .holder(holder2)
+                        .isAllowedTo(action1)
+                        .on(resource3)
+        );
+
+        addPermissions(permissions);
+
+        // when: finding permissions for holder 1 and resource type 1 and action 1
+        var foundPermissions = findPermissionsByResourceTypeAndAction(
+                ResourceType.of("RESOURCE_TYPE_1"),
+                action1
+        );
+
+        // then: the permissions for are found
+        assertThat(foundPermissions).hasSize(2);
+        assertThat(foundPermissions).containsExactlyInAnyOrder(
+                Permission.builder()
+                        .holder(holder1)
+                        .isAllowedTo(action1)
+                        .on(resource1),
+                Permission.builder()
+                        .holder(holder2)
+                        .isAllowedTo(action1)
+                        .on(resource3)
+        );
     }
 
     @Test
@@ -784,6 +844,12 @@ public abstract class PermissionsServiceTest {
             Action action
     ) {
         return service.findPermissionsByHolderAndResourceTypeAndAction(holder, resourceType, action)
+                .collectList()
+                .block();
+    }
+
+    private List<Permission> findPermissionsByResourceTypeAndAction(ResourceType resourceType, Action action) {
+        return service.findPermissionsByResourceTypeAndAction(resourceType, action)
                 .collectList()
                 .block();
     }

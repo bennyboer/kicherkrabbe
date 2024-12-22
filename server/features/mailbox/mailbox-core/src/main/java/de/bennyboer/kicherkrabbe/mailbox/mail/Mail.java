@@ -27,6 +27,8 @@ import java.time.Instant;
 import java.util.Optional;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
+import static de.bennyboer.kicherkrabbe.mailbox.mail.Status.READ;
+import static de.bennyboer.kicherkrabbe.mailbox.mail.Status.UNREAD;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
@@ -109,8 +111,8 @@ public class Mail implements Aggregate {
                     .withSubject(e.getSubject())
                     .withContent(e.getContent())
                     .withReceivedAt(e.getReceivedAt())
-                    .withReadAt(e.getReadAt())
-                    .withDeletedAt(e.getDeletedAt());
+                    .withReadAt(e.getReadAt().orElse(null))
+                    .withDeletedAt(e.getDeletedAt().orElse(null));
             case ReceivedEvent e -> withId(id)
                     .withOrigin(e.getOrigin())
                     .withSender(e.getSender())
@@ -161,6 +163,10 @@ public class Mail implements Aggregate {
 
     public boolean isUnread() {
         return !isRead();
+    }
+
+    public Status getStatus() {
+        return getReadAt().map(ignored -> READ).orElse(UNREAD);
     }
 
 }

@@ -54,6 +54,11 @@ public interface PermissionsRepo {
     Flux<Permission> findPermissionsByHolderAndResource(Holder holder, Resource resource);
 
     /**
+     * Find all permissions for a specific resource type and action.
+     */
+    Flux<Permission> findPermissionsByResourceTypeAndAction(ResourceType resourceType, Action action);
+
+    /**
      * Remove all permissions for a specific holder.
      * This is useful when a holder is deleted and all permissions should be removed.
      */
@@ -75,7 +80,7 @@ public interface PermissionsRepo {
      * Remove a specific permission.
      */
     Mono<Permission> removeByPermission(Permission permission);
-    
+
     Flux<Permission> removePermissions(Permission... permissions);
 
 }

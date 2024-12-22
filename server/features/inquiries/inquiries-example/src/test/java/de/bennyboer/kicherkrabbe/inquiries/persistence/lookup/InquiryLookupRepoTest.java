@@ -95,7 +95,6 @@ public abstract class InquiryLookupRepoTest {
     @Test
     void shouldFindByRequestId() {
         // given: some inquiries
-        // given: some inquiries
         var inquiry1 = LookupInquiry.of(
                 InquiryId.create(),
                 Version.zero(),

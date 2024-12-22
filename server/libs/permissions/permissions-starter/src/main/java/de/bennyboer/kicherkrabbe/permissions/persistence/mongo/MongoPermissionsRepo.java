@@ -149,6 +149,18 @@ public class MongoPermissionsRepo implements PermissionsRepo {
     }
 
     @Override
+    public Flux<Permission> findPermissionsByResourceTypeAndAction(ResourceType resourceType, Action action) {
+        String resourceTypeName = resourceType.getName();
+        String actionName = action.getName();
+
+        Criteria criteria = where("resource.type").is(resourceTypeName)
+                .and("action").is(actionName);
+
+        return template.find(query(criteria), MongoPermission.class, collectionName)
+                .map(MongoPermissionSerializer::deserialize);
+    }
+
+    @Override
     public Flux<Permission> removeByHolder(Holder holder) {
         MongoHolderType holderType = MongoHolderTypeSerializer.serialize(holder.getType());
         String holderId = holder.getId().getValue();
@@ -229,15 +241,17 @@ public class MongoPermissionsRepo implements PermissionsRepo {
         return template.bulkOps(UNORDERED, MongoPermission.class, collectionName)
                 .insert(mongoPermissions)
                 .execute()
-                .onErrorResume(DuplicateKeyException.class, e -> {
-                    log.warn("Tried to insert duplicate permissions. Ignoring.");
+                .onErrorResume(
+                        DuplicateKeyException.class, e -> {
+                            log.warn("Tried to insert duplicate permissions. Ignoring.");
 
-                    if (e.getCause() instanceof MongoBulkWriteException bulkWriteException) {
-                        return Mono.just(bulkWriteException.getWriteResult());
-                    }
+                            if (e.getCause() instanceof MongoBulkWriteException bulkWriteException) {
+                                return Mono.just(bulkWriteException.getWriteResult());
+                            }
 
-                    return Mono.error(e);
-                })
+                            return Mono.error(e);
+                        }
+                )
                 .map(result -> result.getInserts()
                         .stream()
                         .map(i -> i.getId().asString().getValue())
