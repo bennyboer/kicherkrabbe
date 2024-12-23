@@ -74,17 +74,17 @@ public class InquiriesModuleTest {
         return module.getRequestStatistics(from, to, agent).block();
     }
 
-    public void sendInquiry(
+    public String sendInquiry(
             String requestId,
             SenderDTO sender,
             String subject,
             String message,
             Agent agent
     ) {
-        sendInquiry(requestId, sender, subject, message, agent, "127.0.0.1");
+        return sendInquiry(requestId, sender, subject, message, agent, "127.0.0.1");
     }
 
-    public void sendInquiry(
+    public String sendInquiry(
             String requestId,
             SenderDTO sender,
             String subject,
@@ -103,6 +103,15 @@ public class InquiriesModuleTest {
 
         updateInquiryInLookup(id);
         allowSystemToReadAndDeleteInquiry(id);
+
+        return id;
+    }
+
+    public void deleteInquiry(String inquiryId, Agent agent) {
+        module.deleteInquiry(inquiryId, agent).block();
+
+        module.removeInquiryFromLookup(inquiryId).block();
+        module.removePermissions(inquiryId).block();
     }
 
     public InquiryDTO getInquiryByRequestId(String requestId, Agent agent) {

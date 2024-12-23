@@ -178,6 +178,14 @@ public class InquiriesModule {
                 .map(idAndVersion -> idAndVersion.getId().getValue());
     }
 
+    public Mono<Void> deleteInquiry(String inquiryId, Agent agent) {
+        var internalInquiryId = InquiryId.of(inquiryId);
+
+        return assertAgentIsAllowedTo(agent, DELETE, internalInquiryId)
+                .then(inquiryService.delete(internalInquiryId, agent))
+                .then();
+    }
+
     public Mono<InquiryDTO> getInquiryByRequestId(String requestId, Agent agent) {
         return inquiryLookupRepo.findByRequestId(RequestId.of(requestId))
                 .delayUntil(inquiry -> assertAgentIsAllowedTo(agent, READ, inquiry.getId()))

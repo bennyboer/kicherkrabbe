@@ -43,8 +43,8 @@ public class InquiryService extends AggregateService<Inquiry, InquiryId> {
                 .map(version -> AggregateIdAndVersion.of(id, version));
     }
 
-    public Mono<Version> delete(InquiryId id, Version version, Agent agent) {
-        return dispatchCommand(id, version, agent, DeleteCmd.of())
+    public Mono<Version> delete(InquiryId id, Agent agent) {
+        return dispatchCommandToLatest(id, agent, DeleteCmd.of())
                 .flatMap(v -> collapseEvents(id, v, agent));
     }
 

@@ -63,7 +63,7 @@ public class InquiryServiceTest {
         var id = send(requestId, sender, subject, message, fingerprint);
 
         // when: deleting the inquiry
-        var version = delete(id, Version.zero());
+        delete(id);
 
         // then: the inquiry is deleted
         var inquiry = get(id);
@@ -97,8 +97,8 @@ public class InquiryServiceTest {
         return inquiryService.send(requestId, sender, subject, message, fingerprint, Agent.system()).block().getId();
     }
 
-    private Version delete(InquiryId id, Version version) {
-        return inquiryService.delete(id, version, Agent.system()).block();
+    private Version delete(InquiryId id) {
+        return inquiryService.delete(id, Agent.system()).block();
     }
 
     private Inquiry get(InquiryId id) {

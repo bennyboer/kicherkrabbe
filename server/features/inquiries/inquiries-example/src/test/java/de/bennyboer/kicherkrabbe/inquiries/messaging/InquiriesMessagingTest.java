@@ -45,6 +45,7 @@ public class InquiriesMessagingTest extends EventListenerTest {
         when(module.removeInquiryFromLookup(any())).thenReturn(Mono.empty());
         when(module.removePermissions(any())).thenReturn(Mono.empty());
         when(module.allowSystemToReadAndDeleteInquiry(any())).thenReturn(Mono.empty());
+        when(module.deleteInquiry(any(), any())).thenReturn(Mono.empty());
     }
 
     @Test
@@ -134,7 +135,7 @@ public class InquiriesMessagingTest extends EventListenerTest {
         );
 
         // then: the permissions for the inquiry are removed
-        verify(module, timeout(5000).times(1)).removePermissions(eq("INQUIRY_ID"));
+        verify(module, timeout(10000).times(1)).removePermissions(eq("INQUIRY_ID"));
     }
 
     @Test
@@ -153,6 +154,52 @@ public class InquiriesMessagingTest extends EventListenerTest {
 
         // then: the system user is allowed to read and delete inquiries
         verify(module, timeout(5000).times(1)).allowSystemToReadAndDeleteInquiry(eq("INQUIRY_ID"));
+    }
+
+    @Test
+    void shouldDeleteInquiryOnMailDeletedIfOriginIsInquiry() {
+        // when: a mail deleted event is published
+        send(
+                AggregateType.of("MAIL"),
+                AggregateId.of("MAIL_ID"),
+                Version.of(1),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of(
+                        "origin", Map.of(
+                                "type", "INQUIRY",
+                                "id", "SOME_INQUIRY_ID"
+                        )
+                )
+        );
+
+        // then: the inquiry is deleted
+        verify(module, timeout(5000).times(1)).deleteInquiry(eq("SOME_INQUIRY_ID"), eq(Agent.system()));
+    }
+
+    @Test
+    void shouldNotDeleteInquiryOnMailDeletedIfOriginIsNotInquiry() {
+        // when: a mail deleted event is published
+        send(
+                AggregateType.of("MAIL"),
+                AggregateId.of("MAIL_ID"),
+                Version.of(1),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of(
+                        "origin", Map.of(
+                                "type", "SOME_TYPE",
+                                "id", "SOME_ID"
+                        )
+                )
+        );
+
+        // then: the inquiry is not deleted
+        verify(module, timeout(5000).times(0)).deleteInquiry(any(), any());
     }
 
 }

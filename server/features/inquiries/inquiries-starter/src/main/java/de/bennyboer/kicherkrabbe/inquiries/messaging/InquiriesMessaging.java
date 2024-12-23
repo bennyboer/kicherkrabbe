@@ -4,9 +4,13 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListener;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListenerFactory;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.inquiries.InquiriesModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 @Configuration
 public class InquiriesMessaging {
@@ -109,6 +113,29 @@ public class InquiriesMessaging {
                     String inquiryId = event.getMetadata().getAggregateId().getValue();
 
                     return module.allowSystemToReadAndDeleteInquiry(inquiryId);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onMailDeletedDeleteInquiryMsgListener(
+            EventListenerFactory factory,
+            InquiriesModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "inquiries.mail-deleted-delete-inquiry",
+                AggregateType.of("MAIL"),
+                EventName.of("DELETED"),
+                (event) -> {
+                    Map<String, Object> origin = (Map<String, Object>) event.getEvent().get("origin");
+                    String originType = (String) origin.getOrDefault("type", "");
+                    if (!originType.equals("INQUIRY")) {
+                        return Mono.empty();
+                    }
+
+                    String inquiryId = (String) origin.get("id");
+
+                    return module.deleteInquiry(inquiryId, Agent.system());
                 }
         );
     }
