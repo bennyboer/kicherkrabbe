@@ -17,7 +17,9 @@ import de.bennyboer.kicherkrabbe.inquiries.persistence.requests.inmemory.InMemor
 import de.bennyboer.kicherkrabbe.inquiries.settings.SettingsService;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
+import de.bennyboer.kicherkrabbe.persistence.MockReactiveTransactionManager;
 import de.bennyboer.kicherkrabbe.testing.time.TestClock;
+import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -51,12 +53,15 @@ public class InquiriesModuleTest {
             event -> Mono.empty()
     );
 
+    private final ReactiveTransactionManager transactionManager = new MockReactiveTransactionManager();
+
     private final InquiriesModule module = config.inquiriesModule(
             inquiryService,
             settingsService,
             inquiryLookupRepo,
             requestRepo,
             permissionsService,
+            transactionManager,
             Optional.of(clock)
     );
 

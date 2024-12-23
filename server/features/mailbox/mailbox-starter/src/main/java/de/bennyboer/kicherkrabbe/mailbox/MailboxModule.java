@@ -21,6 +21,8 @@ import de.bennyboer.kicherkrabbe.permissions.*;
 import jakarta.annotation.Nullable;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -38,14 +40,18 @@ public class MailboxModule {
 
     private final PermissionsService permissionsService;
 
+    private final ReactiveTransactionManager transactionManager;
+
     public MailboxModule(
             MailService mailService,
             MailLookupRepo mailLookupRepo,
-            PermissionsService permissionsService
+            PermissionsService permissionsService,
+            ReactiveTransactionManager transactionManager
     ) {
         this.mailService = mailService;
         this.mailLookupRepo = mailLookupRepo;
         this.permissionsService = permissionsService;
+        this.transactionManager = transactionManager;
     }
 
     private boolean isInitialized = false;
@@ -57,7 +63,10 @@ public class MailboxModule {
         }
         isInitialized = true;
 
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
         initialize()
+                .as(transactionalOperator::transactional)
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();
     }

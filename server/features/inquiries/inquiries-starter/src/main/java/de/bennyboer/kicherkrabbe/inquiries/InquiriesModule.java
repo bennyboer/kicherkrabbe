@@ -21,6 +21,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -46,6 +48,8 @@ public class InquiriesModule {
 
     private final PermissionsService permissionsService;
 
+    private final ReactiveTransactionManager transactionManager;
+
     private final Clock clock;
 
     public InquiriesModule(
@@ -54,6 +58,7 @@ public class InquiriesModule {
             InquiryLookupRepo inquiryLookupRepo,
             RequestRepo requestRepo,
             PermissionsService permissionsService,
+            ReactiveTransactionManager transactionManager,
             Clock clock
     ) {
         this.inquiryService = inquiryService;
@@ -61,6 +66,7 @@ public class InquiriesModule {
         this.inquiryLookupRepo = inquiryLookupRepo;
         this.requestRepo = requestRepo;
         this.permissionsService = permissionsService;
+        this.transactionManager = transactionManager;
         this.clock = clock;
     }
 
@@ -73,7 +79,10 @@ public class InquiriesModule {
         }
         isInitialized = true;
 
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
         initialize()
+                .as(transactionalOperator::transactional)
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();
     }

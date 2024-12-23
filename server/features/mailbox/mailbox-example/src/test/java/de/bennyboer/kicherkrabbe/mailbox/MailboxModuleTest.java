@@ -13,8 +13,10 @@ import de.bennyboer.kicherkrabbe.mailbox.persistence.lookup.MailLookupRepo;
 import de.bennyboer.kicherkrabbe.mailbox.persistence.lookup.inmemory.InMemoryMailLookupRepo;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
+import de.bennyboer.kicherkrabbe.persistence.MockReactiveTransactionManager;
 import de.bennyboer.kicherkrabbe.testing.time.TestClock;
 import jakarta.annotation.Nullable;
+import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
@@ -38,7 +40,14 @@ public class MailboxModuleTest {
             event -> Mono.empty()
     );
 
-    private final MailboxModule module = config.mailboxModule(mailService, mailLookupRepo, permissionsService);
+    private final ReactiveTransactionManager transactionManager = new MockReactiveTransactionManager();
+
+    private final MailboxModule module = config.mailboxModule(
+            mailService,
+            mailLookupRepo,
+            permissionsService,
+            transactionManager
+    );
 
     public void setTime(Instant instant) {
         clock.setNow(instant);

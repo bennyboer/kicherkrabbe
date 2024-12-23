@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.transaction.ReactiveTransactionManager;
 
 import java.time.Clock;
 import java.util.Optional;
@@ -45,6 +46,7 @@ public class InquiriesModuleConfig {
             InquiryLookupRepo inquiryLookupRepo,
             RequestRepo requestRepo,
             @Qualifier("inquiriesPermissionsService") PermissionsService permissionsService,
+            ReactiveTransactionManager transactionManager,
             Optional<Clock> clock
     ) {
         return new InquiriesModule(
@@ -53,6 +55,7 @@ public class InquiriesModuleConfig {
                 inquiryLookupRepo,
                 requestRepo,
                 permissionsService,
+                transactionManager,
                 clock.orElse(Clock.systemUTC())
         );
     }
