@@ -33,9 +33,10 @@ public class FabricTypesAggregateConfig {
     @Bean
     public FabricTypeService fabricTypeService(
             @Qualifier("fabricTypesEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
-            @Qualifier("fabricTypesEventPublisher") MessagingEventPublisher eventPublisher
+            @Qualifier("fabricTypesEventPublisher") MessagingEventPublisher eventPublisher,
+            Optional<Clock> clock
     ) {
-        return new FabricTypeService(eventSourcingRepo, eventPublisher);
+        return new FabricTypeService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));
     }
 
 }

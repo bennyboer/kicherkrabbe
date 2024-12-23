@@ -13,17 +13,19 @@ import de.bennyboer.kicherkrabbe.inquiries.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.inquiries.send.SendCmd;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 
 public class InquiryService extends AggregateService<Inquiry, InquiryId> {
 
-    public InquiryService(EventSourcingRepo repo, EventPublisher eventPublisher) {
+    public InquiryService(EventSourcingRepo repo, EventPublisher eventPublisher, Clock clock) {
         super(new EventSourcingService<>(
                 Inquiry.TYPE,
                 Inquiry.init(),
                 repo,
                 eventPublisher,
-                List.of()
+                List.of(),
+                clock
         ));
     }
 

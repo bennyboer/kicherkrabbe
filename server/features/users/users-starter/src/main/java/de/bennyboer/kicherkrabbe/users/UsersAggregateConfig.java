@@ -33,9 +33,10 @@ public class UsersAggregateConfig {
     @Bean
     public UsersService usersService(
             @Qualifier("usersEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
-            @Qualifier("usersEventPublisher") MessagingEventPublisher eventPublisher
+            @Qualifier("usersEventPublisher") MessagingEventPublisher eventPublisher,
+            Optional<Clock> clock
     ) {
-        return new UsersService(eventSourcingRepo, eventPublisher);
+        return new UsersService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));
     }
 
 }

@@ -9,6 +9,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingR
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -18,7 +20,7 @@ public class FabricTypeServiceTest {
 
     private final LoggingEventPublisher eventPublisher = new LoggingEventPublisher();
 
-    private final FabricTypeService fabricTypeService = new FabricTypeService(repo, eventPublisher);
+    private final FabricTypeService fabricTypeService = new FabricTypeService(repo, eventPublisher, Clock.systemUTC());
 
     @Test
     void shouldCreateFabricType() {

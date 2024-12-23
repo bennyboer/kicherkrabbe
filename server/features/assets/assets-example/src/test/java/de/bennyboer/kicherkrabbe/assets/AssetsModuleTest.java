@@ -16,12 +16,14 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Clock;
 
 public class AssetsModuleTest {
 
     private final AssetService assetService = new AssetService(
             new InMemoryEventSourcingRepo(),
-            new LoggingEventPublisher()
+            new LoggingEventPublisher(),
+            Clock.systemUTC()
     );
 
     private final PermissionsService permissionsService = new PermissionsService(

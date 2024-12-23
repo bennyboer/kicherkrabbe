@@ -9,6 +9,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMem
 import de.bennyboer.kicherkrabbe.inquiries.snapshot.SnapshottedEvent;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class InquiryServiceTest {
@@ -17,7 +19,7 @@ public class InquiryServiceTest {
 
     private final LoggingEventPublisher eventPublisher = new LoggingEventPublisher();
 
-    private final InquiryService inquiryService = new InquiryService(repo, eventPublisher);
+    private final InquiryService inquiryService = new InquiryService(repo, eventPublisher, Clock.systemUTC());
 
     @Test
     void shouldSendInquiry() {

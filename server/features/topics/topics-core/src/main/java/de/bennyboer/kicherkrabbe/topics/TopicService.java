@@ -14,17 +14,19 @@ import de.bennyboer.kicherkrabbe.topics.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.topics.update.UpdateCmd;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 
 public class TopicService extends AggregateService<Topic, TopicId> {
 
-    public TopicService(EventSourcingRepo repo, EventPublisher eventPublisher) {
+    public TopicService(EventSourcingRepo repo, EventPublisher eventPublisher, Clock clock) {
         super(new EventSourcingService<>(
                 Topic.TYPE,
                 Topic.init(),
                 repo,
                 eventPublisher,
-                List.of()
+                List.of(),
+                clock
         ));
     }
 

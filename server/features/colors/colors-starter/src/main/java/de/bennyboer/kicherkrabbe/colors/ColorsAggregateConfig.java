@@ -33,9 +33,10 @@ public class ColorsAggregateConfig {
     @Bean
     public ColorService colorService(
             @Qualifier("colorsEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
-            @Qualifier("colorsEventPublisher") MessagingEventPublisher eventPublisher
+            @Qualifier("colorsEventPublisher") MessagingEventPublisher eventPublisher,
+            Optional<Clock> clock
     ) {
-        return new ColorService(eventSourcingRepo, eventPublisher);
+        return new ColorService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));
     }
 
 }

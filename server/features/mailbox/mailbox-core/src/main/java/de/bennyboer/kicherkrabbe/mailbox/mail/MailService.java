@@ -15,17 +15,19 @@ import de.bennyboer.kicherkrabbe.mailbox.mail.receive.ReceiveCmd;
 import de.bennyboer.kicherkrabbe.mailbox.mail.unread.MarkAsUnreadCmd;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 
 public class MailService extends AggregateService<Mail, MailId> {
 
-    public MailService(EventSourcingRepo repo, EventPublisher eventPublisher) {
+    public MailService(EventSourcingRepo repo, EventPublisher eventPublisher, Clock clock) {
         super(new EventSourcingService<>(
                 Mail.TYPE,
                 Mail.init(),
                 repo,
                 eventPublisher,
-                List.of()
+                List.of(),
+                clock
         ));
     }
 

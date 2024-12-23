@@ -33,9 +33,10 @@ public class TopicsAggregateConfig {
     @Bean
     public TopicService topicService(
             @Qualifier("topicsEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
-            @Qualifier("topicsEventPublisher") MessagingEventPublisher eventPublisher
+            @Qualifier("topicsEventPublisher") MessagingEventPublisher eventPublisher,
+            Optional<Clock> clock
     ) {
-        return new TopicService(eventSourcingRepo, eventPublisher);
+        return new TopicService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));
     }
 
 }

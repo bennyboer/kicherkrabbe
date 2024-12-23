@@ -14,17 +14,19 @@ import de.bennyboer.kicherkrabbe.users.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.users.rename.RenameCmd;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 
 public class UsersService extends AggregateService<User, UserId> {
 
-    public UsersService(EventSourcingRepo repo, EventPublisher eventPublisher) {
+    public UsersService(EventSourcingRepo repo, EventPublisher eventPublisher, Clock clock) {
         super(new EventSourcingService<>(
                 User.TYPE,
                 User.init(),
                 repo,
                 eventPublisher,
-                List.of()
+                List.of(),
+                clock
         ));
     }
 

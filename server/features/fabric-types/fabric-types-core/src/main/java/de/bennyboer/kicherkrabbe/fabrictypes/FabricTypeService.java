@@ -14,17 +14,19 @@ import de.bennyboer.kicherkrabbe.fabrictypes.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.fabrictypes.update.UpdateCmd;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 
 public class FabricTypeService extends AggregateService<FabricType, FabricTypeId> {
 
-    public FabricTypeService(EventSourcingRepo repo, EventPublisher eventPublisher) {
+    public FabricTypeService(EventSourcingRepo repo, EventPublisher eventPublisher, Clock clock) {
         super(new EventSourcingService<>(
                 FabricType.TYPE,
                 FabricType.init(),
                 repo,
                 eventPublisher,
-                List.of()
+                List.of(),
+                clock
         ));
     }
 

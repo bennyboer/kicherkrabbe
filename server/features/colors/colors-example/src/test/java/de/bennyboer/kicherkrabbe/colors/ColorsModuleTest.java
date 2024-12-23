@@ -11,6 +11,7 @@ import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermis
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 
 public class ColorsModuleTest {
@@ -19,7 +20,8 @@ public class ColorsModuleTest {
 
     private final ColorService colorService = new ColorService(
             new InMemoryEventSourcingRepo(),
-            new LoggingEventPublisher()
+            new LoggingEventPublisher(),
+            Clock.systemUTC()
     );
 
     private final PermissionsService permissionsService = new PermissionsService(

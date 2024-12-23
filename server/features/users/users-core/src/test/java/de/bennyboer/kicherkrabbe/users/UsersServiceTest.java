@@ -10,6 +10,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMem
 import de.bennyboer.kicherkrabbe.users.snapshot.SnapshottedEvent;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -19,7 +21,7 @@ public class UsersServiceTest {
 
     private final LoggingEventPublisher publisher = new LoggingEventPublisher();
 
-    private final UsersService service = new UsersService(repo, publisher);
+    private final UsersService service = new UsersService(repo, publisher, Clock.systemUTC());
 
     @Test
     void shouldCreateUser() {

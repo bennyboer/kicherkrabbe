@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.Set;
 
@@ -32,7 +33,8 @@ public abstract class SampleAggregateTests {
 
     private SampleAggregateService eventSourcingService = new SampleAggregateService(
             repo,
-            eventPublisher
+            eventPublisher,
+            Clock.systemUTC()
     );
 
     Agent testAgent = Agent.user(AgentId.of("USER_ID"));
@@ -44,7 +46,8 @@ public abstract class SampleAggregateTests {
         repo = createRepo();
         eventSourcingService = new SampleAggregateService(
                 repo,
-                eventPublisher
+                eventPublisher,
+                Clock.systemUTC()
         );
     }
 
@@ -277,14 +280,16 @@ public abstract class SampleAggregateTests {
         // given: an aggregate that underwent an old create change
         var testDeletedAt = Instant.parse("2021-01-01T00:00:00.000Z");
         var oldEvent = CreatedEvent.of("Test title", "Test description");
-        var oldEventWithMetadata = EventWithMetadata.of(oldEvent, EventMetadata.of(
-                AggregateId.of(id),
-                SampleAggregate.TYPE,
-                Version.zero(),
-                testAgent,
-                Instant.now(),
-                false
-        ));
+        var oldEventWithMetadata = EventWithMetadata.of(
+                oldEvent, EventMetadata.of(
+                        AggregateId.of(id),
+                        SampleAggregate.TYPE,
+                        Version.zero(),
+                        testAgent,
+                        Instant.now(),
+                        false
+                )
+        );
         repo.insert(oldEventWithMetadata).block();
 
         // when: the aggregate is retrieved

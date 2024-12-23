@@ -11,6 +11,7 @@ import de.bennyboer.kicherkrabbe.fabrics.publish.AlreadyPublishedError;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.AlreadyUnpublishedError;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +23,7 @@ public class FabricServiceTest {
 
     private final LoggingEventPublisher eventPublisher = new LoggingEventPublisher();
 
-    private final FabricService fabricService = new FabricService(repo, eventPublisher);
+    private final FabricService fabricService = new FabricService(repo, eventPublisher, Clock.systemUTC());
 
     @Test
     void shouldCreateFabric() {
@@ -369,10 +370,12 @@ public class FabricServiceTest {
         );
 
         // when: updating the availability
-        var updatedVersion = updateAvailability(id, Version.zero(), Set.of(
-                FabricTypeAvailability.of(FabricTypeId.of("fabric-type 2"), true),
-                FabricTypeAvailability.of(FabricTypeId.of("fabric-type 3"), false)
-        ));
+        var updatedVersion = updateAvailability(
+                id, Version.zero(), Set.of(
+                        FabricTypeAvailability.of(FabricTypeId.of("fabric-type 2"), true),
+                        FabricTypeAvailability.of(FabricTypeId.of("fabric-type 3"), false)
+                )
+        );
 
         // then: the availability is updated
         var fabric = get(id);
@@ -398,10 +401,12 @@ public class FabricServiceTest {
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
 
         // when: updating the availability with an outdated version; then: an error is raised
-        assertThatThrownBy(() -> updateAvailability(id, Version.zero(), Set.of(
-                FabricTypeAvailability.of(FabricTypeId.of("fabric-type 2"), true),
-                FabricTypeAvailability.of(FabricTypeId.of("fabric-type 3"), false)
-        ))).matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+        assertThatThrownBy(() -> updateAvailability(
+                id, Version.zero(), Set.of(
+                        FabricTypeAvailability.of(FabricTypeId.of("fabric-type 2"), true),
+                        FabricTypeAvailability.of(FabricTypeId.of("fabric-type 3"), false)
+                )
+        )).matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test

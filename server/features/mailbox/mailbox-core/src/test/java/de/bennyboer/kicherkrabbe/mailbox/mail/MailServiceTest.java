@@ -10,6 +10,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMem
 import de.bennyboer.kicherkrabbe.mailbox.mail.snapshot.SnapshottedEvent;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -19,7 +21,7 @@ public class MailServiceTest {
 
     private final LoggingEventPublisher eventPublisher = new LoggingEventPublisher();
 
-    private final MailService mailService = new MailService(repo, eventPublisher);
+    private final MailService mailService = new MailService(repo, eventPublisher, Clock.systemUTC());
 
     @Test
     void shouldReceiveMail() {

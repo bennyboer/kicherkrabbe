@@ -26,6 +26,7 @@ import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermis
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Set;
 
@@ -49,7 +50,11 @@ public class FabricsModuleTest {
 
     private final EventSourcingRepo eventSourcingRepo = new InMemoryEventSourcingRepo();
 
-    private final FabricService fabricService = new FabricService(eventSourcingRepo, new LoggingEventPublisher());
+    private final FabricService fabricService = new FabricService(
+            eventSourcingRepo,
+            new LoggingEventPublisher(),
+            Clock.systemUTC()
+    );
 
     private final PermissionsRepo permissionsRepo = new InMemoryPermissionsRepo();
 

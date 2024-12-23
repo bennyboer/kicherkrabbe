@@ -13,6 +13,7 @@ import de.bennyboer.kicherkrabbe.patterns.unpublish.AlreadyUnpublishedError;
 import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -26,7 +27,7 @@ public class PatternServiceTest {
 
     private final LoggingEventPublisher eventPublisher = new LoggingEventPublisher();
 
-    private final PatternService patternService = new PatternService(repo, eventPublisher);
+    private final PatternService patternService = new PatternService(repo, eventPublisher, Clock.systemUTC());
 
     @Test
     void shouldCreatePattern() {

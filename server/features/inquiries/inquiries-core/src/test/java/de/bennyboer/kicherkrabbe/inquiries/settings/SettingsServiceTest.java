@@ -9,6 +9,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingR
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +21,7 @@ public class SettingsServiceTest {
 
     private final LoggingEventPublisher eventPublisher = new LoggingEventPublisher();
 
-    private final SettingsService settingsService = new SettingsService(repo, eventPublisher);
+    private final SettingsService settingsService = new SettingsService(repo, eventPublisher, Clock.systemUTC());
 
     @Test
     void shouldInitSettings() {

@@ -49,17 +49,19 @@ public class InquiriesAggregateConfig {
     @Bean
     public InquiryService inquiryService(
             @Qualifier("inquiriesEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
-            @Qualifier("inquiriesEventPublisher") MessagingEventPublisher eventPublisher
+            @Qualifier("inquiriesEventPublisher") MessagingEventPublisher eventPublisher,
+            Optional<Clock> clock
     ) {
-        return new InquiryService(eventSourcingRepo, eventPublisher);
+        return new InquiryService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));
     }
 
     @Bean
     public SettingsService settingsService(
             @Qualifier("inquiriesSettingsEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
-            @Qualifier("inquiriesSettingsEventPublisher") MessagingEventPublisher eventPublisher
+            @Qualifier("inquiriesSettingsEventPublisher") MessagingEventPublisher eventPublisher,
+            Optional<Clock> clock
     ) {
-        return new SettingsService(eventSourcingRepo, eventPublisher);
+        return new SettingsService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));
     }
 
 }

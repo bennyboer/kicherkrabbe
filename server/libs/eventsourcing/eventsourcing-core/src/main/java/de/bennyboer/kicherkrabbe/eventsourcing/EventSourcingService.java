@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,18 +33,22 @@ public class EventSourcingService<A extends Aggregate> {
 
     private final EventPatcher patcher;
 
+    private final Clock clock;
+
     public EventSourcingService(
             AggregateType aggregateType,
             A initialState,
             EventSourcingRepo repo,
             EventPublisher eventPublisher,
-            List<Patch> patches
+            List<Patch> patches,
+            Clock clock
     ) {
         this.aggregateType = aggregateType;
         this.initialState = initialState;
         this.repo = repo;
         this.eventPublisher = eventPublisher;
         this.patcher = EventPatcher.fromPatches(patches);
+        this.clock = clock;
     }
 
     @SuppressWarnings("unchecked")
@@ -137,10 +142,12 @@ public class EventSourcingService<A extends Aggregate> {
                 .map(event -> event.getMetadata().getAggregateVersion())
                 .defaultIfEmpty(Version.zero())
                 .flatMapMany(fromVersion -> repo.findEventsByAggregateIdAndType(id, aggregateType, fromVersion))
-                .reduce(AggregateContainer.init(initialState), (container, event) -> container.apply(
-                        patcher.patch(event.getEvent(), event.getMetadata()),
-                        event.getMetadata()
-                ));
+                .reduce(
+                        AggregateContainer.init(initialState), (container, event) -> container.apply(
+                                patcher.patch(event.getEvent(), event.getMetadata()),
+                                event.getMetadata()
+                        )
+                );
     }
 
     private Mono<AggregateContainer> aggregateInContainer(AggregateId id, Version version) {
@@ -153,10 +160,12 @@ public class EventSourcingService<A extends Aggregate> {
                         fromVersion,
                         version
                 ))
-                .reduce(AggregateContainer.init(initialState), (container, event) -> container.apply(
-                        patcher.patch(event.getEvent(), event.getMetadata()),
-                        event.getMetadata()
-                ));
+                .reduce(
+                        AggregateContainer.init(initialState), (container, event) -> container.apply(
+                                patcher.patch(event.getEvent(), event.getMetadata()),
+                                event.getMetadata()
+                        )
+                );
     }
 
     private Flux<EventWithMetadata> saveAndPublishEvents(
@@ -165,7 +174,7 @@ public class EventSourcingService<A extends Aggregate> {
             Agent agent,
             ApplyCommandResult result
     ) {
-        Instant now = Instant.now();
+        Instant now = clock.instant();
 
         var events = result.getEvents();
         if (events.isEmpty()) {

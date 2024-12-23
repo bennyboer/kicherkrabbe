@@ -10,6 +10,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMem
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -19,7 +21,7 @@ public class ColorServiceTest {
 
     private final LoggingEventPublisher eventPublisher = new LoggingEventPublisher();
 
-    private final ColorService colorService = new ColorService(repo, eventPublisher);
+    private final ColorService colorService = new ColorService(repo, eventPublisher, Clock.systemUTC());
 
     @Test
     void shouldCreateColor() {

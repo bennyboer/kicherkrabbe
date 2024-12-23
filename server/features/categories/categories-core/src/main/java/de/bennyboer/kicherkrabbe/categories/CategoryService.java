@@ -15,17 +15,19 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.EventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 
 public class CategoryService extends AggregateService<Category, CategoryId> {
 
-    public CategoryService(EventSourcingRepo repo, EventPublisher eventPublisher) {
+    public CategoryService(EventSourcingRepo repo, EventPublisher eventPublisher, Clock clock) {
         super(new EventSourcingService<>(
                 Category.TYPE,
                 Category.init(),
                 repo,
                 eventPublisher,
-                List.of()
+                List.of(),
+                clock
         ));
     }
 

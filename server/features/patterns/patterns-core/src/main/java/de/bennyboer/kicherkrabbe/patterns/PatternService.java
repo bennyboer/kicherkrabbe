@@ -25,18 +25,20 @@ import de.bennyboer.kicherkrabbe.patterns.update.variants.UpdateVariantsCmd;
 import jakarta.annotation.Nullable;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Set;
 
 public class PatternService extends AggregateService<Pattern, PatternId> {
 
-    public PatternService(EventSourcingRepo repo, EventPublisher eventPublisher) {
+    public PatternService(EventSourcingRepo repo, EventPublisher eventPublisher, Clock clock) {
         super(new EventSourcingService<>(
                 Pattern.TYPE,
                 Pattern.init(),
                 repo,
                 eventPublisher,
-                List.of()
+                List.of(),
+                clock
         ));
     }
 

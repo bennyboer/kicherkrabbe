@@ -15,17 +15,19 @@ import de.bennyboer.kicherkrabbe.eventsourcing.example.patches.CreatedEventPatch
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 
 public class SampleAggregateService extends AggregateService<SampleAggregate, String> {
 
-    public SampleAggregateService(EventSourcingRepo repo, EventPublisher eventPublisher) {
+    public SampleAggregateService(EventSourcingRepo repo, EventPublisher eventPublisher, Clock clock) {
         super(new EventSourcingService<>(
                 SampleAggregate.TYPE,
                 SampleAggregate.init(),
                 repo,
                 eventPublisher,
-                List.of(new CreatedEventPatch1())
+                List.of(new CreatedEventPatch1()),
+                clock
         ));
     }
 

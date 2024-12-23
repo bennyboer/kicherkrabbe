@@ -33,9 +33,10 @@ public class AssetsAggregateConfig {
     @Bean
     public AssetService assetService(
             @Qualifier("assetsEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
-            @Qualifier("assetsEventPublisher") MessagingEventPublisher eventPublisher
+            @Qualifier("assetsEventPublisher") MessagingEventPublisher eventPublisher,
+            Optional<Clock> clock
     ) {
-        return new AssetService(eventSourcingRepo, eventPublisher);
+        return new AssetService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));
     }
 
 }

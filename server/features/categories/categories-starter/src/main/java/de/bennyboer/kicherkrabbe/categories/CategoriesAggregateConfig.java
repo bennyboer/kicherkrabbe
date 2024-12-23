@@ -33,9 +33,10 @@ public class CategoriesAggregateConfig {
     @Bean
     public CategoryService categoryService(
             @Qualifier("categoriesEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
-            @Qualifier("categoriesEventPublisher") MessagingEventPublisher eventPublisher
+            @Qualifier("categoriesEventPublisher") MessagingEventPublisher eventPublisher,
+            Optional<Clock> clock
     ) {
-        return new CategoryService(eventSourcingRepo, eventPublisher);
+        return new CategoryService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));
     }
 
 }

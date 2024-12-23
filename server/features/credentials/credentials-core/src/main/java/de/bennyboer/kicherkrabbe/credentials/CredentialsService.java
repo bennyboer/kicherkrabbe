@@ -28,7 +28,8 @@ public class CredentialsService extends AggregateService<Credentials, Credential
                 Credentials.init(),
                 repo,
                 eventPublisher,
-                List.of()
+                List.of(),
+                clock
         ));
 
         this.clock = clock;

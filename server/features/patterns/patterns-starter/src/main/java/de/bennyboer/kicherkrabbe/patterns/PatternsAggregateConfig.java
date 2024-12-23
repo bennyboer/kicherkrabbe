@@ -33,9 +33,10 @@ public class PatternsAggregateConfig {
     @Bean
     public PatternService patternService(
             @Qualifier("patternsEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
-            @Qualifier("patternsEventPublisher") MessagingEventPublisher eventPublisher
+            @Qualifier("patternsEventPublisher") MessagingEventPublisher eventPublisher,
+            Optional<Clock> clock
     ) {
-        return new PatternService(eventSourcingRepo, eventPublisher);
+        return new PatternService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));
     }
 
 }

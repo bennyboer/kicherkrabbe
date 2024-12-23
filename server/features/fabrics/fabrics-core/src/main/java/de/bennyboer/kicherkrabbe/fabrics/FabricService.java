@@ -23,18 +23,20 @@ import de.bennyboer.kicherkrabbe.fabrics.update.image.UpdateImageCmd;
 import de.bennyboer.kicherkrabbe.fabrics.update.topics.UpdateTopicsCmd;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Set;
 
 public class FabricService extends AggregateService<Fabric, FabricId> {
 
-    public FabricService(EventSourcingRepo repo, EventPublisher eventPublisher) {
+    public FabricService(EventSourcingRepo repo, EventPublisher eventPublisher, Clock clock) {
         super(new EventSourcingService<>(
                 Fabric.TYPE,
                 Fabric.init(),
                 repo,
                 eventPublisher,
-                List.of()
+                List.of(),
+                clock
         ));
     }
 

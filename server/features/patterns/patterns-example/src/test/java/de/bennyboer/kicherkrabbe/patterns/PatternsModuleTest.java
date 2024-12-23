@@ -21,6 +21,7 @@ import jakarta.annotation.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Set;
 
@@ -30,7 +31,11 @@ public class PatternsModuleTest {
 
     private final EventSourcingRepo eventSourcingRepo = new InMemoryEventSourcingRepo();
 
-    private final PatternService patternService = new PatternService(eventSourcingRepo, new LoggingEventPublisher());
+    private final PatternService patternService = new PatternService(
+            eventSourcingRepo,
+            new LoggingEventPublisher(),
+            Clock.systemUTC()
+    );
 
     private final PermissionsRepo permissionsRepo = new InMemoryPermissionsRepo();
 

@@ -15,17 +15,19 @@ import de.bennyboer.kicherkrabbe.inquiries.settings.init.InitCmd;
 import de.bennyboer.kicherkrabbe.inquiries.settings.update.ratelimits.UpdateRateLimitsCmd;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 
 public class SettingsService extends AggregateService<Settings, SettingsId> {
 
-    public SettingsService(EventSourcingRepo repo, EventPublisher eventPublisher) {
+    public SettingsService(EventSourcingRepo repo, EventPublisher eventPublisher, Clock clock) {
         super(new EventSourcingService<>(
                 Settings.TYPE,
                 Settings.init(),
                 repo,
                 eventPublisher,
-                List.of()
+                List.of(),
+                clock
         ));
     }
 

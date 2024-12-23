@@ -9,6 +9,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingR
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+
 import static de.bennyboer.kicherkrabbe.categories.CategoryGroup.CLOTHING;
 import static de.bennyboer.kicherkrabbe.categories.CategoryGroup.NONE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +22,7 @@ public class CategoryServiceTest {
 
     private final LoggingEventPublisher eventPublisher = new LoggingEventPublisher();
 
-    private final CategoryService categoryService = new CategoryService(repo, eventPublisher);
+    private final CategoryService categoryService = new CategoryService(repo, eventPublisher, Clock.systemUTC());
 
     @Test
     void shouldCreateCategory() {

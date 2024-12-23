@@ -34,9 +34,10 @@ public class MailboxAggregateConfig {
     @Bean
     public MailService mailService(
             @Qualifier("mailboxMailEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
-            @Qualifier("mailboxMailEventPublisher") MessagingEventPublisher eventPublisher
+            @Qualifier("mailboxMailEventPublisher") MessagingEventPublisher eventPublisher,
+            Optional<Clock> clock
     ) {
-        return new MailService(eventSourcingRepo, eventPublisher);
+        return new MailService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));
     }
 
 }

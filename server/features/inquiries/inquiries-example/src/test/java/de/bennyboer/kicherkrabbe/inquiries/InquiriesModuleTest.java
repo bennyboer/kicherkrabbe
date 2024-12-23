@@ -32,12 +32,14 @@ public class InquiriesModuleTest {
 
     private final InquiryService inquiryService = new InquiryService(
             new InMemoryEventSourcingRepo(),
-            new LoggingEventPublisher()
+            new LoggingEventPublisher(),
+            clock
     );
 
     private final SettingsService settingsService = new SettingsService(
             new InMemoryEventSourcingRepo(),
-            new LoggingEventPublisher()
+            new LoggingEventPublisher(),
+            clock
     );
 
     private final InquiryLookupRepo inquiryLookupRepo = new InMemoryInquiryLookupRepo();

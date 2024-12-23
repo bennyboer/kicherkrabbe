@@ -11,6 +11,7 @@ import de.bennyboer.kicherkrabbe.topics.persistence.lookup.inmemory.InMemoryTopi
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 
 public class TopicsModuleTest {
@@ -19,7 +20,8 @@ public class TopicsModuleTest {
 
     private final TopicService topicService = new TopicService(
             new InMemoryEventSourcingRepo(),
-            new LoggingEventPublisher()
+            new LoggingEventPublisher(),
+            Clock.systemUTC()
     );
 
     private final PermissionsService permissionsService = new PermissionsService(

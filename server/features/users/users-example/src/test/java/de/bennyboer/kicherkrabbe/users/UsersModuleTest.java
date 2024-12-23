@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Mono;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +29,8 @@ public class UsersModuleTest {
 
     private final UsersService usersService = new UsersService(
             new InMemoryEventSourcingRepo(),
-            eventPublisher
+            eventPublisher,
+            Clock.systemUTC()
     );
 
     private final ReactiveTransactionManager transactionManager = new MockReactiveTransactionManager();
