@@ -48,6 +48,26 @@ interface SenderDTO {
   phone?: string;
 }
 
+interface MarkAsReadRequest {
+  version: number;
+}
+
+interface MarkAsReadResponse {
+  version: number;
+}
+
+interface MarkAsUnreadRequest {
+  version: number;
+}
+
+interface MarkAsUnreadResponse {
+  version: number;
+}
+
+interface DeleteMailResponse {
+  version: number;
+}
+
 export interface QueryMailsResult {
   total: number;
   mails: Mail[];
@@ -98,6 +118,39 @@ export class MailboxService {
     return this.http
       .get<QueryMailResponse>(`${environment.apiUrl}/mailbox/mails/${mailId}`)
       .pipe(map((response) => this.toInternalMail(response.mail)));
+  }
+
+  markMailAsRead(id: string, version: number): Observable<number> {
+    const request: MarkAsReadRequest = { version };
+
+    return this.http
+      .post<MarkAsReadResponse>(
+        `${environment.apiUrl}/mailbox/mails/${id}/read`,
+        request,
+      )
+      .pipe(map((response) => response.version));
+  }
+
+  markMailAsUnread(id: string, version: number): Observable<number> {
+    const request: MarkAsUnreadRequest = { version };
+
+    return this.http
+      .post<MarkAsUnreadResponse>(
+        `${environment.apiUrl}/mailbox/mails/${id}/unread`,
+        request,
+      )
+      .pipe(map((response) => response.version));
+  }
+
+  deleteMail(mailId: string, version: number): Observable<number> {
+    const params = new HttpParams().set('version', version.toString());
+
+    return this.http
+      .delete<DeleteMailResponse>(
+        `${environment.apiUrl}/mailbox/mails/${mailId}`,
+        { params },
+      )
+      .pipe(map((response) => response.version));
   }
 
   private toInternalMail(mail: MailDTO): Mail {

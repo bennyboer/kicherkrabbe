@@ -12,6 +12,7 @@ import {
   distinctUntilChanged,
   finalize,
   first,
+  map,
   Observable,
   of,
   Subject,
@@ -25,7 +26,14 @@ import {
 } from '../../../../../shared';
 import { Mail, READ, Status, UNREAD } from '../../model';
 import { MailboxService } from '../../services';
-import { none, Option, some } from '../../../../../shared/modules/option';
+import {
+  none,
+  Option,
+  some,
+  someOrNone,
+} from '../../../../../shared/modules/option';
+
+const MAILS_LIMIT = 10;
 
 @Component({
   selector: 'app-mailbox-page',
@@ -46,6 +54,15 @@ export class MailboxPage implements OnInit, OnDestroy {
     new BehaviorSubject<boolean>(true);
   protected readonly mailsLoaded$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
+  protected readonly remainingMailsCount$: Observable<number> = combineLatest([
+    this.mails$,
+    this.totalMails$,
+  ]).pipe(map(([mails, totalMails]) => totalMails - mails.length));
+  protected readonly moreMailsAvailable$: Observable<boolean> =
+    this.remainingMailsCount$.pipe(
+      map((remainingMailsCount) => remainingMailsCount > 0),
+    );
+
   protected readonly loading$: Observable<boolean> =
     this.loadingMails$.asObservable();
 
@@ -122,10 +139,33 @@ export class MailboxPage implements OnInit, OnDestroy {
     dropdown.toggleOpened();
   }
 
+  loadMoreMails(): void {
+    const skip = this.mails$.value.length;
+    const limit = MAILS_LIMIT;
+
+    const searchTerm = this.searchTerm$.value.trim();
+    const status = this.status$.value;
+
+    this.reloadMails({
+      searchTerm,
+      status,
+      skip,
+      limit,
+      keepCurrentMails: true,
+    });
+  }
+
   private reloadMails(props: {
     searchTerm: string;
     status: Option<Status>;
+    skip?: number;
+    limit?: number;
+    keepCurrentMails?: boolean;
   }): void {
+    const skip = someOrNone(props.skip).orElse(0);
+    const limit = someOrNone(props.limit).orElse(MAILS_LIMIT);
+    const keepCurrentMails = someOrNone(props.keepCurrentMails).orElse(false);
+
     this.loadingMails$.next(true);
 
     const searchTerm = props.searchTerm.trim();
@@ -135,6 +175,8 @@ export class MailboxPage implements OnInit, OnDestroy {
       .getMails({
         searchTerm,
         status: status.orElseNull(),
+        skip,
+        limit,
       })
       .pipe(
         first(),
@@ -157,8 +199,13 @@ export class MailboxPage implements OnInit, OnDestroy {
         }),
       )
       .subscribe((result) => {
-        this.mails$.next(result.mails);
         this.totalMails$.next(result.total);
+
+        if (keepCurrentMails) {
+          this.mails$.next([...this.mails$.value, ...result.mails]);
+        } else {
+          this.mails$.next(result.mails);
+        }
       });
   }
 }

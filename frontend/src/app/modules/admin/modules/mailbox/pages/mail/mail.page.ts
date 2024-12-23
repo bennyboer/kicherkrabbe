@@ -7,6 +7,7 @@ import {
 import {
   BehaviorSubject,
   catchError,
+  combineLatest,
   finalize,
   first,
   map,
@@ -39,8 +40,24 @@ export class MailPage implements OnInit, OnDestroy {
     new BehaviorSubject<boolean>(true);
   protected readonly mailLoaded$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
-  protected readonly loading$: Observable<boolean> =
-    this.loadingMail$.asObservable();
+  protected readonly markingAsRead$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
+  protected readonly cannotMarkAsRead$: Observable<boolean> =
+    this.markingAsRead$.asObservable();
+  protected readonly markingAsUnread$: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
+  protected readonly cannotMarkAsUnread$: Observable<boolean> =
+    this.markingAsUnread$.asObservable();
+  protected readonly loading$: Observable<boolean> = combineLatest([
+    this.loadingMail$,
+    this.markingAsRead$,
+    this.markingAsUnread$,
+  ]).pipe(
+    map(
+      ([loadingMail, markingAsRead, markingAsUnread]) =>
+        loadingMail || markingAsRead || markingAsUnread,
+    ),
+  );
 
   private readonly destroy$: Subject<void> = new Subject<void>();
 
@@ -68,9 +85,51 @@ export class MailPage implements OnInit, OnDestroy {
     this.mail$.complete();
     this.mailLoaded$.complete();
     this.loadingMail$.complete();
+    this.markingAsRead$.complete();
+    this.markingAsUnread$.complete();
 
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  markAsRead(mail: Mail): void {
+    if (this.markingAsRead$.value) {
+      return;
+    }
+    this.markingAsRead$.next(true);
+
+    this.mailboxService
+      .markMailAsRead(mail.id, mail.version)
+      .pipe(
+        first(),
+        finalize(() => this.markingAsRead$.next(false)),
+      )
+      .subscribe((version) => {
+        const updatedMail = this.mail$.value
+          .map((m) => m.markAsRead(version))
+          .orElseThrow();
+        this.mail$.next(some(updatedMail));
+      });
+  }
+
+  markAsUnread(mail: Mail): void {
+    if (this.markingAsUnread$.value) {
+      return;
+    }
+    this.markingAsUnread$.next(true);
+
+    this.mailboxService
+      .markMailAsUnread(mail.id, mail.version)
+      .pipe(
+        first(),
+        finalize(() => this.markingAsUnread$.next(false)),
+      )
+      .subscribe((version) => {
+        const updatedMail = this.mail$.value
+          .map((m) => m.markAsUnread(version))
+          .orElseThrow();
+        this.mail$.next(some(updatedMail));
+      });
   }
 
   private reloadMail(mailId: string): void {

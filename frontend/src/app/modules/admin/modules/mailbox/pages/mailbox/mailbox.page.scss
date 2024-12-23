@@ -9,6 +9,11 @@
   gap: 12px;
 }
 
+.results-note {
+  font-size: 0.8em;
+  color: rgba(var(--text-rgb), 0.7);
+}
+
 .unread-indicator {
   width: 8px;
   height: 8px;
@@ -109,7 +114,21 @@ table.mails-table {
   }
 }
 
+.footer-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+}
+
 @media only screen and (max-width: 1000px) {
+  .action-bar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
   table.mails-table {
     col {
       &.sender, &.date {

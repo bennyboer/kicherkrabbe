@@ -24,7 +24,9 @@
     @if (mails.length === 0) {
       <app-note level="info">Keine Mails vorhanden.</app-note>
     } @else {
-      <app-note level="info">Insgesamt gibt es {{ totalMails$ | async }} Mails</app-note>
+      <p class="results-note">
+        {{ totalMails$ | async }} Mail(s) gefunden
+      </p>
 
       <table class="mails-table">
         <colgroup>
@@ -61,6 +63,16 @@
           }
         </tbody>
       </table>
+
+      @if (moreMailsAvailable$ | async) {
+        <div class="footer-actions">
+          <app-button (click)="loadMoreMails()">Mehr laden... ({{ remainingMailsCount$ | async }})</app-button>
+        </div>
+      } @else {
+        <div class="footer-actions">
+          <app-note level="info">Keine weiteren Mails vorhanden.</app-note>
+        </div>
+      }
     }
   }
 }

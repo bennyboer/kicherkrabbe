@@ -57,7 +57,27 @@ export class Mail {
     });
   }
 
+  markAsRead(version: number): Mail {
+    return new Mail({
+      ...this,
+      version,
+      read: true,
+    });
+  }
+
+  markAsUnread(version: number): Mail {
+    return new Mail({
+      ...this,
+      version,
+      read: false,
+    });
+  }
+
+  isRead(): boolean {
+    return this.read;
+  }
+
   isUnread(): boolean {
-    return !this.read;
+    return !this.isRead();
   }
 }

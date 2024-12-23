@@ -66,7 +66,7 @@ public class MongoMailLookupRepo
                 .skip((int) skip)
                 .limit((int) limit);
 
-        return template.count(query, MongoLookupMail.class, collectionName)
+        return template.count(Query.query(criteria), MongoLookupMail.class, collectionName)
                 .flatMap(total -> template.find(query, MongoLookupMail.class, collectionName)
                         .map(serializer::deserialize)
                         .collectList()
