@@ -83,6 +83,14 @@ h2 {
   margin-bottom: 8px;
 }
 
+.image-subtext {
+  font-size: 12px;
+  color: rgba(var(--text-rgb), 0.7);
+  margin-top: 12px;
+  border-left: 2px solid var(--background-low-contrast);
+  padding-left: 12px;
+}
+
 @media only screen and (max-width: 1000px) {
   .desktop {
     display: none;

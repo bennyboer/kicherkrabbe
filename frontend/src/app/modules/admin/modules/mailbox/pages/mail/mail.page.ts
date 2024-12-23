@@ -8,6 +8,7 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
+  filter,
   finalize,
   first,
   map,
@@ -78,6 +79,15 @@ export class MailPage implements OnInit, OnDestroy {
     this.mailId$
       .pipe(takeUntil(this.destroy$))
       .subscribe((mailId) => this.reloadMail(mailId));
+
+    this.mail$
+      .pipe(
+        filter((mail) => mail.isSome()),
+        first(),
+        map((mail) => mail.orElseThrow()),
+        filter((mail) => mail.isUnread()),
+      )
+      .subscribe((mail) => this.markAsRead(mail));
   }
 
   ngOnDestroy(): void {
