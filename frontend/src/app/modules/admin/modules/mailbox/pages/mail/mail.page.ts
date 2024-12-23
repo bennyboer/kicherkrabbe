@@ -7,17 +7,20 @@ import {
 import {
   BehaviorSubject,
   catchError,
-  delay,
   finalize,
   first,
   map,
   Observable,
   of,
+  ReplaySubject,
   Subject,
   takeUntil,
 } from 'rxjs';
-import { Mail, Sender } from '../../model';
+import { Mail } from '../../model';
 import { none, Option, some } from '../../../../../shared/modules/option';
+import { MailboxService } from '../../services';
+import { NotificationService } from '../../../../../shared';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-mail-page',
@@ -26,6 +29,9 @@ import { none, Option, some } from '../../../../../shared/modules/option';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MailPage implements OnInit, OnDestroy {
+  private readonly mailId$: ReplaySubject<string> = new ReplaySubject<string>(
+    1,
+  );
   protected readonly mail$: BehaviorSubject<Option<Mail>> = new BehaviorSubject<
     Option<Mail>
   >(none());
@@ -38,11 +44,27 @@ export class MailPage implements OnInit, OnDestroy {
 
   private readonly destroy$: Subject<void> = new Subject<void>();
 
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly mailboxService: MailboxService,
+    private readonly notificationService: NotificationService,
+  ) {}
+
   ngOnInit(): void {
-    this.reloadMail();
+    this.route.params
+      .pipe(
+        map((params) => params['mailId']),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((mailId) => this.mailId$.next(mailId));
+
+    this.mailId$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((mailId) => this.reloadMail(mailId));
   }
 
   ngOnDestroy(): void {
+    this.mailId$.complete();
     this.mail$.complete();
     this.mailLoaded$.complete();
     this.loadingMail$.complete();
@@ -51,29 +73,22 @@ export class MailPage implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private reloadMail(): void {
+  private reloadMail(mailId: string): void {
     this.loadingMail$.next(true);
 
-    // TODO Implement loading mail from backend
-    of(
-      Mail.of({
-        id: '1',
-        subject: "I'm interested in your product",
-        content: 'Hello, I would like to know more about your product.',
-        sender: Sender.of({
-          name: 'John Doe',
-          mail: 'john.doe@example.com',
-        }),
-        receivedAt: new Date('2024-09-21T12:30:00'),
-        read: false,
-      }),
-    )
+    this.mailboxService
+      .getMail(mailId)
       .pipe(
-        delay(1000),
         first(),
         map((mail) => some(mail)),
         catchError((e) => {
           console.error('Failed to load mail', e);
+          this.notificationService.publish({
+            message:
+              'Mail konnte nicht geladen werden. Bitte versuche die Seite neu zu laden.',
+            type: 'error',
+          });
+
           return of(none<Mail>());
         }),
         takeUntil(this.destroy$),

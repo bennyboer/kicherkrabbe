@@ -5,6 +5,11 @@ import { PAGES } from './pages';
 import { SharedModule } from '../../../shared/shared.module';
 import { OptionModule } from '../../../shared/modules/option';
 import { QuillViewComponent } from 'ngx-quill';
+import { SERVICES } from './services';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 
 @NgModule({
   imports: [
@@ -15,5 +20,6 @@ import { QuillViewComponent } from 'ngx-quill';
     QuillViewComponent,
   ],
   declarations: [...PAGES],
+  providers: [...SERVICES, provideHttpClient(withInterceptorsFromDi())],
 })
 export class MailboxModule {}

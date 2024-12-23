@@ -30,11 +30,6 @@
 @if (mailLoaded$ | async) {
   @if (mail$ | async | ifSome; as mail) {
     <div class="mail-headers">
-      <div class="mail-content-header subject">
-        <label>Betreff</label>
-        <span>{{ mail.subject }}</span>
-      </div>
-
       <div class="mail-content-header sender">
         <label>Absender</label>
         <span class="sender-container">
@@ -44,12 +39,27 @@
           <span class="mail">
             {{ mail.sender.mail }}
           </span>
+          <span class="phone">
+            {{ mail.sender.phone.orElse("-") }}
+          </span>
         </span>
+      </div>
+
+      <div class="mail-content-header origin">
+        <label>Herkunft</label>
+        <span>{{ mail.origin.type.label }}</span>
       </div>
 
       <div class="mail-content-header received-at">
         <label>Empfangen</label>
-        <span>{{ mail.receivedAt | date }}</span>
+        <span>{{ mail.receivedAt | date: "medium" }}</span>
+      </div>
+
+      <hr>
+
+      <div class="mail-content-header subject">
+        <label>Betreff</label>
+        <span>{{ mail.subject }}</span>
       </div>
 
       <div class="mail-content-header content">

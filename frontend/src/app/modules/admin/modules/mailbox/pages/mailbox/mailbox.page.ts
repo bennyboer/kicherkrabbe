@@ -7,7 +7,9 @@ import {
 import {
   BehaviorSubject,
   catchError,
-  delay,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
   finalize,
   first,
   Observable,
@@ -19,8 +21,11 @@ import {
   DropdownComponent,
   DropdownItem,
   DropdownItemId,
+  NotificationService,
 } from '../../../../../shared';
-import { Mail, Sender } from '../../model';
+import { Mail, READ, Status, UNREAD } from '../../model';
+import { MailboxService } from '../../services';
+import { none, Option, some } from '../../../../../shared/modules/option';
 
 @Component({
   selector: 'app-mailbox-page',
@@ -29,9 +34,14 @@ import { Mail, Sender } from '../../model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MailboxPage implements OnInit, OnDestroy {
+  protected readonly searchTerm$: BehaviorSubject<string> =
+    new BehaviorSubject<string>('');
+
   protected readonly mails$: BehaviorSubject<Mail[]> = new BehaviorSubject<
     Mail[]
   >([]);
+  protected readonly totalMails$: BehaviorSubject<number> =
+    new BehaviorSubject<number>(0);
   private readonly loadingMails$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(true);
   protected readonly mailsLoaded$: BehaviorSubject<boolean> =
@@ -39,8 +49,8 @@ export class MailboxPage implements OnInit, OnDestroy {
   protected readonly loading$: Observable<boolean> =
     this.loadingMails$.asObservable();
 
-  private readonly destroy$: Subject<void> = new Subject<void>();
-
+  protected readonly status$: BehaviorSubject<Option<Status>> =
+    new BehaviorSubject<Option<Status>>(none());
   protected readonly statusDropdownItems$: BehaviorSubject<DropdownItem[]> =
     new BehaviorSubject<DropdownItem[]>([
       {
@@ -53,13 +63,30 @@ export class MailboxPage implements OnInit, OnDestroy {
       },
     ]);
 
+  private readonly destroy$: Subject<void> = new Subject<void>();
+
+  constructor(
+    private readonly mailboxService: MailboxService,
+    private readonly notificationService: NotificationService,
+  ) {}
+
   ngOnInit(): void {
-    this.reloadMails();
+    combineLatest([
+      this.searchTerm$.pipe(distinctUntilChanged(), debounceTime(200)),
+      this.status$,
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([searchTerm, status]) =>
+        this.reloadMails({ searchTerm, status }),
+      );
   }
 
   ngOnDestroy(): void {
+    this.searchTerm$.complete();
     this.statusDropdownItems$.complete();
+    this.status$.complete();
     this.mails$.complete();
+    this.totalMails$.complete();
     this.loadingMails$.complete();
     this.mailsLoaded$.complete();
 
@@ -68,7 +95,7 @@ export class MailboxPage implements OnInit, OnDestroy {
   }
 
   updateSearchTerm(value: string): void {
-    console.log('searchTerm', value);
+    this.searchTerm$.next(value);
   }
 
   updateSelectedStatus(
@@ -76,13 +103,16 @@ export class MailboxPage implements OnInit, OnDestroy {
     items: DropdownItemId[],
   ): void {
     if (items.length === 0) {
-      // TODO Reset selected status
-      console.log('noStatusSelected');
+      this.status$.next(none());
       return;
     }
 
-    // TODO Select status
-    console.log('selectedStatus', items);
+    const status = items[0];
+    if (status === 'read') {
+      this.status$.next(some(READ));
+    } else {
+      this.status$.next(some(UNREAD));
+    }
 
     dropdown.toggleOpened();
   }
@@ -92,51 +122,33 @@ export class MailboxPage implements OnInit, OnDestroy {
     dropdown.toggleOpened();
   }
 
-  private reloadMails(): void {
+  private reloadMails(props: {
+    searchTerm: string;
+    status: Option<Status>;
+  }): void {
     this.loadingMails$.next(true);
 
-    const MOCK_MAILS = [
-      Mail.of({
-        id: '1',
-        subject: "I'm interested in your product",
-        sender: Sender.of({
-          name: 'John Doe',
-          mail: 'john.doe@example.com',
-        }),
-        receivedAt: new Date('2024-09-21T12:30:00'),
-        read: false,
-      }),
-      Mail.of({
-        id: '2',
-        subject: 'How can I contact you?',
-        sender: Sender.of({
-          name: 'Max Mustermann',
-          mail: 'max.mustermann@example.com',
-        }),
-        receivedAt: new Date('2024-09-20T17:45:00'),
-        read: true,
-      }),
-      Mail.of({
-        id: '3',
-        subject:
-          'What about a fairly long subject that should be cut off before we get into trouble with the design?',
-        sender: Sender.of({
-          name: 'Bennybör',
-          mail: 'benjamin.barny.eder+eineechtlangemail@googlemail.com',
-        }),
-        receivedAt: new Date('2024-09-20T17:45:00'),
-        read: true,
-      }),
-    ];
+    const searchTerm = props.searchTerm.trim();
+    const status = props.status;
 
-    // TODO Load mails from backend
-    of(MOCK_MAILS)
+    this.mailboxService
+      .getMails({
+        searchTerm,
+        status: status.orElseNull(),
+      })
       .pipe(
-        delay(1000),
         first(),
-        catchError((e) => {
-          console.error('Error loading mails', e);
-          return of([]);
+        catchError((_) => {
+          this.notificationService.publish({
+            type: 'error',
+            message:
+              'Die Mails konnten nicht geladen werden. Bitte versuche die Seite neu zu laden.',
+          });
+
+          return of({
+            total: 0,
+            mails: [],
+          });
         }),
         takeUntil(this.destroy$),
         finalize(() => {
@@ -144,6 +156,9 @@ export class MailboxPage implements OnInit, OnDestroy {
           this.mailsLoaded$.next(true);
         }),
       )
-      .subscribe((mails) => this.mails$.next(mails));
+      .subscribe((result) => {
+        this.mails$.next(result.mails);
+        this.totalMails$.next(result.total);
+      });
   }
 }
