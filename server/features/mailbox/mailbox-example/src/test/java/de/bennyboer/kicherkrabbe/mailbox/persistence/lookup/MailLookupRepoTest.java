@@ -177,6 +177,65 @@ public abstract class MailLookupRepoTest {
         assertThat(page.getMails()).containsExactly(mail1);
     }
 
+    @Test
+    void shouldCountUnreadMails() {
+        // given: some mails
+        var mail1 = LookupMail.of(
+                MailId.create(),
+                Version.zero(),
+                Origin.inquiry(OriginId.of("INQUIRY_ID_1")),
+                Sender.of(
+                        SenderName.of("John Doe"),
+                        EMail.of("john.doe@kicherkrabbe.com"),
+                        PhoneNumber.of("+49123456789")
+                ),
+                Subject.of("Test Mail 1"),
+                Content.of("Hello, this is a test mail."),
+                Instant.parse("2024-03-12T12:30:00.00Z"),
+                READ,
+                Instant.parse("2024-03-12T12:45:00.00Z")
+        );
+        var mail2 = LookupMail.of(
+                MailId.create(),
+                Version.zero(),
+                Origin.inquiry(OriginId.of("INQUIRY_ID_2")),
+                Sender.of(
+                        SenderName.of("Jane Doe"),
+                        EMail.of("jane.doe@kicherkrabbe.com"),
+                        null
+                ),
+                Subject.of("Test Mail 2"),
+                Content.of("Hello, this is a test mail."),
+                Instant.parse("2024-03-12T13:15:00.00Z"),
+                UNREAD,
+                null
+        );
+        var mail3 = LookupMail.of(
+                MailId.create(),
+                Version.zero(),
+                Origin.inquiry(OriginId.of("INQUIRY_ID_3")),
+                Sender.of(
+                        SenderName.of("Max Mustermann"),
+                        EMail.of("max.mustermann@kicherkrabbe.com"),
+                        null
+                ),
+                Subject.of("Test Mail 3"),
+                Content.of("Hello, this is a test mail."),
+                Instant.parse("2024-03-12T13:30:00.00Z"),
+                UNREAD,
+                null
+        );
+        update(mail1);
+        update(mail2);
+        update(mail3);
+
+        // when: counting unread mails
+        var count = countUnread();
+
+        // then: the correct number of unread mails is returned
+        assertThat(count).isEqualTo(2);
+    }
+
     private void update(LookupMail mail) {
         repo.update(mail).block();
     }
@@ -191,6 +250,10 @@ public abstract class MailLookupRepoTest {
 
     private LookupMailPage query(String searchTerm, @Nullable Status status, long skip, long limit) {
         return repo.query(searchTerm, status, skip, limit).block();
+    }
+
+    private long countUnread() {
+        return repo.countUnread().block();
     }
 
 }

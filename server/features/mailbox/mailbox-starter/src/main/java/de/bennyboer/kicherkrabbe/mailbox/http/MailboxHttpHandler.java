@@ -61,6 +61,13 @@ public class MailboxHttpHandler {
                 .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
     }
 
+    public Mono<ServerResponse> getUnreadMailsCount(ServerRequest request) {
+        return toAgent(request)
+                .flatMap(module::getUnreadMailsCount)
+                .flatMap(count -> ServerResponse.ok().bodyValue(count))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
+    }
+
     public Mono<ServerResponse> markMailAsRead(ServerRequest request) {
         String mailId = request.pathVariable("mailId");
 

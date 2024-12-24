@@ -31,6 +31,7 @@ public class MailboxHttpConfig {
                 nest(
                         path("/mails"),
                         route(GET(""), handler::getMails)
+                                .andRoute(GET("/unread/count"), handler::getUnreadMailsCount)
                                 .andNest(
                                         path("/{mailId}"),
                                         route(GET(""), handler::getMail)

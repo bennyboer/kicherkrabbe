@@ -1,6 +1,6 @@
 import { inject, NgModule } from '@angular/core';
 import { Router, RouterModule, Routes } from '@angular/router';
-import { DashboardPage, LoginPage } from './pages';
+import { LoginPage } from './pages';
 import { AdminAuthService } from './services';
 import { map } from 'rxjs';
 import { ContainerComponent } from './components';
@@ -28,7 +28,10 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: DashboardPage,
+        loadChildren: () =>
+          import('./modules/dashboard/dashboard.module').then(
+            (m) => m.DashboardModule,
+          ),
       },
       {
         path: 'topics',

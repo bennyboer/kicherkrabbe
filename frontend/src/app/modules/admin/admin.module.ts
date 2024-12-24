@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { DashboardPage, LoginPage } from './pages';
+import { LoginPage } from './pages';
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminAuthService, AuthInterceptor } from './services';
 import { SharedModule } from '../shared/shared.module';
@@ -12,7 +12,7 @@ import {
 } from '@angular/common/http';
 import { ContainerComponent, HeaderComponent } from './components';
 
-const PAGES = [DashboardPage, LoginPage];
+const PAGES = [LoginPage];
 
 const COMPONENTS = [ContainerComponent, HeaderComponent];
 

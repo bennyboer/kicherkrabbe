@@ -124,6 +124,16 @@ public class MailboxModule {
                 });
     }
 
+    public Mono<QueryUnreadMailsCountResponse> getUnreadMailsCount(Agent agent) {
+        return assertAgentIsAllowedTo(agent, READ)
+                .then(mailLookupRepo.countUnread())
+                .map(count -> {
+                    var result = new QueryUnreadMailsCountResponse();
+                    result.count = count;
+                    return result;
+                });
+    }
+
     public Mono<MarkMailAsReadResponse> markMailAsRead(String mailId, MarkMailAsReadRequest request, Agent agent) {
         var id = MailId.of(mailId);
         var version = Version.of(request.version);

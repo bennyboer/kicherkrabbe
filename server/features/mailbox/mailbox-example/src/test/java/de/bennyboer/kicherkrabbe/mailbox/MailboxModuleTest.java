@@ -76,6 +76,10 @@ public class MailboxModuleTest {
         return module.getMails(searchTerm, status, skip, limit, agent).block();
     }
 
+    public QueryUnreadMailsCountResponse getUnreadMailsCount(Agent agent) {
+        return module.getUnreadMailsCount(agent).block();
+    }
+
     public MarkMailAsReadResponse markMailAsRead(String mailId, MarkMailAsReadRequest request, Agent agent) {
         var result = module.markMailAsRead(mailId, request, agent).block();
 

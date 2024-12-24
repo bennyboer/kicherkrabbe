@@ -12,4 +12,6 @@ public interface MailLookupRepo extends EventSourcingReadModelRepo<MailId, Looku
 
     Mono<LookupMailPage> query(String searchTerm, @Nullable Status status, long skip, long limit);
 
+    Mono<Long> countUnread();
+
 }

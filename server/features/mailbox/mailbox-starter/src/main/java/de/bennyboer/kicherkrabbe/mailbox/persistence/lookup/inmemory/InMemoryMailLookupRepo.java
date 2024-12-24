@@ -51,6 +51,13 @@ public class InMemoryMailLookupRepo
     }
 
     @Override
+    public Mono<Long> countUnread() {
+        return getAll()
+                .filter(mail -> mail.getStatus() == Status.UNREAD)
+                .count();
+    }
+
+    @Override
     protected MailId getId(LookupMail mail) {
         return mail.getId();
     }

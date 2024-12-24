@@ -74,6 +74,14 @@ public class MongoMailLookupRepo
     }
 
     @Override
+    public Mono<Long> countUnread() {
+        Criteria criteria = where("status").is(Status.UNREAD);
+        Query query = Query.query(criteria);
+
+        return template.count(query, MongoLookupMail.class, collectionName);
+    }
+
+    @Override
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         Index statusReceivedAtIndex = new Index()
                 .on("status", ASC)
