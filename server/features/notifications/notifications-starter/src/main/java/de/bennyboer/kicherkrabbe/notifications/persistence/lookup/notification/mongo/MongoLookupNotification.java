@@ -1,8 +1,9 @@
-package de.bennyboer.kicherkrabbe.notifications.api;
+package de.bennyboer.kicherkrabbe.notifications.persistence.lookup.notification.mongo;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.Instant;
 import java.util.Set;
@@ -12,17 +13,18 @@ import static lombok.AccessLevel.PUBLIC;
 @ToString
 @EqualsAndHashCode
 @FieldDefaults(level = PUBLIC)
-public class NotificationDTO {
+public class MongoLookupNotification {
 
+    @MongoId
     String id;
 
     long version;
 
-    OriginDTO origin;
+    MongoOrigin origin;
 
-    TargetDTO target;
+    MongoTarget target;
 
-    Set<ChannelDTO> channels;
+    Set<MongoChannel> channels;
 
     String title;
 

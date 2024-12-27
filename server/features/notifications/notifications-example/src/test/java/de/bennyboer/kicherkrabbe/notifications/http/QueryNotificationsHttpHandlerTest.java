@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,6 +30,10 @@ public class QueryNotificationsHttpHandlerTest extends HttpHandlerTest {
         response.total = 102;
         response.notifications = new ArrayList<>();
 
+        var mailChannel = new ChannelDTO();
+        mailChannel.type = ChannelTypeDTO.EMAIL;
+        mailChannel.mail = "john.doe@kicherkrabbe.com";
+
         var notification1 = new NotificationDTO();
         notification1.id = "NOTIFICATION_ID_1";
         notification1.version = 1L;
@@ -38,6 +43,7 @@ public class QueryNotificationsHttpHandlerTest extends HttpHandlerTest {
         notification1.target = new TargetDTO();
         notification1.target.type = TargetTypeDTO.SYSTEM;
         notification1.target.id = "SYSTEM";
+        notification1.channels = Set.of(mailChannel);
         notification1.title = "Some title";
         notification1.message = "Some message";
         notification1.sentAt = Instant.parse("2024-12-03T12:15:00.000Z");
@@ -52,6 +58,7 @@ public class QueryNotificationsHttpHandlerTest extends HttpHandlerTest {
         notification2.target = new TargetDTO();
         notification2.target.type = TargetTypeDTO.SYSTEM;
         notification2.target.id = "SYSTEM";
+        notification2.channels = Set.of(mailChannel);
         notification2.title = "Mail received";
         notification2.message = "You have received a new mail.";
         notification2.sentAt = Instant.parse("2024-12-03T12:30:00.000Z");

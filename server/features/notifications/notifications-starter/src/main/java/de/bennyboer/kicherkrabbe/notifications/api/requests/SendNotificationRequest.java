@@ -1,33 +1,24 @@
-package de.bennyboer.kicherkrabbe.notifications.api;
+package de.bennyboer.kicherkrabbe.notifications.api.requests;
 
+import de.bennyboer.kicherkrabbe.notifications.api.OriginDTO;
+import de.bennyboer.kicherkrabbe.notifications.api.TargetDTO;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
-
-import java.time.Instant;
-import java.util.Set;
 
 import static lombok.AccessLevel.PUBLIC;
 
 @ToString
 @EqualsAndHashCode
 @FieldDefaults(level = PUBLIC)
-public class NotificationDTO {
-
-    String id;
-
-    long version;
+public class SendNotificationRequest {
 
     OriginDTO origin;
 
     TargetDTO target;
 
-    Set<ChannelDTO> channels;
-
     String title;
 
     String message;
-
-    Instant sentAt;
 
 }

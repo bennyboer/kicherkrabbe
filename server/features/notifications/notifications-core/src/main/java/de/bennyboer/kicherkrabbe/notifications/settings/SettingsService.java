@@ -36,8 +36,10 @@ public class SettingsService extends AggregateService<Settings, SettingsId> {
     }
 
     public Mono<AggregateIdAndVersion<SettingsId>> init(Agent agent) {
-        var id = SettingsId.create();
+        return init(SettingsId.create(), agent);
+    }
 
+    public Mono<AggregateIdAndVersion<SettingsId>> init(SettingsId id, Agent agent) {
         return dispatchCommandToLatest(id, agent, InitCmd.of(SystemSettings.init()))
                 .map(version -> AggregateIdAndVersion.of(id, version));
     }

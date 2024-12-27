@@ -38,4 +38,20 @@ public class DateRangeFilter {
         return Optional.ofNullable(to);
     }
 
+    public boolean contains(Instant instant) {
+        if (from == null && to == null) {
+            return true;
+        }
+
+        if (from == null) {
+            return instant.isBefore(to);
+        }
+
+        if (to == null) {
+            return instant.equals(from) || instant.isAfter(from);
+        }
+
+        return instant.equals(from) || (instant.isAfter(from) && instant.isBefore(to));
+    }
+
 }
