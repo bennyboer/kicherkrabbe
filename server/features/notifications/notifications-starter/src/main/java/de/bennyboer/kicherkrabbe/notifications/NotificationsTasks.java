@@ -15,11 +15,15 @@ public class NotificationsTasks {
 
     private final NotificationsModule module;
 
-    @Scheduled(fixedRate = 30 * 60 * 1000, fixedDelay = 5 * 60 * 1000)
+    @Scheduled(fixedRate = 30 * 60 * 1000, initialDelay = 5 * 60 * 1000)
     public void cleanupOldNotifications() {
         module.cleanupOldNotifications(Agent.system())
                 .count()
-                .doOnNext(count -> log.info("Cleaned up {} old notifications", count))
+                .doOnNext(count -> {
+                    if (count > 0) {
+                        log.info("Cleaned up {} old notifications", count);
+                    }
+                })
                 .onErrorResume(e -> {
                     log.error("Failed to clean up old notifications", e);
                     return Mono.empty();
