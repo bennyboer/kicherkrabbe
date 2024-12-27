@@ -6,6 +6,7 @@ import de.bennyboer.kicherkrabbe.notifications.api.*;
 import de.bennyboer.kicherkrabbe.notifications.api.requests.ActivateSystemChannelRequest;
 import de.bennyboer.kicherkrabbe.notifications.api.requests.SendNotificationRequest;
 import de.bennyboer.kicherkrabbe.notifications.api.requests.UpdateSystemChannelRequest;
+import de.bennyboer.kicherkrabbe.notifications.notification.SystemNotificationsDisabledException;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
 
@@ -27,33 +28,41 @@ public class SendNotificationTest extends NotificationsModuleTest {
         // and: we are at a fixed point in time
         setTime(Instant.parse("2024-12-08T10:15:30.000Z"));
 
-        // and: the user configured the system to send notifications via mail and telegram
+        // and: system notifications are enabled
         var settings = getSettings(Agent.user(AgentId.of("USER_ID")));
+        var settingsVersion = enableSystemNotifications(
+                settings.settings.version,
+                Agent.user(AgentId.of("USER_ID"))
+        ).version;
 
+        // and: the user configured the system to send notifications via mail and telegram
         var updateMailChannelRequest = new UpdateSystemChannelRequest();
-        updateMailChannelRequest.version = settings.settings.version;
+        updateMailChannelRequest.version = settingsVersion;
         updateMailChannelRequest.channel = new ChannelDTO();
         updateMailChannelRequest.channel.type = ChannelTypeDTO.EMAIL;
         updateMailChannelRequest.channel.mail = "john.doe@kicherkrabbe.com";
-        updateSystemChannel(updateMailChannelRequest, Agent.user(AgentId.of("USER_ID")));
+        settingsVersion = updateSystemChannel(updateMailChannelRequest, Agent.user(AgentId.of("USER_ID"))).version;
 
         var activateMailChannelRequest = new ActivateSystemChannelRequest();
-        activateMailChannelRequest.version = settings.settings.version + 1;
+        activateMailChannelRequest.version = settingsVersion;
         activateMailChannelRequest.channelType = ChannelTypeDTO.EMAIL;
-        activateSystemChannel(activateMailChannelRequest, Agent.user(AgentId.of("USER_ID")));
+        settingsVersion = activateSystemChannel(activateMailChannelRequest, Agent.user(AgentId.of("USER_ID"))).version;
 
         var updateTelegramChannelRequest = new UpdateSystemChannelRequest();
-        updateTelegramChannelRequest.version = settings.settings.version + 2;
+        updateTelegramChannelRequest.version = settingsVersion;
         updateTelegramChannelRequest.channel = new ChannelDTO();
         updateTelegramChannelRequest.channel.type = ChannelTypeDTO.TELEGRAM;
         updateTelegramChannelRequest.channel.telegram = new TelegramDTO();
         updateTelegramChannelRequest.channel.telegram.chatId = "CHAT_ID";
-        updateSystemChannel(updateTelegramChannelRequest, Agent.user(AgentId.of("USER_ID")));
+        settingsVersion = updateSystemChannel(updateTelegramChannelRequest, Agent.user(AgentId.of("USER_ID"))).version;
 
         var activateTelegramChannelRequest = new ActivateSystemChannelRequest();
-        activateTelegramChannelRequest.version = settings.settings.version + 3;
+        activateTelegramChannelRequest.version = settingsVersion;
         activateTelegramChannelRequest.channelType = ChannelTypeDTO.TELEGRAM;
-        activateSystemChannel(activateTelegramChannelRequest, Agent.user(AgentId.of("USER_ID")));
+        settingsVersion = activateSystemChannel(
+                activateTelegramChannelRequest,
+                Agent.user(AgentId.of("USER_ID"))
+        ).version;
 
         // and: a request to send a notification
         var request = new SendNotificationRequest();
@@ -103,6 +112,63 @@ public class SendNotificationTest extends NotificationsModuleTest {
                 .findFirst()
                 .orElseThrow();
         assertThat(telegramChannel.telegram.chatId).isEqualTo("CHAT_ID");
+    }
+
+    @Test
+    void shouldNotSendSystemNotificationWhenSystemNotificationsAreDisabled() {
+        // given: the system user is allowed to send notifications
+        allowSystemUserToSendNotifications();
+
+        // and: the current user is allowed to read notifications and manage settings
+        allowUserToReadNotificationsAndManageSettings("USER_ID");
+
+        // and: system notifications are disabled
+
+        // and: the user configured the system to send notifications via mail and telegram
+        var settings = getSettings(Agent.user(AgentId.of("USER_ID")));
+        var settingsVersion = settings.settings.version;
+        var updateMailChannelRequest = new UpdateSystemChannelRequest();
+        updateMailChannelRequest.version = settingsVersion;
+        updateMailChannelRequest.channel = new ChannelDTO();
+        updateMailChannelRequest.channel.type = ChannelTypeDTO.EMAIL;
+        updateMailChannelRequest.channel.mail = "john.doe@kicherkrabbe.com";
+        settingsVersion = updateSystemChannel(updateMailChannelRequest, Agent.user(AgentId.of("USER_ID"))).version;
+
+        var activateMailChannelRequest = new ActivateSystemChannelRequest();
+        activateMailChannelRequest.version = settingsVersion;
+        activateMailChannelRequest.channelType = ChannelTypeDTO.EMAIL;
+        settingsVersion = activateSystemChannel(activateMailChannelRequest, Agent.user(AgentId.of("USER_ID"))).version;
+
+        var updateTelegramChannelRequest = new UpdateSystemChannelRequest();
+        updateTelegramChannelRequest.version = settingsVersion;
+        updateTelegramChannelRequest.channel = new ChannelDTO();
+        updateTelegramChannelRequest.channel.type = ChannelTypeDTO.TELEGRAM;
+        updateTelegramChannelRequest.channel.telegram = new TelegramDTO();
+        updateTelegramChannelRequest.channel.telegram.chatId = "CHAT_ID";
+        settingsVersion = updateSystemChannel(updateTelegramChannelRequest, Agent.user(AgentId.of("USER_ID"))).version;
+
+        var activateTelegramChannelRequest = new ActivateSystemChannelRequest();
+        activateTelegramChannelRequest.version = settingsVersion;
+        activateTelegramChannelRequest.channelType = ChannelTypeDTO.TELEGRAM;
+        settingsVersion = activateSystemChannel(
+                activateTelegramChannelRequest,
+                Agent.user(AgentId.of("USER_ID"))
+        ).version;
+
+        // and: a request to send a system notification
+        var request = new SendNotificationRequest();
+        request.origin = new OriginDTO();
+        request.origin.type = OriginTypeDTO.MAIL;
+        request.origin.id = "MAIL_ID";
+        request.target = new TargetDTO();
+        request.target.type = TargetTypeDTO.SYSTEM;
+        request.target.id = "SYSTEM";
+        request.title = "Mail received";
+        request.message = "You have received a new mail";
+
+        // when: the system user sends the system notification; then: an exception is thrown
+        assertThatThrownBy(() -> sendNotification(request, Agent.system()))
+                .matches(e -> e instanceof SystemNotificationsDisabledException);
     }
 
     @Test

@@ -24,6 +24,10 @@ public class CleanupOldNotificationsTest extends NotificationsModuleTest {
         // and: the current user is allowed to read notifications and manage settings
         allowUserToReadNotificationsAndManageSettings("USER_ID");
 
+        // and: system notifications are enabled
+        var settings = getSettings(Agent.user(AgentId.of("USER_ID")));
+        enableSystemNotifications(settings.settings.version, Agent.user(AgentId.of("USER_ID")));
+
         // and: some sent notifications at different times
         setTime(Instant.parse("2024-02-08T10:15:30.000Z"));
         var request1 = new SendNotificationRequest();

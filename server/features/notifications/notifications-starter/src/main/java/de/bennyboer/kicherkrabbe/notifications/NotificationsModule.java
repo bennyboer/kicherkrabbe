@@ -96,6 +96,7 @@ public class NotificationsModule {
         var message = Message.of(request.message);
 
         return assertAgentIsAllowedOnNotifications(agent, SEND)
+                .then(assertNotificationsEnabled(target))
                 .then(resolveChannels(target))
                 .flatMap(channels -> notificationService.send(origin, target, channels, title, message, agent))
                 .map(idAndVersion -> {
@@ -324,6 +325,23 @@ public class NotificationsModule {
         return assertAgentIsAllowedOnNotification(agent, DELETE, notificationId)
                 .then(notificationService.delete(notificationId, version, Agent.system()))
                 .then();
+    }
+
+    private Mono<Void> assertNotificationsEnabled(Target target) {
+        return switch (target.getType()) {
+            case SYSTEM -> assertSystemNotificationsEnabled();
+        };
+    }
+
+    private Mono<Void> assertSystemNotificationsEnabled() {
+        return getSettings()
+                .flatMap(settings -> {
+                    if (settings.getSystemSettings().isDisabled()) {
+                        return Mono.error(new SystemNotificationsDisabledException());
+                    }
+
+                    return Mono.empty();
+                });
     }
 
     private Mono<Void> assertAgentIsAllowedOnSettings(Agent agent, Action action) {
