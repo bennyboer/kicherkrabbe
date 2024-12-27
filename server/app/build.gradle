@@ -14,6 +14,7 @@ dependencies {
     implementation project(':features:frontend')
     implementation project(':features:inquiries:inquiries-starter')
     implementation project(':features:mailbox:mailbox-starter')
+    implementation project(':features:notifications:notifications-starter')
     implementation project(':features:patterns:patterns-starter')
     implementation project(':features:topics:topics-starter')
     implementation project(':features:users:users-starter')
