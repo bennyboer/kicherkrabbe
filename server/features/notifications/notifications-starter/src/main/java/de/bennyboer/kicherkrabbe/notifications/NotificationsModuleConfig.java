@@ -37,7 +37,7 @@ public class NotificationsModuleConfig {
     @Bean
     public NotificationsModule notificationsModule(
             NotificationService notificationService,
-            SettingsService settingsService,
+            @Qualifier("notificationsSettingsService") SettingsService settingsService,
             NotificationLookupRepo notificationLookupRepo,
             @Qualifier("notificationsPermissionsService") PermissionsService permissionsService,
             ReactiveTransactionManager transactionManager,

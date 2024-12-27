@@ -66,7 +66,7 @@ public class NotificationsAggregateConfig {
         return new NotificationService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));
     }
 
-    @Bean
+    @Bean("notificationsSettingsService")
     public SettingsService settingsService(
             @Qualifier("notificationsSettingsEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
             @Qualifier("notificationsSettingsEventPublisher") MessagingEventPublisher eventPublisher,

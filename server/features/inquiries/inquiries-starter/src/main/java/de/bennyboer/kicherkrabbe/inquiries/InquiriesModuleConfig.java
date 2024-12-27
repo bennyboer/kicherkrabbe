@@ -42,7 +42,7 @@ public class InquiriesModuleConfig {
     @Bean
     public InquiriesModule inquiriesModule(
             InquiryService inquiryService,
-            SettingsService settingsService,
+            @Qualifier("inquiriesSettingsService") SettingsService settingsService,
             InquiryLookupRepo inquiryLookupRepo,
             RequestRepo requestRepo,
             @Qualifier("inquiriesPermissionsService") PermissionsService permissionsService,

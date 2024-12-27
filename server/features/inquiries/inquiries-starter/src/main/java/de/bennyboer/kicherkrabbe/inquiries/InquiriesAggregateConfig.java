@@ -55,7 +55,7 @@ public class InquiriesAggregateConfig {
         return new InquiryService(eventSourcingRepo, eventPublisher, clock.orElse(Clock.systemUTC()));
     }
 
-    @Bean
+    @Bean("inquiriesSettingsService")
     public SettingsService settingsService(
             @Qualifier("inquiriesSettingsEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
             @Qualifier("inquiriesSettingsEventPublisher") MessagingEventPublisher eventPublisher,
