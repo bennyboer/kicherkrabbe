@@ -15,7 +15,7 @@ public class NotificationsTasks {
 
     private final NotificationsModule module;
 
-    @Scheduled(fixedRateString = "PT30M", fixedDelayString = "PT5M")
+    @Scheduled(fixedRate = 30 * 60 * 1000, fixedDelay = 5 * 60 * 1000)
     public void cleanupOldNotifications() {
         module.cleanupOldNotifications(Agent.system())
                 .count()
