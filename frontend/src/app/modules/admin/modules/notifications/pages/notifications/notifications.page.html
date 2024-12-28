@@ -1,0 +1,72 @@
+<div class="action-bar">
+  <div class="left-actions">
+    <div class="from-selector date-selector">
+      <label for="from">Von</label>
+      <input #from type="date" id="from" (input)="updateFrom(from.valueAsDate)"/>
+    </div>
+    <div class="to-selector date-selector">
+      <label for="to">Bis</label>
+      <input #to type="date" id="to" (input)="updateTo(to.valueAsDate)"/>
+    </div>
+  </div>
+  <div class="right-actions">
+    <app-button routerLink="settings">
+      <span class="icon-button">
+        <span class="material-icons">settings</span>
+        <span>
+          Einstellungen
+        </span>
+      </span>
+    </app-button>
+  </div>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (notificationsLoaded$ | async) {
+  @if (notifications$ | async; as notifications) {
+    @if (notifications.length === 0) {
+      <app-note level="info">Keine Benachrichtigungen vorhanden.</app-note>
+    } @else {
+      <table class="notifications-table">
+        <colgroup>
+          <col span="1" style="width: auto">
+          <col class="date" span="1" style="width: 140px">
+        </colgroup>
+        <thead>
+        <tr>
+          <th class="content">Benachrichtigung</th>
+          <th class="date">Datum</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (notification of notifications; track notification.id) {
+            <a class="table-row" [routerLink]="notification.id">
+              <td class="content" [title]="notification.title">
+                <span class="content-details">
+                  <span class="title">{{ notification.title }}</span>
+                  <span class="message">{{ notification.message }}</span>
+                </span>
+              </td>
+              <td class="date" [title]="notification.sentAt | date: 'full'">
+                {{ notification.sentAt | date: "short" }}
+              </td>
+            </a>
+          }
+        </tbody>
+      </table>
+
+      @if (moreNotificationsAvailable$ | async) {
+        <div class="footer-actions">
+          <app-button (click)="loadMoreNotifications()">
+            Mehr laden... ({{ remainingNotificationsCount$ | async }})
+          </app-button>
+        </div>
+      } @else {
+        <div class="footer-actions">
+          <app-note level="info">Keine weiteren Benachrichtigungen vorhanden.</app-note>
+        </div>
+      }
+    }
+  }
+}

@@ -92,7 +92,8 @@ select {
 input[type="text"],
 input[type="password"],
 input[type="email"],
-input[type="tel"] {
+input[type="tel"],
+input[type="date"] {
   box-sizing: border-box;
   appearance: none;
   background-color: var(--contrast);

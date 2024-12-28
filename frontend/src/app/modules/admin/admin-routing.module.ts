@@ -93,6 +93,14 @@ const routes: Routes = [
             (m) => m.InquiriesModule,
           ),
       },
+      {
+        path: 'notifications',
+        title: 'Benachrichtigungen',
+        loadChildren: () =>
+          import('./modules/notifications/notifications.module').then(
+            (m) => m.NotificationsModule,
+          ),
+      },
     ],
   },
   {

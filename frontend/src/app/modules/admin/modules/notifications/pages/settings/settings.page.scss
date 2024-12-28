@@ -1,0 +1,26 @@
+.action-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-left: 2px solid var(--background-low-contrast);
+  padding-left: 12px;
+
+  & > input {
+    width: 100%;
+  }
+}
+
