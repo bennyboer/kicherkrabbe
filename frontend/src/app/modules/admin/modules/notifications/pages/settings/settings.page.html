@@ -35,16 +35,18 @@
           </app-pending-channel>
         } @else {
           @if (addChannelDropdownItems$ | async; as items) {
-            <div class="channel-actions">
-              <app-dropdown #addChannelDropdown
-                            label="Kanal hinzufügen"
-                            [items]="items"
-                            (selectionChanged)="addChannelDropdownItemSelected(addChannelDropdown, $event)">
-                <ng-template let-item>
-                  <span>{{ item.label }}</span>
-                </ng-template>
-              </app-dropdown>
-            </div>
+            @if (items.length > 0) {
+              <div class="channel-actions">
+                <app-dropdown #addChannelDropdown
+                              label="Kanal hinzufügen"
+                              [items]="items"
+                              (selectionChanged)="addChannelDropdownItemSelected(addChannelDropdown, $event)">
+                  <ng-template let-item>
+                    <span>{{ item.label }}</span>
+                  </ng-template>
+                </app-dropdown>
+              </div>
+            }
           }
         }
 

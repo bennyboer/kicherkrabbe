@@ -9,9 +9,12 @@
 
 .label {
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .details {
   font-size: 14px;
   color: rgba(var(--text-rgb), 0.7);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

@@ -11,9 +11,13 @@ import de.bennyboer.kicherkrabbe.notifications.api.OriginTypeDTO;
 import de.bennyboer.kicherkrabbe.notifications.api.TargetDTO;
 import de.bennyboer.kicherkrabbe.notifications.api.TargetTypeDTO;
 import de.bennyboer.kicherkrabbe.notifications.api.requests.SendNotificationRequest;
+import de.bennyboer.kicherkrabbe.notifications.notification.SystemNotificationsDisabledException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import reactor.core.publisher.Mono;
 
+@Slf4j
 @Configuration
 public class NotificationsMessaging {
 
@@ -145,7 +149,15 @@ public class NotificationsMessaging {
                     request.title = "Neue Nachricht im Postfach";
                     request.message = "Es ist eine neue Nachricht im Postfach eingegangen.";
 
-                    return module.sendNotification(request, Agent.system()).then();
+                    return module.sendNotification(request, Agent.system())
+                            .onErrorResume(
+                                    SystemNotificationsDisabledException.class,
+                                    e -> {
+                                        log.info("System notifications are disabled. Skipping sending notification.");
+                                        return Mono.empty();
+                                    }
+                            )
+                            .then();
                 }
         );
     }

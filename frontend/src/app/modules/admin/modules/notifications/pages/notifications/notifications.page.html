@@ -41,11 +41,14 @@
         </thead>
         <tbody>
           @for (notification of notifications; track notification.id) {
-            <a class="table-row" [routerLink]="notification.id">
+            <a class="table-row">
               <td class="content" [title]="notification.title">
                 <span class="content-details">
                   <span class="title">{{ notification.title }}</span>
                   <span class="message">{{ notification.message }}</span>
+                  <span class="date mobile-only">
+                    {{ notification.sentAt | date: "short" }}
+                  </span>
                 </span>
               </td>
               <td class="date" [title]="notification.sentAt | date: 'full'">
