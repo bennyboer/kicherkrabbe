@@ -114,3 +114,8 @@ include('features:mailbox:mailbox-example')
 include('features:notifications:notifications-core')
 include('features:notifications:notifications-starter')
 include('features:notifications:notifications-example')
+
+// Telegram
+include('features:telegram:telegram-core')
+include('features:telegram:telegram-starter')
+include('features:telegram:telegram-example')
