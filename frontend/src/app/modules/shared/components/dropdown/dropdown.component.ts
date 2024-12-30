@@ -11,16 +11,7 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import {
-  BehaviorSubject,
-  filter,
-  map,
-  Observable,
-  of,
-  Subject,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { Point, Rect, Size } from '../../../../util';
 import { OverlayRef, OverlayService } from '../../services';
 import { ButtonSize as ButtonSize } from '../button/button.component';
@@ -79,22 +70,19 @@ export class DropdownComponent implements OnDestroy, OnInit {
   }
 
   @Output()
-  selectionChanged: EventEmitter<DropdownItemId[]> = new EventEmitter<
-    DropdownItemId[]
-  >();
+  selectionChanged: EventEmitter<DropdownItemId[]> = new EventEmitter<DropdownItemId[]>();
 
   protected readonly ButtonSize = ButtonSize;
 
-  private readonly items$: BehaviorSubject<DropdownItem[]> =
-    new BehaviorSubject<DropdownItem[]>([]);
-  private readonly selected$: BehaviorSubject<SelectedEvent> =
-    new BehaviorSubject<SelectedEvent>({
-      selected: new Set<DropdownItemId>(),
-      emitEvent: false,
-    });
+  private readonly items$: BehaviorSubject<DropdownItem[]> = new BehaviorSubject<DropdownItem[]>([]);
+  private readonly selected$: BehaviorSubject<SelectedEvent> = new BehaviorSubject<SelectedEvent>({
+    selected: new Set<DropdownItemId>(),
+    emitEvent: false,
+  });
   private readonly destroy$: Subject<void> = new Subject<void>();
-  private readonly openedOverlay$: BehaviorSubject<Option<OverlayRef>> =
-    new BehaviorSubject<Option<OverlayRef>>(none());
+  private readonly openedOverlay$: BehaviorSubject<Option<OverlayRef>> = new BehaviorSubject<Option<OverlayRef>>(
+    none(),
+  );
 
   constructor(
     private readonly elementRef: ElementRef,
@@ -107,9 +95,7 @@ export class DropdownComponent implements OnDestroy, OnInit {
         filter((event) => event.emitEvent),
         takeUntil(this.destroy$),
       )
-      .subscribe((event) =>
-        this.selectionChanged.emit(Array.from(event.selected)),
-      );
+      .subscribe((event) => this.selectionChanged.emit(Array.from(event.selected)));
   }
 
   ngOnDestroy(): void {
@@ -124,9 +110,7 @@ export class DropdownComponent implements OnDestroy, OnInit {
   }
 
   getSelected(): Observable<DropdownItemId[]> {
-    return this.selected$
-      .asObservable()
-      .pipe(map((event) => Array.from(event.selected)));
+    return this.selected$.asObservable().pipe(map((event) => Array.from(event.selected)));
   }
 
   isSelected(id: DropdownItemId): Observable<boolean> {
@@ -162,11 +146,7 @@ export class DropdownComponent implements OnDestroy, OnInit {
   }
 
   isOpened(): Observable<boolean> {
-    return this.openedOverlay$.pipe(
-      switchMap((overlay) =>
-        overlay.map((o) => o.isOpened()).orElse(of(false)),
-      ),
-    );
+    return this.openedOverlay$.pipe(switchMap((overlay) => overlay.map((o) => o.isOpened()).orElse(of(false))));
   }
 
   getItems(): Observable<DropdownItem[]> {
@@ -175,9 +155,7 @@ export class DropdownComponent implements OnDestroy, OnInit {
 
   toggleOpened(): void {
     const openedOverlayId = this.openedOverlay$.value;
-    const isOpened = openedOverlayId
-      .map((overlay) => overlay.isCurrentlyOpened())
-      .orElse(false);
+    const isOpened = openedOverlayId.map((overlay) => overlay.isCurrentlyOpened()).orElse(false);
 
     if (isOpened) {
       this.closeOpenedOverlay();
@@ -223,9 +201,7 @@ export class DropdownComponent implements OnDestroy, OnInit {
     }
 
     const selectedItemId = selected[0];
-    const selectedItem = this.items$.value.find(
-      (item) => item.id === selectedItemId,
-    );
+    const selectedItem = this.items$.value.find((item) => item.id === selectedItemId);
     return selectedItem ? selectedItem.label : this.label;
   }
 

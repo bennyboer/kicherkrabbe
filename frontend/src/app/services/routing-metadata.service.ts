@@ -9,9 +9,7 @@ export class RoutingMetadataService {
   updateDescription(description?: string) {
     this.meta.updateTag({
       name: 'description',
-      content: someOrNone(description).orElse(
-        'Handmade Kleidung für Kinder und Babys aus Bayern',
-      ),
+      content: someOrNone(description).orElse('Handmade Kleidung für Kinder und Babys aus Bayern'),
     });
   }
 }

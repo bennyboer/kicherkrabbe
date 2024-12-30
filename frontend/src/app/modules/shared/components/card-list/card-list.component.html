@@ -9,14 +9,13 @@
             </div>
           } @else {
             <div class="image">
-              <img [src]="item.imageUrl" alt="@{item.title}">
+              <img [src]="item.imageUrl" alt="@{item.title}" />
             </div>
           }
         </div>
         <div class="content">
           @if (descriptionTemplate | ifSome; as tmpl) {
-            <ng-container *ngTemplateOutlet="tmpl; context: { $implicit: item }">
-            </ng-container>
+            <ng-container *ngTemplateOutlet="tmpl; context: { $implicit: item }"> </ng-container>
           } @else {
             <div class="title">{{ item.title }}</div>
             @if (item.description | ifSome; as description) {

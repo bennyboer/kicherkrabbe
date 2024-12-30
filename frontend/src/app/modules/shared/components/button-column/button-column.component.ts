@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  HostBinding,
-  Injector,
-  Input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, Injector, Input } from '@angular/core';
 import { ButtonColumnService } from './button-column.service';
 import { ButtonSize } from '../button/button.component';
 import { ButtonRegistry } from '../button/button-registry';

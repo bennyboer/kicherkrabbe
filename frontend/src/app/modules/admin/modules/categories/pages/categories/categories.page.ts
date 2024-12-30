@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
@@ -18,19 +13,8 @@ import {
   takeUntil,
   tap,
 } from 'rxjs';
-import {
-  DropdownComponent,
-  DropdownItem,
-  DropdownItemId,
-  NotificationService,
-} from '../../../../../shared';
-import {
-  Category,
-  CategoryGroup,
-  CategoryGroupType,
-  CLOTHING,
-  GROUPS,
-} from '../../model';
+import { DropdownComponent, DropdownItem, DropdownItemId, NotificationService } from '../../../../../shared';
+import { Category, CategoryGroup, CategoryGroupType, CLOTHING, GROUPS } from '../../model';
 import { CategoriesService } from '../../services';
 import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
@@ -41,26 +25,21 @@ import { none, Option, someOrNone } from '../../../../../shared/modules/option';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoriesPage implements OnInit, OnDestroy {
-  private readonly groups$: BehaviorSubject<CategoryGroup[]> =
-    new BehaviorSubject<CategoryGroup[]>(GROUPS);
-  private readonly selectedGroup$: BehaviorSubject<Option<CategoryGroup>> =
-    new BehaviorSubject<Option<CategoryGroup>>(none());
-  protected readonly groupDropdownItems$: Observable<DropdownItem[]> =
-    this.groups$.pipe(
-      map((groups) => groups.map((g) => ({ id: g.type, label: g.name }))),
-    );
+  private readonly groups$: BehaviorSubject<CategoryGroup[]> = new BehaviorSubject<CategoryGroup[]>(GROUPS);
+  private readonly selectedGroup$: BehaviorSubject<Option<CategoryGroup>> = new BehaviorSubject<Option<CategoryGroup>>(
+    none(),
+  );
+  protected readonly groupDropdownItems$: Observable<DropdownItem[]> = this.groups$.pipe(
+    map((groups) => groups.map((g) => ({ id: g.type, label: g.name }))),
+  );
 
-  private readonly searchTerm$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+  private readonly searchTerm$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-  protected readonly categories$: BehaviorSubject<Category[]> =
-    new BehaviorSubject<Category[]>([]);
-  private readonly loadingCategories$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
+  protected readonly categories$: BehaviorSubject<Category[]> = new BehaviorSubject<Category[]>([]);
+  private readonly loadingCategories$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   protected readonly loading$: Observable<boolean> = this.loadingCategories$;
-  protected readonly notLoading$: Observable<boolean> =
-    this.loadingCategories$.pipe(map((loading) => !loading));
+  protected readonly notLoading$: Observable<boolean> = this.loadingCategories$.pipe(map((loading) => !loading));
 
   private readonly destroy$: Subject<void> = new Subject<void>();
 
@@ -72,14 +51,9 @@ export class CategoriesPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    combineLatest([
-      this.searchTerm$.pipe(debounceTime(300)),
-      this.selectedGroup$,
-    ])
+    combineLatest([this.searchTerm$.pipe(debounceTime(300)), this.selectedGroup$])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(([searchTerm, group]) =>
-        this.reloadCategories({ searchTerm, group: group.orElseNull() }),
-      );
+      .subscribe(([searchTerm, group]) => this.reloadCategories({ searchTerm, group: group.orElseNull() }));
   }
 
   ngOnDestroy(): void {
@@ -97,10 +71,7 @@ export class CategoriesPage implements OnInit, OnDestroy {
     this.searchTerm$.next(value);
   }
 
-  updateSelectedGroup(
-    dropdown: DropdownComponent,
-    items: DropdownItemId[],
-  ): void {
+  updateSelectedGroup(dropdown: DropdownComponent, items: DropdownItemId[]): void {
     if (items.length === 0) {
       this.selectedGroup$.next(none());
       return;
@@ -111,11 +82,8 @@ export class CategoriesPage implements OnInit, OnDestroy {
     }
 
     const item = items[0];
-    const groupType: CategoryGroupType =
-      this.dropdownItemToCategoryGroupType(item);
-    const group: Option<CategoryGroup> = someOrNone(
-      this.groups$.value.find((g) => g.type === groupType),
-    );
+    const groupType: CategoryGroupType = this.dropdownItemToCategoryGroupType(item);
+    const group: Option<CategoryGroup> = someOrNone(this.groups$.value.find((g) => g.type === groupType));
     this.selectedGroup$.next(group);
 
     dropdown.toggleOpened();
@@ -126,9 +94,7 @@ export class CategoriesPage implements OnInit, OnDestroy {
     dropdown.toggleOpened();
   }
 
-  private dropdownItemToCategoryGroupType(
-    item: DropdownItemId,
-  ): CategoryGroupType {
+  private dropdownItemToCategoryGroupType(item: DropdownItemId): CategoryGroupType {
     switch (item) {
       case 'CLOTHING':
         return CategoryGroupType.CLOTHING;
@@ -157,10 +123,7 @@ export class CategoriesPage implements OnInit, OnDestroy {
       .subscribe((categories) => this.categories$.next(categories));
   }
 
-  private loadCategories(props: {
-    searchTerm?: string;
-    group?: CategoryGroup | null;
-  }): Observable<Category[]> {
+  private loadCategories(props: { searchTerm?: string; group?: CategoryGroup | null }): Observable<Category[]> {
     return this.categoriesService
       .getCategories({
         searchTerm: props.searchTerm,
@@ -172,8 +135,7 @@ export class CategoriesPage implements OnInit, OnDestroy {
           console.error(e);
           this.notificationService.publish({
             type: 'error',
-            message:
-              'Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neu zu laden.',
+            message: 'Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neu zu laden.',
           });
           return EMPTY;
         }),

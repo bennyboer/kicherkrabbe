@@ -20,13 +20,9 @@ export class AssetsService {
     const headers = new HttpHeaders({ enctype: 'multipart/form-data' });
 
     return this.http
-      .post<UploadAssetResponse>(
-        `${environment.apiUrl}/assets/upload`,
-        formData,
-        {
-          headers: headers,
-        },
-      )
+      .post<UploadAssetResponse>(`${environment.apiUrl}/assets/upload`, formData, {
+        headers: headers,
+      })
       .pipe(map((response) => response.assetId));
   }
 }

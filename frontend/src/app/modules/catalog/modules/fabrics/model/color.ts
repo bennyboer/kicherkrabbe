@@ -5,13 +5,7 @@ export class Color {
   readonly green: number;
   readonly blue: number;
 
-  private constructor(props: {
-    id: string;
-    name: string;
-    red: number;
-    green: number;
-    blue: number;
-  }) {
+  private constructor(props: { id: string; name: string; red: number; green: number; blue: number }) {
     this.id = props.id;
     this.name = props.name;
     this.red = props.red;
@@ -19,13 +13,7 @@ export class Color {
     this.blue = props.blue;
   }
 
-  static of(props: {
-    id: string;
-    name: string;
-    red: number;
-    green: number;
-    blue: number;
-  }): Color {
+  static of(props: { id: string; name: string; red: number; green: number; blue: number }): Color {
     return new Color({
       id: props.id,
       name: props.name,

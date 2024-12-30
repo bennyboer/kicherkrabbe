@@ -11,8 +11,7 @@ import { environment } from '../../../../../../../environments';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FabricsPage implements OnDestroy {
-  private readonly search$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+  private readonly search$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   constructor(private readonly fabricsService: FabricsService) {}
 
@@ -22,11 +21,7 @@ export class FabricsPage implements OnDestroy {
 
   getFabrics(): Observable<Fabric[]> {
     return combineLatest([this.fabricsService.getFabrics(), this.search$]).pipe(
-      map(([fabrics, search]) =>
-        fabrics.filter((fabric) =>
-          fabric.name.toLowerCase().includes(search.toLowerCase()),
-        ),
-      ),
+      map(([fabrics, search]) => fabrics.filter((fabric) => fabric.name.toLowerCase().includes(search.toLowerCase()))),
     );
   }
 

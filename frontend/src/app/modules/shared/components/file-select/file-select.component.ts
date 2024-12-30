@@ -9,16 +9,7 @@ import {
   Output,
   Renderer2,
 } from '@angular/core';
-import {
-  BehaviorSubject,
-  fromEvent,
-  map,
-  Observable,
-  race,
-  Subject,
-  take,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, fromEvent, map, Observable, race, Subject, take, takeUntil } from 'rxjs';
 import { none, Option, someOrNone } from '../../modules/option';
 
 @Component({
@@ -28,8 +19,7 @@ import { none, Option, someOrNone } from '../../modules/option';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FileSelectComponent implements OnInit, OnDestroy {
-  private readonly droppable$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly droppable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   @Input()
@@ -102,13 +92,8 @@ export class FileSelectComponent implements OnInit, OnDestroy {
         return someOrNone(files);
       }),
     );
-    const cancelled$: Observable<Option<File[]>> = fromEvent(
-      fileInput,
-      'cancel',
-    ).pipe(map(() => none()));
-    const fileSelectedOrCancelled$ = race(filesSelected$, cancelled$).pipe(
-      take(1),
-    );
+    const cancelled$: Observable<Option<File[]>> = fromEvent(fileInput, 'cancel').pipe(map(() => none()));
+    const fileSelectedOrCancelled$ = race(filesSelected$, cancelled$).pipe(take(1));
 
     fileSelectedOrCancelled$
       .pipe(takeUntil(this.destroy$))

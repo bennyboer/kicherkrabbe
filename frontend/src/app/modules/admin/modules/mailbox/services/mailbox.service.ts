@@ -1,14 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import {
-  INQUIRY,
-  Mail,
-  Origin,
-  OriginType,
-  Sender,
-  Status,
-  StatusType,
-} from '../model';
+import { INQUIRY, Mail, Origin, OriginType, Sender, Status, StatusType } from '../model';
 import { map, Observable } from 'rxjs';
 import { someOrNone } from '../../../../shared/modules/option';
 import { environment } from '../../../../../../environments';
@@ -124,10 +116,7 @@ export class MailboxService {
     const request: MarkAsReadRequest = { version };
 
     return this.http
-      .post<MarkAsReadResponse>(
-        `${environment.apiUrl}/mailbox/mails/${id}/read`,
-        request,
-      )
+      .post<MarkAsReadResponse>(`${environment.apiUrl}/mailbox/mails/${id}/read`, request)
       .pipe(map((response) => response.version));
   }
 
@@ -135,10 +124,7 @@ export class MailboxService {
     const request: MarkAsUnreadRequest = { version };
 
     return this.http
-      .post<MarkAsUnreadResponse>(
-        `${environment.apiUrl}/mailbox/mails/${id}/unread`,
-        request,
-      )
+      .post<MarkAsUnreadResponse>(`${environment.apiUrl}/mailbox/mails/${id}/unread`, request)
       .pipe(map((response) => response.version));
   }
 
@@ -146,10 +132,7 @@ export class MailboxService {
     const params = new HttpParams().set('version', version.toString());
 
     return this.http
-      .delete<DeleteMailResponse>(
-        `${environment.apiUrl}/mailbox/mails/${mailId}`,
-        { params },
-      )
+      .delete<DeleteMailResponse>(`${environment.apiUrl}/mailbox/mails/${mailId}`, { params })
       .pipe(map((response) => response.version));
   }
 

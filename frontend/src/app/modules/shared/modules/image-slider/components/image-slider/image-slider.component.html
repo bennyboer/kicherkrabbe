@@ -1,19 +1,23 @@
 <div class="image-slider-layout">
   <div #slidingImageContainer class="sliding-image-container">
-    <app-sliding-image [images]="images$ | async"
-                       [width]="slidingImageContainer.clientWidth"
-                       [height]="slidingImageContainer.clientWidth / 5 * 4"
-                       [theme]="theme$ |async"
-                       [fit]="fit$ | async"
-                       (imageIndexChanged)="onImageIndexChanged($event)">
+    <app-sliding-image
+      [images]="images$ | async"
+      [width]="slidingImageContainer.clientWidth"
+      [height]="(slidingImageContainer.clientWidth / 5) * 4"
+      [theme]="theme$ | async"
+      [fit]="fit$ | async"
+      (imageIndexChanged)="onImageIndexChanged($event)"
+    >
     </app-sliding-image>
   </div>
 
   <div class="thumbnails">
     @for (image of images$ | async; track image.url; let index = $index) {
-      <app-image-slider-thumbnail [image]="image"
-                                  [active]="index === (activeImageIndex$ | async)"
-                                  (click)="onThumbnailClicked(image)">
+      <app-image-slider-thumbnail
+        [image]="image"
+        [active]="index === (activeImageIndex$ | async)"
+        (click)="onThumbnailClicked(image)"
+      >
       </app-image-slider-thumbnail>
     }
   </div>

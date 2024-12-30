@@ -131,7 +131,8 @@ table.mails-table {
 
   table.mails-table {
     col {
-      &.sender, &.date {
+      &.sender,
+      &.date {
         display: none;
       }
     }
@@ -141,13 +142,15 @@ table.mails-table {
     }
 
     th {
-      &.sender, &.date {
+      &.sender,
+      &.date {
         display: none;
       }
     }
 
     td {
-      &.sender, &.date {
+      &.sender,
+      &.date {
         display: none;
       }
     }

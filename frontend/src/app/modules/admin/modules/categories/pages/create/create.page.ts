@@ -15,12 +15,7 @@ import {
   timeout,
 } from 'rxjs';
 import { CategoryGroup, CategoryGroupType, GROUPS, NONE } from '../../model';
-import {
-  DropdownComponent,
-  DropdownItem,
-  DropdownItemId,
-  NotificationService,
-} from '../../../../../shared';
+import { DropdownComponent, DropdownItem, DropdownItemId, NotificationService } from '../../../../../shared';
 import { ActivatedRoute, Router } from '@angular/router';
 import { someOrNone } from '../../../../../shared/modules/option';
 
@@ -31,46 +26,31 @@ import { someOrNone } from '../../../../../shared/modules/option';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreatePage implements OnDestroy {
-  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
-    '',
+  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private readonly nameTouched$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly nameValid$: Observable<boolean> = this.name$.pipe(map((name) => name.length > 0));
+  protected readonly nameError$: Observable<boolean> = combineLatest([this.nameTouched$, this.nameValid$]).pipe(
+    map(([touched, valid]) => touched && !valid),
   );
-  private readonly nameTouched$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly nameValid$: Observable<boolean> = this.name$.pipe(
-    map((name) => name.length > 0),
-  );
-  protected readonly nameError$: Observable<boolean> = combineLatest([
-    this.nameTouched$,
-    this.nameValid$,
-  ]).pipe(map(([touched, valid]) => touched && !valid));
 
-  private readonly groups$: BehaviorSubject<CategoryGroup[]> =
-    new BehaviorSubject<CategoryGroup[]>(GROUPS);
-  private readonly selectedGroup$: BehaviorSubject<CategoryGroup> =
-    new BehaviorSubject<CategoryGroup>(NONE);
-  protected readonly groupDropdownItems$: Observable<DropdownItem[]> =
-    this.groups$.pipe(
-      map((groups) => groups.map((g) => ({ id: g.type, label: g.name }))),
-    );
-  protected readonly initialSelectedDropdownItems$: Observable<
-    DropdownItemId[]
-  > = this.selectedGroup$.pipe(
+  private readonly groups$: BehaviorSubject<CategoryGroup[]> = new BehaviorSubject<CategoryGroup[]>(GROUPS);
+  private readonly selectedGroup$: BehaviorSubject<CategoryGroup> = new BehaviorSubject<CategoryGroup>(NONE);
+  protected readonly groupDropdownItems$: Observable<DropdownItem[]> = this.groups$.pipe(
+    map((groups) => groups.map((g) => ({ id: g.type, label: g.name }))),
+  );
+  protected readonly initialSelectedDropdownItems$: Observable<DropdownItemId[]> = this.selectedGroup$.pipe(
     map((group) => [group.type]),
     first(),
   );
-  private readonly selectedGroupValid$: Observable<boolean> =
-    this.selectedGroup$.pipe(map((group) => !!group));
-  private readonly formValid$: Observable<boolean> = combineLatest([
-    this.nameValid$,
-    this.selectedGroupValid$,
-  ]).pipe(map(([nameValid, groupValid]) => nameValid && groupValid));
+  private readonly selectedGroupValid$: Observable<boolean> = this.selectedGroup$.pipe(map((group) => !!group));
+  private readonly formValid$: Observable<boolean> = combineLatest([this.nameValid$, this.selectedGroupValid$]).pipe(
+    map(([nameValid, groupValid]) => nameValid && groupValid),
+  );
 
-  protected readonly creating$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly cannotSubmit$: Observable<boolean> = combineLatest([
-    this.formValid$,
-    this.creating$,
-  ]).pipe(map(([formValid, creating]) => !formValid || creating));
+  protected readonly creating$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly cannotSubmit$: Observable<boolean> = combineLatest([this.formValid$, this.creating$]).pipe(
+    map(([formValid, creating]) => !formValid || creating),
+  );
 
   private readonly destroy$: Subject<void> = new Subject<void>();
 
@@ -100,20 +80,14 @@ export class CreatePage implements OnDestroy {
     }
   }
 
-  updateSelectedGroup(
-    dropdown: DropdownComponent,
-    items: DropdownItemId[],
-  ): void {
+  updateSelectedGroup(dropdown: DropdownComponent, items: DropdownItemId[]): void {
     if (items.length !== 1) {
       throw new Error('Only one group can be selected');
     }
 
     const item = items[0];
-    const groupType: CategoryGroupType =
-      this.dropdownItemToCategoryGroupType(item);
-    someOrNone(this.groups$.value.find((g) => g.type === groupType)).ifSome(
-      (group) => this.selectedGroup$.next(group),
-    );
+    const groupType: CategoryGroupType = this.dropdownItemToCategoryGroupType(item);
+    someOrNone(this.groups$.value.find((g) => g.type === groupType)).ifSome((group) => this.selectedGroup$.next(group));
 
     dropdown.toggleOpened();
   }
@@ -164,9 +138,7 @@ export class CreatePage implements OnDestroy {
       });
   }
 
-  private dropdownItemToCategoryGroupType(
-    item: DropdownItemId,
-  ): CategoryGroupType {
+  private dropdownItemToCategoryGroupType(item: DropdownItemId): CategoryGroupType {
     switch (item) {
       case 'CLOTHING':
         return CategoryGroupType.CLOTHING;

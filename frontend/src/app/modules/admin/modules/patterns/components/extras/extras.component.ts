@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ButtonSize } from '../../../../../shared';
 import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
 import { PatternExtra } from '../../model';
@@ -27,10 +19,7 @@ class EditablePatternExtra {
     this.editing = props.editing;
   }
 
-  static of(props: {
-    extra: PatternExtra;
-    editing?: boolean;
-  }): EditablePatternExtra {
+  static of(props: { extra: PatternExtra; editing?: boolean }): EditablePatternExtra {
     return new EditablePatternExtra({
       extra: props.extra,
       editing: someOrNone(props.editing).orElse(false),
@@ -77,17 +66,14 @@ export class ExtrasComponent implements OnInit, OnDestroy {
   set extras(extras: PatternExtra[] | null) {
     someOrNone(extras).ifSome((extras) => {
       this.preventNextChangeEmit = true;
-      this.extras$.next(
-        extras.map((extra) => EditablePatternExtra.of({ extra })),
-      );
+      this.extras$.next(extras.map((extra) => EditablePatternExtra.of({ extra })));
     });
   }
 
   @Output()
   changed: EventEmitter<PatternExtra[]> = new EventEmitter<PatternExtra[]>();
 
-  protected readonly extras$: BehaviorSubject<EditablePatternExtra[]> =
-    new BehaviorSubject<EditablePatternExtra[]>([]);
+  protected readonly extras$: BehaviorSubject<EditablePatternExtra[]> = new BehaviorSubject<EditablePatternExtra[]>([]);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   private preventNextChangeEmit: boolean = false;
@@ -131,9 +117,7 @@ export class ExtrasComponent implements OnInit, OnDestroy {
   }
 
   edit(extra: EditablePatternExtra): void {
-    const updatedExtras = this.extras$.value.map((e) =>
-      e.id === extra.id ? extra.startEditing() : e,
-    );
+    const updatedExtras = this.extras$.value.map((e) => (e.id === extra.id ? extra.startEditing() : e));
     this.extras$.next(updatedExtras);
   }
 
@@ -164,9 +148,7 @@ export class ExtrasComponent implements OnInit, OnDestroy {
   }
 
   cancel(extra: EditablePatternExtra): void {
-    const updatedExtras = this.extras$.value.map((e) =>
-      e.id === extra.id ? e.stopEditing() : e,
-    );
+    const updatedExtras = this.extras$.value.map((e) => (e.id === extra.id ? e.stopEditing() : e));
     this.preventNextChangeEmit = true;
     this.extras$.next(updatedExtras);
   }

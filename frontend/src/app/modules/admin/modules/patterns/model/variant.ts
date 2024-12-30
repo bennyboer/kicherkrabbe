@@ -15,10 +15,7 @@ export class PatternVariant implements Eq<PatternVariant> {
     this.sizes = props.sizes;
   }
 
-  static of(props: {
-    name: string;
-    sizes?: PricedSizeRange[];
-  }): PatternVariant {
+  static of(props: { name: string; sizes?: PricedSizeRange[] }): PatternVariant {
     return new PatternVariant({
       name: props.name,
       sizes: someOrNone(props.sizes).orElse([]),
@@ -76,10 +73,7 @@ export class PatternVariant implements Eq<PatternVariant> {
       return Money.zero();
     }
 
-    return prices.reduce(
-      (acc, price) => (acc.isLessThan(price) ? acc : price),
-      prices[0],
-    );
+    return prices.reduce((acc, price) => (acc.isLessThan(price) ? acc : price), prices[0]);
   }
 
   private getHighestPrice(): Money {
@@ -89,10 +83,7 @@ export class PatternVariant implements Eq<PatternVariant> {
       return Money.zero();
     }
 
-    return prices.reduce(
-      (acc, price) => (acc.isGreaterThan(price) ? acc : price),
-      prices[0],
-    );
+    return prices.reduce((acc, price) => (acc.isGreaterThan(price) ? acc : price), prices[0]);
   }
 
   private getSmallestSize(): number {

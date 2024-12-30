@@ -17,12 +17,7 @@ import { HttpClient } from '@angular/common/http';
 import { AdminAuthService } from '../../../services';
 import { environment } from '../../../../../../environments';
 import { FabricType } from '../model';
-import {
-  none,
-  Option,
-  some,
-  someOrNone,
-} from '../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '../../../../shared/modules/option';
 
 interface FabricTypeDTO {
   id: string;
@@ -55,17 +50,11 @@ interface QueryFabricTypesResponse {
 
 @Injectable()
 export class FabricTypesService implements OnDestroy {
-  private readonly loadingFabricTypes$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly failedLoadingFabricTypes$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly fabricTypes$: Subject<FabricType[]> = new ReplaySubject<
-    FabricType[]
-  >(1);
-  private readonly events$: Subject<FabricTypeChangeDTO> =
-    new Subject<FabricTypeChangeDTO>();
-  private readonly subscribedToFabricTypes$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly loadingFabricTypes$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly failedLoadingFabricTypes$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly fabricTypes$: Subject<FabricType[]> = new ReplaySubject<FabricType[]>(1);
+  private readonly events$: Subject<FabricTypeChangeDTO> = new Subject<FabricTypeChangeDTO>();
+  private readonly subscribedToFabricTypes$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
   private sse: Option<SSE> = none();
   private fabricTypesSubCounter: number = 0;
@@ -92,9 +81,7 @@ export class FabricTypesService implements OnDestroy {
       this.reloadFabricTypes();
     });
 
-    const loggedOut$ = this.authService
-      .getToken()
-      .pipe(filter((token) => token.isNone()));
+    const loggedOut$ = this.authService.getToken().pipe(filter((token) => token.isNone()));
     loggedOut$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.closeEventStream();
     });
@@ -114,9 +101,7 @@ export class FabricTypesService implements OnDestroy {
   }
 
   isLoading(): Observable<boolean> {
-    return combineLatest([this.loadingFabricTypes$]).pipe(
-      map(([loadingFabricTypes]) => loadingFabricTypes),
-    );
+    return combineLatest([this.loadingFabricTypes$]).pipe(map(([loadingFabricTypes]) => loadingFabricTypes));
   }
 
   isFailedLoadingFabricTypes(): Observable<boolean> {
@@ -134,32 +119,20 @@ export class FabricTypesService implements OnDestroy {
 
   getFabricType(id: string): Observable<Option<FabricType>> {
     return this.getFabricTypes().pipe(
-      map((fabricTypes) =>
-        someOrNone(fabricTypes.find((fabricType) => fabricType.id === id)),
-      ),
+      map((fabricTypes) => someOrNone(fabricTypes.find((fabricType) => fabricType.id === id))),
     );
   }
 
   createFabricType(name: string): Observable<void> {
     const request: CreateFabricTypeRequest = { name };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/fabric-types/create`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/fabric-types/create`, request);
   }
 
-  updateFabricTypeName(
-    id: string,
-    version: number,
-    name: string,
-  ): Observable<void> {
+  updateFabricTypeName(id: string, version: number, name: string): Observable<void> {
     const request: UpdateFabricTypeRequest = { version, name };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/fabric-types/${id}/update`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/fabric-types/${id}/update`, request);
   }
 
   deleteFabricType(id: string, version: number): Observable<void> {
@@ -174,9 +147,7 @@ export class FabricTypesService implements OnDestroy {
       .get<QueryFabricTypesResponse>(`${environment.apiUrl}/fabric-types/`)
       .pipe(
         map((response) => this.toInternalFabricTypes(response.fabricTypes)),
-        map((fabricTypes) =>
-          fabricTypes.sort((a, b) => a.name.localeCompare(b.name)),
-        ),
+        map((fabricTypes) => fabricTypes.sort((a, b) => a.name.localeCompare(b.name))),
       )
       .subscribe({
         next: (fabricTypes) => {
@@ -191,9 +162,7 @@ export class FabricTypesService implements OnDestroy {
   }
 
   private toInternalFabricTypes(fabricTypes: FabricTypeDTO[]): FabricType[] {
-    return fabricTypes.map((fabricType) =>
-      this.toInternalFabricType(fabricType),
-    );
+    return fabricTypes.map((fabricType) => this.toInternalFabricType(fabricType));
   }
 
   private toInternalFabricType(fabricType: FabricTypeDTO): FabricType {

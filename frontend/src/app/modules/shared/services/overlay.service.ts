@@ -1,12 +1,5 @@
 import { Injectable, OnDestroy, TemplateRef } from '@angular/core';
-import {
-  BehaviorSubject,
-  filter,
-  map,
-  Observable,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, Subject, takeUntil } from 'rxjs';
 import { Point } from '../../../util';
 import { Overlay, OverlayId } from '../models';
 import { Option, someOrNone } from '../modules/option';
@@ -48,8 +41,7 @@ export class OverlayRef {
 @Injectable()
 export class OverlayService implements OnDestroy {
   private overlayParentElement: HTMLElement = window.document.body;
-  private readonly lookup$: BehaviorSubject<OverlayLookup> =
-    new BehaviorSubject<OverlayLookup>({});
+  private readonly lookup$: BehaviorSubject<OverlayLookup> = new BehaviorSubject<OverlayLookup>({});
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   ngOnDestroy(): void {
@@ -67,9 +59,7 @@ export class OverlayService implements OnDestroy {
     minWidth?: number;
   }): OverlayRef {
     const { templateRef, offset, parent } = props;
-    const closeOnBackdropClick = someOrNone(props.closeOnBackdropClick).orElse(
-      true,
-    );
+    const closeOnBackdropClick = someOrNone(props.closeOnBackdropClick).orElse(true);
     const minWidth = someOrNone(props.minWidth).orElse(0);
 
     const index = this.getNextOverlayIndex();
@@ -106,9 +96,7 @@ export class OverlayService implements OnDestroy {
   }
 
   removeOverlayByIndex(index: number): void {
-    this.getOverlayByIndex(index).ifSome((overlay) =>
-      this.removeOverlay(overlay.id),
-    );
+    this.getOverlayByIndex(index).ifSome((overlay) => this.removeOverlay(overlay.id));
   }
 
   removeOverlay(id: OverlayId): void {
@@ -121,13 +109,7 @@ export class OverlayService implements OnDestroy {
   }
 
   getOverlays(): Observable<Overlay[]> {
-    return this.lookup$
-      .asObservable()
-      .pipe(
-        map((lookup) =>
-          Object.values(lookup).sort((a, b) => a.index - b.index),
-        ),
-      );
+    return this.lookup$.asObservable().pipe(map((lookup) => Object.values(lookup).sort((a, b) => a.index - b.index)));
   }
 
   setOverlayParentElement(element: HTMLElement): void {
@@ -155,11 +137,7 @@ export class OverlayService implements OnDestroy {
   }
 
   private getOverlayByIndex(index: number): Option<Overlay> {
-    return someOrNone(
-      Object.values(this.getCurrentOverlayLookup()).find(
-        (o) => o.index === index,
-      ),
-    );
+    return someOrNone(Object.values(this.getCurrentOverlayLookup()).find((o) => o.index === index));
   }
 
   private updateLookup(consumer: (lookup: OverlayLookup) => boolean): void {

@@ -1,13 +1,6 @@
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import {
-  Availability,
-  Color,
-  Fabric,
-  Theme,
-  Type,
-  TypeAvailability,
-} from '../model';
+import { Availability, Color, Fabric, Theme, Type, TypeAvailability } from '../model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../../environments';
 import { Image } from '../../../../../util';
@@ -106,41 +99,33 @@ export class RemoteFabricsService {
       .get<QueryTopicsResponse>(`${environment.apiUrl}/fabrics/topics/used`)
       .pipe(
         map((response: QueryTopicsResponse) =>
-          response.topics.map((topic: TopicDTO) =>
-            Theme.of({ id: topic.id, name: topic.name }),
-          ),
+          response.topics.map((topic: TopicDTO) => Theme.of({ id: topic.id, name: topic.name })),
         ),
       );
   }
 
   getAvailableColors(): Observable<Color[]> {
-    return this.http
-      .get<QueryColorsResponse>(`${environment.apiUrl}/fabrics/colors/used`)
-      .pipe(
-        map((response: QueryColorsResponse) =>
-          response.colors.map((color: ColorDTO) =>
-            Color.of({
-              id: color.id,
-              name: color.name,
-              red: color.red,
-              green: color.green,
-              blue: color.blue,
-            }),
-          ),
+    return this.http.get<QueryColorsResponse>(`${environment.apiUrl}/fabrics/colors/used`).pipe(
+      map((response: QueryColorsResponse) =>
+        response.colors.map((color: ColorDTO) =>
+          Color.of({
+            id: color.id,
+            name: color.name,
+            red: color.red,
+            green: color.green,
+            blue: color.blue,
+          }),
         ),
-      );
+      ),
+    );
   }
 
   getAvailableFabricTypes(): Observable<Type[]> {
     return this.http
-      .get<QueryFabricTypesResponse>(
-        `${environment.apiUrl}/fabrics/fabric-types/used`,
-      )
+      .get<QueryFabricTypesResponse>(`${environment.apiUrl}/fabrics/fabric-types/used`)
       .pipe(
         map((response: QueryFabricTypesResponse) =>
-          response.fabricTypes.flatMap((type: FabricTypeDTO) =>
-            Type.of({ id: type.id, name: type.name }),
-          ),
+          response.fabricTypes.flatMap((type: FabricTypeDTO) => Type.of({ id: type.id, name: type.name })),
         ),
       );
   }
@@ -170,9 +155,7 @@ export class RemoteFabricsService {
     const sort = someOrNone(props.sort)
       .map((s) => ({
         property: FabricsSortPropertyDTO.ALPHABETICAL,
-        direction: s.ascending
-          ? FabricsSortDirectionDTO.ASCENDING
-          : FabricsSortDirectionDTO.DESCENDING,
+        direction: s.ascending ? FabricsSortDirectionDTO.ASCENDING : FabricsSortDirectionDTO.DESCENDING,
       }))
       .orElse({
         property: FabricsSortPropertyDTO.ALPHABETICAL,
@@ -190,29 +173,18 @@ export class RemoteFabricsService {
     };
 
     return this.http
-      .post<QueryPublishedFabricsResponse>(
-        `${environment.apiUrl}/fabrics/published`,
-        request,
-      )
+      .post<QueryPublishedFabricsResponse>(`${environment.apiUrl}/fabrics/published`, request)
       .pipe(
         map((response: QueryPublishedFabricsResponse) =>
-          response.fabrics.map((fabric: PublishedFabricDTO) =>
-            this.mapPublishedFabricDTOToFabric(fabric),
-          ),
+          response.fabrics.map((fabric: PublishedFabricDTO) => this.mapPublishedFabricDTOToFabric(fabric)),
         ),
       );
   }
 
   getFabric(id: string): Observable<Fabric> {
     return this.http
-      .get<QueryPublishedFabricResponse>(
-        `${environment.apiUrl}/fabrics/${id}/published`,
-      )
-      .pipe(
-        map((response: QueryPublishedFabricResponse) =>
-          this.mapPublishedFabricDTOToFabric(response.fabric),
-        ),
-      );
+      .get<QueryPublishedFabricResponse>(`${environment.apiUrl}/fabrics/${id}/published`)
+      .pipe(map((response: QueryPublishedFabricResponse) => this.mapPublishedFabricDTOToFabric(response.fabric)));
   }
 
   private mapPublishedFabricDTOToFabric(fabric: PublishedFabricDTO): Fabric {

@@ -10,8 +10,7 @@ import { Color } from '../../model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ColorsPage implements OnDestroy {
-  private readonly search$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+  private readonly search$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   constructor(private readonly colorsService: ColorsService) {}
 
@@ -21,11 +20,7 @@ export class ColorsPage implements OnDestroy {
 
   getColors(): Observable<Color[]> {
     return combineLatest([this.colorsService.getColors(), this.search$]).pipe(
-      map(([colors, search]) =>
-        colors.filter((color) =>
-          color.name.toLowerCase().includes(search.toLowerCase()),
-        ),
-      ),
+      map(([colors, search]) => colors.filter((color) => color.name.toLowerCase().includes(search.toLowerCase()))),
     );
   }
 

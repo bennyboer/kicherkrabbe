@@ -8,11 +8,7 @@ export class Channel {
   readonly mail: Option<string>;
   readonly telegram: Option<Telegram>;
 
-  private constructor(props: {
-    type: ChannelType;
-    mail: Option<string>;
-    telegram: Option<Telegram>;
-  }) {
+  private constructor(props: { type: ChannelType; mail: Option<string>; telegram: Option<Telegram> }) {
     validateProps(props);
 
     this.type = props.type;

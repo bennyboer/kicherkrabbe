@@ -1,20 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  fromEvent,
-  map,
-  startWith,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { BehaviorSubject, fromEvent, map, startWith, Subject, takeUntil } from 'rxjs';
 import { PatternVariant, PricedSizeRange } from '../../model';
 import { validateProps } from '../../../../../../util';
 import { ButtonSize } from '../../../../../shared';
@@ -25,11 +10,7 @@ class EditablePatternVariant {
   readonly editing: boolean;
   readonly expanded: boolean;
 
-  private constructor(props: {
-    variant: PatternVariant;
-    editing: boolean;
-    expanded: boolean;
-  }) {
+  private constructor(props: { variant: PatternVariant; editing: boolean; expanded: boolean }) {
     validateProps(props);
 
     this.variant = props.variant;
@@ -37,11 +18,7 @@ class EditablePatternVariant {
     this.expanded = props.expanded;
   }
 
-  static of(props: {
-    variant: PatternVariant;
-    editing?: boolean;
-    expanded?: boolean;
-  }): EditablePatternVariant {
+  static of(props: { variant: PatternVariant; editing?: boolean; expanded?: boolean }): EditablePatternVariant {
     return new EditablePatternVariant({
       variant: props.variant,
       editing: someOrNone(props.editing).orElse(false),
@@ -98,9 +75,7 @@ export class VariantsComponent implements OnInit, OnDestroy {
       this.variants$.next(
         extras.map((variant) => {
           const id = variant.id;
-          const old = someOrNone(
-            this.variants$.value.find((v) => v.variant.id === id),
-          );
+          const old = someOrNone(this.variants$.value.find((v) => v.variant.id === id));
 
           return old
             .map((o) =>
@@ -117,12 +92,11 @@ export class VariantsComponent implements OnInit, OnDestroy {
   }
 
   @Output()
-  changed: EventEmitter<PatternVariant[]> = new EventEmitter<
-    PatternVariant[]
-  >();
+  changed: EventEmitter<PatternVariant[]> = new EventEmitter<PatternVariant[]>();
 
-  protected readonly variants$: BehaviorSubject<EditablePatternVariant[]> =
-    new BehaviorSubject<EditablePatternVariant[]>([]);
+  protected readonly variants$: BehaviorSubject<EditablePatternVariant[]> = new BehaviorSubject<
+    EditablePatternVariant[]
+  >([]);
 
   protected readonly sortableConfig: any = {
     onUpdate: () => {
@@ -167,9 +141,7 @@ export class VariantsComponent implements OnInit, OnDestroy {
 
   save(variant: EditablePatternVariant, name: string): void {
     const updatedVariants = this.variants$.value.map((v) =>
-      v.variant.id === variant.variant.id
-        ? variant.stopEditing().withName(name)
-        : v,
+      v.variant.id === variant.variant.id ? variant.stopEditing().withName(name) : v,
     );
 
     this.variants$.next(updatedVariants);
@@ -193,9 +165,7 @@ export class VariantsComponent implements OnInit, OnDestroy {
   }
 
   delete(variant: EditablePatternVariant): void {
-    const updatedVariants = this.variants$.value.filter(
-      (v) => v.variant.id !== variant.variant.id,
-    );
+    const updatedVariants = this.variants$.value.filter((v) => v.variant.id !== variant.variant.id);
 
     this.variants$.next(updatedVariants);
     this.emitChange();
@@ -209,10 +179,7 @@ export class VariantsComponent implements OnInit, OnDestroy {
     this.variants$.next(updatedVariants);
   }
 
-  onVariantSizesChanged(
-    variant: EditablePatternVariant,
-    sizes: PricedSizeRange[],
-  ): void {
+  onVariantSizesChanged(variant: EditablePatternVariant, sizes: PricedSizeRange[]): void {
     const updatedVariants = this.variants$.value.map((v) =>
       v.variant.id === variant.variant.id ? v.withSizes(sizes) : v,
     );

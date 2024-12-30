@@ -1,19 +1,5 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  OnDestroy,
-  ViewChild,
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { BehaviorSubject, combineLatest, map, Observable, Subject, takeUntil } from 'rxjs';
 import { NotificationService } from '../../../../../shared';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FabricTypesService } from '../../services';
@@ -28,13 +14,9 @@ export class CreateFabricTypePage implements AfterViewInit, OnDestroy {
   @ViewChild('name')
   nameInput!: ElementRef;
 
-  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
-    '',
-  );
-  private readonly creatingFabricType$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly failed$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private readonly creatingFabricType$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly failed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -100,10 +82,9 @@ export class CreateFabricTypePage implements AfterViewInit, OnDestroy {
   }
 
   canCreateFabricType(): Observable<boolean> {
-    return combineLatest([
-      this.isFormValid(),
-      this.isCreatingFabricType(),
-    ]).pipe(map(([valid, creating]) => valid && !creating));
+    return combineLatest([this.isFormValid(), this.isCreatingFabricType()]).pipe(
+      map(([valid, creating]) => valid && !creating),
+    );
   }
 
   cannotCreateFabricType(): Observable<boolean> {

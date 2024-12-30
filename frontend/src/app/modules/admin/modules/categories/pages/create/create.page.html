@@ -3,23 +3,20 @@
 <div class="form">
   <div class="form-field">
     <label for="name">Name</label>
-    <input #name
-           id="name"
-           type="text"
-           autofocus
-           [class.error]="nameError$ | async"
-           (input)="updateName(name.value)">
+    <input #name id="name" type="text" autofocus [class.error]="nameError$ | async" (input)="updateName(name.value)" />
     @if (nameError$ | async) {
-      <span class="error">Bitte gib einen Namen für die Kategorie ein</span>
+    <span class="error">Bitte gib einen Namen für die Kategorie ein</span>
     }
   </div>
 
   <div class="form-field">
     <label>Gruppe</label>
-    <app-dropdown #groupDropdown
-                  [items]="groupDropdownItems$ | async"
-                  [selected]="initialSelectedDropdownItems$ | async"
-                  (selectionChanged)="updateSelectedGroup(groupDropdown, $event)">
+    <app-dropdown
+      #groupDropdown
+      [items]="groupDropdownItems$ | async"
+      [selected]="initialSelectedDropdownItems$ | async"
+      (selectionChanged)="updateSelectedGroup(groupDropdown, $event)"
+    >
       <ng-template let-item>
         <span>{{ item.label }}</span>
       </ng-template>
@@ -28,20 +25,17 @@
 </div>
 
 <div class="actions">
-    <span>
-      <app-button routerLink="..">Abbrechen</app-button>
-    </span>
   <span>
-      <app-button [disabled]="cannotSubmit$ | async" (click)="create()" color="primary">
-        @if (creating$ | async) {
-          <span class="loading-button-text">
-            <app-loading-spinner size="16"></app-loading-spinner>
-            <span>Erstellt...</span>
-          </span>
-        } @else {
-          Erstellen
-        }
-      </app-button>
-    </span>
+    <app-button routerLink="..">Abbrechen</app-button>
+  </span>
+  <span>
+    <app-button [disabled]="cannotSubmit$ | async" (click)="create()" color="primary">
+      @if (creating$ | async) {
+      <span class="loading-button-text">
+        <app-loading-spinner size="16"></app-loading-spinner>
+        <span>Erstellt...</span>
+      </span>
+      } @else { Erstellen }
+    </app-button>
+  </span>
 </div>
-

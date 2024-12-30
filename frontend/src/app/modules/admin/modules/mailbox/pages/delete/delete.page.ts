@@ -1,21 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  BehaviorSubject,
-  combineLatest,
-  delay,
-  finalize,
-  first,
-  map,
-  ReplaySubject,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, delay, finalize, first, map, ReplaySubject, Subject, takeUntil } from 'rxjs';
 import { NotificationService } from '../../../../../shared';
 import { MailboxService } from '../../services';
 import { Mail } from '../../model';
@@ -32,10 +17,9 @@ export class DeletePage implements OnInit, OnDestroy {
   protected readonly loadingMail$ = new BehaviorSubject<boolean>(false);
   protected readonly deleting$ = new BehaviorSubject<boolean>(false);
 
-  protected readonly loading$ = combineLatest([
-    this.loadingMail$,
-    this.deleting$,
-  ]).pipe(map(([loadingMail, deleting]) => loadingMail || deleting));
+  protected readonly loading$ = combineLatest([this.loadingMail$, this.deleting$]).pipe(
+    map(([loadingMail, deleting]) => loadingMail || deleting),
+  );
 
   private readonly destroy$ = new Subject<void>();
 
@@ -54,9 +38,7 @@ export class DeletePage implements OnInit, OnDestroy {
       )
       .subscribe((mailId) => this.mailId$.next(mailId));
 
-    this.mailId$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((mailId) => this.reloadMail(mailId));
+    this.mailId$.pipe(takeUntil(this.destroy$)).subscribe((mailId) => this.reloadMail(mailId));
   }
 
   ngOnDestroy(): void {

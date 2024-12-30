@@ -7,28 +7,14 @@ export class PricedSizeRange {
   readonly unit: Option<string>;
   readonly price: Money;
 
-  private constructor(props: {
-    from: number;
-    to: Option<number>;
-    unit: Option<string>;
-    price: Money;
-  }) {
-    this.from = someOrNone(props.from).orElseThrow(
-      'Size range from is required',
-    );
+  private constructor(props: { from: number; to: Option<number>; unit: Option<string>; price: Money }) {
+    this.from = someOrNone(props.from).orElseThrow('Size range from is required');
     this.to = props.to;
     this.unit = props.unit;
-    this.price = someOrNone(props.price).orElseThrow(
-      'Size range price is required',
-    );
+    this.price = someOrNone(props.price).orElseThrow('Size range price is required');
   }
 
-  static of(props: {
-    from: number;
-    to?: number | null;
-    unit?: string | null;
-    price: Money;
-  }): PricedSizeRange {
+  static of(props: { from: number; to?: number | null; unit?: string | null; price: Money }): PricedSizeRange {
     return new PricedSizeRange({
       from: props.from,
       to: someOrNone(props.to),
@@ -56,8 +42,6 @@ export class PricedSizeRange {
   }
 
   includes(size: number): boolean {
-    return this.to
-      .map((to) => size >= this.from && size <= to)
-      .orElse(size === this.from);
+    return this.to.map((to) => size >= this.from && size <= to).orElse(size === this.from);
   }
 }

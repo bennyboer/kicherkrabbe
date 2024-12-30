@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
@@ -19,12 +14,7 @@ import {
   tap,
 } from 'rxjs';
 import { PatternCategoriesService, PatternsService } from '../../services';
-import {
-  DropdownComponent,
-  DropdownItem,
-  DropdownItemId,
-  NotificationService,
-} from '../../../../../shared';
+import { DropdownComponent, DropdownItem, DropdownItemId, NotificationService } from '../../../../../shared';
 import { Pattern, PatternCategory } from '../../model';
 import { someOrNone } from '../../../../../shared/modules/option';
 
@@ -35,41 +25,28 @@ import { someOrNone } from '../../../../../shared/modules/option';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PatternsPage implements OnInit, OnDestroy {
-  protected readonly searchTerm$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+  protected readonly searchTerm$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-  protected readonly usedCategories$: BehaviorSubject<PatternCategory[]> =
-    new BehaviorSubject<PatternCategory[]>([]);
-  protected readonly loadingUsedCategories$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
-  protected readonly selectedCategories$: BehaviorSubject<Set<string>> =
-    new BehaviorSubject<Set<string>>(new Set<string>());
-  protected readonly categoriesDropdownItems$: Observable<DropdownItem[]> =
-    this.usedCategories$.pipe(
-      map((categories) => categories.map((g) => ({ id: g.id, label: g.name }))),
-    );
-  protected readonly categoryLabelLookup$: Observable<Map<string, string>> =
-    this.usedCategories$.pipe(
-      map((categories) => new Map(categories.map((c) => [c.id, c.name]))),
-    );
+  protected readonly usedCategories$: BehaviorSubject<PatternCategory[]> = new BehaviorSubject<PatternCategory[]>([]);
+  protected readonly loadingUsedCategories$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  protected readonly selectedCategories$: BehaviorSubject<Set<string>> = new BehaviorSubject<Set<string>>(
+    new Set<string>(),
+  );
+  protected readonly categoriesDropdownItems$: Observable<DropdownItem[]> = this.usedCategories$.pipe(
+    map((categories) => categories.map((g) => ({ id: g.id, label: g.name }))),
+  );
+  protected readonly categoryLabelLookup$: Observable<Map<string, string>> = this.usedCategories$.pipe(
+    map((categories) => new Map(categories.map((c) => [c.id, c.name]))),
+  );
 
-  protected readonly patterns$: BehaviorSubject<Pattern[]> =
-    new BehaviorSubject<Pattern[]>([]);
-  private readonly loadingPatterns$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
+  protected readonly patterns$: BehaviorSubject<Pattern[]> = new BehaviorSubject<Pattern[]>([]);
+  private readonly loadingPatterns$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   protected readonly loading$: Observable<boolean> = combineLatest([
     this.loadingUsedCategories$,
     this.loadingPatterns$,
-  ]).pipe(
-    map(
-      ([loadingUsedCategories, loadingPatterns]) =>
-        loadingUsedCategories || loadingPatterns,
-    ),
-  );
-  protected readonly notLoading$: Observable<boolean> = this.loading$.pipe(
-    map((loading) => !loading),
-  );
+  ]).pipe(map(([loadingUsedCategories, loadingPatterns]) => loadingUsedCategories || loadingPatterns));
+  protected readonly notLoading$: Observable<boolean> = this.loading$.pipe(map((loading) => !loading));
 
   private readonly destroy$: Subject<void> = new Subject<void>();
 
@@ -84,14 +61,9 @@ export class PatternsPage implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.reloadUsedCategories();
 
-    combineLatest([
-      this.searchTerm$.pipe(debounceTime(300)),
-      this.selectedCategories$,
-    ])
+    combineLatest([this.searchTerm$.pipe(debounceTime(300)), this.selectedCategories$])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(([searchTerm, categories]) =>
-        this.reloadPatterns({ searchTerm, categories }),
-      );
+      .subscribe(([searchTerm, categories]) => this.reloadPatterns({ searchTerm, categories }));
   }
 
   ngOnDestroy(): void {
@@ -125,16 +97,10 @@ export class PatternsPage implements OnInit, OnDestroy {
   }
 
   getCategoryLabel(id: string): Observable<string> {
-    return this.categoryLabelLookup$.pipe(
-      map((lookup) => someOrNone(lookup.get(id)).orElse('X')),
-    );
+    return this.categoryLabelLookup$.pipe(map((lookup) => someOrNone(lookup.get(id)).orElse('X')));
   }
 
-  private reloadPatterns(props: {
-    searchTerm?: string;
-    categories?: Set<string>;
-    indicateLoading?: boolean;
-  }): void {
+  private reloadPatterns(props: { searchTerm?: string; categories?: Set<string>; indicateLoading?: boolean }): void {
     const indicateLoading = someOrNone(props.indicateLoading).orElse(true);
     if (indicateLoading) {
       this.loadingPatterns$.next(true);
@@ -148,10 +114,7 @@ export class PatternsPage implements OnInit, OnDestroy {
       .subscribe((categories) => this.patterns$.next(categories));
   }
 
-  private loadPatterns(props: {
-    searchTerm?: string;
-    categories?: Set<string>;
-  }): Observable<Pattern[]> {
+  private loadPatterns(props: { searchTerm?: string; categories?: Set<string> }): Observable<Pattern[]> {
     const searchTerm = someOrNone(props.searchTerm).orElse('');
     const categories = someOrNone(props.categories).orElse(new Set<string>());
 
@@ -167,8 +130,7 @@ export class PatternsPage implements OnInit, OnDestroy {
           console.error(e);
           this.notificationService.publish({
             type: 'error',
-            message:
-              'Die Schnittmuster konnten nicht geladen werden. Bitte versuche die Seite neu zu laden.',
+            message: 'Die Schnittmuster konnten nicht geladen werden. Bitte versuche die Seite neu zu laden.',
           });
           return EMPTY;
         }),
@@ -205,8 +167,7 @@ export class PatternsPage implements OnInit, OnDestroy {
           console.error(e);
           this.notificationService.publish({
             type: 'error',
-            message:
-              'Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neu zu laden.',
+            message: 'Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neu zu laden.',
           });
           return EMPTY;
         }),

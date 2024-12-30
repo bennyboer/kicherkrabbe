@@ -1,10 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  OnDestroy,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy } from '@angular/core';
 import {
   animationFrameScheduler,
   BehaviorSubject,
@@ -30,9 +24,7 @@ export class HeaderComponent implements AfterViewInit, OnDestroy {
   protected headerHeight: Option<number> = none();
 
   private readonly sticky$: Subject<boolean> = new BehaviorSubject(false);
-  private readonly overlayActive$: Subject<boolean> = new BehaviorSubject(
-    false,
-  );
+  private readonly overlayActive$: Subject<boolean> = new BehaviorSubject(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   protected readonly ButtonSize = ButtonSize;

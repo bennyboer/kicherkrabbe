@@ -5,12 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { AdminAuthService } from '../../../services';
 import { environment } from '../../../../../../environments';
 import { Category, CategoryGroup, CategoryId, CLOTHING, NONE } from '../model';
-import {
-  none,
-  Option,
-  some,
-  someOrNone,
-} from '../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '../../../../shared/modules/option';
 
 interface CategoryDTO {
   id: string;
@@ -59,8 +54,7 @@ interface CreateCategoryResponse {
 
 @Injectable()
 export class CategoriesService implements OnDestroy {
-  private readonly events$: Subject<CategoryChangeDTO> =
-    new Subject<CategoryChangeDTO>();
+  private readonly events$: Subject<CategoryChangeDTO> = new Subject<CategoryChangeDTO>();
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   private sse: Option<SSE> = none();
@@ -69,9 +63,7 @@ export class CategoriesService implements OnDestroy {
     private readonly http: HttpClient,
     private readonly authService: AdminAuthService,
   ) {
-    const loggedOut$ = this.authService
-      .getToken()
-      .pipe(filter((token) => token.isNone()));
+    const loggedOut$ = this.authService.getToken().pipe(filter((token) => token.isNone()));
     loggedOut$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.closeEventStream();
     });
@@ -125,50 +117,30 @@ export class CategoriesService implements OnDestroy {
       );
   }
 
-  createCategory(props: {
-    name: string;
-    group: CategoryGroup;
-  }): Observable<CategoryId> {
+  createCategory(props: { name: string; group: CategoryGroup }): Observable<CategoryId> {
     const request: CreateCategoryRequest = {
       name: props.name,
       group: this.toApiCategoryGroup(props.group),
     };
 
     return this.http
-      .post<CreateCategoryResponse>(
-        `${environment.apiUrl}/categories/create`,
-        request,
-      )
+      .post<CreateCategoryResponse>(`${environment.apiUrl}/categories/create`, request)
       .pipe(map((response) => response.id));
   }
 
-  renameCategory(
-    id: CategoryId,
-    version: number,
-    name: string,
-  ): Observable<void> {
+  renameCategory(id: CategoryId, version: number, name: string): Observable<void> {
     const request: RenameCategoryRequest = { version, name };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/categories/${id}/rename`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/categories/${id}/rename`, request);
   }
 
-  regroupCategory(
-    id: CategoryId,
-    version: number,
-    group: CategoryGroup,
-  ): Observable<void> {
+  regroupCategory(id: CategoryId, version: number, group: CategoryGroup): Observable<void> {
     const request: RegroupCategoryRequest = {
       version,
       group: this.toApiCategoryGroup(group),
     };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/categories/${id}/regroup`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/categories/${id}/regroup`, request);
   }
 
   deleteCategory(id: string, version: number): Observable<void> {
@@ -204,11 +176,7 @@ export class CategoriesService implements OnDestroy {
     this.sse = none();
   }
 
-  private loadCategories(props: {
-    searchTerm?: string;
-    limit?: number;
-    skip?: number;
-  }): Observable<Category[]> {
+  private loadCategories(props: { searchTerm?: string; limit?: number; skip?: number }): Observable<Category[]> {
     const params: any = {};
     someOrNone(props.searchTerm)
       .filter((term) => term.trim().length > 0)
@@ -220,13 +188,7 @@ export class CategoriesService implements OnDestroy {
       .get<QueryCategoriesResponse>(`${environment.apiUrl}/categories`, {
         params,
       })
-      .pipe(
-        map((response) =>
-          response.categories.map((category) =>
-            this.toInternalCategory(category),
-          ),
-        ),
-      );
+      .pipe(map((response) => response.categories.map((category) => this.toInternalCategory(category))));
   }
 
   private loadCategoriesByGroup(props: {
@@ -235,9 +197,7 @@ export class CategoriesService implements OnDestroy {
     limit?: number;
     skip?: number;
   }): Observable<Category[]> {
-    const categoryGroup: CategoryGroupDTO = this.toApiCategoryGroup(
-      props.group,
-    );
+    const categoryGroup: CategoryGroupDTO = this.toApiCategoryGroup(props.group);
 
     const params: any = {};
     someOrNone(props.searchTerm)
@@ -247,19 +207,10 @@ export class CategoriesService implements OnDestroy {
     someOrNone(props.skip).ifSome((skip) => (params['skip'] = skip));
 
     return this.http
-      .get<QueryCategoriesResponse>(
-        `${environment.apiUrl}/categories/groups/${categoryGroup}`,
-        {
-          params,
-        },
-      )
-      .pipe(
-        map((response) =>
-          response.categories.map((category) =>
-            this.toInternalCategory(category),
-          ),
-        ),
-      );
+      .get<QueryCategoriesResponse>(`${environment.apiUrl}/categories/groups/${categoryGroup}`, {
+        params,
+      })
+      .pipe(map((response) => response.categories.map((category) => this.toInternalCategory(category))));
   }
 
   private toInternalCategory(category: CategoryDTO): Category {

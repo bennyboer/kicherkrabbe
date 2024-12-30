@@ -1,19 +1,5 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  OnDestroy,
-  ViewChild,
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { BehaviorSubject, combineLatest, map, Observable, Subject, takeUntil } from 'rxjs';
 import { TopicsService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from '../../../../../shared';
@@ -28,13 +14,9 @@ export class CreateTopicPage implements AfterViewInit, OnDestroy {
   @ViewChild('name')
   nameInput!: ElementRef;
 
-  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
-    '',
-  );
-  private readonly creatingTopic$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly failed$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private readonly creatingTopic$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly failed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(

@@ -1,11 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import {
-  BehaviorSubject,
-  distinctUntilChanged,
-  Observable,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, Observable, Subject, takeUntil } from 'rxjs';
 
 export enum Theme {
   LIGHT = 'LIGHT',
@@ -19,18 +13,14 @@ const THEME_CLASS_NAME_LOOKUP = {
 
 @Injectable()
 export class ThemeService implements OnDestroy {
-  private readonly theme$: BehaviorSubject<Theme> = new BehaviorSubject<Theme>(
-    Theme.LIGHT,
-  );
+  private readonly theme$: BehaviorSubject<Theme> = new BehaviorSubject<Theme>(Theme.LIGHT);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   private darkModeMediaQuery!: MediaQueryList;
   private darkModeEventListener!: (event: MediaQueryListEvent) => void;
 
   constructor() {
-    this.theme$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((theme) => this.applyTheme(theme));
+    this.theme$.pipe(takeUntil(this.destroy$)).subscribe((theme) => this.applyTheme(theme));
 
     this.listenToSystemPreferences();
     this.applyTheme(this.theme$.value);
@@ -69,10 +59,7 @@ export class ThemeService implements OnDestroy {
         this.setTheme(Theme.LIGHT);
       }
     };
-    this.darkModeMediaQuery.addEventListener(
-      'change',
-      this.darkModeEventListener,
-    );
+    this.darkModeMediaQuery.addEventListener('change', this.darkModeEventListener);
 
     if (this.darkModeMediaQuery.matches) {
       this.setTheme(Theme.DARK);
@@ -82,9 +69,6 @@ export class ThemeService implements OnDestroy {
   }
 
   private deregisterSystemPreferencesListener(): void {
-    this.darkModeMediaQuery.removeEventListener(
-      'change',
-      this.darkModeEventListener,
-    );
+    this.darkModeMediaQuery.removeEventListener('change', this.darkModeEventListener);
   }
 }

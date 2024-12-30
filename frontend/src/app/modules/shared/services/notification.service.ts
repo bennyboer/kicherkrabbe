@@ -39,8 +39,7 @@ export class Notification {
 
 @Injectable()
 export class NotificationService implements OnDestroy {
-  private readonly notifications$: Subject<Notification> =
-    new Subject<Notification>();
+  private readonly notifications$: Subject<Notification> = new Subject<Notification>();
 
   ngOnDestroy(): void {
     this.notifications$.complete();

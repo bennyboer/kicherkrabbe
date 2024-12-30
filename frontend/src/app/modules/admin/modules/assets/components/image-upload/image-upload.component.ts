@@ -64,19 +64,13 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   @Output()
   uploaded: EventEmitter<string[]> = new EventEmitter<string[]>();
 
-  private readonly step$: BehaviorSubject<Step> = new BehaviorSubject<Step>(
-    'file-select',
-  );
+  private readonly step$: BehaviorSubject<Step> = new BehaviorSubject<Step>('file-select');
   private readonly files$: Subject<File[]> = new ReplaySubject(1);
-  protected readonly images$: Subject<HTMLImageElement[]> = new ReplaySubject(
-    1,
-  );
+  protected readonly images$: Subject<HTMLImageElement[]> = new ReplaySubject(1);
   protected readonly selectedImageIndex$: BehaviorSubject<SelectedImageIndexContainer> =
     new BehaviorSubject<SelectedImageIndexContainer>({ index: 0 });
-  private readonly blackWatermark$: Subject<HTMLImageElement> =
-    new ReplaySubject(1);
-  private readonly whiteWatermark$: Subject<HTMLImageElement> =
-    new ReplaySubject(1);
+  private readonly blackWatermark$: Subject<HTMLImageElement> = new ReplaySubject(1);
+  private readonly whiteWatermark$: Subject<HTMLImageElement> = new ReplaySubject(1);
   private readonly canvas$: Subject<HTMLCanvasElement> = new ReplaySubject(1);
   private readonly resultImages$: Subject<Blob[]> = new ReplaySubject(1);
   private readonly destroy$: Subject<void> = new Subject<void>();
@@ -84,29 +78,16 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(private readonly assetsService: AssetsService) {}
 
   ngOnInit(): void {
-    this.files$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((files) => this.loadImagesFromFiles(files));
+    this.files$.pipe(takeUntil(this.destroy$)).subscribe((files) => this.loadImagesFromFiles(files));
 
-    const selectedImage$ = combineLatest([
-      this.images$,
-      this.selectedImageIndex$,
-    ]).pipe(map(([images, index]) => images[index.index]));
+    const selectedImage$ = combineLatest([this.images$, this.selectedImageIndex$]).pipe(
+      map(([images, index]) => images[index.index]),
+    );
 
-    combineLatest([
-      selectedImage$,
-      this.blackWatermark$,
-      this.whiteWatermark$,
-      this.canvas$,
-    ])
+    combineLatest([selectedImage$, this.blackWatermark$, this.whiteWatermark$, this.canvas$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([image, blackWatermark, whiteWatermark, canvas]) =>
-        this.onImageAndCanvasReady(
-          image,
-          blackWatermark,
-          whiteWatermark,
-          canvas,
-        ),
+        this.onImageAndCanvasReady(image, blackWatermark, whiteWatermark, canvas),
       );
 
     combineLatest([this.images$, this.blackWatermark$, this.whiteWatermark$])
@@ -117,16 +98,14 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.canvasElements.changes
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((canvasElements) => {
-        if (canvasElements.length === 0) {
-          return;
-        }
+    this.canvasElements.changes.pipe(takeUntil(this.destroy$)).subscribe((canvasElements) => {
+      if (canvasElements.length === 0) {
+        return;
+      }
 
-        const canvasElement = canvasElements.first.nativeElement;
-        this.canvas$.next(canvasElement);
-      });
+      const canvasElement = canvasElements.first.nativeElement;
+      this.canvas$.next(canvasElement);
+    });
 
     this.loadWatermarks();
   }
@@ -191,9 +170,7 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   ): void {
     from(images)
       .pipe(
-        concatMap((image) =>
-          this.renderImage(image, blackWatermark, whiteWatermark),
-        ),
+        concatMap((image) => this.renderImage(image, blackWatermark, whiteWatermark)),
         toArray(),
         takeUntil(this.destroy$),
       )
@@ -223,15 +200,7 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
     const width = Math.min(image.naturalWidth, parentWidth);
     const height = width / aspectRatio;
 
-    this.drawImageAndWatermark(
-      canvas,
-      image,
-      blackWatermark,
-      whiteWatermark,
-      width,
-      height,
-      devicePixelRatio,
-    );
+    this.drawImageAndWatermark(canvas, image, blackWatermark, whiteWatermark, width, height, devicePixelRatio);
   }
 
   private dataUrlToBlob(dataUrl: string): Blob {
@@ -272,8 +241,7 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
     context.drawImage(image, 0, 0, width, height);
 
     if (this.watermark) {
-      const watermarkAspectRatio =
-        blackWatermark.naturalWidth / blackWatermark.naturalHeight;
+      const watermarkAspectRatio = blackWatermark.naturalWidth / blackWatermark.naturalHeight;
 
       const watermarkPaddingRatio = 0.02;
       const watermarkPadding = width * watermarkPaddingRatio;
@@ -283,17 +251,9 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
       const x = width - watermarkWidth - watermarkPadding;
       const y = height - watermarkHeight - watermarkPadding;
 
-      const darkness = this.getImageDarknessInArea(
-        context,
-        x,
-        y,
-        watermarkWidth,
-        watermarkHeight,
-      );
+      const darkness = this.getImageDarknessInArea(context, x, y, watermarkWidth, watermarkHeight);
       const useWhiteWatermark = darkness < 80;
-      const watermarkImage = useWhiteWatermark
-        ? whiteWatermark
-        : blackWatermark;
+      const watermarkImage = useWhiteWatermark ? whiteWatermark : blackWatermark;
       context.drawImage(watermarkImage, x, y, watermarkWidth, watermarkHeight);
     }
   }

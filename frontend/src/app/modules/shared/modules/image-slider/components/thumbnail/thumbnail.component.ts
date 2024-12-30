@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnDestroy,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy } from '@angular/core';
 import { ImageSliderImage } from '../../models';
 import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
 import { someOrNone } from '../../../option';
@@ -15,10 +10,8 @@ import { someOrNone } from '../../../option';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThumbnailComponent implements OnDestroy {
-  protected readonly image$: Subject<ImageSliderImage> =
-    new ReplaySubject<ImageSliderImage>(1);
-  protected readonly active$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  protected readonly image$: Subject<ImageSliderImage> = new ReplaySubject<ImageSliderImage>(1);
+  protected readonly active$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   @Input({ required: true })
   set image(value: ImageSliderImage) {

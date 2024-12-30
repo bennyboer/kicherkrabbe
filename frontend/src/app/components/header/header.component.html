@@ -3,7 +3,7 @@
 <div class="actual-header" [class.sticky]="isSticky() | async">
   <div class="container" [class.small]="isSticky() | async">
     <div class="logo" routerLink="/">
-      <img src="assets/kicherkrabbe.svg" height="100%"/>
+      <img src="assets/kicherkrabbe.svg" height="100%" />
       Kicherkrabbe
     </div>
 
@@ -42,8 +42,7 @@
   </div>
   <nav class="mobile-navigation">
     <app-button-column #buttonColumn [size]="ButtonSize.LARGE">
-      <ng-container [ngTemplateOutlet]="links" [ngTemplateOutletInjector]="buttonColumn.getInjector()">
-      </ng-container>
+      <ng-container [ngTemplateOutlet]="links" [ngTemplateOutletInjector]="buttonColumn.getInjector()"> </ng-container>
     </app-button-column>
   </nav>
 </div>

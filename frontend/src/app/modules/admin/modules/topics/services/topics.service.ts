@@ -17,12 +17,7 @@ import { Topic } from '../model';
 import { environment } from '../../../../../../environments';
 import { AdminAuthService } from '../../../services';
 import { SSE } from 'sse.js';
-import {
-  none,
-  Option,
-  some,
-  someOrNone,
-} from '../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '../../../../shared/modules/option';
 
 interface QueryTopicsResponse {
   skip: number;
@@ -55,15 +50,11 @@ interface UpdateTopicRequest {
 
 @Injectable()
 export class TopicsService implements OnDestroy {
-  private readonly loadingTopics$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly failedLoadingTopics$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly loadingTopics$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly failedLoadingTopics$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly topics$: Subject<Topic[]> = new ReplaySubject<Topic[]>(1);
-  private readonly events$: Subject<TopicChangeDTO> =
-    new Subject<TopicChangeDTO>();
-  private readonly subscribedToTopics$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly events$: Subject<TopicChangeDTO> = new Subject<TopicChangeDTO>();
+  private readonly subscribedToTopics$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
   private sse: Option<SSE> = none();
   private topicsSubCounter: number = 0;
@@ -90,9 +81,7 @@ export class TopicsService implements OnDestroy {
       this.reloadTopics();
     });
 
-    const loggedOut$ = this.authService
-      .getToken()
-      .pipe(filter((token) => token.isNone()));
+    const loggedOut$ = this.authService.getToken().pipe(filter((token) => token.isNone()));
     loggedOut$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.closeEventStream();
     });
@@ -112,9 +101,7 @@ export class TopicsService implements OnDestroy {
   }
 
   isLoading(): Observable<boolean> {
-    return combineLatest([this.loadingTopics$]).pipe(
-      map(([loadingTopics]) => loadingTopics),
-    );
+    return combineLatest([this.loadingTopics$]).pipe(map(([loadingTopics]) => loadingTopics));
   }
 
   isFailedLoadingTopics(): Observable<boolean> {
@@ -131,9 +118,7 @@ export class TopicsService implements OnDestroy {
   }
 
   getTopic(id: string): Observable<Option<Topic>> {
-    return this.getTopics().pipe(
-      map((topics) => someOrNone(topics.find((topic) => topic.id === id))),
-    );
+    return this.getTopics().pipe(map((topics) => someOrNone(topics.find((topic) => topic.id === id))));
   }
 
   createTopic(name: string): Observable<void> {
@@ -145,10 +130,7 @@ export class TopicsService implements OnDestroy {
   updateTopicName(id: string, version: number, name: string): Observable<void> {
     const request: UpdateTopicRequest = { version, name };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/topics/${id}/update`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/topics/${id}/update`, request);
   }
 
   deleteTopic(id: string, version: number): Observable<void> {

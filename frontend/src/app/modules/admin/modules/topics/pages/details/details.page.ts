@@ -1,15 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TopicsService } from '../../services';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-  Subject,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, Subject, switchMap, takeUntil } from 'rxjs';
 import { Topic } from '../../model';
 import { NotificationService } from '../../../../../shared';
 import { none, Option, someOrNone } from '../../../../../shared/modules/option';
@@ -21,14 +13,10 @@ import { none, Option, someOrNone } from '../../../../../shared/modules/option';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopicDetailsPage implements OnDestroy {
-  private readonly transientName$: BehaviorSubject<Option<string>> =
-    new BehaviorSubject<Option<string>>(none());
-  private readonly updatingName$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly failedUpdatingName$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly waitingForDeleteConfirmation$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly transientName$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());
+  private readonly updatingName$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly failedUpdatingName$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly waitingForDeleteConfirmation$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -49,9 +37,7 @@ export class TopicDetailsPage implements OnDestroy {
   }
 
   getTopic(): Observable<Option<Topic>> {
-    return this.getTopicId().pipe(
-      switchMap((id) => this.topicsService.getTopic(id)),
-    );
+    return this.getTopicId().pipe(switchMap((id) => this.topicsService.getTopic(id)));
   }
 
   isLoading(): Observable<boolean> {
@@ -124,8 +110,7 @@ export class TopicDetailsPage implements OnDestroy {
         },
         error: () => {
           this.notificationService.publish({
-            message:
-              'Ein Fehler ist aufgetreten. Das Thema konnte nicht gelöscht werden. Versuche es noch einmal.',
+            message: 'Ein Fehler ist aufgetreten. Das Thema konnte nicht gelöscht werden. Versuche es noch einmal.',
             type: 'error',
           });
         },
@@ -141,8 +126,6 @@ export class TopicDetailsPage implements OnDestroy {
   }
 
   private getTopicId(): Observable<string> {
-    return this.route.paramMap.pipe(
-      map((params) => someOrNone(params.get('id')).orElse('')),
-    );
+    return this.route.paramMap.pipe(map((params) => someOrNone(params.get('id')).orElse('')));
   }
 }

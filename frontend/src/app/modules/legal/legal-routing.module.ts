@@ -1,11 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {
-  CancellationPolicyPage,
-  ImprintPage,
-  PrivacyPolicyPage,
-  TermsAndConditionsPage,
-} from './pages';
+import { CancellationPolicyPage, ImprintPage, PrivacyPolicyPage, TermsAndConditionsPage } from './pages';
 
 const routes: Routes = [
   {

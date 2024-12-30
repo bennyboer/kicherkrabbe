@@ -2,11 +2,16 @@
   <div class="form-field">
     <label for="name">
       Name
-      <span class="input-limit">
-        {{ nameLength$ | async }} / 200
-      </span>
+      <span class="input-limit"> {{ nameLength$ | async }} / 200 </span>
     </label>
-    <input #name type="text" id="name" name="name" [disabled]="nameDisabled$ | async" (input)="updateName(name.value)">
+    <input
+      #name
+      type="text"
+      id="name"
+      name="name"
+      [disabled]="nameDisabled$ | async"
+      (input)="updateName(name.value)"
+    />
 
     @if (nameTouched$ | async) {
       @if (nameMissing$ | async) {
@@ -20,17 +25,17 @@
   <div class="form-field">
     <label for="mail">
       E-Mail
-      <span class="input-limit">
-        {{ mailLength$ | async }} / 70
-      </span>
+      <span class="input-limit"> {{ mailLength$ | async }} / 70 </span>
     </label>
-    <input #mail
-           type="email"
-           id="mail"
-           name="mail"
-           required
-           [disabled]="mailDisabled$ | async"
-           (input)="updateMail(mail.value, mail.checkValidity())">
+    <input
+      #mail
+      type="email"
+      id="mail"
+      name="mail"
+      required
+      [disabled]="mailDisabled$ | async"
+      (input)="updateMail(mail.value, mail.checkValidity())"
+    />
 
     @if (mailTouched$ | async) {
       @if (mailMissing$ | async) {
@@ -46,16 +51,16 @@
   <div class="form-field">
     <label for="phone">
       Telefon (optional)
-      <span class="input-limit">
-        {{ phoneLength$ | async }} / 30
-      </span>
+      <span class="input-limit"> {{ phoneLength$ | async }} / 30 </span>
     </label>
-    <input #phone
-           type="tel"
-           id="phone"
-           name="phone"
-           [disabled]="phoneDisabled$ | async"
-           (input)="updatePhone(phone.value)">
+    <input
+      #phone
+      type="tel"
+      id="phone"
+      name="phone"
+      [disabled]="phoneDisabled$ | async"
+      (input)="updatePhone(phone.value)"
+    />
 
     @if (phoneTouched$ | async) {
       @if (phoneTooLong$ | async) {
@@ -67,16 +72,16 @@
   <div class="form-field">
     <label for="subject">
       Betreff
-      <span class="input-limit">
-        {{ subjectLength$ | async }} / 200
-      </span>
+      <span class="input-limit"> {{ subjectLength$ | async }} / 200 </span>
     </label>
-    <input #subject
-           type="text"
-           id="subject"
-           name="subject"
-           [disabled]="subjectDisabled$ | async"
-           (input)="updateSubject(subject.value)">
+    <input
+      #subject
+      type="text"
+      id="subject"
+      name="subject"
+      [disabled]="subjectDisabled$ | async"
+      (input)="updateSubject(subject.value)"
+    />
 
     @if (subjectTouched$ | async) {
       @if (subjectMissing$ | async) {
@@ -90,11 +95,13 @@
   <div class="form-field">
     <label>Nachricht</label>
     <div class="editor-wrapper">
-      <quill-editor theme="bubble"
-                    placeholder=""
-                    style="display: block; height: 400px"
-                    [modules]="quillModules"
-                    (onContentChanged)="updateMessage($event)">
+      <quill-editor
+        theme="bubble"
+        placeholder=""
+        style="display: block; height: 400px"
+        [modules]="quillModules"
+        (onContentChanged)="updateMessage($event)"
+      >
       </quill-editor>
     </div>
     <app-note>Selektieren Sie Text in Ihrer Nachricht, um ihn zu formatieren.</app-note>
@@ -113,10 +120,10 @@
 
 <div class="notes">
   <p>
-    Ihre Eingaben werden verschlüsselt übertragen.
-    Wir verwenden Ihre Daten ausschließlich zur Bearbeitung der Anfrage.
-    Weitere Informationen finden Sie in unserer <a href="/legal/privacy-policy" target="_blank">Datenschutzerklärung</a>.
-    Wenn Sie auf „Absenden“ klicken, stimmen Sie der Verarbeitung Ihrer Daten zu.
+    Ihre Eingaben werden verschlüsselt übertragen. Wir verwenden Ihre Daten ausschließlich zur Bearbeitung der Anfrage.
+    Weitere Informationen finden Sie in unserer
+    <a href="/legal/privacy-policy" target="_blank">Datenschutzerklärung</a>. Wenn Sie auf „Absenden“ klicken, stimmen
+    Sie der Verarbeitung Ihrer Daten zu.
   </p>
 </div>
 
@@ -124,9 +131,9 @@
   <app-button color="primary" (click)="submit()" [disabled]="cannotSubmit$ | async">
     @if (submitting$ | async) {
       <span class="loading-button-text">
-            <app-loading-spinner size="16"></app-loading-spinner>
-            <span>Wird gesendet...</span>
-          </span>
+        <app-loading-spinner size="16"></app-loading-spinner>
+        <span>Wird gesendet...</span>
+      </span>
     } @else {
       Absenden
     }

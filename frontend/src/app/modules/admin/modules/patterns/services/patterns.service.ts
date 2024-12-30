@@ -1,10 +1,10 @@
-import {Injectable, OnDestroy} from "@angular/core";
-import {filter, map, Observable, Subject, takeUntil} from "rxjs";
-import {Currency, Money} from "../../../../../util";
-import {SSE} from "sse.js";
-import {HttpClient} from "@angular/common/http";
-import {AdminAuthService} from "../../../services";
-import {environment} from "../../../../../../environments";
+import { Injectable, OnDestroy } from '@angular/core';
+import { filter, map, Observable, Subject, takeUntil } from 'rxjs';
+import { Currency, Money } from '../../../../../util';
+import { SSE } from 'sse.js';
+import { HttpClient } from '@angular/common/http';
+import { AdminAuthService } from '../../../services';
+import { environment } from '../../../../../../environments';
 import {
   Pattern,
   PatternAttribution,
@@ -13,8 +13,8 @@ import {
   PatternId,
   PatternVariant,
   PricedSizeRange,
-} from "../model";
-import {none, Option, some, someOrNone,} from "../../../../shared/modules/option";
+} from '../model';
+import { none, Option, some, someOrNone } from '../../../../shared/modules/option';
 
 interface PatternDTO {
   id: string;
@@ -139,8 +139,7 @@ interface PatternChangeDTO {
 
 @Injectable()
 export class PatternsService implements OnDestroy {
-  private readonly events$: Subject<PatternChangeDTO> =
-    new Subject<PatternChangeDTO>();
+  private readonly events$: Subject<PatternChangeDTO> = new Subject<PatternChangeDTO>();
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   private sse: Option<SSE> = none();
@@ -149,12 +148,8 @@ export class PatternsService implements OnDestroy {
     private readonly http: HttpClient,
     private readonly authService: AdminAuthService,
   ) {
-    const loggedOut$ = this.authService
-      .getToken()
-      .pipe(filter((token) => token.isNone()));
-    loggedOut$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.closeEventStream());
+    const loggedOut$ = this.authService.getToken().pipe(filter((token) => token.isNone()));
+    loggedOut$.pipe(takeUntil(this.destroy$)).subscribe(() => this.closeEventStream());
   }
 
   ngOnDestroy(): void {
@@ -170,7 +165,7 @@ export class PatternsService implements OnDestroy {
     this.makeSureEventStreamIsOpen();
 
     return this.events$.pipe(
-      filter((event) => event.type !== "CREATED"),
+      filter((event) => event.type !== 'CREATED'),
       map((event) => new Set<PatternId>(event.affected)),
     );
   }
@@ -187,7 +182,7 @@ export class PatternsService implements OnDestroy {
     skip?: number;
     limit?: number;
   }): Observable<Pattern[]> {
-    const searchTerm = someOrNone(props.searchTerm).orElse("");
+    const searchTerm = someOrNone(props.searchTerm).orElse('');
     const categories = someOrNone(props.categories).orElse([]);
     const skip = someOrNone(props.skip).orElse(0);
     const limit = someOrNone(props.limit).orElse(100);
@@ -201,11 +196,7 @@ export class PatternsService implements OnDestroy {
 
     return this.http
       .post<QueryPatternsResponse>(`${environment.apiUrl}/patterns`, request)
-      .pipe(
-        map((response) =>
-          response.patterns.map((p) => this.toInternalPattern(p)),
-        ),
-      );
+      .pipe(map((response) => response.patterns.map((p) => this.toInternalPattern(p))));
   }
 
   createPattern(props: {
@@ -233,114 +224,62 @@ export class PatternsService implements OnDestroy {
     });
 
     return this.http
-      .post<CreatePatternResponse>(
-        `${environment.apiUrl}/patterns/create`,
-        request,
-      )
+      .post<CreatePatternResponse>(`${environment.apiUrl}/patterns/create`, request)
       .pipe(map((response) => response.id));
   }
 
-  renamePattern(
-    id: PatternId,
-    version: number,
-    name: string,
-  ): Observable<void> {
-    const request: RenamePatternRequest = {version, name};
+  renamePattern(id: PatternId, version: number, name: string): Observable<void> {
+    const request: RenamePatternRequest = { version, name };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/rename`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/rename`, request);
   }
 
   updatePatternNumber(id: PatternId, version: number, number: string): Observable<void> {
-    const request: UpdatePatternNumberRequest = {version, number};
+    const request: UpdatePatternNumberRequest = { version, number };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/update/number`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/number`, request);
   }
 
-  updateImages(
-    id: PatternId,
-    version: number,
-    images: string[],
-  ): Observable<void> {
-    const request: UpdateImagesRequest = {version, images};
+  updateImages(id: PatternId, version: number, images: string[]): Observable<void> {
+    const request: UpdateImagesRequest = { version, images };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/update/images`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/images`, request);
   }
 
-  updateAttribution(
-    id: PatternId,
-    version: number,
-    attribution: PatternAttribution,
-  ): Observable<void> {
+  updateAttribution(id: PatternId, version: number, attribution: PatternAttribution): Observable<void> {
     const request: UpdateAttributionRequest = {
       version,
       attribution: this.toApiAttribution(attribution),
     };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/update/attribution`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/attribution`, request);
   }
 
-  updateCategories(
-    id: PatternId,
-    version: number,
-    categories: PatternCategoryId[],
-  ): Observable<void> {
-    const request: UpdateCategoriesRequest = {version, categories};
+  updateCategories(id: PatternId, version: number, categories: PatternCategoryId[]): Observable<void> {
+    const request: UpdateCategoriesRequest = { version, categories };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/update/categories`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/categories`, request);
   }
 
-  updateVariants(
-    id: PatternId,
-    version: number,
-    variants: PatternVariant[],
-  ): Observable<void> {
+  updateVariants(id: PatternId, version: number, variants: PatternVariant[]): Observable<void> {
     const request: UpdateVariantsRequest = {
       version,
       variants: variants.map((variant) => this.toApiVariant(variant)),
     };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/update/variants`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/variants`, request);
   }
 
-  updateExtras(
-    id: PatternId,
-    version: number,
-    extras: PatternExtra[],
-  ): Observable<void> {
+  updateExtras(id: PatternId, version: number, extras: PatternExtra[]): Observable<void> {
     const request: UpdateExtrasRequest = {
       version,
       extras: extras.map((extra) => this.toApiExtra(extra)),
     };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/update/extras`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/extras`, request);
   }
 
-  updateDescription(
-    id: PatternId,
-    version: number,
-    description?: string | null,
-  ): Observable<void> {
+  updateDescription(id: PatternId, version: number, description?: string | null): Observable<void> {
     const request: UpdateDescriptionRequest = {
       version,
     };
@@ -349,10 +288,7 @@ export class PatternsService implements OnDestroy {
       request.description = value;
     });
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/update/description`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/description`, request);
   }
 
   publishPattern(id: PatternId, version: number): Observable<void> {
@@ -360,7 +296,7 @@ export class PatternsService implements OnDestroy {
       `${environment.apiUrl}/patterns/${id}/publish`,
       {},
       {
-        params: {version: version.toString()},
+        params: { version: version.toString() },
       },
     );
   }
@@ -370,14 +306,14 @@ export class PatternsService implements OnDestroy {
       `${environment.apiUrl}/patterns/${id}/unpublish`,
       {},
       {
-        params: {version: version.toString()},
+        params: { version: version.toString() },
       },
     );
   }
 
   deletePattern(id: string, version: number): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/patterns/${id}`, {
-      params: {version: version.toString()},
+      params: { version: version.toString() },
     });
   }
 
@@ -391,7 +327,7 @@ export class PatternsService implements OnDestroy {
     const token = this.authService.getCurrentToken().orElseThrow();
 
     const sse = new SSE(`${environment.apiUrl}/patterns/changes`, {
-      headers: {Authorization: `Bearer ${token}`},
+      headers: { Authorization: `Bearer ${token}` },
     });
     sse.onmessage = (event) => {
       const change = JSON.parse(event.data);
@@ -419,17 +355,13 @@ export class PatternsService implements OnDestroy {
       attribution: this.toInternalAttribution(pattern.attribution),
       categories: new Set<PatternCategoryId>(pattern.categories),
       images: pattern.images,
-      variants: pattern.variants.map((variant) =>
-        this.toInternalVariant(variant),
-      ),
+      variants: pattern.variants.map((variant) => this.toInternalVariant(variant)),
       extras: pattern.extras.map((extra) => this.toInternalExtra(extra)),
       createdAt: new Date(pattern.createdAt),
     });
   }
 
-  private toInternalAttribution(
-    attribution: PatternAttributionDTO,
-  ): PatternAttribution {
+  private toInternalAttribution(attribution: PatternAttributionDTO): PatternAttribution {
     return PatternAttribution.of({
       originalPatternName: attribution.originalPatternName,
       designer: attribution.designer,
@@ -437,9 +369,7 @@ export class PatternsService implements OnDestroy {
   }
 
   private toInternalVariant(variant: PatternVariantDTO): PatternVariant {
-    const sizes = variant.pricedSizeRanges.map((range) =>
-      this.toInternalPricedSizeRange(range),
-    );
+    const sizes = variant.pricedSizeRanges.map((range) => this.toInternalPricedSizeRange(range));
     sizes.sort((a, b) => a.from - b.from);
 
     return PatternVariant.of({
@@ -448,9 +378,7 @@ export class PatternsService implements OnDestroy {
     });
   }
 
-  private toInternalPricedSizeRange(
-    range: PricedSizeRangeDTO,
-  ): PricedSizeRange {
+  private toInternalPricedSizeRange(range: PricedSizeRangeDTO): PricedSizeRange {
     return PricedSizeRange.of({
       from: range.from,
       to: range.to,
@@ -468,7 +396,7 @@ export class PatternsService implements OnDestroy {
 
   private toInternalCurrency(currency: string): Currency {
     switch (currency) {
-      case "EUR":
+      case 'EUR':
         return Currency.euro();
       default:
         throw new Error(`Unknown currency: ${currency}`);
@@ -482,14 +410,10 @@ export class PatternsService implements OnDestroy {
     });
   }
 
-  private toApiAttribution(
-    attribution: PatternAttribution,
-  ): PatternAttributionDTO {
+  private toApiAttribution(attribution: PatternAttribution): PatternAttributionDTO {
     const result: PatternAttributionDTO = {};
 
-    attribution.originalPatternName.ifSome(
-      (value) => (result.originalPatternName = value),
-    );
+    attribution.originalPatternName.ifSome((value) => (result.originalPatternName = value));
     attribution.designer.ifSome((value) => (result.designer = value));
 
     return result;
@@ -498,9 +422,7 @@ export class PatternsService implements OnDestroy {
   private toApiVariant(variant: PatternVariant): PatternVariantDTO {
     return {
       name: variant.name,
-      pricedSizeRanges: variant.sizes.map((range) =>
-        this.toApiPricedSizeRange(range),
-      ),
+      pricedSizeRanges: variant.sizes.map((range) => this.toApiPricedSizeRange(range)),
     };
   }
 
@@ -522,7 +444,7 @@ export class PatternsService implements OnDestroy {
 
   private toApiCurrency(currency: Currency): string {
     if (currency.equals(Currency.euro())) {
-      return "EUR";
+      return 'EUR';
     }
 
     throw new Error(`Unknown currency: ${currency}`);
@@ -534,5 +456,4 @@ export class PatternsService implements OnDestroy {
       price: this.toApiMoney(extra.price),
     };
   }
-
 }

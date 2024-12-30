@@ -15,16 +15,13 @@ interface UseCredentialsResponse {
 
 @Injectable()
 export class AdminAuthService implements OnDestroy {
-  private readonly token$: BehaviorSubject<Option<string>> =
-    new BehaviorSubject<Option<string>>(none());
+  private readonly token$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(private readonly http: HttpClient) {
     this.tryToRestoreToken();
 
-    this.token$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((token) => this.updateTokenInStorage(token));
+    this.token$.pipe(takeUntil(this.destroy$)).subscribe((token) => this.updateTokenInStorage(token));
   }
 
   ngOnDestroy(): void {
@@ -53,17 +50,12 @@ export class AdminAuthService implements OnDestroy {
   login(username: string, password: string): Observable<boolean> {
     const request: UseCredentialsRequest = { name: username, password };
 
-    return this.http
-      .post<UseCredentialsResponse>(
-        `${environment.apiUrl}/credentials/use`,
-        request,
-      )
-      .pipe(
-        map((response) => {
-          this.token$.next(some(response.token));
-          return true;
-        }),
-      );
+    return this.http.post<UseCredentialsResponse>(`${environment.apiUrl}/credentials/use`, request).pipe(
+      map((response) => {
+        this.token$.next(some(response.token));
+        return true;
+      }),
+    );
   }
 
   private tryToRestoreToken(): void {

@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -18,12 +11,7 @@ import {
   takeUntil,
   tap,
 } from 'rxjs';
-import {
-  CardListItem,
-  Filter,
-  FilterSelectionMode,
-  SortingOption,
-} from '../../../../../shared';
+import { CardListItem, Filter, FilterSelectionMode, SortingOption } from '../../../../../shared';
 import { Color, Fabric, Theme } from '../../model';
 import { RemoteFabricsService } from '../../services';
 import { none, Option, some } from '../../../../../shared/modules/option';
@@ -70,9 +58,7 @@ export class FabricsFilter {
 
   equals(other: FabricsFilter): boolean {
     return (
-      this.colorIds.equals(other.colorIds) &&
-      this.themeIds.equals(other.themeIds) &&
-      this.inStock.equals(other.inStock)
+      this.colorIds.equals(other.colorIds) && this.themeIds.equals(other.themeIds) && this.inStock.equals(other.inStock)
     );
   }
 }
@@ -89,32 +75,22 @@ export class FabricsPage implements OnInit, OnDestroy {
   @ViewChild('colorItemTemplate')
   private readonly colorItemTemplate!: TemplateRef<any>;
 
-  private readonly availableThemes$: BehaviorSubject<Set<Theme>> =
-    new BehaviorSubject<Set<Theme>>(new Set<Theme>());
-  private readonly availableColors$: BehaviorSubject<Set<Color>> =
-    new BehaviorSubject<Set<Color>>(new Set<Color>());
-  private readonly activeFilters$: BehaviorSubject<FabricsFilter> =
-    new BehaviorSubject<FabricsFilter>(FabricsFilter.empty());
-  private readonly sorting$: BehaviorSubject<Sorting> =
-    new BehaviorSubject<Sorting>({
-      property: 'name',
-      ascending: true,
-    });
-  private readonly fabrics$: BehaviorSubject<Fabric[]> = new BehaviorSubject<
-    Fabric[]
-  >([]);
-  private readonly loadingFabrics$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
-  protected readonly items$: Subject<CardListItem[]> = new ReplaySubject<
-    CardListItem[]
-  >(1);
+  private readonly availableThemes$: BehaviorSubject<Set<Theme>> = new BehaviorSubject<Set<Theme>>(new Set<Theme>());
+  private readonly availableColors$: BehaviorSubject<Set<Color>> = new BehaviorSubject<Set<Color>>(new Set<Color>());
+  private readonly activeFilters$: BehaviorSubject<FabricsFilter> = new BehaviorSubject<FabricsFilter>(
+    FabricsFilter.empty(),
+  );
+  private readonly sorting$: BehaviorSubject<Sorting> = new BehaviorSubject<Sorting>({
+    property: 'name',
+    ascending: true,
+  });
+  private readonly fabrics$: BehaviorSubject<Fabric[]> = new BehaviorSubject<Fabric[]>([]);
+  private readonly loadingFabrics$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  protected readonly items$: Subject<CardListItem[]> = new ReplaySubject<CardListItem[]>(1);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
-  protected readonly loading$: Observable<boolean> =
-    this.loadingFabrics$.asObservable();
-  protected readonly notLoading$: Observable<boolean> = this.loading$.pipe(
-    map((loading) => !loading),
-  );
+  protected readonly loading$: Observable<boolean> = this.loadingFabrics$.asObservable();
+  protected readonly notLoading$: Observable<boolean> = this.loading$.pipe(map((loading) => !loading));
   protected readonly filters$: Observable<Filter[]> = combineLatest([
     this.availableThemes$,
     this.availableColors$,
@@ -206,12 +182,7 @@ export class FabricsPage implements OnInit, OnDestroy {
   onScroll(): void {
     const skip = this.fabrics$.value.length;
 
-    this.loadFabrics(
-      this.activeFilters$.value,
-      this.sorting$.value,
-      skip,
-      FABRICS_LIMIT,
-    )
+    this.loadFabrics(this.activeFilters$.value, this.sorting$.value, skip, FABRICS_LIMIT)
       .pipe(takeUntil(this.destroy$))
       .subscribe((fabrics) => {
         const currentFabrics = this.fabrics$.value;
@@ -222,9 +193,7 @@ export class FabricsPage implements OnInit, OnDestroy {
   protected updateFilters(filters: Filter[]): void {
     const themeFilter = filters.find((filter) => filter.id === 'theme');
     const colorFilter = filters.find((filter) => filter.id === 'color');
-    const availabilityFilter = filters.find(
-      (filter) => filter.id === 'availability',
-    );
+    const availabilityFilter = filters.find((filter) => filter.id === 'availability');
 
     const themeIds: Option<Set<string>> = themeFilter?.isActive()
       ? some(new Set<string>(themeFilter.getSelected()))
@@ -293,12 +262,7 @@ export class FabricsPage implements OnInit, OnDestroy {
       .subscribe((fabrics) => this.fabrics$.next(fabrics));
   }
 
-  private loadFabrics(
-    filters: FabricsFilter,
-    sorting: Sorting,
-    skip: number,
-    limit: number,
-  ): Observable<Fabric[]> {
+  private loadFabrics(filters: FabricsFilter, sorting: Sorting, skip: number, limit: number): Observable<Fabric[]> {
     this.loadingFabrics$.next(true);
 
     return this.fabricsService

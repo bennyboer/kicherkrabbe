@@ -42,11 +42,7 @@ class FilterDropdownItem implements DropdownItem {
   readonly label: string;
   readonly content: any;
 
-  private constructor(props: {
-    id: FilterItemId;
-    label: string;
-    content: any;
-  }) {
+  private constructor(props: { id: FilterItemId; label: string; content: any }) {
     this.id = props.id;
     this.label = props.label;
     this.content = props.content;
@@ -150,9 +146,7 @@ export class Filter implements Eq<Filter> {
       return item.id === otherItem.id;
     });
 
-    const selectedEqual = this.getSelected().every((id) =>
-      other.isSelected(id),
-    );
+    const selectedEqual = this.getSelected().every((id) => other.isSelected(id));
 
     return itemsEqual && selectedEqual;
   }
@@ -191,24 +185,14 @@ export class SortingOption {
   readonly ascendingLabel: string;
   readonly descendingLabel: string;
 
-  private constructor(props: {
-    id: string;
-    label: string;
-    ascendingLabel: string;
-    descendingLabel: string;
-  }) {
+  private constructor(props: { id: string; label: string; ascendingLabel: string; descendingLabel: string }) {
     this.id = props.id;
     this.label = props.label;
     this.ascendingLabel = props.ascendingLabel;
     this.descendingLabel = props.descendingLabel;
   }
 
-  static of(props: {
-    id: string;
-    label: string;
-    ascendingLabel: string;
-    descendingLabel: string;
-  }): SortingOption {
+  static of(props: { id: string; label: string; ascendingLabel: string; descendingLabel: string }): SortingOption {
     return new SortingOption({
       id: props.id,
       label: props.label,
@@ -279,20 +263,14 @@ export class FilterSortBarComponent implements OnInit, OnDestroy {
   sorted: EventEmitter<SortEvent> = new EventEmitter<SortEvent>();
 
   private readonly filters$: Subject<Filter[]> = new ReplaySubject<Filter[]>(1);
-  private readonly sortingOptions$: Subject<SortingOption[]> =
-    new ReplaySubject<SortingOption[]>(1);
-  private readonly sortBy$: Subject<SortingOptionId> =
-    new ReplaySubject<SortingOptionId>(1);
-  private readonly ascending$: Subject<boolean> = new BehaviorSubject<boolean>(
-    true,
-  );
+  private readonly sortingOptions$: Subject<SortingOption[]> = new ReplaySubject<SortingOption[]>(1);
+  private readonly sortBy$: Subject<SortingOptionId> = new ReplaySubject<SortingOptionId>(1);
+  private readonly ascending$: Subject<boolean> = new BehaviorSubject<boolean>(true);
   private readonly filtersChanged$: Subject<void> = new Subject<void>();
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   ngOnInit(): void {
-    this.filtersChanged$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.emitFilteredEvent());
+    this.filtersChanged$.pipe(takeUntil(this.destroy$)).subscribe(() => this.emitFilteredEvent());
 
     combineLatest([this.sortBy$, this.ascending$])
       .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
@@ -326,26 +304,19 @@ export class FilterSortBarComponent implements OnInit, OnDestroy {
     return items.map((item) => this.filterToDropdownItem(item));
   }
 
-  protected updateFilterDropdownItemsSelection(
-    filter: Filter,
-    dropdownItemIds: DropdownItemId[],
-  ): void {
+  protected updateFilterDropdownItemsSelection(filter: Filter, dropdownItemIds: DropdownItemId[]): void {
     const filterItemIds = dropdownItemIds.map((id) => id as FilterItemId);
     filter.setSelected(filterItemIds);
 
     this.filtersChanged$.next();
   }
 
-  protected updateSortingOptionDropdownItemSelection(
-    dropdownItemIds: DropdownItemId[],
-  ): void {
+  protected updateSortingOptionDropdownItemSelection(dropdownItemIds: DropdownItemId[]): void {
     const selectedSortingOptionId = dropdownItemIds[0] as SortingOptionId;
     this.sortBy$.next(selectedSortingOptionId);
   }
 
-  protected updateSortDirectionDropdownItemSelection(
-    dropdownItemIds: DropdownItemId[],
-  ): void {
+  protected updateSortDirectionDropdownItemSelection(dropdownItemIds: DropdownItemId[]): void {
     const selectedSortDirection = dropdownItemIds[0];
     const isAscending = selectedSortDirection === 'ascending';
     this.ascending$.next(isAscending);
@@ -355,9 +326,7 @@ export class FilterSortBarComponent implements OnInit, OnDestroy {
     combineLatest([this.sortingOptions$, this.sortBy$, this.ascending$])
       .pipe(take(1))
       .subscribe(([sortingOptions, selectedSortingOptionId, ascending]) => {
-        const selectedSortingOption = sortingOptions.find(
-          (option) => option.id === selectedSortingOptionId,
-        );
+        const selectedSortingOption = sortingOptions.find((option) => option.id === selectedSortingOptionId);
 
         if (!!selectedSortingOption) {
           this.sorted.emit(
@@ -372,9 +341,7 @@ export class FilterSortBarComponent implements OnInit, OnDestroy {
 
   private emitFilteredEvent(): void {
     this.filters$.pipe(take(1)).subscribe((filters) => {
-      const activeFilters = filters
-        .filter((filter) => filter.isActive())
-        .map((filter) => filter.clone());
+      const activeFilters = filters.filter((filter) => filter.isActive()).map((filter) => filter.clone());
       this.filtered.emit(FilterEvent.of({ filters: activeFilters }));
     });
   }
@@ -383,23 +350,15 @@ export class FilterSortBarComponent implements OnInit, OnDestroy {
     return FilterDropdownItem.fromFilterItem(item);
   }
 
-  protected sortingOptionsToDropdownItems(
-    sortingOptions: SortingOption[],
-  ): DropdownItem[] {
-    return sortingOptions.map((sortingOption) =>
-      this.sortingOptionToDropdownItem(sortingOption),
-    );
+  protected sortingOptionsToDropdownItems(sortingOptions: SortingOption[]): DropdownItem[] {
+    return sortingOptions.map((sortingOption) => this.sortingOptionToDropdownItem(sortingOption));
   }
 
-  private sortingOptionToDropdownItem(
-    sortingOption: SortingOption,
-  ): DropdownItem {
+  private sortingOptionToDropdownItem(sortingOption: SortingOption): DropdownItem {
     return SortingOptionDropdownItem.fromSortingOption(sortingOption);
   }
 
-  protected sortDirectionToDropdownItems(
-    selectedSortingOption: SortingOption,
-  ): DropdownItem[] {
+  protected sortDirectionToDropdownItems(selectedSortingOption: SortingOption): DropdownItem[] {
     return [
       {
         id: 'ascending',
@@ -412,13 +371,9 @@ export class FilterSortBarComponent implements OnInit, OnDestroy {
     ];
   }
 
-  protected getSortingOption(
-    selectedSortingOption: SortingOptionId,
-  ): Observable<SortingOption> {
+  protected getSortingOption(selectedSortingOption: SortingOptionId): Observable<SortingOption> {
     return this.sortingOptions$.pipe(
-      map((sortingOptions) =>
-        sortingOptions.find((option) => option.id === selectedSortingOption),
-      ),
+      map((sortingOptions) => sortingOptions.find((option) => option.id === selectedSortingOption)),
       filter((option) => !!option),
       map((option) => option as SortingOption),
     );

@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  TemplateRef,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, TemplateRef } from '@angular/core';
 import { none, Option, someOrNone } from '../../modules/option';
 
 export class CardListItem {
@@ -23,9 +18,7 @@ export class CardListItem {
     this.title = someOrNone(props.title).orElseThrow('Title is required');
     this.description = props.description;
     this.link = someOrNone(props.link).orElseThrow('Link is required');
-    this.imageUrl = someOrNone(props.imageUrl).orElseThrow(
-      'Image URL is required',
-    );
+    this.imageUrl = someOrNone(props.imageUrl).orElseThrow('Image URL is required');
     this.content = props.content;
   }
 

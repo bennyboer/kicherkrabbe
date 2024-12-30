@@ -9,10 +9,10 @@ import { BehaviorSubject, map, Observable } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent implements OnDestroy {
-  private readonly showHiddenThingsCounter$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
-  protected readonly showHiddenThings$: Observable<boolean> =
-    this.showHiddenThingsCounter$.pipe(map((counter) => counter > 10));
+  private readonly showHiddenThingsCounter$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  protected readonly showHiddenThings$: Observable<boolean> = this.showHiddenThingsCounter$.pipe(
+    map((counter) => counter > 10),
+  );
 
   constructor(private readonly themeService: ThemeService) {}
 
@@ -21,15 +21,11 @@ export class FooterComponent implements OnDestroy {
   }
 
   isDarkMode(): Observable<boolean> {
-    return this.themeService
-      .getTheme()
-      .pipe(map((theme) => theme === Theme.DARK));
+    return this.themeService.getTheme().pipe(map((theme) => theme === Theme.DARK));
   }
 
   isLightMode(): Observable<boolean> {
-    return this.themeService
-      .getTheme()
-      .pipe(map((theme) => theme === Theme.LIGHT));
+    return this.themeService.getTheme().pipe(map((theme) => theme === Theme.LIGHT));
   }
 
   incrementShowHiddenThingsCounter(): void {

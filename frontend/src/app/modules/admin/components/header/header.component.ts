@@ -1,24 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  filter,
-  map,
-  Observable,
-  startWith,
-  Subject,
-  takeUntil,
-} from 'rxjs';
-import {
-  DropdownComponent,
-  DropdownItem,
-  DropdownItemId,
-} from '../../../shared';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { BehaviorSubject, filter, map, Observable, startWith, Subject, takeUntil } from 'rxjs';
+import { DropdownComponent, DropdownItem, DropdownItemId } from '../../../shared';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { validateProps } from '../../../../util';
 import { AdminAuthService } from '../../services';
@@ -93,6 +75,11 @@ const NOTIFICATIONS = ManagementItem.of({
   route: 'notifications',
 });
 
+const TELEGRAM = ManagementItem.of({
+  label: 'Telegram',
+  route: 'telegram',
+});
+
 const ESSENTIAL_MANAGEMENT_ITEMS = [
   TOPICS,
   FABRIC_TYPES,
@@ -103,6 +90,7 @@ const ESSENTIAL_MANAGEMENT_ITEMS = [
   MAILBOX,
   INQUIRIES,
   NOTIFICATIONS,
+  TELEGRAM,
 ].sort((a, b) => a.label.localeCompare(b.label));
 const MANAGEMENT_ITEMS = [DASHBOARD, ...ESSENTIAL_MANAGEMENT_ITEMS];
 
@@ -116,10 +104,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @ViewChild('dropdown')
   protected dropdown!: DropdownComponent;
 
-  private readonly managementItems$: BehaviorSubject<ManagementItem[]> =
-    new BehaviorSubject<ManagementItem[]>(MANAGEMENT_ITEMS);
-  private readonly selectedManagementItem$: BehaviorSubject<ManagementItem> =
-    new BehaviorSubject<ManagementItem>(DASHBOARD);
+  private readonly managementItems$: BehaviorSubject<ManagementItem[]> = new BehaviorSubject<ManagementItem[]>(
+    MANAGEMENT_ITEMS,
+  );
+  private readonly selectedManagementItem$: BehaviorSubject<ManagementItem> = new BehaviorSubject<ManagementItem>(
+    DASHBOARD,
+  );
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -137,9 +127,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
 
     route$.pipe(takeUntil(this.destroy$)).subscribe((route) => {
-      someOrNone(
-        this.managementItems$.value.find((item) => item.route === route),
-      ).ifSome((item) => this.selectedManagementItem$.next(item));
+      someOrNone(this.managementItems$.value.find((item) => item.route === route)).ifSome((item) =>
+        this.selectedManagementItem$.next(item),
+      );
     });
   }
 

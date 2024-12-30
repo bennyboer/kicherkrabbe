@@ -7,9 +7,7 @@ export class Currency implements Eq<Currency> {
 
   private constructor(props: { name: string; symbol: string }) {
     this.name = someOrNone(props.name).orElseThrow('Currency name is required');
-    this.symbol = someOrNone(props.symbol).orElseThrow(
-      'Currency short form is required',
-    );
+    this.symbol = someOrNone(props.symbol).orElseThrow('Currency short form is required');
   }
 
   static of(props: { name: string; symbol: string }): Currency {

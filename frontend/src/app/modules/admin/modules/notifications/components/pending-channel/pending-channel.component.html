@@ -7,13 +7,15 @@
 @if (channel.type == EMAIL) {
   <div class="field">
     <label for="mail">E-Mail Adresse</label>
-    <input #mail
-           type="email"
-           id="mail"
-           name="mail"
-           [value]="channel.mail.orElseThrow()"
-           [class.error]="mailInvalidAndTouched$ | async"
-           (input)="updateMail(mail.value, mail.checkValidity())">
+    <input
+      #mail
+      type="email"
+      id="mail"
+      name="mail"
+      [value]="channel.mail.orElseThrow()"
+      [class.error]="mailInvalidAndTouched$ | async"
+      (input)="updateMail(mail.value, mail.checkValidity())"
+    />
     <app-button color="primary" [disabled]="mailInvalid$ | async" (click)="finishEmail()">Fertig</app-button>
     <app-button (click)="cancel()">Abbrechen</app-button>
   </div>
@@ -29,12 +31,14 @@
 } @else if (channel.type == TELEGRAM) {
   <div class="field">
     <label for="telegramChatId">Telegram Chat ID</label>
-    <input #telegramChatId
-           type="text"
-           id="telegramChatId"
-           name="telegramChatId"
-           [value]="channel.telegram.orElseThrow().chatId"
-           (input)="updateTelegramChatId(telegramChatId.value)">
+    <input
+      #telegramChatId
+      type="text"
+      id="telegramChatId"
+      name="telegramChatId"
+      [value]="channel.telegram.orElseThrow().chatId"
+      (input)="updateTelegramChatId(telegramChatId.value)"
+    />
     <app-button color="primary" [disabled]="telegramChatIdInvalid$ | async" (click)="finishTelegram()">
       Fertig
     </app-button>

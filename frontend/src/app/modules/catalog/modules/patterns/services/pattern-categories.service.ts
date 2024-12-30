@@ -18,19 +18,15 @@ export class PatternCategoriesService {
   constructor(private readonly http: HttpClient) {}
 
   getCategories(): Observable<Category[]> {
-    return this.http
-      .get<QueryCategoriesResponse>(
-        `${environment.apiUrl}/patterns/categories/used`,
-      )
-      .pipe(
-        map((response) =>
-          response.categories.map((category) =>
-            Category.of({
-              id: category.id,
-              name: category.name,
-            }),
-          ),
+    return this.http.get<QueryCategoriesResponse>(`${environment.apiUrl}/patterns/categories/used`).pipe(
+      map((response) =>
+        response.categories.map((category) =>
+          Category.of({
+            id: category.id,
+            name: category.name,
+          }),
         ),
-      );
+      ),
+    );
   }
 }

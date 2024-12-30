@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
@@ -18,13 +13,7 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
-import {
-  CardListItem,
-  Filter,
-  FilterSelectionMode,
-  NotificationService,
-  SortingOption,
-} from '../../../../../shared';
+import { CardListItem, Filter, FilterSelectionMode, NotificationService, SortingOption } from '../../../../../shared';
 import { Category, ImageId, Pattern } from '../../model';
 import { PatternCategoriesService, PatternsService } from '../../services';
 import { environment } from '../../../../../../../environments';
@@ -49,9 +38,7 @@ class Sorting implements Eq<Sorting> {
   }
 
   equals(other: Sorting): boolean {
-    return (
-      this.property === other.property && this.ascending === other.ascending
-    );
+    return this.property === other.property && this.ascending === other.ascending;
   }
 }
 
@@ -62,32 +49,19 @@ class Sorting implements Eq<Sorting> {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PatternsPage implements OnInit, OnDestroy {
-  protected readonly patterns$: BehaviorSubject<Pattern[]> =
-    new BehaviorSubject<Pattern[]>([]);
-  protected readonly patternsLoading$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
+  protected readonly patterns$: BehaviorSubject<Pattern[]> = new BehaviorSubject<Pattern[]>([]);
+  protected readonly patternsLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-  protected readonly categories$: BehaviorSubject<Category[]> =
-    new BehaviorSubject<Category[]>([]);
-  protected readonly categoriesLoading$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
+  protected readonly categories$: BehaviorSubject<Category[]> = new BehaviorSubject<Category[]>([]);
+  protected readonly categoriesLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   protected readonly loading$: Observable<boolean> = combineLatest([
     this.patternsLoading$,
     this.categoriesLoading$,
-  ]).pipe(
-    map(
-      ([patternsLoading, categoriesLoading]) =>
-        patternsLoading || categoriesLoading,
-    ),
-  );
-  protected readonly notLoading$: Observable<boolean> = this.loading$.pipe(
-    map((loading) => !loading),
-  );
+  ]).pipe(map(([patternsLoading, categoriesLoading]) => patternsLoading || categoriesLoading));
+  protected readonly notLoading$: Observable<boolean> = this.loading$.pipe(map((loading) => !loading));
   protected readonly items$: Observable<CardListItem[]> = this.patterns$.pipe(
-    map((patterns) =>
-      patterns.map((pattern) => this.mapPatternToItem(pattern)),
-    ),
+    map((patterns) => patterns.map((pattern) => this.mapPatternToItem(pattern))),
   );
 
   private readonly filterSizeRange = {
@@ -135,15 +109,13 @@ export class PatternsPage implements OnInit, OnDestroy {
     }),
   );
 
-  private readonly activeFilters$: BehaviorSubject<Filter[]> =
-    new BehaviorSubject<Filter[]>([]);
-  private readonly sorting$: BehaviorSubject<Sorting> =
-    new BehaviorSubject<Sorting>(
-      Sorting.of({
-        property: 'name',
-        ascending: true,
-      }),
-    );
+  private readonly activeFilters$: BehaviorSubject<Filter[]> = new BehaviorSubject<Filter[]>([]);
+  private readonly sorting$: BehaviorSubject<Sorting> = new BehaviorSubject<Sorting>(
+    Sorting.of({
+      property: 'name',
+      ascending: true,
+    }),
+  );
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -160,8 +132,7 @@ export class PatternsPage implements OnInit, OnDestroy {
         distinctUntilChanged(([sortingA, filtersA], [sortingB, filtersB]) => {
           const sortingEqual = sortingA.equals(sortingB);
           const filtersEqual =
-            filtersA.length === filtersB.length &&
-            filtersA.every((filter, index) => filter.equals(filtersB[index]));
+            filtersA.length === filtersB.length && filtersA.every((filter, index) => filter.equals(filtersB[index]));
 
           return sortingEqual && filtersEqual;
         }),
@@ -216,12 +187,8 @@ export class PatternsPage implements OnInit, OnDestroy {
     const categoriesFilter = filters.find((filter) => filter.id === 'category');
     const sizesFilter = filters.find((filter) => filter.id === 'size');
 
-    const categories: Set<string> = new Set<string>(
-      categoriesFilter?.getSelected(),
-    );
-    const sizes: Set<number> = new Set<number>(
-      sizesFilter?.getSelected().map((size) => parseInt(size, 10)),
-    );
+    const categories: Set<string> = new Set<string>(categoriesFilter?.getSelected());
+    const sizes: Set<number> = new Set<number>(sizesFilter?.getSelected().map((size) => parseInt(size, 10)));
 
     this.patternsService
       .getPatterns({
@@ -235,8 +202,7 @@ export class PatternsPage implements OnInit, OnDestroy {
         catchError((e) => {
           this.notificationService.publish({
             type: 'error',
-            message:
-              'Die Schnitte konnten nicht geladen werden. Bitte versuchen Sie es später erneut.',
+            message: 'Die Schnitte konnten nicht geladen werden. Bitte versuchen Sie es später erneut.',
           });
           return EMPTY;
         }),
@@ -256,8 +222,7 @@ export class PatternsPage implements OnInit, OnDestroy {
         catchError((e) => {
           this.notificationService.publish({
             type: 'error',
-            message:
-              'Die Kategorien konnten nicht geladen werden. Bitte versuchen Sie es später erneut.',
+            message: 'Die Kategorien konnten nicht geladen werden. Bitte versuchen Sie es später erneut.',
           });
           return EMPTY;
         }),

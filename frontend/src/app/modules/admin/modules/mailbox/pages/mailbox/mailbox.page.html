@@ -1,10 +1,12 @@
 <div class="action-bar">
-  <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)"/>
-  <app-dropdown #statusDropdown
-                label="Status"
-                [items]="statusDropdownItems$ | async"
-                [showSelectionIndicator]="true"
-                (selectionChanged)="updateSelectedStatus(statusDropdown, $event)">
+  <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)" />
+  <app-dropdown
+    #statusDropdown
+    label="Status"
+    [items]="statusDropdownItems$ | async"
+    [showSelectionIndicator]="true"
+    (selectionChanged)="updateSelectedStatus(statusDropdown, $event)"
+  >
     <ng-template let-item>
       <span>{{ item.label }}</span>
     </ng-template>
@@ -19,60 +21,53 @@
 
 <app-loading-bar [visible]="loading$ | async"></app-loading-bar>
 
-@if (mailsLoaded$ | async) {
-  @if (mails$ | async; as mails) {
-    @if (mails.length === 0) {
-      <app-note level="info">Keine Mails vorhanden.</app-note>
-    } @else {
-      <p class="results-note">
-        {{ totalMails$ | async }} Mail(s) gefunden
-      </p>
+@if (mailsLoaded$ | async) { @if (mails$ | async; as mails) { @if (mails.length === 0) {
+<app-note level="info">Keine Mails vorhanden.</app-note>
+} @else {
+<p class="results-note">{{ totalMails$ | async }} Mail(s) gefunden</p>
 
-      <table class="mails-table">
-        <colgroup>
-          <col span="1" style="width: 32px">
-          <col span="1" style="width: auto">
-          <col class="sender" span="1" style="width: 200px">
-          <col class="date" span="1" style="width: 140px">
-        </colgroup>
-        <thead>
-        <tr>
-          <th></th>
-          <th class="subject">Betreff</th>
-          <th class="sender">Absender</th>
-          <th class="date">Datum</th>
-        </tr>
-        </thead>
-        <tbody>
-          @for (mail of mails; track mail.id) {
-            <a class="table-row" [routerLink]="mail.id">
-              <td>
-                @if (mail.isUnread()) {
-                  <span class="unread-indicator"></span>
-                }
-              </td>
-              <td class="subject" [class.unread]="mail.isUnread()" [title]="mail.subject">{{ mail.subject }}</td>
-              <td class="sender" title="{{ mail.sender.name }} ({{ mail.sender.mail }})">
-                <div class="sender-details">
-                  <span class="name">{{ mail.sender.name }}</span>
-                  <span class="mail">{{ mail.sender.mail }}</span>
-                </div>
-              </td>
-              <td class="date" [title]="mail.receivedAt | date: 'full'">{{ mail.receivedAt | date: "short" }}</td>
-            </a>
-          }
-        </tbody>
-      </table>
-
-      @if (moreMailsAvailable$ | async) {
-        <div class="footer-actions">
-          <app-button (click)="loadMoreMails()">Mehr laden... ({{ remainingMailsCount$ | async }})</app-button>
+<table class="mails-table">
+  <colgroup>
+    <col span="1" style="width: 32px" />
+    <col span="1" style="width: auto" />
+    <col class="sender" span="1" style="width: 200px" />
+    <col class="date" span="1" style="width: 140px" />
+  </colgroup>
+  <thead>
+    <tr>
+      <th></th>
+      <th class="subject">Betreff</th>
+      <th class="sender">Absender</th>
+      <th class="date">Datum</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (mail of mails; track mail.id) {
+    <a class="table-row" [routerLink]="mail.id">
+      <td>
+        @if (mail.isUnread()) {
+        <span class="unread-indicator"></span>
+        }
+      </td>
+      <td class="subject" [class.unread]="mail.isUnread()" [title]="mail.subject">{{ mail.subject }}</td>
+      <td class="sender" title="{{ mail.sender.name }} ({{ mail.sender.mail }})">
+        <div class="sender-details">
+          <span class="name">{{ mail.sender.name }}</span>
+          <span class="mail">{{ mail.sender.mail }}</span>
         </div>
-      } @else {
-        <div class="footer-actions">
-          <app-note level="info">Keine weiteren Mails vorhanden.</app-note>
-        </div>
-      }
+      </td>
+      <td class="date" [title]="mail.receivedAt | date: 'full'">{{ mail.receivedAt | date: "short" }}</td>
+    </a>
     }
-  }
-}
+  </tbody>
+</table>
+
+@if (moreMailsAvailable$ | async) {
+<div class="footer-actions">
+  <app-button (click)="loadMoreMails()">Mehr laden... ({{ remainingMailsCount$ | async }})</app-button>
+</div>
+} @else {
+<div class="footer-actions">
+  <app-note level="info">Keine weiteren Mails vorhanden.</app-note>
+</div>
+} } } }

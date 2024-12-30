@@ -28,17 +28,10 @@ export class InquiriesService {
   getStatus(): Observable<InquiriesStatus> {
     return this.http
       .get<QueryStatusResponse>(`${environment.apiUrl}/inquiries/status`)
-      .pipe(
-        map((response) => InquiriesStatus.of({ enabled: response.enabled })),
-      );
+      .pipe(map((response) => InquiriesStatus.of({ enabled: response.enabled })));
   }
 
-  send(props: {
-    requestId: string;
-    sender: Sender;
-    subject: string;
-    message: string;
-  }): Observable<void> {
+  send(props: { requestId: string; sender: Sender; subject: string; message: string }): Observable<void> {
     const request: SendInquiryRequest = {
       requestId: props.requestId,
       sender: {
@@ -53,9 +46,6 @@ export class InquiriesService {
       request.sender.phone = phone;
     });
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/inquiries/send`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/inquiries/send`, request);
   }
 }

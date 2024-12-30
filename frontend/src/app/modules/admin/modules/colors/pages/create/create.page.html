@@ -1,28 +1,28 @@
 <h3>Neue Farbe erstellen</h3>
 
 <form class="create-color-form">
-  <hr>
+  <hr />
 
   <div class="form-group color-group">
-    <app-color-picker [size]="128"
-                      [color]="getColorValue() | async"
-                      (colorChanged)="updateColor($event)">
+    <app-color-picker [size]="128" [color]="getColorValue() | async" (colorChanged)="updateColor($event)">
     </app-color-picker>
   </div>
 
   <div class="form-group">
     <label for="name">Name</label>
-    <input #name
-           type="text"
-           id="name"
-           name="name"
-           autofocus
-           required
-           [disabled]="isCreatingColor() | async"
-           (input)="updateName(name.value)">
+    <input
+      #name
+      type="text"
+      id="name"
+      name="name"
+      autofocus
+      required
+      [disabled]="isCreatingColor() | async"
+      (input)="updateName(name.value)"
+    />
   </div>
 
-  <hr>
+  <hr />
 
   <div class="actions">
     <span>
@@ -31,23 +31,18 @@
     <span>
       <app-button [disabled]="cannotCreateColor() | async" (click)="createColor()" color="primary">
         @if (isCreatingColor() | async) {
-          <span class="loading-button-text">
-            <app-loading-spinner size="16"></app-loading-spinner>
-            <span>Erstellt...</span>
-          </span>
-        } @else {
-          Erstellen
-        }
+        <span class="loading-button-text">
+          <app-loading-spinner size="16"></app-loading-spinner>
+          <span>Erstellt...</span>
+        </span>
+        } @else { Erstellen }
       </app-button>
     </span>
   </div>
 
   @if (isFailed() | async) {
-    <app-note level="error">
-      Die Farbe konnte nicht erstellt werden. Bitte versuche es erneut.
-    </app-note>
+  <app-note level="error"> Die Farbe konnte nicht erstellt werden. Bitte versuche es erneut. </app-note>
   }
 
   <button type="submit" [disabled]="cannotCreateColor() | async" class="hidden" (click)="createColor()"></button>
 </form>
-

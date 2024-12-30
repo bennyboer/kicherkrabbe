@@ -17,12 +17,7 @@ import { HttpClient } from '@angular/common/http';
 import { AdminAuthService } from '../../../services';
 import { environment } from '../../../../../../environments';
 import { Color } from '../model';
-import {
-  none,
-  Option,
-  some,
-  someOrNone,
-} from '../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '../../../../shared/modules/option';
 
 interface QueryColorsResponse {
   skip: number;
@@ -64,15 +59,11 @@ interface UpdateColorRequest {
 
 @Injectable()
 export class ColorsService implements OnDestroy {
-  private readonly loadingColors$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly failedLoadingColors$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly loadingColors$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly failedLoadingColors$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly colors$: Subject<Color[]> = new ReplaySubject<Color[]>(1);
-  private readonly events$: Subject<ColorChangeDTO> =
-    new Subject<ColorChangeDTO>();
-  private readonly subscribedToColors$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly events$: Subject<ColorChangeDTO> = new Subject<ColorChangeDTO>();
+  private readonly subscribedToColors$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
   private sse: Option<SSE> = none();
   private colorsSubCounter: number = 0;
@@ -99,9 +90,7 @@ export class ColorsService implements OnDestroy {
       this.reloadColors();
     });
 
-    const loggedOut$ = this.authService
-      .getToken()
-      .pipe(filter((token) => token.isNone()));
+    const loggedOut$ = this.authService.getToken().pipe(filter((token) => token.isNone()));
     loggedOut$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.closeEventStream();
     });
@@ -121,9 +110,7 @@ export class ColorsService implements OnDestroy {
   }
 
   isLoading(): Observable<boolean> {
-    return combineLatest([this.loadingColors$]).pipe(
-      map(([loadingColors]) => loadingColors),
-    );
+    return combineLatest([this.loadingColors$]).pipe(map(([loadingColors]) => loadingColors));
   }
 
   isFailedLoadingColors(): Observable<boolean> {
@@ -140,17 +127,10 @@ export class ColorsService implements OnDestroy {
   }
 
   getColor(id: string): Observable<Option<Color>> {
-    return this.getColors().pipe(
-      map((colors) => someOrNone(colors.find((color) => color.id === id))),
-    );
+    return this.getColors().pipe(map((colors) => someOrNone(colors.find((color) => color.id === id))));
   }
 
-  createColor(props: {
-    name: string;
-    red: number;
-    green: number;
-    blue: number;
-  }): Observable<void> {
+  createColor(props: { name: string; red: number; green: number; blue: number }): Observable<void> {
     const request: CreateColorRequest = {
       name: props.name,
       red: props.red,
@@ -177,10 +157,7 @@ export class ColorsService implements OnDestroy {
       blue: props.blue,
     };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/colors/${props.id}/update`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/colors/${props.id}/update`, request);
   }
 
   deleteColor(id: string, version: number): Observable<void> {

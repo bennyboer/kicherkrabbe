@@ -10,8 +10,7 @@ import { FabricType } from '../../model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FabricTypesPage {
-  private readonly search$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+  private readonly search$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   constructor(private readonly fabricTypesService: FabricTypesService) {}
 
@@ -20,14 +19,9 @@ export class FabricTypesPage {
   }
 
   getFabricTypes(): Observable<FabricType[]> {
-    return combineLatest([
-      this.fabricTypesService.getFabricTypes(),
-      this.search$,
-    ]).pipe(
+    return combineLatest([this.fabricTypesService.getFabricTypes(), this.search$]).pipe(
       map(([fabricTypes, search]) =>
-        fabricTypes.filter((fabricType) =>
-          fabricType.name.toLowerCase().includes(search.toLowerCase()),
-        ),
+        fabricTypes.filter((fabricType) => fabricType.name.toLowerCase().includes(search.toLowerCase())),
       ),
     );
   }

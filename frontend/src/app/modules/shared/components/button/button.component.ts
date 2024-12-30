@@ -54,17 +54,13 @@ export class ButtonComponent implements OnInit, OnDestroy {
 
   @Input('size')
   set setSize(size: ButtonSize) {
-    this.sizeToClass(this.size).ifSome((className) =>
-      this.removeClass(className),
-    );
+    this.sizeToClass(this.size).ifSome((className) => this.removeClass(className));
     this.sizeToClass(size).ifSome((className) => this.addClass(className));
     this.size = size;
   }
 
   @Output()
-  click: EventEmitter<MouseEvent | KeyboardEvent> = new EventEmitter<
-    MouseEvent | KeyboardEvent
-  >();
+  click: EventEmitter<MouseEvent | KeyboardEvent> = new EventEmitter<MouseEvent | KeyboardEvent>();
 
   private size: ButtonSize = ButtonSize.NORMAL;
   private buttonId: Option<ButtonId> = none();

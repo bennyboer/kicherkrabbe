@@ -1,8 +1,7 @@
 import { Eq } from '../../../../util';
 
 export const some = <T>(value: T | null | undefined) => Option.some(value);
-export const someOrNone = <T>(value: T | null | undefined) =>
-  Option.someOrNone(value);
+export const someOrNone = <T>(value: T | null | undefined) => Option.someOrNone(value);
 export const none = <T>() => Option.none<T>();
 
 export class Option<T> {
@@ -14,9 +13,7 @@ export class Option<T> {
 
   static some<T>(value: T | null | undefined): Option<T> {
     if (value === null || value === undefined) {
-      throw new Error(
-        'Expected value to be non-null and non-undefined, but got null or undefined',
-      );
+      throw new Error('Expected value to be non-null and non-undefined, but got null or undefined');
     }
 
     return new Option<T>(value);
@@ -132,9 +129,7 @@ export class Option<T> {
 
   orElseThrow(message?: string): T {
     if (this.isNone()) {
-      throw new Error(
-        some(message).orElse('Expected value to be non-null and non-undefined'),
-      );
+      throw new Error(some(message).orElse('Expected value to be non-null and non-undefined'));
     }
 
     return this.value as T;

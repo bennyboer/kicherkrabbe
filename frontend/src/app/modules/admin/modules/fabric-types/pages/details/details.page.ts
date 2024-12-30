@@ -1,13 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-  Subject,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, Subject, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from '../../../../../shared';
 import { FabricTypesService } from '../../services';
@@ -21,14 +13,10 @@ import { none, Option, someOrNone } from '../../../../../shared/modules/option';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FabricTypeDetailsPage implements OnDestroy {
-  private readonly transientName$: BehaviorSubject<Option<string>> =
-    new BehaviorSubject<Option<string>>(none());
-  private readonly updatingName$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly failedUpdatingName$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly waitingForDeleteConfirmation$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly transientName$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());
+  private readonly updatingName$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly failedUpdatingName$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly waitingForDeleteConfirmation$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -49,9 +37,7 @@ export class FabricTypeDetailsPage implements OnDestroy {
   }
 
   getFabricType(): Observable<Option<FabricType>> {
-    return this.getFabricTypeId().pipe(
-      switchMap((id) => this.fabricTypesService.getFabricType(id)),
-    );
+    return this.getFabricTypeId().pipe(switchMap((id) => this.fabricTypesService.getFabricType(id)));
   }
 
   isLoading(): Observable<boolean> {
@@ -124,8 +110,7 @@ export class FabricTypeDetailsPage implements OnDestroy {
         },
         error: () => {
           this.notificationService.publish({
-            message:
-              'Ein Fehler ist aufgetreten. Die Stoffart konnte nicht gelöscht werden. Versuche es noch einmal.',
+            message: 'Ein Fehler ist aufgetreten. Die Stoffart konnte nicht gelöscht werden. Versuche es noch einmal.',
             type: 'error',
           });
         },
@@ -141,8 +126,6 @@ export class FabricTypeDetailsPage implements OnDestroy {
   }
 
   private getFabricTypeId(): Observable<string> {
-    return this.route.paramMap.pipe(
-      map((params) => someOrNone(params.get('id')).orElse('')),
-    );
+    return this.route.paramMap.pipe(map((params) => someOrNone(params.get('id')).orElse('')));
   }
 }

@@ -35,16 +35,12 @@ export class LineGraphComponent implements AfterViewInit, OnDestroy {
 
   @Input()
   set maxVisibleYLabels(maxVisibleYLabels: number | null) {
-    someOrNone(maxVisibleYLabels).ifSome((m) =>
-      this.maxVisibleYLabels$.next(m),
-    );
+    someOrNone(maxVisibleYLabels).ifSome((m) => this.maxVisibleYLabels$.next(m));
   }
 
   @Input()
   set maxVisibleXLabels(maxVisibleXLabels: number | null) {
-    someOrNone(maxVisibleXLabels).ifSome((m) =>
-      this.maxVisibleXLabels$.next(m),
-    );
+    someOrNone(maxVisibleXLabels).ifSome((m) => this.maxVisibleXLabels$.next(m));
   }
 
   @ViewChild('canvas')
@@ -55,19 +51,11 @@ export class LineGraphComponent implements AfterViewInit, OnDestroy {
 
   private resizeObserver: Option<ResizeObserver> = none();
 
-  protected readonly xLabels$: BehaviorSubject<string[]> = new BehaviorSubject<
-    string[]
-  >([]);
-  protected readonly yLabels$: BehaviorSubject<string[]> = new BehaviorSubject<
-    string[]
-  >([]);
-  protected readonly data$: BehaviorSubject<number[]> = new BehaviorSubject<
-    number[]
-  >([]);
-  protected readonly maxVisibleYLabels$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(99999999);
-  protected readonly maxVisibleXLabels$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(99999999);
+  protected readonly xLabels$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  protected readonly yLabels$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  protected readonly data$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
+  protected readonly maxVisibleYLabels$: BehaviorSubject<number> = new BehaviorSubject<number>(99999999);
+  protected readonly maxVisibleXLabels$: BehaviorSubject<number> = new BehaviorSubject<number>(99999999);
 
   private readonly destroy$: Subject<void> = new Subject<void>();
 
@@ -92,13 +80,7 @@ export class LineGraphComponent implements AfterViewInit, OnDestroy {
         }
       });
 
-    combineLatest([
-      this.xLabels$,
-      this.yLabels$,
-      this.data$,
-      this.maxVisibleYLabels$,
-      this.maxVisibleXLabels$,
-    ])
+    combineLatest([this.xLabels$, this.yLabels$, this.data$, this.maxVisibleYLabels$, this.maxVisibleXLabels$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.repaint());
   }
@@ -158,9 +140,7 @@ export class LineGraphComponent implements AfterViewInit, OnDestroy {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const longestYLabel = this.xLabels$.value.reduce((a, b) =>
-      a.length > b.length ? a : b,
-    );
+    const longestYLabel = this.xLabels$.value.reduce((a, b) => (a.length > b.length ? a : b));
     const longestYLabelWidth = ctx.measureText(longestYLabel).width;
 
     const xLabelsResult = this.repaintXLabels(ctx, longestYLabelWidth);
@@ -172,11 +152,7 @@ export class LineGraphComponent implements AfterViewInit, OnDestroy {
       xLabelsResult.height,
       yLabelsResult.width,
     );
-    this.repaintData(
-      ctx,
-      xLabelsResult.tickPositions,
-      yLabelsResult.tickPositions,
-    );
+    this.repaintData(ctx, xLabelsResult.tickPositions, yLabelsResult.tickPositions);
   }
 
   private repaintXLabels(
@@ -272,8 +248,7 @@ export class LineGraphComponent implements AfterViewInit, OnDestroy {
     }
 
     const yOffset = 20;
-    const availableSpace =
-      this.canvas.nativeElement.height - xLabelsHeight - yOffset;
+    const availableSpace = this.canvas.nativeElement.height - xLabelsHeight - yOffset;
     const labelCount = visibleLabels.length;
 
     const labelOffset = availableSpace / labelCount;
@@ -326,10 +301,7 @@ export class LineGraphComponent implements AfterViewInit, OnDestroy {
 
       ctx.beginPath();
       ctx.moveTo(tick.pos, 0);
-      ctx.lineTo(
-        tick.pos,
-        this.canvas.nativeElement.height - xLabelsHeight - 5,
-      );
+      ctx.lineTo(tick.pos, this.canvas.nativeElement.height - xLabelsHeight - 5);
       ctx.stroke();
     }
 

@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
@@ -31,34 +26,19 @@ import { ActivatedRoute } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MailPage implements OnInit, OnDestroy {
-  private readonly mailId$: ReplaySubject<string> = new ReplaySubject<string>(
-    1,
-  );
-  protected readonly mail$: BehaviorSubject<Option<Mail>> = new BehaviorSubject<
-    Option<Mail>
-  >(none());
-  private readonly loadingMail$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
-  protected readonly mailLoaded$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly markingAsRead$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly cannotMarkAsRead$: Observable<boolean> =
-    this.markingAsRead$.asObservable();
-  protected readonly markingAsUnread$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly cannotMarkAsUnread$: Observable<boolean> =
-    this.markingAsUnread$.asObservable();
+  private readonly mailId$: ReplaySubject<string> = new ReplaySubject<string>(1);
+  protected readonly mail$: BehaviorSubject<Option<Mail>> = new BehaviorSubject<Option<Mail>>(none());
+  private readonly loadingMail$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  protected readonly mailLoaded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly markingAsRead$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly cannotMarkAsRead$: Observable<boolean> = this.markingAsRead$.asObservable();
+  protected readonly markingAsUnread$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly cannotMarkAsUnread$: Observable<boolean> = this.markingAsUnread$.asObservable();
   protected readonly loading$: Observable<boolean> = combineLatest([
     this.loadingMail$,
     this.markingAsRead$,
     this.markingAsUnread$,
-  ]).pipe(
-    map(
-      ([loadingMail, markingAsRead, markingAsUnread]) =>
-        loadingMail || markingAsRead || markingAsUnread,
-    ),
-  );
+  ]).pipe(map(([loadingMail, markingAsRead, markingAsUnread]) => loadingMail || markingAsRead || markingAsUnread));
 
   private readonly destroy$: Subject<void> = new Subject<void>();
 
@@ -76,9 +56,7 @@ export class MailPage implements OnInit, OnDestroy {
       )
       .subscribe((mailId) => this.mailId$.next(mailId));
 
-    this.mailId$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((mailId) => this.reloadMail(mailId));
+    this.mailId$.pipe(takeUntil(this.destroy$)).subscribe((mailId) => this.reloadMail(mailId));
 
     this.mail$
       .pipe(
@@ -115,9 +93,7 @@ export class MailPage implements OnInit, OnDestroy {
         finalize(() => this.markingAsRead$.next(false)),
       )
       .subscribe((version) => {
-        const updatedMail = this.mail$.value
-          .map((m) => m.markAsRead(version))
-          .orElseThrow();
+        const updatedMail = this.mail$.value.map((m) => m.markAsRead(version)).orElseThrow();
         this.mail$.next(some(updatedMail));
       });
   }
@@ -135,9 +111,7 @@ export class MailPage implements OnInit, OnDestroy {
         finalize(() => this.markingAsUnread$.next(false)),
       )
       .subscribe((version) => {
-        const updatedMail = this.mail$.value
-          .map((m) => m.markAsUnread(version))
-          .orElseThrow();
+        const updatedMail = this.mail$.value.map((m) => m.markAsUnread(version)).orElseThrow();
         this.mail$.next(some(updatedMail));
       });
   }
@@ -153,8 +127,7 @@ export class MailPage implements OnInit, OnDestroy {
         catchError((e) => {
           console.error('Failed to load mail', e);
           this.notificationService.publish({
-            message:
-              'Mail konnte nicht geladen werden. Bitte versuche die Seite neu zu laden.',
+            message: 'Mail konnte nicht geladen werden. Bitte versuche die Seite neu zu laden.',
             type: 'error',
           });
 

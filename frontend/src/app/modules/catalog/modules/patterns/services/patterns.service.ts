@@ -1,10 +1,10 @@
-import {Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
-import {map, Observable} from "rxjs";
-import {Pattern, PatternAttribution, PatternExtra, PatternVariant, PricedSizeRange,} from "../model";
-import {Currency, Money} from "../../../../../util";
-import {environment} from "../../../../../../environments";
-import {someOrNone} from "../../../../shared/modules/option";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
+import { Pattern, PatternAttribution, PatternExtra, PatternVariant, PricedSizeRange } from '../model';
+import { Currency, Money } from '../../../../../util';
+import { environment } from '../../../../../../environments';
+import { someOrNone } from '../../../../shared/modules/option';
 
 interface PatternsSortDTO {
   property: PatternsSortPropertyDTO;
@@ -12,12 +12,12 @@ interface PatternsSortDTO {
 }
 
 enum PatternsSortPropertyDTO {
-  ALPHABETICAL = "ALPHABETICAL",
+  ALPHABETICAL = 'ALPHABETICAL',
 }
 
 enum PatternsSortDirectionDTO {
-  ASCENDING = "ASCENDING",
-  DESCENDING = "DESCENDING",
+  ASCENDING = 'ASCENDING',
+  DESCENDING = 'DESCENDING',
 }
 
 interface QueryPublishedPatternsRequest {
@@ -82,8 +82,7 @@ interface PatternExtraDTO {
 
 @Injectable()
 export class PatternsService {
-  constructor(private readonly http: HttpClient) {
-  }
+  constructor(private readonly http: HttpClient) {}
 
   getPatterns(props: {
     searchTerm?: string;
@@ -97,7 +96,7 @@ export class PatternsService {
       searchTerm: someOrNone(props.searchTerm)
         .map((s) => s.trim())
         .filter((s) => s.length > 0)
-        .orElse(""),
+        .orElse(''),
       categories: someOrNone(props.categories)
         .map((c) => Array.from(c))
         .orElse([]),
@@ -107,11 +106,7 @@ export class PatternsService {
       sort: {
         property: PatternsSortPropertyDTO.ALPHABETICAL,
         direction: someOrNone(props.ascending)
-          .map((a) =>
-            a
-              ? PatternsSortDirectionDTO.ASCENDING
-              : PatternsSortDirectionDTO.DESCENDING,
-          )
+          .map((a) => (a ? PatternsSortDirectionDTO.ASCENDING : PatternsSortDirectionDTO.DESCENDING))
           .orElse(PatternsSortDirectionDTO.ASCENDING),
       },
       skip: someOrNone(props.skip).orElse(0),
@@ -119,22 +114,13 @@ export class PatternsService {
     };
 
     return this.http
-      .post<QueryPublishedPatternsResponse>(
-        `${environment.apiUrl}/patterns/published`,
-        request,
-      )
-      .pipe(
-        map((response) =>
-          response.patterns.map((pattern) => this.toInternalPattern(pattern)),
-        ),
-      );
+      .post<QueryPublishedPatternsResponse>(`${environment.apiUrl}/patterns/published`, request)
+      .pipe(map((response) => response.patterns.map((pattern) => this.toInternalPattern(pattern))));
   }
 
   getPattern(id: string): Observable<Pattern> {
     return this.http
-      .get<QueryPublishedPatternResponse>(
-        `${environment.apiUrl}/patterns/${id}/published`,
-      )
+      .get<QueryPublishedPatternResponse>(`${environment.apiUrl}/patterns/${id}/published`)
       .pipe(map((response) => this.toInternalPattern(response.pattern)));
   }
 
@@ -148,16 +134,12 @@ export class PatternsService {
       attribution: this.toInternalAttribution(pattern.attribution),
       categories: new Set<string>(pattern.categories),
       images: pattern.images,
-      variants: pattern.variants.map((variant) =>
-        this.toInternalVariant(variant),
-      ),
+      variants: pattern.variants.map((variant) => this.toInternalVariant(variant)),
       extras: pattern.extras.map((extra) => this.toInternalExtra(extra)),
     });
   }
 
-  private toInternalAttribution(
-    attribution: PatternAttributionDTO,
-  ): PatternAttribution {
+  private toInternalAttribution(attribution: PatternAttributionDTO): PatternAttribution {
     return PatternAttribution.of({
       originalPatternName: attribution.originalPatternName,
       designer: attribution.designer,
@@ -165,9 +147,7 @@ export class PatternsService {
   }
 
   private toInternalVariant(variant: PatternVariantDTO): PatternVariant {
-    const sizes = variant.pricedSizeRanges.map((range) =>
-      this.toInternalPricedSizeRange(range),
-    );
+    const sizes = variant.pricedSizeRanges.map((range) => this.toInternalPricedSizeRange(range));
     sizes.sort((a, b) => a.from - b.from);
 
     return PatternVariant.of({
@@ -176,9 +156,7 @@ export class PatternsService {
     });
   }
 
-  private toInternalPricedSizeRange(
-    range: PricedSizeRangeDTO,
-  ): PricedSizeRange {
+  private toInternalPricedSizeRange(range: PricedSizeRangeDTO): PricedSizeRange {
     return PricedSizeRange.of({
       from: range.from,
       to: range.to,
@@ -196,7 +174,7 @@ export class PatternsService {
 
   private toInternalCurrency(currency: string): Currency {
     switch (currency) {
-      case "EUR":
+      case 'EUR':
         return Currency.euro();
       default:
         throw new Error(`Unknown currency: ${currency}`);

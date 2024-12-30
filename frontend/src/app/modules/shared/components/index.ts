@@ -1,16 +1,9 @@
 export { PriceTagComponent } from './price-tag/price-tag.component';
-export {
-  CardListComponent,
-  CardListItem,
-} from './card-list/card-list.component';
+export { CardListComponent, CardListItem } from './card-list/card-list.component';
 export { AccordionComponent } from './accordion/accordion.component';
 export { AccordionItemComponent } from './accordion-item/accordion-item.component';
 export * from './filter-sort-bar/filter-sort-bar.component';
-export {
-  DropdownComponent,
-  DropdownItem,
-  DropdownItemId,
-} from './dropdown/dropdown.component';
+export { DropdownComponent, DropdownItem, DropdownItemId } from './dropdown/dropdown.component';
 export { ButtonComponent, ButtonSize } from './button/button.component';
 export { ButtonRowComponent } from './button-row/button-row.component';
 export { ButtonColumnComponent } from './button-column/button-column.component';
@@ -23,14 +16,8 @@ export { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.compo
 export { LoadingBarComponent } from './loading-bar/loading-bar.component';
 export { NoteComponent } from './note/note.component';
 export { NotificationOutletComponent } from './notification-outlet/notification-outlet.component';
-export {
-  ColorPickerComponent,
-  ColorPickerColor,
-} from './color-picker/color-picker.component';
-export {
-  ColorBadgeComponent,
-  ColorBadgeColor,
-} from './color-badge/color-badge.component';
+export { ColorPickerComponent, ColorPickerColor } from './color-picker/color-picker.component';
+export { ColorBadgeComponent, ColorBadgeColor } from './color-badge/color-badge.component';
 export { FileSelectComponent } from './file-select/file-select.component';
 export { ChipsComponent, Chip } from './chips/chips.component';
 export { ChipComponent } from './chip/chip.component';

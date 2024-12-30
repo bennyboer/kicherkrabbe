@@ -1,8 +1,7 @@
 @if (getChips() | async; as chips) {
   @for (chip of chips; track chip.id) {
     <app-chip (click)="removeChip(chip)">
-      <ng-container [ngTemplateOutlet]="chipTemplateRef"
-                    [ngTemplateOutletContext]="{ $implicit: chip }">
+      <ng-container [ngTemplateOutlet]="chipTemplateRef" [ngTemplateOutletContext]="{ $implicit: chip }">
       </ng-container>
     </app-chip>
   }
@@ -15,14 +14,16 @@
 }
 
 @if (isAdding() | async) {
-  <input #addChipTextField
-         class="add-chips-text-field"
-         type="text"
-         (blur)="onAddChipTextFieldBlurred()"
-         (focus)="onAddChipTextFieldFocused()"
-         (input)="onAddChipTextFieldValueChanged(addChipTextField.value)"
-         (keydown.escape)="cancelAddingChips()"
-         (keydown.enter)="addChipIfAvailable(addChipTextField.value)">
+  <input
+    #addChipTextField
+    class="add-chips-text-field"
+    type="text"
+    (blur)="onAddChipTextFieldBlurred()"
+    (focus)="onAddChipTextFieldFocused()"
+    (input)="onAddChipTextFieldValueChanged(addChipTextField.value)"
+    (keydown.escape)="cancelAddingChips()"
+    (keydown.enter)="addChipIfAvailable(addChipTextField.value)"
+  />
   <app-button (click)="cancelAddingChips()" color="warn">Abbrechen</app-button>
 }
 
@@ -33,8 +34,10 @@
         @for (chip of searchResults; track chip.id) {
           <app-button (click)="onAvailableChipSelected(chip)" (mousedown)="onAvailableChipMouseDown($event)">
             <div class="dropdown-item">
-              <ng-container [ngTemplateOutlet]="chipDropdownItemTemplateRef"
-                            [ngTemplateOutletContext]="{ $implicit: chip }">
+              <ng-container
+                [ngTemplateOutlet]="chipDropdownItemTemplateRef"
+                [ngTemplateOutletContext]="{ $implicit: chip }"
+              >
               </ng-container>
             </div>
           </app-button>

@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  HostListener,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
 import { Theme, ThemeService } from '../../services';
 

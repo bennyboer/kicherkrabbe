@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { PricedSizeRange } from '../../model';
 import { BehaviorSubject } from 'rxjs';
 import { Money, validateProps } from '../../../../../../util';
@@ -24,10 +17,7 @@ class EditablePricedSizeRange {
     this.editing = props.editing;
   }
 
-  static of(props: {
-    size: PricedSizeRange;
-    editing?: boolean;
-  }): EditablePricedSizeRange {
+  static of(props: { size: PricedSizeRange; editing?: boolean }): EditablePricedSizeRange {
     return new EditablePricedSizeRange({
       size: props.size,
       editing: someOrNone(props.editing).orElse(false),
@@ -69,14 +59,10 @@ export class SizesComponent implements OnDestroy {
       .map((s) =>
         s.map((size) => {
           const id = size.id;
-          const old = someOrNone(
-            this.sizes$.value.find((s) => s.size.id === id),
-          );
+          const old = someOrNone(this.sizes$.value.find((s) => s.size.id === id));
 
           return old
-            .map((o) =>
-              EditablePricedSizeRange.of({ size, editing: o.editing }),
-            )
+            .map((o) => EditablePricedSizeRange.of({ size, editing: o.editing }))
             .orElseGet(() => EditablePricedSizeRange.of({ size }));
         }),
       )
@@ -84,12 +70,9 @@ export class SizesComponent implements OnDestroy {
   }
 
   @Output()
-  changed: EventEmitter<PricedSizeRange[]> = new EventEmitter<
-    PricedSizeRange[]
-  >();
+  changed: EventEmitter<PricedSizeRange[]> = new EventEmitter<PricedSizeRange[]>();
 
-  protected sizes$: BehaviorSubject<EditablePricedSizeRange[]> =
-    new BehaviorSubject<EditablePricedSizeRange[]>([]);
+  protected sizes$: BehaviorSubject<EditablePricedSizeRange[]> = new BehaviorSubject<EditablePricedSizeRange[]>([]);
 
   protected readonly ButtonSize = ButtonSize;
 
@@ -107,16 +90,12 @@ export class SizesComponent implements OnDestroy {
   }
 
   edit(size: EditablePricedSizeRange): void {
-    const updatedSizes = this.sizes$.value.map((s) =>
-      s.size.id === size.size.id ? s.startEditing() : s,
-    );
+    const updatedSizes = this.sizes$.value.map((s) => (s.size.id === size.size.id ? s.startEditing() : s));
     this.sizes$.next(updatedSizes);
   }
 
   delete(size: EditablePricedSizeRange): void {
-    const updatedSizes = this.sizes$.value.filter(
-      (s) => s.size.id !== size.size.id,
-    );
+    const updatedSizes = this.sizes$.value.filter((s) => s.size.id !== size.size.id);
     this.sizes$.next(updatedSizes);
     this.emitChange();
   }
@@ -126,19 +105,11 @@ export class SizesComponent implements OnDestroy {
   }
 
   cancel(size: EditablePricedSizeRange): void {
-    const updatedSizes = this.sizes$.value.map((s) =>
-      s.size.id === size.size.id ? s.stopEditing() : s,
-    );
+    const updatedSizes = this.sizes$.value.map((s) => (s.size.id === size.size.id ? s.stopEditing() : s));
     this.sizes$.next(updatedSizes);
   }
 
-  save(
-    size: EditablePricedSizeRange,
-    from: string,
-    to: string,
-    unit: string,
-    price: string,
-  ): void {
+  save(size: EditablePricedSizeRange, from: string, to: string, unit: string, price: string): void {
     let fromSize = 0;
     if (from) {
       fromSize = parseInt(from, 10);

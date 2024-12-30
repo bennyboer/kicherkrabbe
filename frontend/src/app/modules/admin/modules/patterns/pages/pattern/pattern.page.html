@@ -1,217 +1,211 @@
 <app-loading-bar [visible]="loading$ | async"></app-loading-bar>
 
-@if (notLoading$ | async) {
-  @if (pattern$ | async; as pattern) {
-    <div class="top-action-bar">
-      <h3>{{ pattern.name }}</h3>
-      <span class="top-action-bar-actions">
-        @if (pattern.published) {
-          <app-button color="warn" (click)="unpublishPattern(pattern)">Veröffentlichung aufheben</app-button>
-        } @else {
-          <app-button color="primary" (click)="publishPattern(pattern)">Veröffentlichen</app-button>
-        }
-      </span>
+@if (notLoading$ | async) { @if (pattern$ | async; as pattern) {
+<div class="top-action-bar">
+  <h3>{{ pattern.name }}</h3>
+  <span class="top-action-bar-actions">
+    @if (pattern.published) {
+    <app-button color="warn" (click)="unpublishPattern(pattern)">Veröffentlichung aufheben</app-button>
+    } @else {
+    <app-button color="primary" (click)="publishPattern(pattern)">Veröffentlichen</app-button>
+    }
+  </span>
+</div>
+
+<div class="form">
+  <div class="form-field">
+    <label for="name">Name</label>
+    <div class="form-field-content">
+      <input
+        #name
+        id="name"
+        type="text"
+        placeholder="z.B. Sommerkleid"
+        [class.error]="nameError$ | async"
+        [value]="name$ | async"
+        (input)="updateName(name.value)"
+        (keydown.enter)="saveUpdatedName(pattern)"
+      />
+      <app-button [disabled]="cannotSaveUpdatedName$ | async" (click)="saveUpdatedName(pattern)">
+        Speichern
+      </app-button>
     </div>
+    @if (nameError$ | async) {
+    <span class="error">Bitte gib einen Namen ein</span>
+    }
+  </div>
 
-    <div class="form">
-      <div class="form-field">
-        <label for="name">Name</label>
-        <div class="form-field-content">
-          <input #name
-                 id="name"
-                 type="text"
-                 placeholder="z.B. Sommerkleid"
-                 [class.error]="nameError$ | async"
-                 [value]="name$ | async"
-                 (input)="updateName(name.value)"
-                 (keydown.enter)="saveUpdatedName(pattern)">
-          <app-button [disabled]="cannotSaveUpdatedName$ | async" (click)="saveUpdatedName(pattern)">
-            Speichern
-          </app-button>
-        </div>
-        @if (nameError$ | async) {
-          <span class="error">Bitte gib einen Namen ein</span>
-        }
-      </div>
-
-      <div class="form-field">
-        <label for="number">Nummer</label>
-        <div class="form-field-content">
-          <input #number
-                 id="number"
-                 type="text"
-                 placeholder="z.B. S-123"
-                 [class.error]="numberError$ | async"
-                 [value]="number$ | async"
-                 (input)="updateNumber(number.value)"
-                 (keydown.enter)="saveUpdatedNumber(pattern)">
-          <app-button [disabled]="cannotSaveUpdatedNumber$ | async" (click)="saveUpdatedNumber(pattern)">
-            Speichern
-          </app-button>
-        </div>
-        @if (numberError$ | async) {
-          <span class="error">Bitte gib eine Nummer ein, die mit "S-" beginnt.</span>
-        }
-      </div>
-
-      <div class="columns">
-        <div class="form-field">
-          <label for="originalPatternName">Originalname des Schnitts (optional)</label>
-          <input #originalPatternName
-                 id="originalPatternName"
-                 type="text"
-                 [value]="originalPatternName$ | async"
-                 (input)="updateOriginalPatternName(originalPatternName.value)"
-                 (keydown.enter)="saveUpdatedAttribution(pattern)">
-        </div>
-        <div class="form-field">
-          <label for="designer">Schnittdesigner (optional)</label>
-          <input #designer
-                 id="designer"
-                 type="text"
-                 [value]="designer$ | async"
-                 (input)="updateDesigner(designer.value)"
-                 (keydown.enter)="saveUpdatedAttribution(pattern)">
-        </div>
-        <app-button [disabled]="cannotSaveUpdatedAttribution$ | async" (click)="saveUpdatedAttribution(pattern)">
-          Speichern
-        </app-button>
-      </div>
-
-      <div class="form-field">
-        <label for="name">Beschreibung</label>
-        <div class="form-field-content">
-          <div class="editor-wrapper">
-            <quill-editor theme="bubble"
-                          placeholder=""
-                          style="display: block"
-                          [modules]="quillModules"
-                          (onEditorCreated)="onEditorCreated($event)"
-                          (onContentChanged)="updateDescription($event)">
-            </quill-editor>
-          </div>
-          <app-button [disabled]="cannotSaveUpdatedDescription$ | async" (click)="saveUpdatedDescription(pattern)">
-            Speichern
-          </app-button>
-        </div>
-      </div>
-
-      <div class="form-field">
-        <label>Kategorien</label>
-        @if (categoriesLoading$ | async) {
-          <div class="loading-container">
-            <app-loading-spinner></app-loading-spinner>
-          </div>
-        } @else {
-          @if (categories$ | async; as categories) {
-            @if (selectedCategories$ | async; as selectedCategories) {
-              <app-chips [chips]="categoriesToChips(toCategories(selectedCategories, categories))"
-                         [available]="categoriesToChips(categories)"
-                         [alwaysShowOptions]="true"
-                         [chipDropdownItemTemplateRef]="topicDropdownItemTemplateRef"
-                         (removed)="onCategoryRemoved($event)"
-                         (added)="onCategoryAdded($event)">
-                <ng-template let-chip>
-                  {{ chip.label }}
-                </ng-template>
-              </app-chips>
-
-              <ng-template #topicDropdownItemTemplateRef let-chip>
-                {{ chip.label }}
-              </ng-template>
-            }
-          }
-        }
-      </div>
-
-      <div class="form-field">
-        <label>Varianten</label>
-        <app-variants [variants]="variants$ | async" (changed)="onVariantsChanged($event)"></app-variants>
-        @if (variantsError$ | async) {
-          <app-note level="error">
-            Bitte gib mindestens eine Variante an. Jede Variante benötigt außerdem mindestens einen Namen sowie eine
-            Größenangabe mitsamt Preis.
-          </app-note>
-        }
-      </div>
-
-      <div class="form-field">
-        <label>Extras</label>
-        <app-extras [extras]="extras$ | async" (changed)="onExtrasChanged($event)"></app-extras>
-        @if (extrasError$ | async) {
-          <app-note level="error">
-            Jedes Extra benötigt einen Namen und einen Preis.
-          </app-note>
-        }
-      </div>
-
-      <div class="form-field">
-        <label>Bilder</label>
-        @if (imageIds$ | async; as imageIds) {
-          @if (imageIds.length > 0) {
-            <ul class="image-list" [nxtSortablejs]="imageIds" [config]="imagesSortableConfig">
-              @for (imageId of imageIds; track imageId) {
-                <li class="drag-handle">
-                  <img [src]="getImageUrl(imageId)" width="100%">
-                  <span class="delete-button material-icons" (click)="deleteImage(imageId)">close</span>
-                </li>
-              }
-            </ul>
-          }
-        }
-
-        @if (imageUploadActive$ | async) {
-          <app-image-upload [multiple]="true"
-                            [desiredWidth]="1024"
-                            [watermark]="watermark$ | async"
-                            (uploaded)="onImagesUploaded($event)">
-          </app-image-upload>
-          <div>
-            <app-checkbox label="Wasserzeichen hinzufügen"
-                          [checked]="watermark$ | async"
-                          (checkedChanges)="onWatermarkChanged($event)">
-            </app-checkbox>
-          </div>
-        } @else {
-          <div class="add-image-button-container">
-            <app-button (click)="activateImageUpload()">
-              <span class="icon-button">
-                <span class="material-icons">add</span>
-                <span>
-                  Bilder hinzufügen
-                </span>
-              </span>
-            </app-button>
-          </div>
-        }
-
-        @if (imagesError$ | async) {
-          <app-note level="error">
-            Bitte lade mindestens ein Bild hoch.
-          </app-note>
-        }
-      </div>
+  <div class="form-field">
+    <label for="number">Nummer</label>
+    <div class="form-field-content">
+      <input
+        #number
+        id="number"
+        type="text"
+        placeholder="z.B. S-123"
+        [class.error]="numberError$ | async"
+        [value]="number$ | async"
+        (input)="updateNumber(number.value)"
+        (keydown.enter)="saveUpdatedNumber(pattern)"
+      />
+      <app-button [disabled]="cannotSaveUpdatedNumber$ | async" (click)="saveUpdatedNumber(pattern)">
+        Speichern
+      </app-button>
     </div>
+    @if (numberError$ | async) {
+    <span class="error">Bitte gib eine Nummer ein, die mit "S-" beginnt.</span>
+    }
+  </div>
 
-    <div class="additional-details">
-      <span class="created-at">
-        Erstellt am {{ pattern.createdAt | date: 'dd.MM.yyyy' }} um {{ pattern.createdAt | date: 'HH:mm' }} Uhr
-      </span>
+  <div class="columns">
+    <div class="form-field">
+      <label for="originalPatternName">Originalname des Schnitts (optional)</label>
+      <input
+        #originalPatternName
+        id="originalPatternName"
+        type="text"
+        [value]="originalPatternName$ | async"
+        (input)="updateOriginalPatternName(originalPatternName.value)"
+        (keydown.enter)="saveUpdatedAttribution(pattern)"
+      />
     </div>
+    <div class="form-field">
+      <label for="designer">Schnittdesigner (optional)</label>
+      <input
+        #designer
+        id="designer"
+        type="text"
+        [value]="designer$ | async"
+        (input)="updateDesigner(designer.value)"
+        (keydown.enter)="saveUpdatedAttribution(pattern)"
+      />
+    </div>
+    <app-button [disabled]="cannotSaveUpdatedAttribution$ | async" (click)="saveUpdatedAttribution(pattern)">
+      Speichern
+    </app-button>
+  </div>
 
-    <div class="actions">
-        <span>
-          <app-button routerLink="..">Zurück</app-button>
+  <div class="form-field">
+    <label for="name">Beschreibung</label>
+    <div class="form-field-content">
+      <div class="editor-wrapper">
+        <quill-editor
+          theme="bubble"
+          placeholder=""
+          style="display: block"
+          [modules]="quillModules"
+          (onEditorCreated)="onEditorCreated($event)"
+          (onContentChanged)="updateDescription($event)"
+        >
+        </quill-editor>
+      </div>
+      <app-button [disabled]="cannotSaveUpdatedDescription$ | async" (click)="saveUpdatedDescription(pattern)">
+        Speichern
+      </app-button>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <label>Kategorien</label>
+    @if (categoriesLoading$ | async) {
+    <div class="loading-container">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+    } @else { @if (categories$ | async; as categories) { @if (selectedCategories$ | async; as selectedCategories) {
+    <app-chips
+      [chips]="categoriesToChips(toCategories(selectedCategories, categories))"
+      [available]="categoriesToChips(categories)"
+      [alwaysShowOptions]="true"
+      [chipDropdownItemTemplateRef]="topicDropdownItemTemplateRef"
+      (removed)="onCategoryRemoved($event)"
+      (added)="onCategoryAdded($event)"
+    >
+      <ng-template let-chip> {{ chip.label }} </ng-template>
+    </app-chips>
+
+    <ng-template #topicDropdownItemTemplateRef let-chip> {{ chip.label }} </ng-template>
+    } } }
+  </div>
+
+  <div class="form-field">
+    <label>Varianten</label>
+    <app-variants [variants]="variants$ | async" (changed)="onVariantsChanged($event)"></app-variants>
+    @if (variantsError$ | async) {
+    <app-note level="error">
+      Bitte gib mindestens eine Variante an. Jede Variante benötigt außerdem mindestens einen Namen sowie eine
+      Größenangabe mitsamt Preis.
+    </app-note>
+    }
+  </div>
+
+  <div class="form-field">
+    <label>Extras</label>
+    <app-extras [extras]="extras$ | async" (changed)="onExtrasChanged($event)"></app-extras>
+    @if (extrasError$ | async) {
+    <app-note level="error"> Jedes Extra benötigt einen Namen und einen Preis. </app-note>
+    }
+  </div>
+
+  <div class="form-field">
+    <label>Bilder</label>
+    @if (imageIds$ | async; as imageIds) { @if (imageIds.length > 0) {
+    <ul class="image-list" [nxtSortablejs]="imageIds" [config]="imagesSortableConfig">
+      @for (imageId of imageIds; track imageId) {
+      <li class="drag-handle">
+        <img [src]="getImageUrl(imageId)" width="100%" />
+        <span class="delete-button material-icons" (click)="deleteImage(imageId)">close</span>
+      </li>
+      }
+    </ul>
+    } } @if (imageUploadActive$ | async) {
+    <app-image-upload
+      [multiple]="true"
+      [desiredWidth]="1024"
+      [watermark]="watermark$ | async"
+      (uploaded)="onImagesUploaded($event)"
+    >
+    </app-image-upload>
+    <div>
+      <app-checkbox
+        label="Wasserzeichen hinzufügen"
+        [checked]="watermark$ | async"
+        (checkedChanges)="onWatermarkChanged($event)"
+      >
+      </app-checkbox>
+    </div>
+    } @else {
+    <div class="add-image-button-container">
+      <app-button (click)="activateImageUpload()">
+        <span class="icon-button">
+          <span class="material-icons">add</span>
+          <span> Bilder hinzufügen </span>
         </span>
-      <span>
-          @if (deleteConfirmationRequired$ | async) {
-            <app-button color="warn" (click)="delete(pattern)">Wirklich löschen?</app-button>
-          } @else {
-            <app-button (click)="waitForDeleteConfirmation()">Schnittmuster löschen</app-button>
-          }
-        </span>
+      </app-button>
     </div>
-  } @else {
-    <app-note level="error">Das Schnittmuster konnte nicht gefunden werden.</app-note>
-  }
-}
+    } @if (imagesError$ | async) {
+    <app-note level="error"> Bitte lade mindestens ein Bild hoch. </app-note>
+    }
+  </div>
+</div>
+
+<div class="additional-details">
+  <span class="created-at">
+    Erstellt am {{ pattern.createdAt | date: 'dd.MM.yyyy' }} um {{ pattern.createdAt | date: 'HH:mm' }} Uhr
+  </span>
+</div>
+
+<div class="actions">
+  <span>
+    <app-button routerLink="..">Zurück</app-button>
+  </span>
+  <span>
+    @if (deleteConfirmationRequired$ | async) {
+    <app-button color="warn" (click)="delete(pattern)">Wirklich löschen?</app-button>
+    } @else {
+    <app-button (click)="waitForDeleteConfirmation()">Schnittmuster löschen</app-button>
+    }
+  </span>
+</div>
+} @else {
+<app-note level="error">Das Schnittmuster konnte nicht gefunden werden.</app-note>
+} }

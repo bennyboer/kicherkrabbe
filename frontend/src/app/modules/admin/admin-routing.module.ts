@@ -28,78 +28,57 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () =>
-          import('./modules/dashboard/dashboard.module').then(
-            (m) => m.DashboardModule,
-          ),
+        loadChildren: () => import('./modules/dashboard/dashboard.module').then((m) => m.DashboardModule),
       },
       {
         path: 'topics',
         title: 'Themenverwaltung',
-        loadChildren: () =>
-          import('./modules/topics/topics.module').then((m) => m.TopicsModule),
+        loadChildren: () => import('./modules/topics/topics.module').then((m) => m.TopicsModule),
       },
       {
         path: 'fabric-types',
         title: 'Stoffartenverwaltung',
-        loadChildren: () =>
-          import('./modules/fabric-types/fabric-types.module').then(
-            (m) => m.FabricTypesModule,
-          ),
+        loadChildren: () => import('./modules/fabric-types/fabric-types.module').then((m) => m.FabricTypesModule),
       },
       {
         path: 'colors',
         title: 'Farbenverwaltung',
-        loadChildren: () =>
-          import('./modules/colors/colors.module').then((m) => m.ColorsModule),
+        loadChildren: () => import('./modules/colors/colors.module').then((m) => m.ColorsModule),
       },
       {
         path: 'fabrics',
         title: 'Stoffverwaltung',
-        loadChildren: () =>
-          import('./modules/fabrics/fabrics.module').then(
-            (m) => m.FabricsModule,
-          ),
+        loadChildren: () => import('./modules/fabrics/fabrics.module').then((m) => m.FabricsModule),
       },
       {
         path: 'patterns',
         title: 'Schnittmuster-Verwaltung',
-        loadChildren: () =>
-          import('./modules/patterns/patterns.module').then(
-            (m) => m.PatternsModule,
-          ),
+        loadChildren: () => import('./modules/patterns/patterns.module').then((m) => m.PatternsModule),
       },
       {
         path: 'categories',
         title: 'Kategorienverwaltung',
-        loadChildren: () =>
-          import('./modules/categories/categories.module').then(
-            (m) => m.CategoriesModule,
-          ),
+        loadChildren: () => import('./modules/categories/categories.module').then((m) => m.CategoriesModule),
       },
       {
         path: 'mailbox',
         title: 'Postfach',
-        loadChildren: () =>
-          import('./modules/mailbox/mailbox.module').then(
-            (m) => m.MailboxModule,
-          ),
+        loadChildren: () => import('./modules/mailbox/mailbox.module').then((m) => m.MailboxModule),
       },
       {
         path: 'inquiries',
         title: 'Kontaktanfragen',
-        loadChildren: () =>
-          import('./modules/inquiries/inquiries.module').then(
-            (m) => m.InquiriesModule,
-          ),
+        loadChildren: () => import('./modules/inquiries/inquiries.module').then((m) => m.InquiriesModule),
       },
       {
         path: 'notifications',
         title: 'Benachrichtigungen',
-        loadChildren: () =>
-          import('./modules/notifications/notifications.module').then(
-            (m) => m.NotificationsModule,
-          ),
+        loadChildren: () => import('./modules/notifications/notifications.module').then((m) => m.NotificationsModule),
+      },
+      {
+        path: 'telegram',
+        title: 'Telegram',
+        loadChildren: () => import('./modules/telegram/telegram.module').then((m) => m.TelegramModule),
       },
     ],
   },

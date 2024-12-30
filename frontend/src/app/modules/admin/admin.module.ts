@@ -5,11 +5,7 @@ import { AdminAuthService, AuthInterceptor } from './services';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import {
-  HTTP_INTERCEPTORS,
-  provideHttpClient,
-  withInterceptorsFromDi,
-} from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { ContainerComponent, HeaderComponent } from './components';
 
 const PAGES = [LoginPage];

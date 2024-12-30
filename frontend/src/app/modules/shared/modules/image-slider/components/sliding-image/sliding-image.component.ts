@@ -37,9 +37,7 @@ import { none, Option, some, someOrNone } from '../../../option';
 
 const LOADING_ANIMATION_DURATION_MS = 2000;
 const easeInOut = (progress: number) =>
-  progress < 0.5
-    ? 4 * progress * progress * progress
-    : (progress - 1) * (2 * progress - 2) * (2 * progress - 2) + 1;
+  progress < 0.5 ? 4 * progress * progress * progress : (progress - 1) * (2 * progress - 2) * (2 * progress - 2) + 1;
 
 type ImageFit = 'contain' | 'cover';
 
@@ -88,28 +86,19 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output()
   imageIndexChanged: EventEmitter<number> = new EventEmitter<number>();
 
-  private readonly dragging$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly imageIndex$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
-  private readonly offset$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
-  private readonly fit$: BehaviorSubject<ImageFit> =
-    new BehaviorSubject<ImageFit>('contain');
-  private readonly theme$: BehaviorSubject<'light' | 'dark'> =
-    new BehaviorSubject<'light' | 'dark'>('light');
-  private readonly width$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
-  private readonly height$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
-  private readonly images$: BehaviorSubject<ImageSliderImage[]> =
-    new BehaviorSubject<ImageSliderImage[]>([]);
-  private readonly loadedImages$: BehaviorSubject<HTMLImageElement[]> =
-    new BehaviorSubject<HTMLImageElement[]>([]);
-  protected readonly loading$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly canvas$: BehaviorSubject<Option<HTMLCanvasElement>> =
-    new BehaviorSubject<Option<HTMLCanvasElement>>(none());
+  private readonly dragging$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly imageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  private readonly offset$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  private readonly fit$: BehaviorSubject<ImageFit> = new BehaviorSubject<ImageFit>('contain');
+  private readonly theme$: BehaviorSubject<'light' | 'dark'> = new BehaviorSubject<'light' | 'dark'>('light');
+  private readonly width$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  private readonly height$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  private readonly images$: BehaviorSubject<ImageSliderImage[]> = new BehaviorSubject<ImageSliderImage[]>([]);
+  private readonly loadedImages$: BehaviorSubject<HTMLImageElement[]> = new BehaviorSubject<HTMLImageElement[]>([]);
+  protected readonly loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly canvas$: BehaviorSubject<Option<HTMLCanvasElement>> = new BehaviorSubject<Option<HTMLCanvasElement>>(
+    none(),
+  );
   private readonly repaint$: Subject<void> = new Subject<void>();
   private readonly destroy$: Subject<void> = new Subject<void>();
 
@@ -183,13 +172,7 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.height$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((height) =>
-        this.renderer.setStyle(
-          this.elementRef.nativeElement,
-          'height',
-          `${height}px`,
-        ),
-      );
+      .subscribe((height) => this.renderer.setStyle(this.elementRef.nativeElement, 'height', `${height}px`));
 
     this.dragging$.pipe(takeUntil(this.destroy$)).subscribe((dragging) => {
       if (dragging) {
@@ -308,9 +291,7 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
     const timestamp = window.performance.now();
 
     const canvas = this.canvas$.value.orElseThrow('Canvas unavailable');
-    const ctx = someOrNone(canvas.getContext('2d')).orElseThrow(
-      'Canvas 2D context unavailable',
-    );
+    const ctx = someOrNone(canvas.getContext('2d')).orElseThrow('Canvas 2D context unavailable');
 
     this.resizeCanvasIfNecessary(canvas);
 
@@ -340,8 +321,7 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
     const expectedWidth = Math.round(this.width$.value * devicePixelRatio);
     const expectedHeight = Math.round(this.height$.value * devicePixelRatio);
 
-    const needsResize =
-      actualWidth !== expectedWidth || actualHeight !== expectedHeight;
+    const needsResize = actualWidth !== expectedWidth || actualHeight !== expectedHeight;
     if (needsResize) {
       canvas.width = expectedWidth;
       canvas.height = expectedHeight;
@@ -353,19 +333,13 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private renderLoading(
-    ctx: CanvasRenderingContext2D,
-    timestamp: number,
-  ): void {
-    const animationProgress =
-      (timestamp % LOADING_ANIMATION_DURATION_MS) /
-      LOADING_ANIMATION_DURATION_MS;
+  private renderLoading(ctx: CanvasRenderingContext2D, timestamp: number): void {
+    const animationProgress = (timestamp % LOADING_ANIMATION_DURATION_MS) / LOADING_ANIMATION_DURATION_MS;
     const curvedAnimationProgress = easeInOut(animationProgress);
 
     const bouncyProgress = Math.sin(curvedAnimationProgress * Math.PI);
     const minTransparency = 0.2;
-    const transparency =
-      minTransparency + bouncyProgress * (1 - minTransparency);
+    const transparency = minTransparency + bouncyProgress * (1 - minTransparency);
 
     const width = ctx.canvas.width;
     const height = ctx.canvas.height;
@@ -382,19 +356,13 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
     const height = ctx.canvas.height;
 
     if (this.resetAnimationOngoing) {
-      const progress = easeInOut(
-        (timestamp - this.resetAnimationStartTimestamp) /
-          this.resetAnimationDurationMs,
-      );
+      const progress = easeInOut((timestamp - this.resetAnimationStartTimestamp) / this.resetAnimationDurationMs);
 
       if (progress >= 1.0) {
         this.resetAnimationOngoing = false;
         this.offset$.next(this.resetAnimationEndX);
       } else {
-        this.offset$.next(
-          this.resetAnimationStartX +
-            (this.resetAnimationEndX - this.resetAnimationStartX) * progress,
-        );
+        this.offset$.next(this.resetAnimationStartX + (this.resetAnimationEndX - this.resetAnimationStartX) * progress);
       }
     }
 
@@ -415,23 +383,12 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const isInViewport = x + layout.width > 0 && x < width;
       if (isInViewport) {
-        ctx.drawImage(
-          image,
-          x + layout.x,
-          layout.y,
-          layout.width,
-          layout.height,
-        );
+        ctx.drawImage(image, x + layout.x, layout.y, layout.width, layout.height);
       }
     }
   }
 
-  private layoutImage(props: {
-    width: number;
-    height: number;
-    image: HTMLImageElement;
-    fit: ImageFit;
-  }): ImageLayout {
+  private layoutImage(props: { width: number; height: number; image: HTMLImageElement; fit: ImageFit }): ImageLayout {
     if (props.fit === 'contain') {
       return this.layoutContainedImage({
         width: props.width,
@@ -447,11 +404,7 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private layoutContainedImage(props: {
-    width: number;
-    height: number;
-    image: HTMLImageElement;
-  }): ImageLayout {
+  private layoutContainedImage(props: { width: number; height: number; image: HTMLImageElement }): ImageLayout {
     const { width, height, image } = props;
 
     const preferredAspectRatio = width / height;
@@ -474,11 +427,7 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private layoutCoveredImage(props: {
-    width: number;
-    height: number;
-    image: HTMLImageElement;
-  }): ImageLayout {
+  private layoutCoveredImage(props: { width: number; height: number; image: HTMLImageElement }): ImageLayout {
     const { width, height, image } = props;
 
     const isPortrait = image.height > image.width;
@@ -536,8 +485,7 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
     const imageIndexChanged = nextImageIndex !== this.imageIndex$.value;
     if (!imageIndexChanged) {
       const totalDragDistance = x - this.dragStartX;
-      const totalDragDistanceInPercent =
-        Math.abs(totalDragDistance) / this.width$.value;
+      const totalDragDistanceInPercent = Math.abs(totalDragDistance) / this.width$.value;
       if (totalDragDistanceInPercent > 0.1) {
         const dragTime = window.performance.now() - this.dragStartTimestamp;
         const dragSpeed = Math.abs(totalDragDistanceInPercent / dragTime);

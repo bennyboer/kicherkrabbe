@@ -18,10 +18,9 @@ export class PatternPage {
     map((params) => params['id']),
     switchMap((id) => this.patternsService.getPattern(id)),
   );
-  protected readonly images$: Observable<ImageSliderImage[]> =
-    this.pattern$.pipe(
-      map((pattern) => this.toImageSliderImages(pattern.images)),
-    );
+  protected readonly images$: Observable<ImageSliderImage[]> = this.pattern$.pipe(
+    map((pattern) => this.toImageSliderImages(pattern.images)),
+  );
   protected readonly theme$ = this.themeService
     .getTheme()
     .pipe(map((theme) => (theme === Theme.DARK ? 'dark' : 'light')));
@@ -33,9 +32,7 @@ export class PatternPage {
   ) {}
 
   toImageSliderImages(images: ImageId[]): ImageSliderImage[] {
-    return images.map((imageId) =>
-      ImageSliderImage.of({ url: this.getImageUrl(imageId) }),
-    );
+    return images.map((imageId) => ImageSliderImage.of({ url: this.getImageUrl(imageId) }));
   }
 
   private getImageUrl(imageId: ImageId): string {

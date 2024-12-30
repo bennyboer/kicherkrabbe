@@ -7,11 +7,7 @@ export class RegisteredButton {
   readonly index: number;
   readonly component: ButtonComponent;
 
-  private constructor(props: {
-    id: ButtonId;
-    index: number;
-    component: ButtonComponent;
-  }) {
+  private constructor(props: { id: ButtonId; index: number; component: ButtonComponent }) {
     this.id = props.id;
     this.index = props.index;
     this.component = props.component;
@@ -36,11 +32,9 @@ export type ButtonId = string;
 
 @Injectable()
 export abstract class ButtonRegistry implements OnDestroy {
-  private readonly lookup$: BehaviorSubject<RegisteredButtonsLookup> =
-    new BehaviorSubject<RegisteredButtonsLookup>({});
+  private readonly lookup$: BehaviorSubject<RegisteredButtonsLookup> = new BehaviorSubject<RegisteredButtonsLookup>({});
 
-  private readonly size$: BehaviorSubject<ButtonSize> =
-    new BehaviorSubject<ButtonSize>(ButtonSize.NORMAL);
+  private readonly size$: BehaviorSubject<ButtonSize> = new BehaviorSubject<ButtonSize>(ButtonSize.NORMAL);
 
   ngOnDestroy(): void {
     this.lookup$.complete();
@@ -72,20 +66,13 @@ export abstract class ButtonRegistry implements OnDestroy {
   }
 
   isFirst(buttonId: ButtonId): Observable<boolean> {
-    return this.lookup$
-      .asObservable()
-      .pipe(map((lookup) => lookup[buttonId]?.index === 0));
+    return this.lookup$.asObservable().pipe(map((lookup) => lookup[buttonId]?.index === 0));
   }
 
   isLast(buttonId: ButtonId): Observable<boolean> {
     return this.lookup$
       .asObservable()
-      .pipe(
-        map(
-          (lookup) =>
-            lookup[buttonId]?.index === Object.keys(lookup).length - 1,
-        ),
-      );
+      .pipe(map((lookup) => lookup[buttonId]?.index === Object.keys(lookup).length - 1));
   }
 
   getSize(): Observable<ButtonSize> {

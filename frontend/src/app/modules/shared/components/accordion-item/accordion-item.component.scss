@@ -34,11 +34,13 @@
 .content-container {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.2s ease, opacity 0.2s ease;
+  transition:
+    grid-template-rows 0.2s ease,
+    opacity 0.2s ease;
   opacity: 0;
 
   &.visible {
-    grid-template-rows:  1fr;
+    grid-template-rows: 1fr;
     opacity: 1;
   }
 }

@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ContactFormResult } from '../../components';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, finalize, map, Observable } from 'rxjs';
@@ -17,25 +12,19 @@ import { InquiriesStatus, Sender } from '../../models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactPage implements OnInit, OnDestroy {
-  protected readonly loadingInquiriesStatus$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
-  protected readonly inquiriesStatus$: BehaviorSubject<InquiriesStatus> =
-    new BehaviorSubject<InquiriesStatus>(
-      InquiriesStatus.of({ enabled: false }),
-    );
-  protected readonly loadedInquiriesStatus$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly sending$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly sendingFailed$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly requestId$: BehaviorSubject<string> =
-    new BehaviorSubject<string>(crypto.randomUUID());
+  protected readonly loadingInquiriesStatus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  protected readonly inquiriesStatus$: BehaviorSubject<InquiriesStatus> = new BehaviorSubject<InquiriesStatus>(
+    InquiriesStatus.of({ enabled: false }),
+  );
+  protected readonly loadedInquiriesStatus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly sending$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly sendingFailed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly requestId$: BehaviorSubject<string> = new BehaviorSubject<string>(crypto.randomUUID());
 
-  protected readonly loading$: Observable<boolean> =
-    this.loadingInquiriesStatus$.asObservable();
-  protected readonly inquiriesEnabled$: Observable<boolean> =
-    this.inquiriesStatus$.pipe(map((status) => status.enabled));
+  protected readonly loading$: Observable<boolean> = this.loadingInquiriesStatus$.asObservable();
+  protected readonly inquiriesEnabled$: Observable<boolean> = this.inquiriesStatus$.pipe(
+    map((status) => status.enabled),
+  );
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -71,9 +60,7 @@ export class ContactPage implements OnInit, OnDestroy {
         sender: Sender.of({
           name: result.name,
           mail: result.mail,
-          phone: result.phone
-            ?.filter((phone) => phone.trim().length > 0)
-            .orElseNull(),
+          phone: result.phone?.filter((phone) => phone.trim().length > 0).orElseNull(),
         }),
         subject: result.subject,
         message: JSON.stringify(result.message),

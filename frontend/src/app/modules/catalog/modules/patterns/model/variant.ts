@@ -1,11 +1,6 @@
 import { Money, validateProps } from '../../../../../util';
 import { PricedSizeRange } from './priced-size-range';
-import {
-  none,
-  Option,
-  some,
-  someOrNone,
-} from '../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '../../../../shared/modules/option';
 
 export class PatternVariant {
   readonly name: string;
@@ -18,10 +13,7 @@ export class PatternVariant {
     this.sizes = props.sizes;
   }
 
-  static of(props: {
-    name: string;
-    sizes?: PricedSizeRange[];
-  }): PatternVariant {
+  static of(props: { name: string; sizes?: PricedSizeRange[] }): PatternVariant {
     return new PatternVariant({
       name: props.name,
       sizes: someOrNone(props.sizes).orElse([]),
@@ -35,10 +27,7 @@ export class PatternVariant {
       return Money.zero();
     }
 
-    return prices.reduce(
-      (acc, price) => (acc.isLessThan(price) ? acc : price),
-      prices[0],
-    );
+    return prices.reduce((acc, price) => (acc.isLessThan(price) ? acc : price), prices[0]);
   }
 
   getEndingPrice(): Money {
@@ -48,10 +37,7 @@ export class PatternVariant {
       return Money.zero();
     }
 
-    return prices.reduce(
-      (acc, price) => (acc.isGreaterThan(price) ? acc : price),
-      prices[0],
-    );
+    return prices.reduce((acc, price) => (acc.isGreaterThan(price) ? acc : price), prices[0]);
   }
 
   getSmallestSize(): number {
@@ -76,9 +62,7 @@ export class PatternVariant {
       return some(0);
     }
 
-    return some(
-      sizes.reduce((acc, size) => (size > acc ? size : acc), sizes[0]),
-    );
+    return some(sizes.reduce((acc, size) => (size > acc ? size : acc), sizes[0]));
   }
 
   isAvailableInSize(size: number): boolean {

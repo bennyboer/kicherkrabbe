@@ -37,10 +37,8 @@ export class RadioComponent implements OnDestroy {
 
   protected readonly id: string = crypto.randomUUID();
   private readonly label$: Subject<string> = new ReplaySubject<string>(1);
-  private readonly checked$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly passive$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly checked$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly passive$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   ngOnDestroy(): void {
     this.label$.complete();

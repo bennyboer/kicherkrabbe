@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
@@ -27,86 +22,59 @@ import { RateLimit, RateLimits, Statistics } from '../../models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InquiriesPage implements OnInit, OnDestroy {
-  private readonly loadingStats$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
-  protected readonly statsLoaded$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly stats$: BehaviorSubject<Statistics[]> =
-    new BehaviorSubject<Statistics[]>([]);
-  private readonly loadingSettings$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
-  protected readonly settingsLoaded$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly loading$: Observable<boolean> = combineLatest([
-    this.loadingStats$,
-    this.loadingSettings$,
-  ]).pipe(
+  private readonly loadingStats$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  protected readonly statsLoaded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly stats$: BehaviorSubject<Statistics[]> = new BehaviorSubject<Statistics[]>([]);
+  private readonly loadingSettings$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  protected readonly settingsLoaded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly loading$: Observable<boolean> = combineLatest([this.loadingStats$, this.loadingSettings$]).pipe(
     map(([loadingStats, loadingSettings]) => loadingStats || loadingSettings),
   );
 
-  protected readonly contactFormEnabled$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly updatingContactFormEnabled$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  protected readonly contactFormEnabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly updatingContactFormEnabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  protected readonly rateLimitForMail$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
-  protected readonly pendingRateLimitForMail$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
-  protected readonly updatingRateLimitForMail$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly cannotUpdateRateLimitForMail$: Observable<boolean> =
-    combineLatest([
-      this.rateLimitForMail$,
-      this.pendingRateLimitForMail$,
-      this.updatingRateLimitForMail$,
-    ]).pipe(
-      map(
-        ([
-          rateLimitForMail,
-          pendingRateLimitForMail,
-          updatingRateLimitForMail,
-        ]) =>
-          rateLimitForMail === pendingRateLimitForMail ||
-          updatingRateLimitForMail,
-      ),
-    );
+  protected readonly rateLimitForMail$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  protected readonly pendingRateLimitForMail$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  protected readonly updatingRateLimitForMail$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly cannotUpdateRateLimitForMail$: Observable<boolean> = combineLatest([
+    this.rateLimitForMail$,
+    this.pendingRateLimitForMail$,
+    this.updatingRateLimitForMail$,
+  ]).pipe(
+    map(
+      ([rateLimitForMail, pendingRateLimitForMail, updatingRateLimitForMail]) =>
+        rateLimitForMail === pendingRateLimitForMail || updatingRateLimitForMail,
+    ),
+  );
 
-  protected readonly rateLimitForIp$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
-  protected readonly pendingRateLimitForIp$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
-  protected readonly updatingRateLimitForIp$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly cannotUpdateRateLimitForIp$: Observable<boolean> =
-    combineLatest([
-      this.rateLimitForIp$,
-      this.pendingRateLimitForIp$,
-      this.updatingRateLimitForIp$,
-    ]).pipe(
-      map(
-        ([rateLimitForIp, pendingRateLimitForIp, updatingRateLimitForIp]) =>
-          rateLimitForIp === pendingRateLimitForIp || updatingRateLimitForIp,
-      ),
-    );
+  protected readonly rateLimitForIp$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  protected readonly pendingRateLimitForIp$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  protected readonly updatingRateLimitForIp$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly cannotUpdateRateLimitForIp$: Observable<boolean> = combineLatest([
+    this.rateLimitForIp$,
+    this.pendingRateLimitForIp$,
+    this.updatingRateLimitForIp$,
+  ]).pipe(
+    map(
+      ([rateLimitForIp, pendingRateLimitForIp, updatingRateLimitForIp]) =>
+        rateLimitForIp === pendingRateLimitForIp || updatingRateLimitForIp,
+    ),
+  );
 
-  protected readonly rateLimitPerDay$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
-  protected readonly pendingRateLimitPerDay$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
-  protected readonly updatingRateLimitPerDay$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly cannotUpdateRateLimitPerDay$: Observable<boolean> =
-    combineLatest([
-      this.rateLimitPerDay$,
-      this.pendingRateLimitPerDay$,
-      this.updatingRateLimitPerDay$,
-    ]).pipe(
-      map(
-        ([rateLimitPerDay, pendingRateLimitPerDay, updatingRateLimitPerDay]) =>
-          rateLimitPerDay === pendingRateLimitPerDay || updatingRateLimitPerDay,
-      ),
-    );
+  protected readonly rateLimitPerDay$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  protected readonly pendingRateLimitPerDay$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  protected readonly updatingRateLimitPerDay$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly cannotUpdateRateLimitPerDay$: Observable<boolean> = combineLatest([
+    this.rateLimitPerDay$,
+    this.pendingRateLimitPerDay$,
+    this.updatingRateLimitPerDay$,
+  ]).pipe(
+    map(
+      ([rateLimitPerDay, pendingRateLimitPerDay, updatingRateLimitPerDay]) =>
+        rateLimitPerDay === pendingRateLimitPerDay || updatingRateLimitPerDay,
+    ),
+  );
 
   private readonly destroy$: Subject<void> = new Subject<void>();
 
@@ -152,9 +120,7 @@ export class InquiriesPage implements OnInit, OnDestroy {
 
     const isActivating = !this.contactFormEnabled$.value;
 
-    const action$ = isActivating
-      ? this.inquiriesService.enableInquiries()
-      : this.inquiriesService.disableInquiries();
+    const action$ = isActivating ? this.inquiriesService.enableInquiries() : this.inquiriesService.disableInquiries();
 
     action$
       .pipe(
@@ -162,8 +128,7 @@ export class InquiriesPage implements OnInit, OnDestroy {
         catchError((e) => {
           console.error('Failed to toggle contact form enabled', e);
           this.notificationService.publish({
-            message:
-              'Das Kontaktformular konnte nicht aktiviert/deaktiviert werden',
+            message: 'Das Kontaktformular konnte nicht aktiviert/deaktiviert werden',
             type: 'error',
           });
           return EMPTY;
@@ -179,9 +144,7 @@ export class InquiriesPage implements OnInit, OnDestroy {
         }),
         takeUntil(this.destroy$),
       )
-      .subscribe(() =>
-        this.contactFormEnabled$.next(!this.contactFormEnabled$.value),
-      );
+      .subscribe(() => this.contactFormEnabled$.next(!this.contactFormEnabled$.value));
   }
 
   updatePendingRateLimitForMail(rateLimit: string): void {
@@ -202,8 +165,7 @@ export class InquiriesPage implements OnInit, OnDestroy {
     const currentRateLimit = this.rateLimitForMail$.value;
     if (rateLimitNumber === currentRateLimit) {
       this.notificationService.publish({
-        message:
-          'Das Limit für Kontaktanfragen je E-Mail Adresse ist bereits auf diesen Wert eingestellt',
+        message: 'Das Limit für Kontaktanfragen je E-Mail Adresse ist bereits auf diesen Wert eingestellt',
         type: 'warn',
       });
       return;
@@ -224,8 +186,7 @@ export class InquiriesPage implements OnInit, OnDestroy {
         catchError((e) => {
           console.error('Failed to update rate limit for mail', e);
           this.notificationService.publish({
-            message:
-              'Das Limit für Kontaktanfragen je E-Mail Adresse konnte nicht aktualisiert werden',
+            message: 'Das Limit für Kontaktanfragen je E-Mail Adresse konnte nicht aktualisiert werden',
             type: 'error',
           });
           return EMPTY;
@@ -260,8 +221,7 @@ export class InquiriesPage implements OnInit, OnDestroy {
     const currentRateLimit = this.rateLimitForIp$.value;
     if (rateLimitNumber === currentRateLimit) {
       this.notificationService.publish({
-        message:
-          'Das Limit für Kontaktanfragen je IP-Adresse ist bereits auf diesen Wert eingestellt',
+        message: 'Das Limit für Kontaktanfragen je IP-Adresse ist bereits auf diesen Wert eingestellt',
         type: 'warn',
       });
       return;
@@ -282,8 +242,7 @@ export class InquiriesPage implements OnInit, OnDestroy {
         catchError((e) => {
           console.error('Failed to update rate limit for IP', e);
           this.notificationService.publish({
-            message:
-              'Das Limit für Kontaktanfragen je IP-Adresse konnte nicht aktualisiert werden',
+            message: 'Das Limit für Kontaktanfragen je IP-Adresse konnte nicht aktualisiert werden',
             type: 'error',
           });
           return EMPTY;
@@ -318,8 +277,7 @@ export class InquiriesPage implements OnInit, OnDestroy {
     const currentRateLimit = this.rateLimitPerDay$.value;
     if (rateLimitNumber === currentRateLimit) {
       this.notificationService.publish({
-        message:
-          'Das Limit für Kontaktanfragen je Tag ist bereits auf diesen Wert eingestellt',
+        message: 'Das Limit für Kontaktanfragen je Tag ist bereits auf diesen Wert eingestellt',
         type: 'warn',
       });
       return;
@@ -340,8 +298,7 @@ export class InquiriesPage implements OnInit, OnDestroy {
         catchError((e) => {
           console.error('Failed to update rate limit per day', e);
           this.notificationService.publish({
-            message:
-              'Das Limit für Kontaktanfragen je Tag konnte nicht aktualisiert werden',
+            message: 'Das Limit für Kontaktanfragen je Tag konnte nicht aktualisiert werden',
             type: 'error',
           });
           return EMPTY;
@@ -385,9 +342,7 @@ export class InquiriesPage implements OnInit, OnDestroy {
 
     for (const stat of stats) {
       const date = stat.dateRange.from;
-      const daysAgo = Math.floor(
-        (maxDate.getTime() - date.getTime()) / (24 * 60 * 60 * 1000),
-      );
+      const daysAgo = Math.floor((maxDate.getTime() - date.getTime()) / (24 * 60 * 60 * 1000));
       data[data.length - 1 - daysAgo] = stat.totalRequests;
     }
 
@@ -404,8 +359,7 @@ export class InquiriesPage implements OnInit, OnDestroy {
         catchError((e) => {
           console.error('Failed to load settings', e);
           this.notificationService.publish({
-            message:
-              'Die Kontaktanfragen-Einstellungen konnten nicht geladen werden',
+            message: 'Die Kontaktanfragen-Einstellungen konnten nicht geladen werden',
             type: 'error',
           });
           return EMPTY;
@@ -441,8 +395,7 @@ export class InquiriesPage implements OnInit, OnDestroy {
         catchError((e) => {
           console.error('Failed to load stats', e);
           this.notificationService.publish({
-            message:
-              'Die Kontaktanfragen-Statistiken konnten nicht geladen werden',
+            message: 'Die Kontaktanfragen-Statistiken konnten nicht geladen werden',
             type: 'error',
           });
           return EMPTY;

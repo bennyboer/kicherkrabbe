@@ -1,181 +1,161 @@
 <div class="container">
   <app-loading-bar [visible]="isLoading() | async"></app-loading-bar>
 
-  @if (getFabric() | async; as fabricOption) {
-    @if (fabricOption.unwrap(); as fabric) {
-      <div class="top-action-bar">
-        <span class="created-at">
-          Erstellt am: {{ fabric.createdAt | date: 'dd.MM.yyyy' }} um {{ fabric.createdAt | date: 'HH:mm' }} Uhr
-        </span>
-        <span class="top-action-bar-actions">
-          @if (fabric.published) {
-            <app-button color="warn" (click)="unpublishFabric(fabric)">Veröffentlichung aufheben</app-button>
-          } @else {
-            <app-button color="primary" (click)="publishFabric(fabric)">Veröffentlichen</app-button>
-          }
-        </span>
-      </div>
+  @if (getFabric() | async; as fabricOption) { @if (fabricOption.unwrap(); as fabric) {
+  <div class="top-action-bar">
+    <span class="created-at">
+      Erstellt am: {{ fabric.createdAt | date: 'dd.MM.yyyy' }} um {{ fabric.createdAt | date: 'HH:mm' }} Uhr
+    </span>
+    <span class="top-action-bar-actions">
+      @if (fabric.published) {
+      <app-button color="warn" (click)="unpublishFabric(fabric)">Veröffentlichung aufheben</app-button>
+      } @else {
+      <app-button color="primary" (click)="publishFabric(fabric)">Veröffentlichen</app-button>
+      }
+    </span>
+  </div>
 
-      <hr>
+  <hr />
 
-      <div class="image-edit-centering-container">
-        <div class="image-edit-container">
-          @if (isEditingImage() | async) {
-            <app-image-upload (uploaded)="onImageUploaded(fabric, $event)"></app-image-upload>
-          } @else {
-            <div class="image-container">
-              @if (getImageId() | async; as imageId) {
-                <img [src]="getImageUrl(imageId)" width="100%" alt="Bild des Stoffs">
-              } @else {
-                <img [src]="getImageUrl(fabric.image)" width="100%" alt="Bild des Stoffs">
-              }
-            </div>
-            <div>
-              <app-button (click)="editImage()">Bild ändern</app-button>
-            </div>
-          }
-        </div>
-      </div>
-
-      <hr>
-
-      <form class="name-form" (submit)="false">
-        <div class="form-group">
-          <span class="input-label-group">
-            <label for="name">Name</label>
-            <input #name
-                   id="name"
-                   name="name"
-                   type="text"
-                   [value]="fabric.name"
-                   (input)="updateTransientName(name.value)"/>
-          </span>
-          <app-button (click)="updateName(fabric)" [disabled]="cannotUpdateName() | async">Speichern</app-button>
-        </div>
-
-        @if (isFailedUpdatingName() | async) {
-          <app-note level="error">
-            Der Name konnte nicht aktualisiert werden. Bitte versuche es erneut.
-          </app-note>
-        }
-
-        <button type="submit"
-                class="hidden"
-                (click)="updateName(fabric)"
-                [disabled]="cannotUpdateName() | async">
-        </button>
-      </form>
-
-      <div class="topics-container">
-        <h4>Themen</h4>
-
-        @if (isLoadingAvailableTopics() | async) {
-          <div class="loading-container">
-            <app-loading-spinner></app-loading-spinner>
-          </div>
+  <div class="image-edit-centering-container">
+    <div class="image-edit-container">
+      @if (isEditingImage() | async) {
+      <app-image-upload (uploaded)="onImageUploaded(fabric, $event)"></app-image-upload>
+      } @else {
+      <div class="image-container">
+        @if (getImageId() | async; as imageId) {
+        <img [src]="getImageUrl(imageId)" width="100%" alt="Bild des Stoffs" />
         } @else {
-          @if (getAvailableTopics() | async; as topics) {
-            @if (getSelectedTopics() | async; as selectedTopics) {
-              <app-chips [chips]="topicsToChips(selectedTopics)"
-                         [available]="topicsToChips(topics)"
-                         [alwaysShowOptions]="true"
-                         [chipDropdownItemTemplateRef]="topicDropdownItemTemplateRef"
-                         (removed)="onTopicRemoved(fabric, selectedTopics, $event)"
-                         (added)="onTopicAdded(fabric, selectedTopics, $event)">
-                <ng-template let-chip>
-                  {{ chip.label }}
-                </ng-template>
-              </app-chips>
-
-              <ng-template #topicDropdownItemTemplateRef let-chip>
-                {{ chip.label }}
-              </ng-template>
-            }
-          }
+        <img [src]="getImageUrl(fabric.image)" width="100%" alt="Bild des Stoffs" />
         }
       </div>
-
-      <div class="colors-container">
-        <h4>Farben</h4>
-
-        @if (isLoadingAvailableColors() | async) {
-          <div class="loading-container">
-            <app-loading-spinner></app-loading-spinner>
-          </div>
-        } @else {
-          @if (getAvailableColors() | async; as colors) {
-            @if (getSelectedColors() | async; as selectedColors) {
-              <app-chips [chips]="colorsToChips(selectedColors)"
-                         [available]="colorsToChips(colors)"
-                         [alwaysShowOptions]="true"
-                         [chipDropdownItemTemplateRef]="colorDropdownItemTemplateRef"
-                         (removed)="onColorRemoved(fabric, selectedColors,$event)"
-                         (added)="onColorAdded(fabric, selectedColors,$event)">
-                <ng-template let-chip>
-                  <div class="color-chip">
-                    <app-color-badge [color]="chip.content" size="20"></app-color-badge>
-                    {{ chip.label }}
-                  </div>
-                </ng-template>
-              </app-chips>
-
-              <ng-template #colorDropdownItemTemplateRef let-chip>
-                <div class="color-dropdown-item">
-                  <app-color-badge [color]="chip.content"></app-color-badge>
-                  {{ chip.label }}
-                </div>
-              </ng-template>
-            }
-          }
-        }
+      <div>
+        <app-button (click)="editImage()">Bild ändern</app-button>
       </div>
+      }
+    </div>
+  </div>
 
-      <div class="fabric-type-availability-container">
-        <h4>Verfügbarkeit</h4>
+  <hr />
 
-        @if (isLoadingAvailableFabricTypes() | async) {
-          <div class="loading-container">
-            <app-loading-spinner></app-loading-spinner>
-          </div>
-        } @else {
-          @if (getAvailableFabricTypes() | async; as fabricTypes) {
-            @if (getSelectedFabricTypes() | async; as selectedFabricTypes) {
-              <app-chips [chips]="fabricTypesToChips(selectedFabricTypes)"
-                         [available]="fabricTypesToChips(fabricTypes)"
-                         [alwaysShowOptions]="true"
-                         [chipDropdownItemTemplateRef]="fabricTypeDropdownItemTemplateRef"
-                         (removed)="onFabricTypeRemoved(fabric, selectedFabricTypes, $event)"
-                         (added)="onFabricTypeAdded(fabric, selectedFabricTypes,$event)">
-                <ng-template let-chip>
-                  {{ chip.label }}
-                </ng-template>
-              </app-chips>
+  <form class="name-form" (submit)="false">
+    <div class="form-group">
+      <span class="input-label-group">
+        <label for="name">Name</label>
+        <input
+          #name
+          id="name"
+          name="name"
+          type="text"
+          [value]="fabric.name"
+          (input)="updateTransientName(name.value)"
+        />
+      </span>
+      <app-button (click)="updateName(fabric)" [disabled]="cannotUpdateName() | async">Speichern</app-button>
+    </div>
 
-              <ng-template #fabricTypeDropdownItemTemplateRef let-chip>
-                {{ chip.label }}
-              </ng-template>
-            }
-          }
-        }
-      </div>
-
-      <hr>
-
-      <div class="actions">
-        <span>
-          <app-button routerLink="..">Zurück zur Übersicht</app-button>
-        </span>
-        <span>
-          @if (isDeleteConfirmation() | async) {
-            <app-button color="warn" (click)="deleteFabric(fabric)">Wirklich löschen?</app-button>
-          } @else {
-            <app-button (click)="waitForDeleteConfirmation()">Stoff löschen</app-button>
-          }
-        </span>
-      </div>
-    } @else {
-      <p>Der Stoff konnte nicht gefunden werden.</p>
+    @if (isFailedUpdatingName() | async) {
+    <app-note level="error"> Der Name konnte nicht aktualisiert werden. Bitte versuche es erneut. </app-note>
     }
-  }
 
+    <button type="submit" class="hidden" (click)="updateName(fabric)" [disabled]="cannotUpdateName() | async"></button>
+  </form>
+
+  <div class="topics-container">
+    <h4>Themen</h4>
+
+    @if (isLoadingAvailableTopics() | async) {
+    <div class="loading-container">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+    } @else { @if (getAvailableTopics() | async; as topics) { @if (getSelectedTopics() | async; as selectedTopics) {
+    <app-chips
+      [chips]="topicsToChips(selectedTopics)"
+      [available]="topicsToChips(topics)"
+      [alwaysShowOptions]="true"
+      [chipDropdownItemTemplateRef]="topicDropdownItemTemplateRef"
+      (removed)="onTopicRemoved(fabric, selectedTopics, $event)"
+      (added)="onTopicAdded(fabric, selectedTopics, $event)"
+    >
+      <ng-template let-chip> {{ chip.label }} </ng-template>
+    </app-chips>
+
+    <ng-template #topicDropdownItemTemplateRef let-chip> {{ chip.label }} </ng-template>
+    } } }
+  </div>
+
+  <div class="colors-container">
+    <h4>Farben</h4>
+
+    @if (isLoadingAvailableColors() | async) {
+    <div class="loading-container">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+    } @else { @if (getAvailableColors() | async; as colors) { @if (getSelectedColors() | async; as selectedColors) {
+    <app-chips
+      [chips]="colorsToChips(selectedColors)"
+      [available]="colorsToChips(colors)"
+      [alwaysShowOptions]="true"
+      [chipDropdownItemTemplateRef]="colorDropdownItemTemplateRef"
+      (removed)="onColorRemoved(fabric, selectedColors,$event)"
+      (added)="onColorAdded(fabric, selectedColors,$event)"
+    >
+      <ng-template let-chip>
+        <div class="color-chip">
+          <app-color-badge [color]="chip.content" size="20"></app-color-badge>
+          {{ chip.label }}
+        </div>
+      </ng-template>
+    </app-chips>
+
+    <ng-template #colorDropdownItemTemplateRef let-chip>
+      <div class="color-dropdown-item">
+        <app-color-badge [color]="chip.content"></app-color-badge>
+        {{ chip.label }}
+      </div>
+    </ng-template>
+    } } }
+  </div>
+
+  <div class="fabric-type-availability-container">
+    <h4>Verfügbarkeit</h4>
+
+    @if (isLoadingAvailableFabricTypes() | async) {
+    <div class="loading-container">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+    } @else { @if (getAvailableFabricTypes() | async; as fabricTypes) { @if (getSelectedFabricTypes() | async; as
+    selectedFabricTypes) {
+    <app-chips
+      [chips]="fabricTypesToChips(selectedFabricTypes)"
+      [available]="fabricTypesToChips(fabricTypes)"
+      [alwaysShowOptions]="true"
+      [chipDropdownItemTemplateRef]="fabricTypeDropdownItemTemplateRef"
+      (removed)="onFabricTypeRemoved(fabric, selectedFabricTypes, $event)"
+      (added)="onFabricTypeAdded(fabric, selectedFabricTypes,$event)"
+    >
+      <ng-template let-chip> {{ chip.label }} </ng-template>
+    </app-chips>
+
+    <ng-template #fabricTypeDropdownItemTemplateRef let-chip> {{ chip.label }} </ng-template>
+    } } }
+  </div>
+
+  <hr />
+
+  <div class="actions">
+    <span>
+      <app-button routerLink="..">Zurück zur Übersicht</app-button>
+    </span>
+    <span>
+      @if (isDeleteConfirmation() | async) {
+      <app-button color="warn" (click)="deleteFabric(fabric)">Wirklich löschen?</app-button>
+      } @else {
+      <app-button (click)="waitForDeleteConfirmation()">Stoff löschen</app-button>
+      }
+    </span>
+  </div>
+  } @else {
+  <p>Der Stoff konnte nicht gefunden werden.</p>
+  } }
 </div>

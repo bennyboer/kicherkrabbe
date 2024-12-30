@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
@@ -22,19 +17,8 @@ import {
 } from 'rxjs';
 import { CategoriesService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  Category,
-  CategoryGroup,
-  CategoryGroupType,
-  CategoryId,
-  GROUPS,
-} from '../../model';
-import {
-  DropdownComponent,
-  DropdownItem,
-  DropdownItemId,
-  NotificationService,
-} from '../../../../../shared';
+import { Category, CategoryGroup, CategoryGroupType, CategoryId, GROUPS } from '../../model';
+import { DropdownComponent, DropdownItem, DropdownItemId, NotificationService } from '../../../../../shared';
 import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
@@ -45,46 +29,29 @@ import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 })
 export class CategoryPage implements OnInit, OnDestroy {
   protected readonly category$: Subject<Category> = new ReplaySubject(1);
-  protected readonly loading$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
-  protected readonly notLoading$: Observable<boolean> = this.loading$.pipe(
-    map((loading) => !loading),
-  );
-  protected readonly deleteConfirmationRequired$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly categoryId$: BehaviorSubject<Option<CategoryId>> =
-    new BehaviorSubject<Option<CategoryId>>(none());
+  protected readonly loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  protected readonly notLoading$: Observable<boolean> = this.loading$.pipe(map((loading) => !loading));
+  protected readonly deleteConfirmationRequired$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly categoryId$: BehaviorSubject<Option<CategoryId>> = new BehaviorSubject<Option<CategoryId>>(none());
   private readonly destroy$: Subject<void> = new Subject<void>();
 
-  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
-    '',
+  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private readonly nameChanged$: Observable<boolean> = combineLatest([this.category$, this.name$]).pipe(
+    map(([category, name]) => category.name !== name),
   );
-  private readonly nameChanged$: Observable<boolean> = combineLatest([
-    this.category$,
-    this.name$,
-  ]).pipe(map(([category, name]) => category.name !== name));
-  private readonly nameValid$: Observable<boolean> = this.name$.pipe(
-    map((name) => name.length > 0),
-  );
-  protected readonly nameError$: Observable<boolean> = this.nameValid$.pipe(
-    map((valid) => !valid),
-  );
-  protected readonly cannotSaveUpdatedName$: Observable<boolean> =
-    combineLatest([this.nameValid$, this.nameChanged$]).pipe(
-      map(([valid, changed]) => !valid || !changed),
-    );
+  private readonly nameValid$: Observable<boolean> = this.name$.pipe(map((name) => name.length > 0));
+  protected readonly nameError$: Observable<boolean> = this.nameValid$.pipe(map((valid) => !valid));
+  protected readonly cannotSaveUpdatedName$: Observable<boolean> = combineLatest([
+    this.nameValid$,
+    this.nameChanged$,
+  ]).pipe(map(([valid, changed]) => !valid || !changed));
 
-  private readonly groups$: BehaviorSubject<CategoryGroup[]> =
-    new BehaviorSubject<CategoryGroup[]>(GROUPS);
-  private readonly selectedGroup$: Observable<CategoryGroup> =
-    this.category$.pipe(map((category) => category.group));
-  protected readonly groupDropdownItems$: Observable<DropdownItem[]> =
-    this.groups$.pipe(
-      map((groups) => groups.map((g) => ({ id: g.type, label: g.name }))),
-    );
-  protected readonly initialSelectedDropdownItems$: Observable<
-    DropdownItemId[]
-  > = this.selectedGroup$.pipe(
+  private readonly groups$: BehaviorSubject<CategoryGroup[]> = new BehaviorSubject<CategoryGroup[]>(GROUPS);
+  private readonly selectedGroup$: Observable<CategoryGroup> = this.category$.pipe(map((category) => category.group));
+  protected readonly groupDropdownItems$: Observable<DropdownItem[]> = this.groups$.pipe(
+    map((groups) => groups.map((g) => ({ id: g.type, label: g.name }))),
+  );
+  protected readonly initialSelectedDropdownItems$: Observable<DropdownItemId[]> = this.selectedGroup$.pipe(
     map((group) => [group.type]),
     first(),
   );
@@ -166,11 +133,7 @@ export class CategoryPage implements OnInit, OnDestroy {
       });
   }
 
-  updateSelectedGroup(
-    category: Category,
-    dropdown: DropdownComponent,
-    items: DropdownItemId[],
-  ): void {
+  updateSelectedGroup(category: Category, dropdown: DropdownComponent, items: DropdownItemId[]): void {
     if (items.length !== 1) {
       throw new Error('Only one group can be selected');
     }
@@ -178,42 +141,40 @@ export class CategoryPage implements OnInit, OnDestroy {
     dropdown.toggleOpened();
 
     const item = items[0];
-    const groupType: CategoryGroupType =
-      this.dropdownItemToCategoryGroupType(item);
-    someOrNone(this.groups$.value.find((g) => g.type === groupType)).ifSome(
-      (group) =>
-        this.categoriesService
-          .regroupCategory(category.id, category.version, group)
-          .pipe(
-            switchMap(() => {
-              return this.categoriesService.getCategoryChanges().pipe(
-                filter((categories) => categories.has(category.id)),
-                first(),
-                map(() => null),
-                timeout(5000),
-                catchError((e) => {
-                  console.warn('Category regrouping not confirmed', e);
-                  return of(null);
-                }),
-              );
-            }),
-          )
-          .subscribe({
-            next: () => {
-              this.notificationService.publish({
-                type: 'success',
-                message: `Die Gruppe der Kategorie wurde zu ${group.name} geändert`,
-              });
-              this.reloadCategory({ id: category.id, indicateLoading: false });
-            },
-            error: (e) => {
-              console.error(e);
-              this.notificationService.publish({
-                type: 'error',
-                message: 'Die Kategorie konnte nicht umgruppiert werden',
-              });
-            },
+    const groupType: CategoryGroupType = this.dropdownItemToCategoryGroupType(item);
+    someOrNone(this.groups$.value.find((g) => g.type === groupType)).ifSome((group) =>
+      this.categoriesService
+        .regroupCategory(category.id, category.version, group)
+        .pipe(
+          switchMap(() => {
+            return this.categoriesService.getCategoryChanges().pipe(
+              filter((categories) => categories.has(category.id)),
+              first(),
+              map(() => null),
+              timeout(5000),
+              catchError((e) => {
+                console.warn('Category regrouping not confirmed', e);
+                return of(null);
+              }),
+            );
           }),
+        )
+        .subscribe({
+          next: () => {
+            this.notificationService.publish({
+              type: 'success',
+              message: `Die Gruppe der Kategorie wurde zu ${group.name} geändert`,
+            });
+            this.reloadCategory({ id: category.id, indicateLoading: false });
+          },
+          error: (e) => {
+            console.error(e);
+            this.notificationService.publish({
+              type: 'error',
+              message: 'Die Kategorie konnte nicht umgruppiert werden',
+            });
+          },
+        }),
     );
   }
 
@@ -257,10 +218,7 @@ export class CategoryPage implements OnInit, OnDestroy {
     this.deleteConfirmationRequired$.next(true);
   }
 
-  private reloadCategory(props: {
-    id: CategoryId;
-    indicateLoading?: boolean;
-  }): void {
+  private reloadCategory(props: { id: CategoryId; indicateLoading?: boolean }): void {
     const id = props.id;
     const indicateLoading = someOrNone(props.indicateLoading).orElse(true);
     if (indicateLoading) {
@@ -289,9 +247,7 @@ export class CategoryPage implements OnInit, OnDestroy {
       });
   }
 
-  private dropdownItemToCategoryGroupType(
-    item: DropdownItemId,
-  ): CategoryGroupType {
+  private dropdownItemToCategoryGroupType(item: DropdownItemId): CategoryGroupType {
     switch (item) {
       case 'CLOTHING':
         return CategoryGroupType.CLOTHING;

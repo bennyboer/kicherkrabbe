@@ -8,12 +8,7 @@ export class PricedSizeRange implements Eq<PricedSizeRange> {
   readonly unit: Option<string>;
   readonly price: Money;
 
-  private constructor(props: {
-    from: number;
-    to: Option<number>;
-    unit: Option<string>;
-    price: Money;
-  }) {
+  private constructor(props: { from: number; to: Option<number>; unit: Option<string>; price: Money }) {
     validateProps(props);
 
     this.id = crypto.randomUUID();
@@ -23,12 +18,7 @@ export class PricedSizeRange implements Eq<PricedSizeRange> {
     this.price = props.price;
   }
 
-  static of(props: {
-    from?: number;
-    to?: number | null;
-    unit?: string | null;
-    price?: Money;
-  }): PricedSizeRange {
+  static of(props: { from?: number; to?: number | null; unit?: string | null; price?: Money }): PricedSizeRange {
     return new PricedSizeRange({
       from: someOrNone(props.from).orElse(0),
       to: someOrNone(props.to),

@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MailboxService } from '../../services';
 import { BehaviorSubject, finalize, first, map } from 'rxjs';
 
@@ -15,11 +10,8 @@ import { BehaviorSubject, finalize, first, map } from 'rxjs';
 })
 export class DashboardPage implements OnInit, OnDestroy {
   protected readonly unreadMailsCount$ = new BehaviorSubject<number>(0);
-  protected readonly loadingUnreadMailsCount$ = new BehaviorSubject<boolean>(
-    false,
-  );
-  protected readonly unreadMailsCountLoaded$ =
-    this.loadingUnreadMailsCount$.pipe(map((loading) => !loading));
+  protected readonly loadingUnreadMailsCount$ = new BehaviorSubject<boolean>(false);
+  protected readonly unreadMailsCountLoaded$ = this.loadingUnreadMailsCount$.pipe(map((loading) => !loading));
 
   protected readonly loading$ = this.loadingUnreadMailsCount$.asObservable();
 

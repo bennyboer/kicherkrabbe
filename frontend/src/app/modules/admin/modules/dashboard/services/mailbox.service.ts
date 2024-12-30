@@ -13,9 +13,7 @@ export class MailboxService {
 
   getUnreadMailsCount(): Observable<number> {
     return this.http
-      .get<QueryUnreadMailsCountResponse>(
-        `${environment.apiUrl}/mailbox/mails/unread/count`,
-      )
+      .get<QueryUnreadMailsCountResponse>(`${environment.apiUrl}/mailbox/mails/unread/count`)
       .pipe(map((response) => response.count));
   }
 }

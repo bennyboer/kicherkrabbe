@@ -11,13 +11,7 @@ export class Category {
   readonly group: CategoryGroup;
   readonly createdAt: Date;
 
-  private constructor(props: {
-    id: CategoryId;
-    version: number;
-    name: string;
-    group: CategoryGroup;
-    createdAt: Date;
-  }) {
+  private constructor(props: { id: CategoryId; version: number; name: string; group: CategoryGroup; createdAt: Date }) {
     validateProps(props);
 
     this.id = props.id;

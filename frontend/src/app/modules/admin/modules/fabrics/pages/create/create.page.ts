@@ -7,28 +7,11 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  filter,
-  map,
-  Observable,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, map, Observable, Subject, takeUntil } from 'rxjs';
 import { FabricsService } from '../../services';
-import {
-  Chip,
-  ColorBadgeColor,
-  NotificationService,
-} from '../../../../../shared';
+import { Chip, ColorBadgeColor, NotificationService } from '../../../../../shared';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  FabricColor,
-  FabricTopic,
-  FabricType,
-  FabricTypeAvailability,
-} from '../../model';
+import { FabricColor, FabricTopic, FabricType, FabricTypeAvailability } from '../../model';
 import { environment } from '../../../../../../../environments';
 import { none, Option, some } from '../../../../../shared/modules/option';
 
@@ -42,33 +25,19 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('name')
   nameInput!: ElementRef;
 
-  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
-    '',
-  );
-  private readonly imageId$: BehaviorSubject<Option<string>> =
-    new BehaviorSubject<Option<string>>(none());
-  private readonly selectedTopics$: BehaviorSubject<FabricTopic[]> =
-    new BehaviorSubject<FabricTopic[]>([]);
-  private readonly availableTopics$: BehaviorSubject<FabricTopic[]> =
-    new BehaviorSubject<FabricTopic[]>([]);
-  private readonly loadingAvailableTopics$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly selectedColors$: BehaviorSubject<FabricColor[]> =
-    new BehaviorSubject<FabricColor[]>([]);
-  private readonly availableColors$: BehaviorSubject<FabricColor[]> =
-    new BehaviorSubject<FabricColor[]>([]);
-  private readonly loadingAvailableColors$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly selectedFabricTypes$: BehaviorSubject<FabricType[]> =
-    new BehaviorSubject<FabricType[]>([]);
-  private readonly availableFabricTypes$: BehaviorSubject<FabricType[]> =
-    new BehaviorSubject<FabricType[]>([]);
-  private readonly loadingAvailableFabricTypes$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly creatingFabric$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly failed$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private readonly imageId$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());
+  private readonly selectedTopics$: BehaviorSubject<FabricTopic[]> = new BehaviorSubject<FabricTopic[]>([]);
+  private readonly availableTopics$: BehaviorSubject<FabricTopic[]> = new BehaviorSubject<FabricTopic[]>([]);
+  private readonly loadingAvailableTopics$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly selectedColors$: BehaviorSubject<FabricColor[]> = new BehaviorSubject<FabricColor[]>([]);
+  private readonly availableColors$: BehaviorSubject<FabricColor[]> = new BehaviorSubject<FabricColor[]>([]);
+  private readonly loadingAvailableColors$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly selectedFabricTypes$: BehaviorSubject<FabricType[]> = new BehaviorSubject<FabricType[]>([]);
+  private readonly availableFabricTypes$: BehaviorSubject<FabricType[]> = new BehaviorSubject<FabricType[]>([]);
+  private readonly loadingAvailableFabricTypes$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly creatingFabric$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly failed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -116,13 +85,12 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     const image = this.imageId$.value.orElseThrow('Image ID is missing');
     const colors = new Set<string>(this.selectedColors$.value.map((c) => c.id));
     const topics = new Set<string>(this.selectedTopics$.value.map((t) => t.id));
-    const availability: FabricTypeAvailability[] =
-      this.selectedFabricTypes$.value.map((fabricType) =>
-        FabricTypeAvailability.of({
-          typeId: fabricType.id,
-          inStock: true,
-        }),
-      );
+    const availability: FabricTypeAvailability[] = this.selectedFabricTypes$.value.map((fabricType) =>
+      FabricTypeAvailability.of({
+        typeId: fabricType.id,
+        inStock: true,
+      }),
+    );
 
     this.creatingFabric$.next(true);
     this.failed$.next(false);
@@ -244,23 +212,17 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
   }
 
   onTopicRemoved(chip: Chip) {
-    const topics = this.selectedTopics$.value.filter(
-      (topic) => topic.id !== chip.id,
-    );
+    const topics = this.selectedTopics$.value.filter((topic) => topic.id !== chip.id);
     this.selectedTopics$.next(topics);
   }
 
   onColorRemoved(chip: Chip) {
-    const colors = this.selectedColors$.value.filter(
-      (color) => color.id !== chip.id,
-    );
+    const colors = this.selectedColors$.value.filter((color) => color.id !== chip.id);
     this.selectedColors$.next(colors);
   }
 
   onFabricTypeRemoved(chip: Chip) {
-    const fabricTypes = this.selectedFabricTypes$.value.filter(
-      (fabricType) => fabricType.id !== chip.id,
-    );
+    const fabricTypes = this.selectedFabricTypes$.value.filter((fabricType) => fabricType.id !== chip.id);
     this.selectedFabricTypes$.next(fabricTypes);
   }
 
@@ -281,9 +243,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
   }
 
   onFabricTypeAdded(chip: Chip) {
-    const fabricType = this.availableFabricTypes$.value.find(
-      (t) => t.id === chip.id,
-    );
+    const fabricType = this.availableFabricTypes$.value.find((t) => t.id === chip.id);
     if (fabricType) {
       const fabricTypes = [...this.selectedFabricTypes$.value, fabricType];
       this.selectedFabricTypes$.next(fabricTypes);
@@ -331,8 +291,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
         error: () => {
           this.loadingAvailableTopics$.next(false);
           this.notificationService.publish({
-            message:
-              'Die verfügbaren Themen konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
+            message: 'Die verfügbaren Themen konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
             type: 'error',
           });
         },
@@ -352,8 +311,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
         error: () => {
           this.loadingAvailableColors$.next(false);
           this.notificationService.publish({
-            message:
-              'Die verfügbaren Farben konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
+            message: 'Die verfügbaren Farben konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
             type: 'error',
           });
         },
@@ -373,8 +331,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
         error: () => {
           this.loadingAvailableFabricTypes$.next(false);
           this.notificationService.publish({
-            message:
-              'Die verfügbaren Stoffarten konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
+            message: 'Die verfügbaren Stoffarten konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
             type: 'error',
           });
         },

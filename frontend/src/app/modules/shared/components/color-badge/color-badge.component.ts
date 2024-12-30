@@ -32,11 +32,8 @@ const DEFAULT_COLOR: ColorBadgeColor = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ColorBadgeComponent implements OnInit, OnDestroy {
-  private readonly color$: BehaviorSubject<ColorBadgeColor> =
-    new BehaviorSubject<ColorBadgeColor>(DEFAULT_COLOR);
-  private readonly size$: BehaviorSubject<number> = new BehaviorSubject<number>(
-    32,
-  );
+  private readonly color$: BehaviorSubject<ColorBadgeColor> = new BehaviorSubject<ColorBadgeColor>(DEFAULT_COLOR);
+  private readonly size$: BehaviorSubject<number> = new BehaviorSubject<number>(32);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   @Input()
@@ -65,12 +62,7 @@ export class ColorBadgeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.size$.pipe(takeUntil(this.destroy$)).subscribe((size) => {
-      this.renderer.setStyle(
-        this.elementRef.nativeElement,
-        '--size',
-        `${size}px`,
-        RendererStyleFlags2.DashCase,
-      );
+      this.renderer.setStyle(this.elementRef.nativeElement, '--size', `${size}px`, RendererStyleFlags2.DashCase);
     });
 
     this.color$.pipe(takeUntil(this.destroy$)).subscribe((color) => {

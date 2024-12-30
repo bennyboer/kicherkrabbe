@@ -1,19 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  filter,
-  map,
-  Observable,
-  Subject,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, combineLatest, filter, map, Observable, Subject, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ColorsService } from '../../services';
 import { ColorPickerColor, NotificationService } from '../../../../../shared';
@@ -27,18 +13,12 @@ import { none, Option, someOrNone } from '../../../../../shared/modules/option';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ColorDetailsPage implements OnInit, OnDestroy {
-  private readonly transientName$: BehaviorSubject<Option<string>> =
-    new BehaviorSubject<Option<string>>(none());
-  private readonly updatingName$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly failedUpdatingName$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly updatingColorValue$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly failedUpdatingColorValue$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly waitingForDeleteConfirmation$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly transientName$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());
+  private readonly updatingName$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly failedUpdatingName$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly updatingColorValue$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly failedUpdatingColorValue$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly waitingForDeleteConfirmation$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -56,8 +36,7 @@ export class ColorDetailsPage implements OnInit, OnDestroy {
       )
       .subscribe(() =>
         this.notificationService.publish({
-          message:
-            'Ein Fehler ist aufgetreten. Die Farbe konnte nicht aktualisiert werden. Versuche es noch einmal.',
+          message: 'Ein Fehler ist aufgetreten. Die Farbe konnte nicht aktualisiert werden. Versuche es noch einmal.',
           type: 'error',
         }),
       );
@@ -76,9 +55,7 @@ export class ColorDetailsPage implements OnInit, OnDestroy {
   }
 
   getColor(): Observable<Option<Color>> {
-    return this.getColorId().pipe(
-      switchMap((id) => this.colorsService.getColor(id)),
-    );
+    return this.getColorId().pipe(switchMap((id) => this.colorsService.getColor(id)));
   }
 
   isLoading(): Observable<boolean> {
@@ -190,8 +167,7 @@ export class ColorDetailsPage implements OnInit, OnDestroy {
         },
         error: () => {
           this.notificationService.publish({
-            message:
-              'Ein Fehler ist aufgetreten. Die Farbe konnte nicht gelöscht werden. Versuche es noch einmal.',
+            message: 'Ein Fehler ist aufgetreten. Die Farbe konnte nicht gelöscht werden. Versuche es noch einmal.',
             type: 'error',
           });
         },
@@ -207,8 +183,6 @@ export class ColorDetailsPage implements OnInit, OnDestroy {
   }
 
   private getColorId(): Observable<string> {
-    return this.route.paramMap.pipe(
-      map((params) => someOrNone(params.get('id')).orElse('')),
-    );
+    return this.route.paramMap.pipe(map((params) => someOrNone(params.get('id')).orElse('')));
   }
 }

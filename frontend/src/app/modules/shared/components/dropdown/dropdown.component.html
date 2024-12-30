@@ -33,18 +33,13 @@
               <div class="dropdown-item">
                 <div class="dropdown-item-prefix">
                   @if (multiple) {
-                    <app-checkbox [checked]="isSelected(item.id) | async"
-                                  [passive]="true">
-                    </app-checkbox>
+                    <app-checkbox [checked]="isSelected(item.id) | async" [passive]="true"> </app-checkbox>
                   } @else if (useRadioButtonForSingleSelection) {
-                    <app-radio [checked]="isSelected(item.id) | async"
-                               [passive]="true">
-                    </app-radio>
+                    <app-radio [checked]="isSelected(item.id) | async" [passive]="true"> </app-radio>
                   }
                 </div>
                 <div class="dropdown-item-content">
-                  <ng-container [ngTemplateOutlet]="itemTemplate"
-                                [ngTemplateOutletContext]="{ $implicit: item }">
+                  <ng-container [ngTemplateOutlet]="itemTemplate" [ngTemplateOutletContext]="{ $implicit: item }">
                   </ng-container>
                 </div>
               </div>

@@ -1,12 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, Subject, takeUntil } from 'rxjs';
 import { AdminAuthService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { someOrNone } from '../../../shared/modules/option';
@@ -18,14 +11,10 @@ import { someOrNone } from '../../../shared/modules/option';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPage implements OnDestroy {
-  private readonly username$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
-  private readonly password$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
-  private readonly loggingIn$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly error$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly username$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private readonly password$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private readonly loggingIn$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly error$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -45,9 +34,7 @@ export class LoginPage implements OnDestroy {
 
   isValid(): Observable<boolean> {
     return combineLatest([this.username$, this.password$]).pipe(
-      map(([username, password]) =>
-        this.isValidCredentials(username, password),
-      ),
+      map(([username, password]) => this.isValidCredentials(username, password)),
     );
   }
 
@@ -55,9 +42,7 @@ export class LoginPage implements OnDestroy {
     const invalid$ = this.isValid().pipe(map((isValid) => !isValid));
     const loading$ = this.isLoading();
 
-    return combineLatest([invalid$, loading$]).pipe(
-      map(([invalid, loading]) => invalid || loading),
-    );
+    return combineLatest([invalid$, loading$]).pipe(map(([invalid, loading]) => invalid || loading));
   }
 
   isLoading(): Observable<boolean> {
@@ -80,9 +65,7 @@ export class LoginPage implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          const redirect = someOrNone(
-            this.route.snapshot.queryParams['redirect'],
-          ).orElse('/admin');
+          const redirect = someOrNone(this.route.snapshot.queryParams['redirect']).orElse('/admin');
 
           this.router.navigate([redirect]);
         },

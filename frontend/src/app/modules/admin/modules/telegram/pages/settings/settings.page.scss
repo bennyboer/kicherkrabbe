@@ -1,0 +1,36 @@
+:host {
+  display: block;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-left: 2px solid var(--background-low-contrast);
+  padding-left: 12px;
+}
+
+.input-and-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+}
+
+@media only screen and (max-width: 1000px) {
+  .input-and-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+
+    & > input {
+      width: 100%;
+    }
+  }
+}

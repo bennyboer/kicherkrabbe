@@ -1,19 +1,5 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  OnDestroy,
-  ViewChild,
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { BehaviorSubject, combineLatest, map, Observable, Subject, takeUntil } from 'rxjs';
 import { ColorsService } from '../../services';
 import { ColorPickerColor, NotificationService } from '../../../../../shared';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -29,19 +15,14 @@ export class CreateColorPage implements AfterViewInit, OnDestroy {
   @ViewChild('name')
   nameInput!: ElementRef;
 
-  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
-    '',
-  );
-  private readonly colorValue$: BehaviorSubject<ColorValue> =
-    new BehaviorSubject<ColorValue>({
-      red: 255,
-      green: 0,
-      blue: 0,
-    });
-  private readonly creatingColor$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly failed$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private readonly colorValue$: BehaviorSubject<ColorValue> = new BehaviorSubject<ColorValue>({
+    red: 255,
+    green: 0,
+    blue: 0,
+  });
+  private readonly creatingColor$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly failed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(

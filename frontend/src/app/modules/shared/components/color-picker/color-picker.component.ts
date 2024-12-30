@@ -35,11 +35,8 @@ export class ColorPickerComponent implements AfterViewInit, OnDestroy {
   @ViewChild(NgxColorsTriggerDirective)
   triggerDirective!: NgxColorsTriggerDirective;
 
-  private readonly color$: BehaviorSubject<ColorPickerColor> =
-    new BehaviorSubject<ColorPickerColor>(DEFAULT_COLOR);
-  private readonly size$: BehaviorSubject<number> = new BehaviorSubject<number>(
-    32,
-  );
+  private readonly color$: BehaviorSubject<ColorPickerColor> = new BehaviorSubject<ColorPickerColor>(DEFAULT_COLOR);
+  private readonly size$: BehaviorSubject<number> = new BehaviorSubject<number>(32);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   @Input({ transform: numberAttribute })
@@ -53,8 +50,7 @@ export class ColorPickerComponent implements AfterViewInit, OnDestroy {
   }
 
   @Output()
-  colorChanged: EventEmitter<ColorPickerColor> =
-    new EventEmitter<ColorPickerColor>();
+  colorChanged: EventEmitter<ColorPickerColor> = new EventEmitter<ColorPickerColor>();
 
   ngAfterViewInit(): void {
     this.triggerDirective.acceptLabel = 'Fertig';
@@ -62,17 +58,15 @@ export class ColorPickerComponent implements AfterViewInit, OnDestroy {
     this.triggerDirective.colorPickerControls = 'no-alpha';
     this.triggerDirective.hideTextInput = true;
 
-    this.triggerDirective.change
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((color) => {
-        const red = parseInt(color.substring(1, 3), 16);
-        const green = parseInt(color.substring(3, 5), 16);
-        const blue = parseInt(color.substring(5, 7), 16);
-        const updatedColor = { red, green, blue };
+    this.triggerDirective.change.pipe(takeUntil(this.destroy$)).subscribe((color) => {
+      const red = parseInt(color.substring(1, 3), 16);
+      const green = parseInt(color.substring(3, 5), 16);
+      const blue = parseInt(color.substring(5, 7), 16);
+      const updatedColor = { red, green, blue };
 
-        this.color$.next(updatedColor);
-        this.colorChanged.emit(updatedColor);
-      });
+      this.color$.next(updatedColor);
+      this.colorChanged.emit(updatedColor);
+    });
   }
 
   ngOnDestroy(): void {

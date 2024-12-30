@@ -1,62 +1,64 @@
 <app-loading-bar [visible]="loading$ | async"></app-loading-bar>
 
-@if (notLoading$ | async) {
-  @if (category$ | async; as category) {
-    <h3>{{ category.name }}</h3>
+@if (notLoading$ | async) { @if (category$ | async; as category) {
+<h3>{{ category.name }}</h3>
 
-    <div class="form">
-      <div class="form-field">
-        <label for="name">Name</label>
-        <div class="form-field-content">
-          <input #name
-                 id="name"
-                 type="text"
-                 autofocus
-                 [value]="category.name"
-                 [class.error]="nameError$ | async"
-                 (input)="updateName(name.value)"
-                 (keydown.enter)="saveUpdatedName(category)">
-          <app-button [disabled]="cannotSaveUpdatedName$ | async" (click)="saveUpdatedName(category)">
-            Speichern
-          </app-button>
-        </div>
-        @if (nameError$ | async) {
-          <span class="error">Bitte gib einen Namen für die Kategorie ein</span>
-        }
-      </div>
-
-      <div class="form-field">
-        <label>Gruppe</label>
-        <app-dropdown #groupDropdown
-                      [items]="groupDropdownItems$ | async"
-                      [selected]="initialSelectedDropdownItems$ | async"
-                      (selectionChanged)="updateSelectedGroup(category, groupDropdown, $event)">
-          <ng-template let-item>
-            <span>{{ item.label }}</span>
-          </ng-template>
-        </app-dropdown>
-      </div>
+<div class="form">
+  <div class="form-field">
+    <label for="name">Name</label>
+    <div class="form-field-content">
+      <input
+        #name
+        id="name"
+        type="text"
+        autofocus
+        [value]="category.name"
+        [class.error]="nameError$ | async"
+        (input)="updateName(name.value)"
+        (keydown.enter)="saveUpdatedName(category)"
+      />
+      <app-button [disabled]="cannotSaveUpdatedName$ | async" (click)="saveUpdatedName(category)">
+        Speichern
+      </app-button>
     </div>
+    @if (nameError$ | async) {
+    <span class="error">Bitte gib einen Namen für die Kategorie ein</span>
+    }
+  </div>
 
-    <div>
-      <span class="created-at">
-        Erstellt am {{ category.createdAt | date: 'dd.MM.yyyy' }} um {{ category.createdAt | date: 'HH:mm' }} Uhr
-      </span>
-    </div>
+  <div class="form-field">
+    <label>Gruppe</label>
+    <app-dropdown
+      #groupDropdown
+      [items]="groupDropdownItems$ | async"
+      [selected]="initialSelectedDropdownItems$ | async"
+      (selectionChanged)="updateSelectedGroup(category, groupDropdown, $event)"
+    >
+      <ng-template let-item>
+        <span>{{ item.label }}</span>
+      </ng-template>
+    </app-dropdown>
+  </div>
+</div>
 
-    <div class="actions">
-        <span>
-          <app-button routerLink="..">Zurück</app-button>
-        </span>
-      <span>
-          @if (deleteConfirmationRequired$ | async) {
-            <app-button color="warn" (click)="delete(category)">Wirklich löschen?</app-button>
-          } @else {
-            <app-button (click)="waitForDeleteConfirmation()">Kategorie löschen</app-button>
-          }
-        </span>
-    </div>
-  } @else {
-    <app-note level="error">Die Kategorie konnte nicht gefunden werden.</app-note>
-  }
-}
+<div>
+  <span class="created-at">
+    Erstellt am {{ category.createdAt | date: 'dd.MM.yyyy' }} um {{ category.createdAt | date: 'HH:mm' }} Uhr
+  </span>
+</div>
+
+<div class="actions">
+  <span>
+    <app-button routerLink="..">Zurück</app-button>
+  </span>
+  <span>
+    @if (deleteConfirmationRequired$ | async) {
+    <app-button color="warn" (click)="delete(category)">Wirklich löschen?</app-button>
+    } @else {
+    <app-button (click)="waitForDeleteConfirmation()">Kategorie löschen</app-button>
+    }
+  </span>
+</div>
+} @else {
+<app-note level="error">Die Kategorie konnte nicht gefunden werden.</app-note>
+} }

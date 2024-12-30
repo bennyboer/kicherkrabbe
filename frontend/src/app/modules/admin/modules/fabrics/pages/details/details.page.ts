@@ -1,40 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  filter,
-  map,
-  Observable,
-  Subject,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, combineLatest, filter, map, Observable, Subject, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FabricsService } from '../../services';
-import {
-  Chip,
-  ColorBadgeColor,
-  NotificationService,
-} from '../../../../../shared';
-import {
-  Fabric,
-  FabricColor,
-  FabricTopic,
-  FabricType,
-  FabricTypeAvailability,
-} from '../../model';
+import { Chip, ColorBadgeColor, NotificationService } from '../../../../../shared';
+import { Fabric, FabricColor, FabricTopic, FabricType, FabricTypeAvailability } from '../../model';
 import { environment } from '../../../../../../../environments';
-import {
-  none,
-  Option,
-  some,
-  someOrNone,
-} from '../../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
   selector: 'app-fabric-details-page',
@@ -43,30 +14,18 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FabricDetailsPage implements OnInit, OnDestroy {
-  private readonly transientName$: BehaviorSubject<Option<string>> =
-    new BehaviorSubject<Option<string>>(none());
-  private readonly updatingName$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly failedUpdatingName$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly waitingForDeleteConfirmation$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly editingImage$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly imageId$: BehaviorSubject<Option<string>> =
-    new BehaviorSubject<Option<string>>(none());
-  private readonly availableTopics$: BehaviorSubject<FabricTopic[]> =
-    new BehaviorSubject<FabricTopic[]>([]);
-  private readonly loadingAvailableTopics$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly availableColors$: BehaviorSubject<FabricColor[]> =
-    new BehaviorSubject<FabricColor[]>([]);
-  private readonly loadingAvailableColors$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly availableFabricTypes$: BehaviorSubject<FabricType[]> =
-    new BehaviorSubject<FabricType[]>([]);
-  private readonly loadingAvailableFabricTypes$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly transientName$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());
+  private readonly updatingName$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly failedUpdatingName$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly waitingForDeleteConfirmation$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly editingImage$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly imageId$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());
+  private readonly availableTopics$: BehaviorSubject<FabricTopic[]> = new BehaviorSubject<FabricTopic[]>([]);
+  private readonly loadingAvailableTopics$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly availableColors$: BehaviorSubject<FabricColor[]> = new BehaviorSubject<FabricColor[]>([]);
+  private readonly loadingAvailableColors$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly availableFabricTypes$: BehaviorSubject<FabricType[]> = new BehaviorSubject<FabricType[]>([]);
+  private readonly loadingAvailableFabricTypes$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -101,9 +60,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
   }
 
   getFabric(): Observable<Option<Fabric>> {
-    return this.getFabricId().pipe(
-      switchMap((id) => this.fabricsService.getFabric(id)),
-    );
+    return this.getFabricId().pipe(switchMap((id) => this.fabricsService.getFabric(id)));
   }
 
   isLoading(): Observable<boolean> {
@@ -176,8 +133,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
         },
         error: () => {
           this.notificationService.publish({
-            message:
-              'Ein Fehler ist aufgetreten. Das Bild konnte nicht aktualisiert werden. Versuche es noch einmal.',
+            message: 'Ein Fehler ist aufgetreten. Das Bild konnte nicht aktualisiert werden. Versuche es noch einmal.',
             type: 'error',
           });
         },
@@ -198,8 +154,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
         },
         error: () => {
           this.notificationService.publish({
-            message:
-              'Ein Fehler ist aufgetreten. Der Stoff konnte nicht gelöscht werden. Versuche es noch einmal.',
+            message: 'Ein Fehler ist aufgetreten. Der Stoff konnte nicht gelöscht werden. Versuche es noch einmal.',
             type: 'error',
           });
         },
@@ -298,13 +253,9 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
   getSelectedTopics(): Observable<FabricTopic[]> {
     return combineLatest([this.getFabric(), this.getAvailableTopics()]).pipe(
       map(([fabric, availableTopics]) => {
-        const selectedTopicIds = fabric
-          .map((f) => f.topics)
-          .orElse(new Set<string>());
+        const selectedTopicIds = fabric.map((f) => f.topics).orElse(new Set<string>());
 
-        return availableTopics.filter((topic) =>
-          selectedTopicIds.has(topic.id),
-        );
+        return availableTopics.filter((topic) => selectedTopicIds.has(topic.id));
       }),
     );
   }
@@ -312,33 +263,22 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
   getSelectedColors(): Observable<FabricColor[]> {
     return combineLatest([this.getFabric(), this.getAvailableColors()]).pipe(
       map(([fabric, availableColors]) => {
-        const selectedColorIds = fabric
-          .map((f) => f.colors)
-          .orElse(new Set<string>());
+        const selectedColorIds = fabric.map((f) => f.colors).orElse(new Set<string>());
 
-        return availableColors.filter((color) =>
-          selectedColorIds.has(color.id),
-        );
+        return availableColors.filter((color) => selectedColorIds.has(color.id));
       }),
     );
   }
 
   getSelectedFabricTypes(): Observable<FabricType[]> {
-    return combineLatest([
-      this.getFabric(),
-      this.getAvailableFabricTypes(),
-    ]).pipe(
+    return combineLatest([this.getFabric(), this.getAvailableFabricTypes()]).pipe(
       map(([fabric, availableFabricTypes]) => {
         const selectedFabricTypeIds = new Set<string>();
-        for (const availability of fabric
-          .map((f) => f.availability)
-          .orElse([])) {
+        for (const availability of fabric.map((f) => f.availability).orElse([])) {
           selectedFabricTypeIds.add(availability.typeId);
         }
 
-        return availableFabricTypes.filter((fabricType) =>
-          selectedFabricTypeIds.has(fabricType.id),
-        );
+        return availableFabricTypes.filter((fabricType) => selectedFabricTypeIds.has(fabricType.id));
       }),
     );
   }
@@ -369,9 +309,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
 
   onTopicRemoved(fabric: Fabric, selectedTopics: FabricTopic[], chip: Chip) {
     const updatedSelectedTopics = new Set<string>(
-      selectedTopics
-        .filter((topic) => topic.id !== chip.id)
-        .map((topic) => topic.id),
+      selectedTopics.filter((topic) => topic.id !== chip.id).map((topic) => topic.id),
     );
 
     this.fabricsService
@@ -386,8 +324,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
         },
         error: () => {
           this.notificationService.publish({
-            message:
-              'Das Thema konnte nicht entfernt werden. Versuchen Sie es noch einmal.',
+            message: 'Das Thema konnte nicht entfernt werden. Versuchen Sie es noch einmal.',
             type: 'error',
           });
         },
@@ -396,9 +333,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
 
   onColorRemoved(fabric: Fabric, selectedColors: FabricColor[], chip: Chip) {
     const updatedSelectedColors = new Set<string>(
-      selectedColors
-        .filter((color) => color.id !== chip.id)
-        .map((color) => color.id),
+      selectedColors.filter((color) => color.id !== chip.id).map((color) => color.id),
     );
 
     this.fabricsService
@@ -413,31 +348,20 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
         },
         error: () => {
           this.notificationService.publish({
-            message:
-              'Die Farbe konnte nicht entfernt werden. Versuchen Sie es noch einmal.',
+            message: 'Die Farbe konnte nicht entfernt werden. Versuchen Sie es noch einmal.',
             type: 'error',
           });
         },
       });
   }
 
-  onFabricTypeRemoved(
-    fabric: Fabric,
-    selectedFabricTypes: FabricType[],
-    chip: Chip,
-  ) {
+  onFabricTypeRemoved(fabric: Fabric, selectedFabricTypes: FabricType[], chip: Chip) {
     const updatedSelectedFabricTypes = selectedFabricTypes
       .filter((type) => type.id !== chip.id)
-      .map((type) =>
-        FabricTypeAvailability.of({ typeId: type.id, inStock: true }),
-      );
+      .map((type) => FabricTypeAvailability.of({ typeId: type.id, inStock: true }));
 
     this.fabricsService
-      .updateFabricAvailability(
-        fabric.id,
-        fabric.version,
-        updatedSelectedFabricTypes,
-      )
+      .updateFabricAvailability(fabric.id, fabric.version, updatedSelectedFabricTypes)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -448,8 +372,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
         },
         error: () => {
           this.notificationService.publish({
-            message:
-              'Die Stoffart konnte nicht entfernt werden. Versuchen Sie es noch einmal.',
+            message: 'Die Stoffart konnte nicht entfernt werden. Versuchen Sie es noch einmal.',
             type: 'error',
           });
         },
@@ -457,9 +380,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
   }
 
   onTopicAdded(fabric: Fabric, selectedTopics: FabricTopic[], chip: Chip) {
-    const updatedSelectedTopics = new Set<string>(
-      selectedTopics.map((topic) => topic.id),
-    );
+    const updatedSelectedTopics = new Set<string>(selectedTopics.map((topic) => topic.id));
     updatedSelectedTopics.add(chip.id);
 
     this.fabricsService
@@ -474,8 +395,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
         },
         error: () => {
           this.notificationService.publish({
-            message:
-              'Das Thema konnte nicht hinzugefügt werden. Versuchen Sie es noch einmal.',
+            message: 'Das Thema konnte nicht hinzugefügt werden. Versuchen Sie es noch einmal.',
             type: 'error',
           });
         },
@@ -483,9 +403,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
   }
 
   onColorAdded(fabric: Fabric, selectedColors: FabricColor[], chip: Chip) {
-    const updatedSelectedColors = new Set<string>(
-      selectedColors.map((color) => color.id),
-    );
+    const updatedSelectedColors = new Set<string>(selectedColors.map((color) => color.id));
     updatedSelectedColors.add(chip.id);
 
     this.fabricsService
@@ -500,19 +418,14 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
         },
         error: () => {
           this.notificationService.publish({
-            message:
-              'Die Farbe konnte nicht hinzugefügt werden. Versuchen Sie es noch einmal.',
+            message: 'Die Farbe konnte nicht hinzugefügt werden. Versuchen Sie es noch einmal.',
             type: 'error',
           });
         },
       });
   }
 
-  onFabricTypeAdded(
-    fabric: Fabric,
-    selectedFabricTypes: FabricType[],
-    chip: Chip,
-  ) {
+  onFabricTypeAdded(fabric: Fabric, selectedFabricTypes: FabricType[], chip: Chip) {
     const updatedSelectedFabricTypes = selectedFabricTypes.map((type) =>
       FabricTypeAvailability.of({ typeId: type.id, inStock: true }),
     );
@@ -524,11 +437,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
     );
 
     this.fabricsService
-      .updateFabricAvailability(
-        fabric.id,
-        fabric.version,
-        updatedSelectedFabricTypes,
-      )
+      .updateFabricAvailability(fabric.id, fabric.version, updatedSelectedFabricTypes)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -539,8 +448,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
         },
         error: () => {
           this.notificationService.publish({
-            message:
-              'Die Stoffart konnte nicht hinzugefügt werden. Versuchen Sie es noch einmal.',
+            message: 'Die Stoffart konnte nicht hinzugefügt werden. Versuchen Sie es noch einmal.',
             type: 'error',
           });
         },
@@ -548,9 +456,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
   }
 
   private getFabricId(): Observable<string> {
-    return this.route.paramMap.pipe(
-      map((params) => someOrNone(params.get('id')).orElse('')),
-    );
+    return this.route.paramMap.pipe(map((params) => someOrNone(params.get('id')).orElse('')));
   }
 
   private topicToChip(topic: FabricTopic): Chip {
@@ -594,8 +500,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
         error: () => {
           this.loadingAvailableTopics$.next(false);
           this.notificationService.publish({
-            message:
-              'Die verfügbaren Themen konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
+            message: 'Die verfügbaren Themen konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
             type: 'error',
           });
         },
@@ -615,8 +520,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
         error: () => {
           this.loadingAvailableColors$.next(false);
           this.notificationService.publish({
-            message:
-              'Die verfügbaren Farben konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
+            message: 'Die verfügbaren Farben konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
             type: 'error',
           });
         },
@@ -636,8 +540,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
         error: () => {
           this.loadingAvailableFabricTypes$.next(false);
           this.notificationService.publish({
-            message:
-              'Die verfügbaren Stoffarten konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
+            message: 'Die verfügbaren Stoffarten konnten nicht geladen werden. Versuchen Sie die Seite neu zu laden.',
             type: 'error',
           });
         },

@@ -4,10 +4,7 @@ export class RateLimit {
   readonly maxRequests: number;
   readonly durationInMillis: number;
 
-  private constructor(props: {
-    maxRequests: number;
-    durationInMillis: number;
-  }) {
+  private constructor(props: { maxRequests: number; durationInMillis: number }) {
     validateProps(props);
 
     this.maxRequests = props.maxRequests;

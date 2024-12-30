@@ -31,7 +31,7 @@ ul.cards {
       display: flex;
       align-items: center;
       justify-content: center;
-      
+
       & > .material-icons {
         font-size: 32px;
       }
@@ -61,7 +61,6 @@ ul.cards {
     }
   }
 }
-
 
 @media only screen and (max-width: 1000px) {
   ul.cards {

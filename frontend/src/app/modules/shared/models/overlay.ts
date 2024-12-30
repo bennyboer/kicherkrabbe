@@ -12,8 +12,7 @@ export class Overlay {
   readonly offset: Point;
   readonly closeOnBackdropClick: boolean;
   readonly minWidth: number;
-  private readonly closed$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly closed$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   private constructor(props: {
     id: OverlayId;

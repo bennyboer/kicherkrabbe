@@ -10,8 +10,7 @@ import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopicsPage implements OnDestroy {
-  private readonly search$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
+  private readonly search$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   constructor(private readonly topicsService: TopicsService) {}
 
@@ -21,11 +20,7 @@ export class TopicsPage implements OnDestroy {
 
   getTopics(): Observable<Topic[]> {
     return combineLatest([this.topicsService.getTopics(), this.search$]).pipe(
-      map(([topics, search]) =>
-        topics.filter((topic) =>
-          topic.name.toLowerCase().includes(search.toLowerCase()),
-        ),
-      ),
+      map(([topics, search]) => topics.filter((topic) => topic.name.toLowerCase().includes(search.toLowerCase()))),
     );
   }
 

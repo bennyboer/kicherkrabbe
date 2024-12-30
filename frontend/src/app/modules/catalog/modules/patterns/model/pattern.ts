@@ -1,8 +1,8 @@
-import {PatternVariant} from "./variant";
-import {PatternExtra} from "./extra";
-import {Money, validateProps} from "../../../../../util";
-import {PatternAttribution} from "./attribution";
-import {none, Option, some, someOrNone,} from "../../../../shared/modules/option";
+import { PatternVariant } from './variant';
+import { PatternExtra } from './extra';
+import { Money, validateProps } from '../../../../../util';
+import { PatternAttribution } from './attribution';
+import { none, Option, some, someOrNone } from '../../../../shared/modules/option';
 
 export type CategoryId = string;
 export type ImageId = string;
@@ -63,9 +63,7 @@ export class Pattern {
       number: props.number,
       description: someOrNone(props.description),
       alias: props.alias,
-      attribution: someOrNone(props.attribution).orElse(
-        PatternAttribution.of({}),
-      ),
+      attribution: someOrNone(props.attribution).orElse(PatternAttribution.of({})),
       categories: someOrNone(props.categories).orElse(new Set<CategoryId>()),
       images: someOrNone(props.images).orElse([]),
       variants: someOrNone(props.variants).orElse([]),
@@ -81,7 +79,7 @@ export class Pattern {
       return startingPrice.formatted();
     }
 
-    return `${startingPrice.formatted({withSymbol: false})} - ${endingPrice.formatted()}`;
+    return `${startingPrice.formatted({ withSymbol: false })} - ${endingPrice.formatted()}`;
   }
 
   getStartingPrice(): Money {
@@ -91,10 +89,7 @@ export class Pattern {
       return Money.zero();
     }
 
-    return prices.reduce(
-      (acc, price) => (acc.isLessThan(price) ? acc : price),
-      prices[0],
-    );
+    return prices.reduce((acc, price) => (acc.isLessThan(price) ? acc : price), prices[0]);
   }
 
   getEndingPrice(): Money {
@@ -104,10 +99,7 @@ export class Pattern {
       return Money.zero();
     }
 
-    return prices.reduce(
-      (acc, price) => (acc.isGreaterThan(price) ? acc : price),
-      prices[0],
-    );
+    return prices.reduce((acc, price) => (acc.isGreaterThan(price) ? acc : price), prices[0]);
   }
 
   getFormattedSizeRange(): string {
@@ -116,7 +108,7 @@ export class Pattern {
 
     const sizeUnit = this.getSizeUnit()
       .map((unit) => ` ${unit}`)
-      .orElse("");
+      .orElse('');
 
     return largestSize
       .map((l) => {
@@ -144,9 +136,7 @@ export class Pattern {
   }
 
   private getLargestSize(): Option<number> {
-    const sizes: Option<number>[] = this.variants.map((variant) =>
-      variant.getLargestSize(),
-    );
+    const sizes: Option<number>[] = this.variants.map((variant) => variant.getLargestSize());
 
     if (sizes.length === 0) {
       return none();
@@ -160,9 +150,7 @@ export class Pattern {
   }
 
   private getSizeUnit(): Option<string> {
-    const units = this.variants.flatMap((variant) =>
-      variant.sizes.map((size) => size.unit.orElse("")),
-    );
+    const units = this.variants.flatMap((variant) => variant.sizes.map((size) => size.unit.orElse('')));
 
     if (units.length === 0) {
       return none();

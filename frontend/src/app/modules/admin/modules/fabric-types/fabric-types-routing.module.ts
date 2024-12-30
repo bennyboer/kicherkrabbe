@@ -1,10 +1,6 @@
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
-import {
-  CreateFabricTypePage,
-  FabricTypeDetailsPage,
-  FabricTypesPage,
-} from './pages';
+import { CreateFabricTypePage, FabricTypeDetailsPage, FabricTypesPage } from './pages';
 
 const routes: Routes = [
   {

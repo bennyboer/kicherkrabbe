@@ -1,96 +1,68 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit,} from "@angular/core";
-import {BehaviorSubject, catchError, combineLatest, delay, finalize, first, map, Observable,} from "rxjs";
-import {environment} from "../../../../../../../environments";
-import {PatternAttribution, PatternCategory, PatternExtra, PatternVariant,} from "../../model";
-import {ButtonSize, Chip, NotificationService} from "../../../../../shared";
-import {PatternCategoriesService, PatternsService} from "../../services";
-import {ActivatedRoute, Router} from "@angular/router";
-import {ContentChange} from "ngx-quill";
-import {Delta} from "quill/core";
-import {someOrNone} from "../../../../../shared/modules/option";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, catchError, combineLatest, delay, finalize, first, map, Observable } from 'rxjs';
+import { environment } from '../../../../../../../environments';
+import { PatternAttribution, PatternCategory, PatternExtra, PatternVariant } from '../../model';
+import { ButtonSize, Chip, NotificationService } from '../../../../../shared';
+import { PatternCategoriesService, PatternsService } from '../../services';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ContentChange } from 'ngx-quill';
+import { Delta } from 'quill/core';
+import { someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
-  selector: "app-create-pattern-page",
-  templateUrl: "./create.page.html",
-  styleUrls: ["./create.page.scss"],
+  selector: 'app-create-pattern-page',
+  templateUrl: './create.page.html',
+  styleUrls: ['./create.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreatePage implements OnInit, OnDestroy {
-  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
-    "",
+  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private readonly nameTouched$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly nameValid$: Observable<boolean> = this.name$.pipe(map((name) => name.length > 0));
+  protected readonly nameError$: Observable<boolean> = combineLatest([this.nameTouched$, this.nameValid$]).pipe(
+    map(([touched, valid]) => touched && !valid),
   );
-  private readonly nameTouched$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly nameValid$: Observable<boolean> = this.name$.pipe(
-    map((name) => name.length > 0),
-  );
-  protected readonly nameError$: Observable<boolean> = combineLatest([
-    this.nameTouched$,
-    this.nameValid$,
-  ]).pipe(map(([touched, valid]) => touched && !valid));
 
-  protected readonly number$: BehaviorSubject<string> = new BehaviorSubject<string>("S-");
+  protected readonly number$: BehaviorSubject<string> = new BehaviorSubject<string>('S-');
   private readonly numberTouched$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   protected readonly numberValid$: Observable<boolean> = this.number$.pipe(
-    map((number) => number.trim().length > 0 && number.startsWith("S-")),
+    map((number) => number.trim().length > 0 && number.startsWith('S-')),
   );
-  protected readonly numberError$: Observable<boolean> = this.numberValid$.pipe(
-    map((valid) => !valid),
+  protected readonly numberError$: Observable<boolean> = this.numberValid$.pipe(map((valid) => !valid));
+
+  protected readonly imageIds$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  protected readonly imageUploadActive$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  protected readonly imagesValid$: Observable<boolean> = this.imageIds$.pipe(map((imageIds) => imageIds.length > 0));
+  protected readonly imagesError$: Observable<boolean> = this.imagesValid$.pipe(map((valid) => !valid));
+
+  private readonly originalPatternName$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private readonly designer$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+
+  private readonly description$: BehaviorSubject<Delta> = new BehaviorSubject<Delta>(new Delta());
+
+  protected readonly availableCategories$: BehaviorSubject<PatternCategory[]> = new BehaviorSubject<PatternCategory[]>(
+    [],
+  );
+  protected readonly loadingAvailableCategories$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  protected readonly selectedCategories$: BehaviorSubject<PatternCategory[]> = new BehaviorSubject<PatternCategory[]>(
+    [],
   );
 
-  protected readonly imageIds$: BehaviorSubject<string[]> = new BehaviorSubject<
-    string[]
-  >([]);
-  protected readonly imageUploadActive$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
-  protected readonly imagesValid$: Observable<boolean> = this.imageIds$.pipe(
-    map((imageIds) => imageIds.length > 0),
-  );
-  protected readonly imagesError$: Observable<boolean> = this.imagesValid$.pipe(
-    map((valid) => !valid),
-  );
-
-  private readonly originalPatternName$: BehaviorSubject<string> =
-    new BehaviorSubject<string>("");
-  private readonly designer$: BehaviorSubject<string> =
-    new BehaviorSubject<string>("");
-
-  private readonly description$: BehaviorSubject<Delta> =
-    new BehaviorSubject<Delta>(new Delta());
-
-  protected readonly availableCategories$: BehaviorSubject<PatternCategory[]> =
-    new BehaviorSubject<PatternCategory[]>([]);
-  protected readonly loadingAvailableCategories$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
-  protected readonly selectedCategories$: BehaviorSubject<PatternCategory[]> =
-    new BehaviorSubject<PatternCategory[]>([]);
-
-  protected readonly variants$: BehaviorSubject<PatternVariant[]> =
-    new BehaviorSubject<PatternVariant[]>([]);
+  protected readonly variants$: BehaviorSubject<PatternVariant[]> = new BehaviorSubject<PatternVariant[]>([]);
   protected readonly variantsValid$: Observable<boolean> = this.variants$.pipe(
-    map(
-      (variants) =>
-        variants.length > 0 &&
-        variants.every((v) => v.name.trim().length > 0 && v.sizes.length > 0),
-    ),
+    map((variants) => variants.length > 0 && variants.every((v) => v.name.trim().length > 0 && v.sizes.length > 0)),
   );
-  protected readonly variantsError$: Observable<boolean> =
-    this.variantsValid$.pipe(map((valid) => !valid));
+  protected readonly variantsError$: Observable<boolean> = this.variantsValid$.pipe(map((valid) => !valid));
 
-  protected readonly extras$: BehaviorSubject<PatternExtra[]> =
-    new BehaviorSubject<PatternExtra[]>([]);
+  protected readonly extras$: BehaviorSubject<PatternExtra[]> = new BehaviorSubject<PatternExtra[]>([]);
   protected readonly extrasValid$: Observable<boolean> = this.extras$.pipe(
     map((extras) => extras.every((e) => e.name.trim().length > 0)),
   );
-  protected readonly extrasError$: Observable<boolean> = this.extrasValid$.pipe(
-    map((valid) => !valid),
-  );
+  protected readonly extrasError$: Observable<boolean> = this.extrasValid$.pipe(map((valid) => !valid));
 
-  protected readonly watermark$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
+  protected readonly watermark$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-  protected readonly creating$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  protected readonly creating$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   protected readonly cannotSubmit$: Observable<boolean> = combineLatest([
     this.nameValid$,
@@ -98,22 +70,17 @@ export class CreatePage implements OnInit, OnDestroy {
     this.variantsValid$,
     this.extrasValid$,
     this.imagesValid$,
-  ]).pipe(
-    map(
-      ([name, number, variants, extras, images]) =>
-        !name || !number || !variants || !extras || !images,
-    ),
-  );
+  ]).pipe(map(([name, number, variants, extras, images]) => !name || !number || !variants || !extras || !images));
 
   protected readonly ButtonSize = ButtonSize;
   protected readonly quillModules = {
     toolbar: [
-      [{header: [1, 2, false]}],
-      ["bold", "italic", "underline", "strike", "link"],
-      [{align: []}],
-      [{color: []}, {background: []}],
-      ["blockquote", {list: "ordered"}, {list: "bullet"}],
-      ["clean"],
+      [{ header: [1, 2, false] }],
+      ['bold', 'italic', 'underline', 'strike', 'link'],
+      [{ align: [] }],
+      [{ color: [] }, { background: [] }],
+      ['blockquote', { list: 'ordered' }, { list: 'bullet' }],
+      ['clean'],
     ],
   };
 
@@ -123,8 +90,7 @@ export class CreatePage implements OnInit, OnDestroy {
     private readonly notificationService: NotificationService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.reloadAvailableCategories();
@@ -170,10 +136,7 @@ export class CreatePage implements OnInit, OnDestroy {
     const images = this.imageIds$.value;
     const variants = this.variants$.value;
     const extras = this.extras$.value;
-    const description =
-      this.description$.value.ops.length > 0
-        ? JSON.stringify(this.description$.value)
-        : null;
+    const description = this.description$.value.ops.length > 0 ? JSON.stringify(this.description$.value) : null;
 
     this.patternsService
       .createPattern({
@@ -191,9 +154,8 @@ export class CreatePage implements OnInit, OnDestroy {
         catchError((e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message:
-              "Das Schnittmuster konnte nicht erstellt werden. Bitte versuche es erneut.",
+            type: 'error',
+            message: 'Das Schnittmuster konnte nicht erstellt werden. Bitte versuche es erneut.',
           });
           return [];
         }),
@@ -202,10 +164,10 @@ export class CreatePage implements OnInit, OnDestroy {
       )
       .subscribe((patternId) => {
         this.notificationService.publish({
-          type: "success",
-          message: "Das Schnittmuster wurde erfolgreich erstellt.",
+          type: 'success',
+          message: 'Das Schnittmuster wurde erfolgreich erstellt.',
         });
-        this.router.navigate(["..", patternId], {
+        this.router.navigate(['..', patternId], {
           relativeTo: this.route,
         });
       });
@@ -238,7 +200,7 @@ export class CreatePage implements OnInit, OnDestroy {
   updateDescription(event: ContentChange): void {
     const html = someOrNone(event.html)
       .map((h) => h.trim())
-      .orElse("");
+      .orElse('');
     const isEmpty = html.length === 0;
     if (isEmpty) {
       this.description$.next(new Delta());
@@ -265,16 +227,12 @@ export class CreatePage implements OnInit, OnDestroy {
   }
 
   onCategoryRemoved(chip: Chip): void {
-    const categories = this.selectedCategories$.value.filter(
-      (category) => category.id !== chip.id,
-    );
+    const categories = this.selectedCategories$.value.filter((category) => category.id !== chip.id);
     this.selectedCategories$.next(categories);
   }
 
   onCategoryAdded(chip: Chip): void {
-    const category = this.availableCategories$.value.find(
-      (c) => c.id === chip.id,
-    );
+    const category = this.availableCategories$.value.find((c) => c.id === chip.id);
     if (category) {
       const categories = [...this.selectedCategories$.value, category];
       this.selectedCategories$.next(categories);
@@ -315,9 +273,8 @@ export class CreatePage implements OnInit, OnDestroy {
         catchError((e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message:
-              "Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neuzuladen.",
+            type: 'error',
+            message: 'Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neuzuladen.',
           });
           return [];
         }),

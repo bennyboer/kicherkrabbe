@@ -7,13 +7,7 @@ export class FabricColor {
   readonly green: number;
   readonly blue: number;
 
-  private constructor(props: {
-    id: ColorId;
-    name: string;
-    red: number;
-    green: number;
-    blue: number;
-  }) {
+  private constructor(props: { id: ColorId; name: string; red: number; green: number; blue: number }) {
     this.id = props.id;
     this.name = props.name;
     this.red = props.red;
@@ -21,13 +15,7 @@ export class FabricColor {
     this.blue = props.blue;
   }
 
-  static of(props: {
-    id: ColorId;
-    name: string;
-    red: number;
-    green: number;
-    blue: number;
-  }): FabricColor {
+  static of(props: { id: ColorId; name: string; red: number; green: number; blue: number }): FabricColor {
     return new FabricColor(props);
   }
 }

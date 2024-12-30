@@ -14,20 +14,9 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, Subject, takeUntil } from 'rxjs';
 import { Point } from '../../../../util';
-import {
-  NotificationService,
-  OverlayRef,
-  OverlayService,
-} from '../../services';
+import { NotificationService, OverlayRef, OverlayService } from '../../services';
 import { ButtonSize as ButtonSize } from '../button/button.component';
 import { none, Option, some, someOrNone } from '../../modules/option';
 
@@ -95,21 +84,13 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
   @Output()
   removed: EventEmitter<Chip> = new EventEmitter<Chip>();
 
-  private readonly chips$: BehaviorSubject<Chip[]> = new BehaviorSubject<
-    Chip[]
-  >([]);
-  private readonly availableChips$: BehaviorSubject<Chip[]> =
-    new BehaviorSubject<Chip[]>([]);
-  private readonly adding$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly search$: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
-  private readonly searchResults$: BehaviorSubject<Chip[]> =
-    new BehaviorSubject<Chip[]>([]);
-  private readonly inputFocused$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly showOverlay$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly chips$: BehaviorSubject<Chip[]> = new BehaviorSubject<Chip[]>([]);
+  private readonly availableChips$: BehaviorSubject<Chip[]> = new BehaviorSubject<Chip[]>([]);
+  private readonly adding$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly search$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private readonly searchResults$: BehaviorSubject<Chip[]> = new BehaviorSubject<Chip[]>([]);
+  private readonly inputFocused$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly showOverlay$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   private overlay: Option<OverlayRef> = none();
@@ -128,10 +109,7 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
       }
     });
 
-    const filteredAvailableChips$ = combineLatest([
-      this.chips$,
-      this.availableChips$,
-    ]).pipe(
+    const filteredAvailableChips$ = combineLatest([this.chips$, this.availableChips$]).pipe(
       map(([chips, availableChips]) => {
         const chipIds = new Set<string>(chips.map((chip) => chip.id));
         return availableChips.filter((c) => !chipIds.has(c.id));
@@ -149,9 +127,7 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
             this.searchResults$.next([]);
           }
         } else {
-          const result = filteredAvailableChips.filter((chip) =>
-            chip.label.toLowerCase().includes(search),
-          );
+          const result = filteredAvailableChips.filter((chip) => chip.label.toLowerCase().includes(search));
           this.searchResults$.next(result);
         }
       });
@@ -176,15 +152,13 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   ngAfterViewInit(): void {
-    this.addChipTextFieldElements.changes
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((elements) => {
-        if (elements.length === 0) {
-          return;
-        }
+    this.addChipTextFieldElements.changes.pipe(takeUntil(this.destroy$)).subscribe((elements) => {
+      if (elements.length === 0) {
+        return;
+      }
 
-        this.onAddChipTextFieldAppeared(elements.first.nativeElement);
-      });
+      this.onAddChipTextFieldAppeared(elements.first.nativeElement);
+    });
   }
 
   ngOnDestroy(): void {
@@ -238,9 +212,7 @@ export class ChipsComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   addChipIfAvailable(label: string): void {
-    let chip = someOrNone(
-      this.availableChips$.value.find((chip) => chip.label === label),
-    );
+    let chip = someOrNone(this.availableChips$.value.find((chip) => chip.label === label));
     if (chip.isNone()) {
       if (this.searchResults$.value.length === 1) {
         chip = some(this.searchResults$.value[0]);

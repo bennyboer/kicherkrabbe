@@ -18,9 +18,7 @@ import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadingSpinnerComponent implements OnInit, OnDestroy {
-  private readonly size$: BehaviorSubject<number> = new BehaviorSubject<number>(
-    32,
-  );
+  private readonly size$: BehaviorSubject<number> = new BehaviorSubject<number>(32);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -35,12 +33,7 @@ export class LoadingSpinnerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.size$.pipe(takeUntil(this.destroy$)).subscribe((size) => {
-      this.renderer.setStyle(
-        this.elementRef.nativeElement,
-        '--size',
-        `${size}px`,
-        RendererStyleFlags2.DashCase,
-      );
+      this.renderer.setStyle(this.elementRef.nativeElement, '--size', `${size}px`, RendererStyleFlags2.DashCase);
     });
   }
 

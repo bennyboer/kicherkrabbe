@@ -1,6 +1,6 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit,} from "@angular/core";
-import {ActivatedRoute, Router} from "@angular/router";
-import {PatternCategoriesService, PatternsService} from "../../services";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PatternCategoriesService, PatternsService } from '../../services';
 import {
   BehaviorSubject,
   catchError,
@@ -17,7 +17,7 @@ import {
   switchMap,
   takeUntil,
   timeout,
-} from "rxjs";
+} from 'rxjs';
 import {
   ImageId,
   Pattern,
@@ -27,134 +27,93 @@ import {
   PatternExtra,
   PatternId,
   PatternVariant,
-} from "../../model";
-import {Chip, NotificationService} from "../../../../../shared";
-import {Eq} from "../../../../../../util";
-import {environment} from "../../../../../../../environments";
-import Quill, {Delta} from "quill/core";
-import {ContentChange} from "ngx-quill";
-import {none, Option, someOrNone} from "../../../../../shared/modules/option";
+} from '../../model';
+import { Chip, NotificationService } from '../../../../../shared';
+import { Eq } from '../../../../../../util';
+import { environment } from '../../../../../../../environments';
+import Quill, { Delta } from 'quill/core';
+import { ContentChange } from 'ngx-quill';
+import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
-  selector: "app-pattern-page",
-  templateUrl: "./pattern.page.html",
-  styleUrls: ["./pattern.page.scss"],
+  selector: 'app-pattern-page',
+  templateUrl: './pattern.page.html',
+  styleUrls: ['./pattern.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PatternPage implements OnInit, OnDestroy {
-  protected readonly patternId$: BehaviorSubject<Option<PatternId>> =
-    new BehaviorSubject<Option<PatternId>>(none());
+  protected readonly patternId$: BehaviorSubject<Option<PatternId>> = new BehaviorSubject<Option<PatternId>>(none());
   protected readonly pattern$: Subject<Pattern> = new ReplaySubject<Pattern>(1);
-  protected readonly patternLoading$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
+  protected readonly patternLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-  protected readonly categories$: BehaviorSubject<PatternCategory[]> =
-    new BehaviorSubject<PatternCategory[]>([]);
-  protected readonly categoriesLoading$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
-  protected readonly selectedCategories$: BehaviorSubject<PatternCategoryId[]> =
-    new BehaviorSubject<PatternCategoryId[]>([]);
+  protected readonly categories$: BehaviorSubject<PatternCategory[]> = new BehaviorSubject<PatternCategory[]>([]);
+  protected readonly categoriesLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  protected readonly selectedCategories$: BehaviorSubject<PatternCategoryId[]> = new BehaviorSubject<
+    PatternCategoryId[]
+  >([]);
 
-  protected readonly name$: BehaviorSubject<string> =
-    new BehaviorSubject<string>("");
-  private readonly nameValid$: Observable<boolean> = this.name$.pipe(
-    map((name) => name.length > 0),
+  protected readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private readonly nameValid$: Observable<boolean> = this.name$.pipe(map((name) => name.length > 0));
+  protected readonly nameError$: Observable<boolean> = this.nameValid$.pipe(map((valid) => !valid));
+  private readonly nameChanged$: Observable<boolean> = combineLatest([this.pattern$, this.name$]).pipe(
+    map(([pattern, name]) => pattern.name !== name),
   );
-  protected readonly nameError$: Observable<boolean> = this.nameValid$.pipe(
-    map((valid) => !valid),
-  );
-  private readonly nameChanged$: Observable<boolean> = combineLatest([
-    this.pattern$,
-    this.name$,
-  ]).pipe(map(([pattern, name]) => pattern.name !== name));
-  protected readonly cannotSaveUpdatedName$: Observable<boolean> =
-    combineLatest([this.nameValid$, this.nameChanged$]).pipe(
-      map(([valid, changed]) => !valid || !changed),
-    );
+  protected readonly cannotSaveUpdatedName$: Observable<boolean> = combineLatest([
+    this.nameValid$,
+    this.nameChanged$,
+  ]).pipe(map(([valid, changed]) => !valid || !changed));
 
-  protected readonly number$: BehaviorSubject<string> = new BehaviorSubject<string>("S-");
+  protected readonly number$: BehaviorSubject<string> = new BehaviorSubject<string>('S-');
   protected readonly numberValid$: Observable<boolean> = this.number$.pipe(
-    map((number) => number.length > 0 && number.startsWith("S-")),
+    map((number) => number.length > 0 && number.startsWith('S-')),
   );
-  protected readonly numberError$: Observable<boolean> = this.numberValid$.pipe(
-    map((valid) => !valid),
+  protected readonly numberError$: Observable<boolean> = this.numberValid$.pipe(map((valid) => !valid));
+  private readonly numberChanged$: Observable<boolean> = combineLatest([this.pattern$, this.number$]).pipe(
+    map(([pattern, number]) => pattern.number !== number),
   );
-  private readonly numberChanged$: Observable<boolean> = combineLatest([
-    this.pattern$,
-    this.number$,
-  ]).pipe(map(([pattern, number]) => pattern.number !== number));
-  protected readonly cannotSaveUpdatedNumber$: Observable<boolean> =
-    combineLatest([this.numberValid$, this.numberChanged$]).pipe(
-      map(([valid, changed]) => !valid || !changed),
-    );
+  protected readonly cannotSaveUpdatedNumber$: Observable<boolean> = combineLatest([
+    this.numberValid$,
+    this.numberChanged$,
+  ]).pipe(map(([valid, changed]) => !valid || !changed));
 
-  protected readonly originalPatternName$: BehaviorSubject<string> =
-    new BehaviorSubject<string>("");
-  protected readonly designer$: BehaviorSubject<string> =
-    new BehaviorSubject<string>("");
-  protected readonly cannotSaveUpdatedAttribution$: Observable<boolean> =
-    combineLatest([
-      this.pattern$,
-      this.originalPatternName$,
-      this.designer$,
-    ]).pipe(
-      map(([pattern, originalPatternName, designer]) => {
-        return (
-          pattern.attribution.originalPatternName.orElse("") ===
-          originalPatternName &&
-          pattern.attribution.designer.orElse("") === designer
-        );
-      }),
-    );
+  protected readonly originalPatternName$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  protected readonly designer$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  protected readonly cannotSaveUpdatedAttribution$: Observable<boolean> = combineLatest([
+    this.pattern$,
+    this.originalPatternName$,
+    this.designer$,
+  ]).pipe(
+    map(([pattern, originalPatternName, designer]) => {
+      return (
+        pattern.attribution.originalPatternName.orElse('') === originalPatternName &&
+        pattern.attribution.designer.orElse('') === designer
+      );
+    }),
+  );
 
   private readonly editor$: Subject<Quill> = new ReplaySubject(1);
-  protected readonly description$: BehaviorSubject<Delta> =
-    new BehaviorSubject<Delta>(new Delta());
-  protected readonly cannotSaveUpdatedDescription$: Observable<boolean> =
-    combineLatest([
-      this.pattern$,
-      this.description$.pipe(
-        map((d) => (d.ops.length > 0 ? JSON.stringify(d) : null)),
-      ),
-    ]).pipe(
-      map(
-        ([pattern, description]) =>
-          pattern.description.orElse("") === someOrNone(description).orElse(""),
-      ),
-    );
+  protected readonly description$: BehaviorSubject<Delta> = new BehaviorSubject<Delta>(new Delta());
+  protected readonly cannotSaveUpdatedDescription$: Observable<boolean> = combineLatest([
+    this.pattern$,
+    this.description$.pipe(map((d) => (d.ops.length > 0 ? JSON.stringify(d) : null))),
+  ]).pipe(map(([pattern, description]) => pattern.description.orElse('') === someOrNone(description).orElse('')));
 
-  protected readonly variants$: BehaviorSubject<PatternVariant[]> =
-    new BehaviorSubject<PatternVariant[]>([]);
+  protected readonly variants$: BehaviorSubject<PatternVariant[]> = new BehaviorSubject<PatternVariant[]>([]);
   protected readonly variantsValid$: Observable<boolean> = this.variants$.pipe(
-    map(
-      (variants) =>
-        variants.length > 0 &&
-        variants.every((v) => v.name.trim().length > 0 && v.sizes.length > 0),
-    ),
+    map((variants) => variants.length > 0 && variants.every((v) => v.name.trim().length > 0 && v.sizes.length > 0)),
   );
-  protected readonly variantsError$: Observable<boolean> =
-    this.variantsValid$.pipe(map((valid) => !valid));
+  protected readonly variantsError$: Observable<boolean> = this.variantsValid$.pipe(map((valid) => !valid));
 
-  protected readonly extras$: BehaviorSubject<PatternExtra[]> =
-    new BehaviorSubject<PatternExtra[]>([]);
+  protected readonly extras$: BehaviorSubject<PatternExtra[]> = new BehaviorSubject<PatternExtra[]>([]);
   protected readonly extrasValid$: Observable<boolean> = this.extras$.pipe(
     map((extras) => extras.every((e) => e.name.trim().length > 0)),
   );
-  protected readonly extrasError$: Observable<boolean> = this.extrasValid$.pipe(
-    map((valid) => !valid),
-  );
+  protected readonly extrasError$: Observable<boolean> = this.extrasValid$.pipe(map((valid) => !valid));
 
-  protected readonly imageIds$: BehaviorSubject<string[]> = new BehaviorSubject<
-    string[]
-  >([]);
-  protected readonly imageUploadActive$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly imagesValid$: Observable<boolean> = this.imageIds$.pipe(
-    map((imageIds) => imageIds.length > 0),
-  );
-  protected readonly imagesError$: Observable<boolean> = this.imagesValid$.pipe(
-    map((valid) => !valid),
-  );
+  protected readonly imageIds$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  protected readonly imageUploadActive$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly imagesValid$: Observable<boolean> = this.imageIds$.pipe(map((imageIds) => imageIds.length > 0));
+  protected readonly imagesError$: Observable<boolean> = this.imagesValid$.pipe(map((valid) => !valid));
   protected readonly imagesSortableConfig: any = {
     delay: 300,
     delayOnTouchOnly: true,
@@ -164,35 +123,26 @@ export class PatternPage implements OnInit, OnDestroy {
     },
   };
 
-  protected readonly deleteConfirmationRequired$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  protected readonly deleteConfirmationRequired$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  protected readonly watermark$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(true);
+  protected readonly watermark$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   protected readonly loading$: Observable<boolean> = combineLatest([
     this.patternLoading$,
     this.categoriesLoading$,
-  ]).pipe(
-    map(
-      ([patternLoading, categoriesLoading]) =>
-        patternLoading || categoriesLoading,
-    ),
-  );
-  protected readonly notLoading$: Observable<boolean> = this.loading$.pipe(
-    map((loading) => !loading),
-  );
+  ]).pipe(map(([patternLoading, categoriesLoading]) => patternLoading || categoriesLoading));
+  protected readonly notLoading$: Observable<boolean> = this.loading$.pipe(map((loading) => !loading));
 
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   protected readonly quillModules = {
     toolbar: [
-      [{header: [1, 2, false]}],
-      ["bold", "italic", "underline", "strike", "link"],
-      [{align: []}],
-      [{color: []}, {background: []}],
-      ["blockquote", {list: "ordered"}, {list: "bullet"}],
-      ["clean"],
+      [{ header: [1, 2, false] }],
+      ['bold', 'italic', 'underline', 'strike', 'link'],
+      [{ align: [] }],
+      [{ color: [] }, { background: [] }],
+      ['blockquote', { list: 'ordered' }, { list: 'bullet' }],
+      ['clean'],
     ],
   };
 
@@ -202,15 +152,14 @@ export class PatternPage implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly notificationService: NotificationService,
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.reloadAvailableCategories();
 
     this.route.params
       .pipe(
-        map((params) => params["id"]),
+        map((params) => params['id']),
         takeUntil(this.destroy$),
       )
       .subscribe((id) => this.patternId$.next(someOrNone(id)));
@@ -221,74 +170,38 @@ export class PatternPage implements OnInit, OnDestroy {
         map((id) => id.orElseThrow()),
         takeUntil(this.destroy$),
       )
-      .subscribe((id) => this.reloadPattern({id}));
+      .subscribe((id) => this.reloadPattern({ id }));
 
-    combineLatest([
-      this.pattern$,
-      this.selectedCategories$.pipe(debounceTime(300)),
-    ])
+    combineLatest([this.pattern$, this.selectedCategories$.pipe(debounceTime(300))])
       .pipe(
         filter(
-          ([pattern, categories]) =>
-            !this.areSetsEqual(
-              pattern.categories,
-              new Set<PatternCategoryId>(categories),
-            ),
+          ([pattern, categories]) => !this.areSetsEqual(pattern.categories, new Set<PatternCategoryId>(categories)),
         ),
         takeUntil(this.destroy$),
       )
-      .subscribe(([pattern, categories]) =>
-        this.saveUpdatedCategories(pattern, categories),
-      );
+      .subscribe(([pattern, categories]) => this.saveUpdatedCategories(pattern, categories));
 
-    combineLatest([
-      this.pattern$,
-      this.variants$.pipe(debounceTime(300)),
-      this.variantsValid$,
-    ])
+    combineLatest([this.pattern$, this.variants$.pipe(debounceTime(300)), this.variantsValid$])
       .pipe(
-        filter(
-          ([pattern, variants, valid]) =>
-            valid && !this.areArraysEqual(pattern.variants, variants),
-        ),
+        filter(([pattern, variants, valid]) => valid && !this.areArraysEqual(pattern.variants, variants)),
         takeUntil(this.destroy$),
       )
-      .subscribe(([pattern, variants, _valid]) =>
-        this.saveUpdatedVariants(pattern, variants),
-      );
+      .subscribe(([pattern, variants, _valid]) => this.saveUpdatedVariants(pattern, variants));
 
-    combineLatest([
-      this.pattern$,
-      this.extras$.pipe(debounceTime(300)),
-      this.extrasValid$,
-    ])
+    combineLatest([this.pattern$, this.extras$.pipe(debounceTime(300)), this.extrasValid$])
       .pipe(
-        filter(
-          ([pattern, extras, valid]) =>
-            valid && !this.areArraysEqual(pattern.extras, extras),
-        ),
+        filter(([pattern, extras, valid]) => valid && !this.areArraysEqual(pattern.extras, extras)),
         takeUntil(this.destroy$),
       )
-      .subscribe(([pattern, extras, _valid]) =>
-        this.saveUpdatedExtras(pattern, extras),
-      );
+      .subscribe(([pattern, extras, _valid]) => this.saveUpdatedExtras(pattern, extras));
 
-    combineLatest([
-      this.pattern$,
-      this.imageIds$.pipe(debounceTime(300)),
-      this.imagesValid$,
-    ])
+    combineLatest([this.pattern$, this.imageIds$.pipe(debounceTime(300)), this.imagesValid$])
       .pipe(
         debounceTime(200),
-        filter(
-          ([pattern, imageIds, valid]) =>
-            valid && !this.arePrimitiveArraysEqual(pattern.images, imageIds),
-        ),
+        filter(([pattern, imageIds, valid]) => valid && !this.arePrimitiveArraysEqual(pattern.images, imageIds)),
         takeUntil(this.destroy$),
       )
-      .subscribe(([pattern, imageIds, _valid]) =>
-        this.saveUpdatedImages(pattern, imageIds),
-      );
+      .subscribe(([pattern, imageIds, _valid]) => this.saveUpdatedImages(pattern, imageIds));
 
     combineLatest([this.editor$, this.description$])
       .pipe(takeUntil(this.destroy$))
@@ -300,9 +213,7 @@ export class PatternPage implements OnInit, OnDestroy {
           return;
         }
 
-        if (
-          JSON.stringify(currentContents) !== JSON.stringify(expectedContents)
-        ) {
+        if (JSON.stringify(currentContents) !== JSON.stringify(expectedContents)) {
           editor.setContents(description);
         }
       });
@@ -352,7 +263,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn("Pattern update not confirmed", e);
+              console.warn('Pattern update not confirmed', e);
               return of(null);
             }),
           );
@@ -362,16 +273,16 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: "success",
+            type: 'success',
             message: `Der Name des Schnittmusters wurde zu „${name}“ geändert`,
           });
-          this.reloadPattern({id: pattern.id, indicateLoading: false});
+          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message: "Der Name des Schnittmusters konnte nicht geändert werden",
+            type: 'error',
+            message: 'Der Name des Schnittmusters konnte nicht geändert werden',
           });
         },
       });
@@ -395,7 +306,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn("Pattern update not confirmed", e);
+              console.warn('Pattern update not confirmed', e);
               return of(null);
             }),
           );
@@ -405,23 +316,23 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: "success",
+            type: 'success',
             message: `Die Nummber des Schnittmusters wurde zu „${number}“ geändert`,
           });
-          this.reloadPattern({id: pattern.id, indicateLoading: false});
+          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           const reason = e?.error?.reason;
-          if (reason === "NUMBER_ALREADY_IN_USE") {
+          if (reason === 'NUMBER_ALREADY_IN_USE') {
             this.notificationService.publish({
-              type: "error",
-              message: "Die Nummer des Schnittmusters ist bereits vergeben",
+              type: 'error',
+              message: 'Die Nummer des Schnittmusters ist bereits vergeben',
             });
           } else {
             console.error(e);
             this.notificationService.publish({
-              type: "error",
-              message: "Die Nummer des Schnittmusters konnte nicht geändert werden",
+              type: 'error',
+              message: 'Die Nummer des Schnittmusters konnte nicht geändert werden',
             });
           }
         },
@@ -431,10 +342,7 @@ export class PatternPage implements OnInit, OnDestroy {
   saveUpdatedDescription(pattern: Pattern): void {
     const changes$ = this.patternsService.getPatternChanges();
 
-    const description =
-      this.description$.value.ops.length > 0
-        ? JSON.stringify(this.description$.value)
-        : null;
+    const description = this.description$.value.ops.length > 0 ? JSON.stringify(this.description$.value) : null;
     this.patternsService
       .updateDescription(pattern.id, pattern.version, description)
       .pipe(
@@ -445,7 +353,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn("Pattern description update not confirmed", e);
+              console.warn('Pattern description update not confirmed', e);
               return of(null);
             }),
           );
@@ -455,17 +363,16 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: "success",
+            type: 'success',
             message: `Die Beschreibung des Schnittmusters wurde geändert`,
           });
-          this.reloadPattern({id: pattern.id, indicateLoading: false});
+          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message:
-              "Die Beschreibung des Schnittmusters konnte nicht geändert werden",
+            type: 'error',
+            message: 'Die Beschreibung des Schnittmusters konnte nicht geändert werden',
           });
         },
       });
@@ -486,7 +393,7 @@ export class PatternPage implements OnInit, OnDestroy {
   updateDescription(event: ContentChange): void {
     const html = someOrNone(event.html)
       .map((h) => h.trim())
-      .orElse("");
+      .orElse('');
     const isEmpty = html.length === 0;
     if (isEmpty) {
       this.description$.next(new Delta());
@@ -508,7 +415,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn("Pattern publish not confirmed", e);
+              console.warn('Pattern publish not confirmed', e);
               return of(null);
             }),
           );
@@ -518,16 +425,16 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: "success",
-            message: "Das Schnittmuster wurde veröffentlicht",
+            type: 'success',
+            message: 'Das Schnittmuster wurde veröffentlicht',
           });
-          this.reloadPattern({id: pattern.id, indicateLoading: false});
+          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message: "Das Schnittmuster konnte nicht veröffentlicht werden",
+            type: 'error',
+            message: 'Das Schnittmuster konnte nicht veröffentlicht werden',
           });
         },
       });
@@ -546,7 +453,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn("Pattern unpublish not confirmed", e);
+              console.warn('Pattern unpublish not confirmed', e);
               return of(null);
             }),
           );
@@ -556,17 +463,16 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: "success",
-            message: "Die Veröffentlichung des Schnittmusters wurde aufgehoben",
+            type: 'success',
+            message: 'Die Veröffentlichung des Schnittmusters wurde aufgehoben',
           });
-          this.reloadPattern({id: pattern.id, indicateLoading: false});
+          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message:
-              "Die Veröffentlichung des Schnittmusters konnte nicht aufgehoben werden",
+            type: 'error',
+            message: 'Die Veröffentlichung des Schnittmusters konnte nicht aufgehoben werden',
           });
         },
       });
@@ -598,7 +504,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn("Pattern attribution update not confirmed", e);
+              console.warn('Pattern attribution update not confirmed', e);
               return of(null);
             }),
           );
@@ -608,26 +514,22 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: "success",
+            type: 'success',
             message: `Der Originalname und der Designer des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({id: pattern.id, indicateLoading: false});
+          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message:
-              "Der Originalname und der Designer des Schnittmusters konnten nicht geändert werden",
+            type: 'error',
+            message: 'Der Originalname und der Designer des Schnittmusters konnten nicht geändert werden',
           });
         },
       });
   }
 
-  saveUpdatedCategories(
-    pattern: Pattern,
-    categories: PatternCategoryId[],
-  ): void {
+  saveUpdatedCategories(pattern: Pattern, categories: PatternCategoryId[]): void {
     const changes$ = this.patternsService.getPatternChanges();
 
     this.patternsService
@@ -640,7 +542,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn("Pattern category update not confirmed", e);
+              console.warn('Pattern category update not confirmed', e);
               return of(null);
             }),
           );
@@ -650,17 +552,16 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: "success",
+            type: 'success',
             message: `Die Kategorien des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({id: pattern.id, indicateLoading: false});
+          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message:
-              "Die Kategorien des Schnittmusters konnten nicht geändert werden",
+            type: 'error',
+            message: 'Die Kategorien des Schnittmusters konnten nicht geändert werden',
           });
         },
       });
@@ -679,7 +580,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn("Pattern variants update not confirmed", e);
+              console.warn('Pattern variants update not confirmed', e);
               return of(null);
             }),
           );
@@ -689,17 +590,16 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: "success",
+            type: 'success',
             message: `Die Varianten des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({id: pattern.id, indicateLoading: false});
+          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message:
-              "Die Varianten des Schnittmusters konnten nicht geändert werden",
+            type: 'error',
+            message: 'Die Varianten des Schnittmusters konnten nicht geändert werden',
           });
         },
       });
@@ -718,7 +618,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn("Pattern extras update not confirmed", e);
+              console.warn('Pattern extras update not confirmed', e);
               return of(null);
             }),
           );
@@ -728,17 +628,16 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: "success",
+            type: 'success',
             message: `Die Extras des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({id: pattern.id, indicateLoading: false});
+          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message:
-              "Die Extras des Schnittmusters konnten nicht geändert werden",
+            type: 'error',
+            message: 'Die Extras des Schnittmusters konnten nicht geändert werden',
           });
         },
       });
@@ -757,7 +656,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn("Pattern images update not confirmed", e);
+              console.warn('Pattern images update not confirmed', e);
               return of(null);
             }),
           );
@@ -767,17 +666,16 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: "success",
+            type: 'success',
             message: `Die Bilder des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({id: pattern.id, indicateLoading: false});
+          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message:
-              "Die Bilder des Schnittmusters konnten nicht geändert werden",
+            type: 'error',
+            message: 'Die Bilder des Schnittmusters konnten nicht geändert werden',
           });
         },
       });
@@ -796,7 +694,7 @@ export class PatternPage implements OnInit, OnDestroy {
             map(() => null),
             timeout(5000),
             catchError((e) => {
-              console.warn("Pattern deletion not confirmed", e);
+              console.warn('Pattern deletion not confirmed', e);
               return of(null);
             }),
           );
@@ -806,16 +704,16 @@ export class PatternPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            type: "success",
-            message: "Das Schnittmuster wurde gelöscht",
+            type: 'success',
+            message: 'Das Schnittmuster wurde gelöscht',
           });
-          this.router.navigate([".."], {relativeTo: this.route});
+          this.router.navigate(['..'], { relativeTo: this.route });
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message: "Das Schnittmuster konnte nicht gelöscht werden",
+            type: 'error',
+            message: 'Das Schnittmuster konnte nicht gelöscht werden',
           });
         },
       });
@@ -851,24 +749,16 @@ export class PatternPage implements OnInit, OnDestroy {
     return `${environment.apiUrl}/assets/${imageId}/content`;
   }
 
-  toCategories(
-    ids: PatternCategoryId[],
-    categories: PatternCategory[],
-  ): PatternCategory[] {
-    const lookup: Map<PatternCategoryId, PatternCategory> = new Map<
-      PatternCategoryId,
-      PatternCategory
-    >();
+  toCategories(ids: PatternCategoryId[], categories: PatternCategory[]): PatternCategory[] {
+    const lookup: Map<PatternCategoryId, PatternCategory> = new Map<PatternCategoryId, PatternCategory>();
     for (const category of categories) {
       lookup.set(category.id, category);
     }
 
-    const result = ids
-      .map((id) => lookup.get(id))
-      .filter((category) => !!category);
+    const result = ids.map((id) => lookup.get(id)).filter((category) => !!category);
 
     result.sort((a, b) =>
-      a.name.localeCompare(b.name, "de-de", {
+      a.name.localeCompare(b.name, 'de-de', {
         numeric: true,
       }),
     );
@@ -881,9 +771,7 @@ export class PatternPage implements OnInit, OnDestroy {
   }
 
   onCategoryRemoved(chip: Chip): void {
-    const categories = this.selectedCategories$.value.filter(
-      (category) => category !== chip.id,
-    );
+    const categories = this.selectedCategories$.value.filter((category) => category !== chip.id);
     this.selectedCategories$.next(categories);
   }
 
@@ -902,10 +790,7 @@ export class PatternPage implements OnInit, OnDestroy {
     });
   }
 
-  private reloadPattern(props: {
-    id: PatternId;
-    indicateLoading?: boolean;
-  }): void {
+  private reloadPattern(props: { id: PatternId; indicateLoading?: boolean }): void {
     const id = props.id;
     const indicateLoading = someOrNone(props.indicateLoading).orElse(true);
     if (indicateLoading) {
@@ -924,13 +809,9 @@ export class PatternPage implements OnInit, OnDestroy {
           this.pattern$.next(pattern);
           this.name$.next(pattern.name);
           this.number$.next(pattern.number);
-          pattern.description.ifSome((description) =>
-            this.description$.next(new Delta(JSON.parse(description))),
-          );
-          this.originalPatternName$.next(
-            pattern.attribution.originalPatternName.orElse(""),
-          );
-          this.designer$.next(pattern.attribution.designer.orElse(""));
+          pattern.description.ifSome((description) => this.description$.next(new Delta(JSON.parse(description))));
+          this.originalPatternName$.next(pattern.attribution.originalPatternName.orElse(''));
+          this.designer$.next(pattern.attribution.designer.orElse(''));
           this.selectedCategories$.next(Array.from(pattern.categories));
 
           if (!this.areArraysEqual(pattern.variants, this.variants$.value)) {
@@ -941,17 +822,15 @@ export class PatternPage implements OnInit, OnDestroy {
             this.extras$.next(pattern.extras);
           }
 
-          if (
-            !this.arePrimitiveArraysEqual(pattern.images, this.imageIds$.value)
-          ) {
+          if (!this.arePrimitiveArraysEqual(pattern.images, this.imageIds$.value)) {
             this.imageIds$.next([...pattern.images]);
           }
         },
         error: (e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message: "Das Schnittmuster konnte nicht geladen werden",
+            type: 'error',
+            message: 'Das Schnittmuster konnte nicht geladen werden',
           });
         },
       });
@@ -967,9 +846,8 @@ export class PatternPage implements OnInit, OnDestroy {
         catchError((e) => {
           console.error(e);
           this.notificationService.publish({
-            type: "error",
-            message:
-              "Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neuzuladen.",
+            type: 'error',
+            message: 'Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neuzuladen.',
           });
           return [];
         }),

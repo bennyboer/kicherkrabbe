@@ -1,17 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  distinctUntilChanged,
-  map,
-  Observable,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, distinctUntilChanged, map, Observable, Subject, takeUntil } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
@@ -21,8 +9,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MobileSwitchComponent implements OnInit, OnDestroy {
-  private readonly isMobile$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(private readonly breakpointObserver: BreakpointObserver) {}

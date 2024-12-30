@@ -1,9 +1,9 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild,} from "@angular/core";
-import {ContentChange, QuillEditorComponent} from "ngx-quill";
-import {validateProps} from "../../../../util";
-import {Delta} from "quill/core";
-import {BehaviorSubject, combineLatest, map, Observable, Subject, takeUntil,} from "rxjs";
-import {Option, someOrNone} from "../../../shared/modules/option";
+import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { ContentChange, QuillEditorComponent } from 'ngx-quill';
+import { validateProps } from '../../../../util';
+import { Delta } from 'quill/core';
+import { BehaviorSubject, combineLatest, map, Observable, Subject, takeUntil } from 'rxjs';
+import { Option, someOrNone } from '../../../shared/modules/option';
 
 export class ContactFormResult {
   readonly name: string;
@@ -51,9 +51,9 @@ export class ContactFormResult {
 }
 
 @Component({
-  selector: "app-contact-form",
-  templateUrl: "./contact-form.component.html",
-  styleUrls: ["./contact-form.component.scss"],
+  selector: 'app-contact-form',
+  templateUrl: './contact-form.component.html',
+  styleUrls: ['./contact-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactFormComponent implements OnInit, OnDestroy {
@@ -61,117 +61,68 @@ export class ContactFormComponent implements OnInit, OnDestroy {
   quillEditor!: QuillEditorComponent;
 
   @Output()
-  submitted: EventEmitter<ContactFormResult> =
-    new EventEmitter<ContactFormResult>();
+  submitted: EventEmitter<ContactFormResult> = new EventEmitter<ContactFormResult>();
 
-  protected readonly submitting$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  protected readonly submitting$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>(
-    "",
-  );
-  protected readonly nameTouched$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly nameLength$: Observable<number> = this.name$.pipe(
-    map((name) => name.length),
-  );
-  protected readonly nameMissing$: Observable<boolean> = this.name$.pipe(
-    map((name) => name.length === 0),
-  );
-  protected readonly nameTooLong$: Observable<boolean> = this.name$.pipe(
-    map((name) => name.length > 200),
-  );
+  private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  protected readonly nameTouched$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly nameLength$: Observable<number> = this.name$.pipe(map((name) => name.length));
+  protected readonly nameMissing$: Observable<boolean> = this.name$.pipe(map((name) => name.length === 0));
+  protected readonly nameTooLong$: Observable<boolean> = this.name$.pipe(map((name) => name.length > 200));
   protected readonly nameDisabled$: Observable<boolean> = this.submitting$;
-  protected readonly nameValid$: Observable<boolean> = combineLatest([
-    this.nameMissing$,
-    this.nameTooLong$,
-  ]).pipe(map(([missing, tooLong]) => !missing && !tooLong));
+  protected readonly nameValid$: Observable<boolean> = combineLatest([this.nameMissing$, this.nameTooLong$]).pipe(
+    map(([missing, tooLong]) => !missing && !tooLong),
+  );
 
-  private readonly mail$: BehaviorSubject<string> = new BehaviorSubject<string>(
-    "",
-  );
-  protected readonly mailTouched$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly mailLength$: Observable<number> = this.mail$.pipe(
-    map((mail) => mail.length),
-  );
-  protected readonly mailMissing$: Observable<boolean> = this.mail$.pipe(
-    map((mail) => mail.length === 0),
-  );
-  protected readonly mailTooLong$: Observable<boolean> = this.mail$.pipe(
-    map((mail) => mail.length > 70),
-  );
-  protected readonly mailFormatInvalid$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly mail$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  protected readonly mailTouched$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly mailLength$: Observable<number> = this.mail$.pipe(map((mail) => mail.length));
+  protected readonly mailMissing$: Observable<boolean> = this.mail$.pipe(map((mail) => mail.length === 0));
+  protected readonly mailTooLong$: Observable<boolean> = this.mail$.pipe(map((mail) => mail.length > 70));
+  protected readonly mailFormatInvalid$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   protected readonly mailDisabled$: Observable<boolean> = this.submitting$;
   protected readonly mailValid$: Observable<boolean> = combineLatest([
     this.mailMissing$,
     this.mailTooLong$,
     this.mailFormatInvalid$,
-  ]).pipe(
-    map(
-      ([missing, tooLong, formatInvalid]) =>
-        !missing && !tooLong && !formatInvalid,
-    ),
-  );
+  ]).pipe(map(([missing, tooLong, formatInvalid]) => !missing && !tooLong && !formatInvalid));
 
-  private readonly phone$: BehaviorSubject<string> =
-    new BehaviorSubject<string>("");
-  protected readonly phoneTouched$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly phoneLength$: Observable<number> = this.phone$.pipe(
-    map((phone) => phone.length),
-  );
-  protected readonly phoneTooLong$: Observable<boolean> = this.phone$.pipe(
-    map((phone) => phone.length > 30),
-  );
+  private readonly phone$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  protected readonly phoneTouched$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly phoneLength$: Observable<number> = this.phone$.pipe(map((phone) => phone.length));
+  protected readonly phoneTooLong$: Observable<boolean> = this.phone$.pipe(map((phone) => phone.length > 30));
   protected readonly phoneDisabled$: Observable<boolean> = this.submitting$;
-  protected readonly phoneValid$: Observable<boolean> = this.phoneTooLong$.pipe(
-    map((tooLong) => !tooLong),
-  );
+  protected readonly phoneValid$: Observable<boolean> = this.phoneTooLong$.pipe(map((tooLong) => !tooLong));
 
-  private readonly subject$: BehaviorSubject<string> =
-    new BehaviorSubject<string>("");
-  protected readonly subjectTouched$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly subjectLength$: Observable<number> = this.subject$.pipe(
-    map((subject) => subject.length),
-  );
-  protected readonly subjectMissing$: Observable<boolean> = this.subject$.pipe(
-    map((subject) => subject.length === 0),
-  );
-  protected readonly subjectTooLong$: Observable<boolean> = this.subject$.pipe(
-    map((subject) => subject.length > 200),
-  );
+  private readonly subject$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  protected readonly subjectTouched$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly subjectLength$: Observable<number> = this.subject$.pipe(map((subject) => subject.length));
+  protected readonly subjectMissing$: Observable<boolean> = this.subject$.pipe(map((subject) => subject.length === 0));
+  protected readonly subjectTooLong$: Observable<boolean> = this.subject$.pipe(map((subject) => subject.length > 200));
   protected readonly subjectDisabled$: Observable<boolean> = this.submitting$;
   protected readonly subjectValid$: Observable<boolean> = combineLatest([
     this.subjectMissing$,
     this.subjectTooLong$,
   ]).pipe(map(([missing, tooLong]) => !missing && !tooLong));
 
-  private readonly message$: BehaviorSubject<Delta> =
-    new BehaviorSubject<Delta>(new Delta());
-  protected readonly messageHtml$: BehaviorSubject<string> =
-    new BehaviorSubject<string>("");
-  protected readonly messageTouched$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly message$: BehaviorSubject<Delta> = new BehaviorSubject<Delta>(new Delta());
+  protected readonly messageHtml$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  protected readonly messageTouched$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   protected readonly messageMissing$: Observable<boolean> = this.message$.pipe(
     map((message) => message.length() === 0),
   );
   protected readonly messageTooLong$: Observable<boolean> = this.message$.pipe(
     map((message) => message.length() > 10000),
   );
-  protected readonly messageHtmlTooLong$: Observable<boolean> =
-    this.messageHtml$.pipe(map((messageHtml) => messageHtml.length > 20000));
+  protected readonly messageHtmlTooLong$: Observable<boolean> = this.messageHtml$.pipe(
+    map((messageHtml) => messageHtml.length > 20000),
+  );
   protected readonly messageValid$: Observable<boolean> = combineLatest([
     this.messageMissing$,
     this.messageTooLong$,
     this.messageHtmlTooLong$,
-  ]).pipe(
-    map(
-      ([missing, tooLong, htmlTooLong]) => !missing && !tooLong && !htmlTooLong,
-    ),
-  );
+  ]).pipe(map(([missing, tooLong, htmlTooLong]) => !missing && !tooLong && !htmlTooLong));
 
   protected readonly canSubmit$: Observable<boolean> = combineLatest([
     this.submitting$,
@@ -182,34 +133,16 @@ export class ContactFormComponent implements OnInit, OnDestroy {
     this.messageValid$,
   ]).pipe(
     map(
-      ([
-         submitting,
-         nameValid,
-         mailValid,
-         phoneValid,
-         subjectValid,
-         messageValid,
-       ]) =>
-        !submitting &&
-        nameValid &&
-        mailValid &&
-        phoneValid &&
-        subjectValid &&
-        messageValid,
+      ([submitting, nameValid, mailValid, phoneValid, subjectValid, messageValid]) =>
+        !submitting && nameValid && mailValid && phoneValid && subjectValid && messageValid,
     ),
   );
-  protected readonly cannotSubmit$: Observable<boolean> = this.canSubmit$.pipe(
-    map((canSubmit) => !canSubmit),
-  );
+  protected readonly cannotSubmit$: Observable<boolean> = this.canSubmit$.pipe(map((canSubmit) => !canSubmit));
 
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   protected readonly quillModules = {
-    toolbar: [
-      [{header: [1, 2, false]}],
-      ["bold", "italic", "underline"],
-      ["clean"],
-    ],
+    toolbar: [[{ header: [1, 2, false] }], ['bold', 'italic', 'underline'], ['clean']],
   };
 
   ngOnInit(): void {
@@ -281,7 +214,7 @@ export class ContactFormComponent implements OnInit, OnDestroy {
   updateMessage(event: ContentChange): void {
     const html = someOrNone(event.html)
       .map((h) => h.trim())
-      .orElse("");
+      .orElse('');
     this.messageHtml$.next(html);
 
     const isEmpty = html.length === 0;

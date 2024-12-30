@@ -9,10 +9,7 @@ export class FabricTypeAvailability {
     this.inStock = props.inStock;
   }
 
-  static of(props: {
-    typeId: FabricTypeId;
-    inStock: boolean;
-  }): FabricTypeAvailability {
+  static of(props: { typeId: FabricTypeId; inStock: boolean }): FabricTypeAvailability {
     return new FabricTypeAvailability(props);
   }
 }

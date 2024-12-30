@@ -10,10 +10,7 @@ const routes: Routes = [
   {
     path: 'patterns',
     title: 'Schnitte',
-    loadChildren: () =>
-      import('./modules/patterns/patterns.module').then(
-        (m) => m.PatternsModule,
-      ),
+    loadChildren: () => import('./modules/patterns/patterns.module').then((m) => m.PatternsModule),
     data: {
       description: 'Alle verfügbaren Schnitte für dein nächstes Unikat',
     },
@@ -21,8 +18,7 @@ const routes: Routes = [
   {
     path: 'fabrics',
     title: 'Stoffe',
-    loadChildren: () =>
-      import('./modules/fabrics/fabrics.module').then((m) => m.FabricsModule),
+    loadChildren: () => import('./modules/fabrics/fabrics.module').then((m) => m.FabricsModule),
     data: {
       description: 'Stoffe aus denen dein nächstes Unikat entstehen kann',
     },

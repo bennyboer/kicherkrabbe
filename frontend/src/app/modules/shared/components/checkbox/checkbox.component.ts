@@ -42,12 +42,9 @@ export class CheckboxComponent implements OnDestroy {
 
   protected readonly id: string = crypto.randomUUID();
   private readonly label$: Subject<string> = new ReplaySubject<string>(1);
-  protected readonly checked$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly passive$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  protected readonly disabled$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  protected readonly checked$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly passive$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected readonly disabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   ngOnDestroy(): void {
     this.label$.complete();

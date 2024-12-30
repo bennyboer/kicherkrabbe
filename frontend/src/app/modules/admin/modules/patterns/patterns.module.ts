@@ -11,14 +11,7 @@ import { QuillModule } from 'ngx-quill';
 
 @NgModule({
   declarations: [...PAGES, ...COMPONENTS],
-  imports: [
-    CommonModule,
-    PatternsRoutingModule,
-    SharedModule,
-    AssetsModule,
-    SortablejsModule,
-    QuillModule,
-  ],
+  imports: [CommonModule, PatternsRoutingModule, SharedModule, AssetsModule, SortablejsModule, QuillModule],
   providers: [PatternsService, PatternCategoriesService],
 })
 export class PatternsModule {}

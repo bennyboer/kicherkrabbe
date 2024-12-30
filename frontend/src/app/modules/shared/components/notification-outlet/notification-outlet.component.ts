@@ -1,19 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { Notification, NotificationService } from '../../services';
-import {
-  BehaviorSubject,
-  map,
-  Observable,
-  Subject,
-  Subscription,
-  takeUntil,
-  timer,
-} from 'rxjs';
+import { BehaviorSubject, map, Observable, Subject, Subscription, takeUntil, timer } from 'rxjs';
 import { none, Option, some } from '../../modules/option';
 
 @Component({
@@ -23,8 +10,9 @@ import { none, Option, some } from '../../modules/option';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotificationOutletComponent implements OnInit, OnDestroy {
-  private readonly notificationToShow$: BehaviorSubject<Option<Notification>> =
-    new BehaviorSubject<Option<Notification>>(none());
+  private readonly notificationToShow$: BehaviorSubject<Option<Notification>> = new BehaviorSubject<
+    Option<Notification>
+  >(none());
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   private timerSub: Option<Subscription> = none();

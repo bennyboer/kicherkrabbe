@@ -2,13 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../../../../../environments';
-import {
-  DateRange,
-  RateLimit,
-  RateLimits,
-  Settings,
-  Statistics,
-} from '../models';
+import { DateRange, RateLimit, RateLimits, Settings, Statistics } from '../models';
 
 interface QuerySettingsResponse {
   enabled: boolean;
@@ -49,38 +43,26 @@ export class InquiriesService {
   constructor(private readonly http: HttpClient) {}
 
   enableInquiries(): Observable<void> {
-    return this.http.post<void>(
-      `${environment.apiUrl}/inquiries/settings/enable`,
-      {},
-    );
+    return this.http.post<void>(`${environment.apiUrl}/inquiries/settings/enable`, {});
   }
 
   disableInquiries(): Observable<void> {
-    return this.http.post<void>(
-      `${environment.apiUrl}/inquiries/settings/disable`,
-      {},
-    );
+    return this.http.post<void>(`${environment.apiUrl}/inquiries/settings/disable`, {});
   }
 
   getSettings(): Observable<Settings> {
-    return this.http
-      .get<QuerySettingsResponse>(`${environment.apiUrl}/inquiries/settings`)
-      .pipe(
-        map((response) =>
-          Settings.of({
-            enabled: response.enabled,
-            rateLimits: {
-              perMail: RateLimit.fullDay(
-                response.rateLimits.perMail.maxRequests,
-              ),
-              perIp: RateLimit.fullDay(response.rateLimits.perIp.maxRequests),
-              overall: RateLimit.fullDay(
-                response.rateLimits.overall.maxRequests,
-              ),
-            },
-          }),
-        ),
-      );
+    return this.http.get<QuerySettingsResponse>(`${environment.apiUrl}/inquiries/settings`).pipe(
+      map((response) =>
+        Settings.of({
+          enabled: response.enabled,
+          rateLimits: {
+            perMail: RateLimit.fullDay(response.rateLimits.perMail.maxRequests),
+            perIp: RateLimit.fullDay(response.rateLimits.perIp.maxRequests),
+            overall: RateLimit.fullDay(response.rateLimits.overall.maxRequests),
+          },
+        }),
+      ),
+    );
   }
 
   updateRateLimits(rateLimits: RateLimits): Observable<void> {
@@ -101,29 +83,22 @@ export class InquiriesService {
       },
     };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/inquiries/settings/rate-limits`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/inquiries/settings/rate-limits`, request);
   }
 
   getStatistics(): Observable<Statistics[]> {
-    return this.http
-      .get<QueryStatisticsResponse>(
-        `${environment.apiUrl}/inquiries/statistics`,
-      )
-      .pipe(
-        map((response) =>
-          response.statistics.map((statistics) =>
-            Statistics.of({
-              dateRange: DateRange.of({
-                from: new Date(statistics.dateRange.from),
-                to: new Date(statistics.dateRange.to),
-              }),
-              totalRequests: statistics.totalRequests,
+    return this.http.get<QueryStatisticsResponse>(`${environment.apiUrl}/inquiries/statistics`).pipe(
+      map((response) =>
+        response.statistics.map((statistics) =>
+          Statistics.of({
+            dateRange: DateRange.of({
+              from: new Date(statistics.dateRange.from),
+              to: new Date(statistics.dateRange.to),
             }),
-          ),
+            totalRequests: statistics.totalRequests,
+          }),
         ),
-      );
+      ),
+    );
   }
 }

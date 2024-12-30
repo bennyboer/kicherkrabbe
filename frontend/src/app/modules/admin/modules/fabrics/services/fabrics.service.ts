@@ -27,12 +27,7 @@ import {
   ImageId,
   TopicId,
 } from '../model';
-import {
-  none,
-  Option,
-  some,
-  someOrNone,
-} from '../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '../../../../shared/modules/option';
 
 interface FabricDTO {
   id: string;
@@ -135,15 +130,11 @@ interface UpdateFabricAvailabilityRequest {
 
 @Injectable()
 export class FabricsService implements OnDestroy {
-  private readonly loadingFabrics$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
-  private readonly failedLoadingFabrics$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly loadingFabrics$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly failedLoadingFabrics$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly fabrics$: Subject<Fabric[]> = new ReplaySubject<Fabric[]>(1);
-  private readonly events$: Subject<FabricChangeDTO> =
-    new Subject<FabricChangeDTO>();
-  private readonly subscribedToFabrics$: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  private readonly events$: Subject<FabricChangeDTO> = new Subject<FabricChangeDTO>();
+  private readonly subscribedToFabrics$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
   private sse: Option<SSE> = none();
   private fabricsSubCounter: number = 0;
@@ -170,9 +161,7 @@ export class FabricsService implements OnDestroy {
       this.reloadFabrics();
     });
 
-    const loggedOut$ = this.authService
-      .getToken()
-      .pipe(filter((token) => token.isNone()));
+    const loggedOut$ = this.authService.getToken().pipe(filter((token) => token.isNone()));
     loggedOut$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.closeEventStream();
     });
@@ -192,9 +181,7 @@ export class FabricsService implements OnDestroy {
   }
 
   isLoading(): Observable<boolean> {
-    return combineLatest([this.loadingFabrics$]).pipe(
-      map(([loadingFabrics]) => loadingFabrics),
-    );
+    return combineLatest([this.loadingFabrics$]).pipe(map(([loadingFabrics]) => loadingFabrics));
   }
 
   isFailedLoadingFabrics(): Observable<boolean> {
@@ -211,9 +198,7 @@ export class FabricsService implements OnDestroy {
   }
 
   getFabric(id: string): Observable<Option<Fabric>> {
-    return this.getFabrics().pipe(
-      map((fabrics) => someOrNone(fabrics.find((fabric) => fabric.id === id))),
-    );
+    return this.getFabrics().pipe(map((fabrics) => someOrNone(fabrics.find((fabric) => fabric.id === id))));
   }
 
   createFabric(props: {
@@ -234,10 +219,7 @@ export class FabricsService implements OnDestroy {
       })),
     };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/fabrics/create`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/fabrics/create`, request);
   }
 
   deleteFabric(id: string, version: number): Observable<void> {
@@ -266,69 +248,37 @@ export class FabricsService implements OnDestroy {
     );
   }
 
-  updateFabricName(
-    id: FabricId,
-    version: number,
-    name: string,
-  ): Observable<void> {
+  updateFabricName(id: FabricId, version: number, name: string): Observable<void> {
     const request: RenameFabricRequest = { version, name };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/fabrics/${id}/rename`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/fabrics/${id}/rename`, request);
   }
 
-  updateFabricImage(
-    id: FabricId,
-    version: number,
-    imageId: ImageId,
-  ): Observable<void> {
+  updateFabricImage(id: FabricId, version: number, imageId: ImageId): Observable<void> {
     const request: UpdateFabricImageRequest = { version, imageId };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/fabrics/${id}/update/image`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/fabrics/${id}/update/image`, request);
   }
 
-  updateFabricTopics(
-    id: FabricId,
-    version: number,
-    topics: Set<TopicId>,
-  ): Observable<void> {
+  updateFabricTopics(id: FabricId, version: number, topics: Set<TopicId>): Observable<void> {
     const request: UpdateFabricTopicsRequest = {
       version,
       topicIds: Array.from(topics),
     };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/fabrics/${id}/update/topics`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/fabrics/${id}/update/topics`, request);
   }
 
-  updateFabricColors(
-    id: FabricId,
-    version: number,
-    colors: Set<ColorId>,
-  ): Observable<void> {
+  updateFabricColors(id: FabricId, version: number, colors: Set<ColorId>): Observable<void> {
     const request: UpdateFabricColorsRequest = {
       version,
       colorIds: Array.from(colors),
     };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/fabrics/${id}/update/colors`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/fabrics/${id}/update/colors`, request);
   }
 
-  updateFabricAvailability(
-    id: FabricId,
-    version: number,
-    availability: FabricTypeAvailability[],
-  ): Observable<void> {
+  updateFabricAvailability(id: FabricId, version: number, availability: FabricTypeAvailability[]): Observable<void> {
     const request: UpdateFabricAvailabilityRequest = {
       version,
       availability: availability.map((availability) => ({
@@ -337,52 +287,37 @@ export class FabricsService implements OnDestroy {
       })),
     };
 
-    return this.http.post<void>(
-      `${environment.apiUrl}/fabrics/${id}/update/availability`,
-      request,
-    );
+    return this.http.post<void>(`${environment.apiUrl}/fabrics/${id}/update/availability`, request);
   }
 
   getAvailableTopicsForFabrics(): Observable<FabricTopic[]> {
     return this.http
       .get<QueryTopicsResponse>(`${environment.apiUrl}/fabrics/topics`)
-      .pipe(
-        map((response) =>
-          response.topics.map((topic) =>
-            FabricTopic.of({ id: topic.id, name: topic.name }),
-          ),
-        ),
-      );
+      .pipe(map((response) => response.topics.map((topic) => FabricTopic.of({ id: topic.id, name: topic.name }))));
   }
 
   getAvailableColorsForFabrics(): Observable<FabricColor[]> {
-    return this.http
-      .get<QueryColorsResponse>(`${environment.apiUrl}/fabrics/colors`)
-      .pipe(
-        map((response) =>
-          response.colors.map((color) =>
-            FabricColor.of({
-              id: color.id,
-              name: color.name,
-              red: color.red,
-              green: color.green,
-              blue: color.blue,
-            }),
-          ),
+    return this.http.get<QueryColorsResponse>(`${environment.apiUrl}/fabrics/colors`).pipe(
+      map((response) =>
+        response.colors.map((color) =>
+          FabricColor.of({
+            id: color.id,
+            name: color.name,
+            red: color.red,
+            green: color.green,
+            blue: color.blue,
+          }),
         ),
-      );
+      ),
+    );
   }
 
   getAvailableFabricTypesForFabrics(): Observable<FabricType[]> {
     return this.http
-      .get<QueryFabricTypesResponse>(
-        `${environment.apiUrl}/fabrics/fabric-types`,
-      )
+      .get<QueryFabricTypesResponse>(`${environment.apiUrl}/fabrics/fabric-types`)
       .pipe(
         map((response) =>
-          response.fabricTypes.map((fabricType) =>
-            FabricType.of({ id: fabricType.id, name: fabricType.name }),
-          ),
+          response.fabricTypes.map((fabricType) => FabricType.of({ id: fabricType.id, name: fabricType.name })),
         ),
       );
   }
@@ -399,11 +334,7 @@ export class FabricsService implements OnDestroy {
       .post<QueryFabricsResponse>(`${environment.apiUrl}/fabrics/`, request)
       .pipe(
         map((response) => this.toInternalFabrics(response.fabrics)),
-        map((fabrics) =>
-          fabrics.sort((a, b) =>
-            a.name.localeCompare(b.name, 'de-de', { numeric: true }),
-          ),
-        ),
+        map((fabrics) => fabrics.sort((a, b) => a.name.localeCompare(b.name, 'de-de', { numeric: true }))),
       )
       .subscribe({
         next: (fabrics) => {

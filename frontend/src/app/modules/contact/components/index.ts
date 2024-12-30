@@ -1,7 +1,4 @@
-import {
-  ContactFormComponent,
-  ContactFormResult,
-} from './contact-form/contact-form.component';
+import { ContactFormComponent, ContactFormResult } from './contact-form/contact-form.component';
 
 export { ContactFormComponent, ContactFormResult };
 

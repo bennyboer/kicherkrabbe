@@ -8,9 +8,7 @@ export class Money implements Eq<Money> {
 
   private constructor(props: { value: number; currency: Currency }) {
     this.value = someOrNone(props.value).orElse(0);
-    this.currency = someOrNone(props.currency).orElseThrow(
-      'Currency is required',
-    );
+    this.currency = someOrNone(props.currency).orElseThrow('Currency is required');
   }
 
   static of(props: { value: number; currency: Currency }): Money {

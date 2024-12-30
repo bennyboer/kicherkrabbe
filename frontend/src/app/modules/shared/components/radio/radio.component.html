@@ -1,4 +1,4 @@
-<input [id]="id" [checked]="isChecked() | async" (click)="onRadioClicked($event)" type="radio">
+<input [id]="id" [checked]="isChecked() | async" (click)="onRadioClicked($event)" type="radio" />
 @if (getLabel() | async; as label) {
-  <label [for]="id"></label><br>
+  <label [for]="id"></label><br />
 }

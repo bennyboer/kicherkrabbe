@@ -6,11 +6,7 @@ export class Sender {
   readonly mail: string;
   readonly phone: Option<string>;
 
-  private constructor(props: {
-    name: string;
-    mail: string;
-    phone: Option<string>;
-  }) {
+  private constructor(props: { name: string; mail: string; phone: Option<string> }) {
     validateProps(props);
 
     this.name = props.name;
@@ -18,11 +14,7 @@ export class Sender {
     this.phone = props.phone;
   }
 
-  static of(props: {
-    name: string;
-    mail: string;
-    phone?: string | null;
-  }): Sender {
+  static of(props: { name: string; mail: string; phone?: string | null }): Sender {
     return new Sender({
       name: props.name,
       mail: props.mail,

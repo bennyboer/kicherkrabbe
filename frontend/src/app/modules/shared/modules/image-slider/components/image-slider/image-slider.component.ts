@@ -23,15 +23,11 @@ export class ImageSliderComponent implements OnInit, OnDestroy {
   @ViewChild(SlidingImageComponent)
   slidingImage!: SlidingImageComponent;
 
-  protected readonly images$: BehaviorSubject<ImageSliderImage[]> =
-    new BehaviorSubject<ImageSliderImage[]>([]);
+  protected readonly images$: BehaviorSubject<ImageSliderImage[]> = new BehaviorSubject<ImageSliderImage[]>([]);
   private readonly destroy$: Subject<void> = new Subject<void>();
-  protected readonly theme$: BehaviorSubject<'light' | 'dark'> =
-    new BehaviorSubject<'light' | 'dark'>('light');
-  protected readonly fit$: BehaviorSubject<'contain' | 'cover'> =
-    new BehaviorSubject<'contain' | 'cover'>('contain');
-  protected readonly activeImageIndex$: BehaviorSubject<number> =
-    new BehaviorSubject<number>(0);
+  protected readonly theme$: BehaviorSubject<'light' | 'dark'> = new BehaviorSubject<'light' | 'dark'>('light');
+  protected readonly fit$: BehaviorSubject<'contain' | 'cover'> = new BehaviorSubject<'contain' | 'cover'>('contain');
+  protected readonly activeImageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
   @Input({ required: true })
   set images(value: ImageSliderImage[]) {
@@ -66,9 +62,7 @@ export class ImageSliderComponent implements OnInit, OnDestroy {
       };
     });
 
-    resized$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.cd.markForCheck());
+    resized$.pipe(takeUntil(this.destroy$)).subscribe(() => this.cd.markForCheck());
   }
 
   ngOnDestroy(): void {

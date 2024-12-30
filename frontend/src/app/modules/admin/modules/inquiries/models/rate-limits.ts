@@ -6,11 +6,7 @@ export class RateLimits {
   readonly perIp: RateLimit;
   readonly overall: RateLimit;
 
-  private constructor(props: {
-    perMail: RateLimit;
-    perIp: RateLimit;
-    overall: RateLimit;
-  }) {
+  private constructor(props: { perMail: RateLimit; perIp: RateLimit; overall: RateLimit }) {
     validateProps(props);
 
     this.perMail = props.perMail;
@@ -18,11 +14,7 @@ export class RateLimits {
     this.overall = props.overall;
   }
 
-  static of(props: {
-    perMail: RateLimit;
-    perIp: RateLimit;
-    overall: RateLimit;
-  }): RateLimits {
+  static of(props: { perMail: RateLimit; perIp: RateLimit; overall: RateLimit }): RateLimits {
     return new RateLimits(props);
   }
 }

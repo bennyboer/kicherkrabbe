@@ -1,19 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  finalize,
-  first,
-  map,
-  Observable,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, combineLatest, finalize, first, map, Observable, Subject, takeUntil } from 'rxjs';
 import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 import { Notification } from '../../model';
 import { NotificationsService } from '../../services';
@@ -27,26 +13,20 @@ const NOTIFICATIONS_LIMIT = 10;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotificationsPage implements OnInit, OnDestroy {
-  protected readonly loadingNotifications$ = new BehaviorSubject<boolean>(
-    false,
-  );
+  protected readonly loadingNotifications$ = new BehaviorSubject<boolean>(false);
   protected readonly notifications$ = new BehaviorSubject<Notification[]>([]);
   protected readonly totalNotifications$ = new BehaviorSubject<number>(0);
   protected readonly notificationsLoaded$ = new BehaviorSubject<boolean>(false);
   protected readonly from$ = new BehaviorSubject<Option<Date>>(none());
   protected readonly to$ = new BehaviorSubject<Option<Date>>(none());
 
-  protected readonly remainingNotificationsCount$: Observable<number> =
-    combineLatest([this.notifications$, this.totalNotifications$]).pipe(
-      map(
-        ([notifications, totalNotifications]) =>
-          totalNotifications - notifications.length,
-      ),
-    );
-  protected readonly moreNotificationsAvailable$: Observable<boolean> =
-    this.remainingNotificationsCount$.pipe(
-      map((remainingMailsCount) => remainingMailsCount > 0),
-    );
+  protected readonly remainingNotificationsCount$: Observable<number> = combineLatest([
+    this.notifications$,
+    this.totalNotifications$,
+  ]).pipe(map(([notifications, totalNotifications]) => totalNotifications - notifications.length));
+  protected readonly moreNotificationsAvailable$: Observable<boolean> = this.remainingNotificationsCount$.pipe(
+    map((remainingMailsCount) => remainingMailsCount > 0),
+  );
   protected readonly loading$ = this.loadingNotifications$.asObservable();
 
   private readonly destroy$ = new Subject<void>();
@@ -116,9 +96,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
     const to = someOrNone(props.to).orElseNull();
     const skip = someOrNone(props.skip).orElse(0);
     const limit = someOrNone(props.limit).orElse(NOTIFICATIONS_LIMIT);
-    const keepCurrentNotifications = someOrNone(
-      props.keepCurrentNotifications,
-    ).orElse(false);
+    const keepCurrentNotifications = someOrNone(props.keepCurrentNotifications).orElse(false);
 
     this.notificationsService
       .getNotifications({
@@ -138,10 +116,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
         this.totalNotifications$.next(result.total);
 
         if (keepCurrentNotifications) {
-          this.notifications$.next([
-            ...this.notifications$.value,
-            ...result.notifications,
-          ]);
+          this.notifications$.next([...this.notifications$.value, ...result.notifications]);
         } else {
           this.notifications$.next(result.notifications);
         }

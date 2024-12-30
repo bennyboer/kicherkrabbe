@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.telegram.external.TelegramApi;
 import de.bennyboer.kicherkrabbe.telegram.external.TelegramApiConfig;
 import de.bennyboer.kicherkrabbe.telegram.http.TelegramHttpConfig;
+import de.bennyboer.kicherkrabbe.telegram.messaging.TelegramMessaging;
 import de.bennyboer.kicherkrabbe.telegram.settings.SettingsService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.transaction.ReactiveTransactionManager;
         TelegramAggregateConfig.class,
         TelegramPermissionsConfig.class,
         TelegramHttpConfig.class,
+        TelegramMessaging.class,
         TelegramApiConfig.class
 })
 @Configuration

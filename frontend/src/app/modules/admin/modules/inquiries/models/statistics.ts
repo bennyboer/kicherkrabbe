@@ -13,10 +13,7 @@ export class Statistics {
     this.totalRequests = props.totalRequests;
   }
 
-  static of(props: {
-    dateRange: DateRange;
-    totalRequests?: number;
-  }): Statistics {
+  static of(props: { dateRange: DateRange; totalRequests?: number }): Statistics {
     return new Statistics({
       ...props,
       totalRequests: someOrNone(props.totalRequests).orElse(0),

@@ -5,9 +5,7 @@ type ItemId = string;
 
 @Injectable()
 export class AccordionService implements OnDestroy {
-  private readonly items$: BehaviorSubject<Set<ItemId>> = new BehaviorSubject<
-    Set<ItemId>
-  >(new Set());
+  private readonly items$: BehaviorSubject<Set<ItemId>> = new BehaviorSubject<Set<ItemId>>(new Set());
   private readonly openedItem$: Subject<ItemId> = new ReplaySubject(1);
 
   ngOnDestroy(): void {

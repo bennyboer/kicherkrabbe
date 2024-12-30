@@ -1,8 +1,10 @@
 @if (editing$ | async) {
-  <app-pending-channel label="Kanal bearbeiten"
-                       [channel]="channel.channel"
-                       (done)="finishEditing($event)"
-                       (cancelled)="cancelEditing()">
+  <app-pending-channel
+    label="Kanal bearbeiten"
+    [channel]="channel.channel"
+    (done)="finishEditing($event)"
+    (cancelled)="cancelEditing()"
+  >
   </app-pending-channel>
 } @else {
   <app-checkbox [checked]="channel.active" (checkedChanges)="toggleActivation($event)"></app-checkbox>
