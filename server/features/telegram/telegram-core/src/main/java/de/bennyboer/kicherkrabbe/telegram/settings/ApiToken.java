@@ -20,6 +20,14 @@ public class ApiToken {
         return new ApiToken(value);
     }
 
+    public String getMaskedValue() {
+        if (value.length() >= 8) {
+            return "****" + value.substring(value.length() - 4);
+        }
+
+        return "********";
+    }
+
     @Override
     public String toString() {
         return "ApiToken(%s)".formatted(value);
