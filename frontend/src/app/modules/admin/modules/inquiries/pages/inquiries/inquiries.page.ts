@@ -342,7 +342,7 @@ export class InquiriesPage implements OnInit, OnDestroy {
 
     for (const stat of stats) {
       const date = stat.dateRange.from;
-      const daysAgo = Math.floor((maxDate.getTime() - date.getTime()) / (24 * 60 * 60 * 1000));
+      const daysAgo = Math.max(0, Math.floor((maxDate.getTime() - date.getTime()) / (24 * 60 * 60 * 1000)));
       data[data.length - 1 - daysAgo] = stat.totalRequests;
     }
 

@@ -8,95 +8,96 @@
 </div>
 
 @if (settingsLoaded$ | async) {
-<div class="form">
-  <div class="form-field">
-    <app-checkbox
-      label="Kontaktformular aktivieren"
-      [checked]="contactFormEnabled$ | async"
-      [disabled]="updatingContactFormEnabled$ | async"
-      (checkedChanges)="toggleContactFormEnabled()"
-    >
-    </app-checkbox>
-  </div>
-
-  <div class="form-field">
-    <label for="rate-limit-for-mail">Erlaubte Anfragen je E-Mail Adresse je 24 Stunden</label>
-    <div class="input-with-action">
-      <input
-        #rateLimitForMail
-        type="text"
-        id="rate-limit-for-mail"
-        [disabled]="updatingRateLimitForMail$ | async"
-        [value]="rateLimitForMail$ | async"
-        (input)="updatePendingRateLimitForMail(rateLimitForMail.value)"
-        (keydown.enter)="updateRateLimitForMail(rateLimitForMail.value)"
-      />
-      <app-button
-        [disabled]="cannotUpdateRateLimitForMail$ | async"
-        (click)="updateRateLimitForMail(rateLimitForMail.value)"
+  <div class="form">
+    <div class="form-field">
+      <app-checkbox
+        label="Kontaktformular aktivieren"
+        [checked]="contactFormEnabled$ | async"
+        [disabled]="updatingContactFormEnabled$ | async"
+        (checkedChanges)="toggleContactFormEnabled()"
       >
-        Speichern
-      </app-button>
+      </app-checkbox>
+    </div>
+
+    <div class="form-field">
+      <label for="rate-limit-for-mail">Erlaubte Anfragen je E-Mail Adresse je 24 Stunden</label>
+      <div class="input-with-action">
+        <input
+          #rateLimitForMail
+          type="text"
+          id="rate-limit-for-mail"
+          [disabled]="updatingRateLimitForMail$ | async"
+          [value]="rateLimitForMail$ | async"
+          (input)="updatePendingRateLimitForMail(rateLimitForMail.value)"
+          (keydown.enter)="updateRateLimitForMail(rateLimitForMail.value)"
+        />
+        <app-button
+          [disabled]="cannotUpdateRateLimitForMail$ | async"
+          (click)="updateRateLimitForMail(rateLimitForMail.value)"
+        >
+          Speichern
+        </app-button>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="rate-limit-for-ip">Erlaubte Anfragen je IP-Adresse je 24 Stunden</label>
+      <div class="input-with-action">
+        <input
+          #rateLimitForIp
+          type="text"
+          id="rate-limit-for-ip"
+          [disabled]="updatingRateLimitForIp$ | async"
+          [value]="rateLimitForIp$ | async"
+          (input)="updatePendingRateLimitForIp(rateLimitForIp.value)"
+          (keydown.enter)="updateRateLimitForIp(rateLimitForIp.value)"
+        />
+        <app-button [disabled]="cannotUpdateRateLimitForIp$ | async"
+                    (click)="updateRateLimitForIp(rateLimitForIp.value)">
+          Speichern
+        </app-button>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="rate-limit-per-day">Insgesamt erlaubte Anfragen je 24 Stunden</label>
+      <div class="input-with-action">
+        <input
+          #rateLimitPerDay
+          type="text"
+          id="rate-limit-per-day"
+          [disabled]="updatingRateLimitPerDay$ | async"
+          [value]="rateLimitPerDay$ | async"
+          (input)="updatePendingRateLimitPerDay(rateLimitPerDay.value)"
+          (keydown.enter)="updateRateLimitPerDay(rateLimitPerDay.value)"
+        />
+        <app-button
+          [disabled]="cannotUpdateRateLimitPerDay$ | async"
+          (click)="updateRateLimitPerDay(rateLimitPerDay.value)"
+        >
+          Speichern
+        </app-button>
+      </div>
     </div>
   </div>
+}
+@if (statsLoaded$ | async) {
+  <div class="statistics">
+    <hr/>
+    <h3>Anfragen in den letzten 30 Tagen</h3>
 
-  <div class="form-field">
-    <label for="rate-limit-for-ip">Erlaubte Anfragen je IP-Adresse je 24 Stunden</label>
-    <div class="input-with-action">
-      <input
-        #rateLimitForIp
-        type="text"
-        id="rate-limit-for-ip"
-        [disabled]="updatingRateLimitForIp$ | async"
-        [value]="rateLimitForIp$ | async"
-        (input)="updatePendingRateLimitForIp(rateLimitForIp.value)"
-        (keydown.enter)="updateRateLimitForIp(rateLimitForIp.value)"
-      />
-      <app-button [disabled]="cannotUpdateRateLimitForIp$ | async" (click)="updateRateLimitForIp(rateLimitForIp.value)">
-        Speichern
-      </app-button>
-    </div>
+    @if (stats$ | async; as stats) {
+      <p>Insgesamt wurden {{ toTotalInquiries(stats) }} Anfragen in den letzten 30 Tagen gestellt.</p>
+
+      <div class="stats-container">
+        <app-line-graph
+          [xLabels]="toXLabels(stats)"
+          [yLabels]="toYLabels(stats)"
+          [maxVisibleYLabels]="5"
+          [maxVisibleXLabels]="30"
+          [data]="toData(stats)">
+        </app-line-graph>
+      </div>
+    }
   </div>
-
-  <div class="form-field">
-    <label for="rate-limit-per-day">Insgesamt erlaubte Anfragen je 24 Stunden</label>
-    <div class="input-with-action">
-      <input
-        #rateLimitPerDay
-        type="text"
-        id="rate-limit-per-day"
-        [disabled]="updatingRateLimitPerDay$ | async"
-        [value]="rateLimitPerDay$ | async"
-        (input)="updatePendingRateLimitPerDay(rateLimitPerDay.value)"
-        (keydown.enter)="updateRateLimitPerDay(rateLimitPerDay.value)"
-      />
-      <app-button
-        [disabled]="cannotUpdateRateLimitPerDay$ | async"
-        (click)="updateRateLimitPerDay(rateLimitPerDay.value)"
-      >
-        Speichern
-      </app-button>
-    </div>
-  </div>
-</div>
-} @if (statsLoaded$ | async) {
-<div class="statistics">
-  <hr />
-  <h3>Anfragen in den letzten 30 Tagen</h3>
-
-  @if (stats$ | async; as stats) {
-  <p>Insgesamt wurden {{ toTotalInquiries(stats) }} Anfragen in den letzten 30 Tagen gestellt.</p>
-
-  <div class="stats-container">
-    <app-line-graph
-      [xLabels]="toXLabels(stats)"
-      [yLabels]="toYLabels(stats)"
-      [maxVisibleYLabels]="5"
-      [maxVisibleXLabels]="30"
-      [data]="toData(stats)"
-    >
-    </app-line-graph>
-  </div>
-  }
-</div>
 }
