@@ -119,3 +119,8 @@ include('features:notifications:notifications-example')
 include('features:telegram:telegram-core')
 include('features:telegram:telegram-starter')
 include('features:telegram:telegram-example')
+
+// Mailing
+include('features:mailing:mailing-core')
+include('features:mailing:mailing-starter')
+include('features:mailing:mailing-example')
