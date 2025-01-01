@@ -15,6 +15,8 @@ import de.bennyboer.kicherkrabbe.mailing.settings.mailgun.apitoken.clear.ClearMa
 import de.bennyboer.kicherkrabbe.mailing.settings.mailgun.apitoken.clear.MailgunApiTokenClearedEvent;
 import de.bennyboer.kicherkrabbe.mailing.settings.mailgun.apitoken.update.MailgunApiTokenUpdatedEvent;
 import de.bennyboer.kicherkrabbe.mailing.settings.mailgun.apitoken.update.UpdateMailgunApiTokenCmd;
+import de.bennyboer.kicherkrabbe.mailing.settings.ratelimit.update.RateLimitUpdatedEvent;
+import de.bennyboer.kicherkrabbe.mailing.settings.ratelimit.update.UpdateRateLimitCmd;
 import de.bennyboer.kicherkrabbe.mailing.settings.snapshot.SnapshottedEvent;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -33,12 +35,15 @@ public class Settings implements Aggregate {
 
     Version version;
 
+    RateLimitSettings rateLimit;
+
     MailgunSettings mailgun;
 
     public static Settings init() {
         return new Settings(
                 null,
                 Version.zero(),
+                null,
                 null
         );
     }
@@ -46,8 +51,9 @@ public class Settings implements Aggregate {
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(getMailgun()));
-            case InitCmd c -> ApplyCommandResult.of(InitEvent.of(c.getMailgun()));
+            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(getRateLimit(), getMailgun()));
+            case InitCmd c -> ApplyCommandResult.of(InitEvent.of(c.getRateLimit(), c.getMailgun()));
+            case UpdateRateLimitCmd c -> ApplyCommandResult.of(RateLimitUpdatedEvent.of(c.getDuration(), c.getLimit()));
             case UpdateMailgunApiTokenCmd c -> ApplyCommandResult.of(MailgunApiTokenUpdatedEvent.of(c.getApiToken()));
             case ClearMailgunApiTokenCmd ignored -> ApplyCommandResult.of(MailgunApiTokenClearedEvent.of());
             default -> throw new IllegalArgumentException("Unknown command " + cmd.getClass().getSimpleName());
@@ -61,9 +67,12 @@ public class Settings implements Aggregate {
 
         return (switch (event) {
             case SnapshottedEvent e -> withId(id)
+                    .withRateLimit(e.getRateLimit())
                     .withMailgun(e.getMailgun());
             case InitEvent e -> withId(id)
+                    .withRateLimit(e.getRateLimit())
                     .withMailgun(e.getMailgun());
+            case RateLimitUpdatedEvent e -> withRateLimit(getRateLimit().update(e.getDuration(), e.getLimit()));
             case MailgunApiTokenUpdatedEvent e -> withMailgun(getMailgun().updateApiToken(e.getApiToken()));
             case MailgunApiTokenClearedEvent ignored -> withMailgun(getMailgun().clearApiToken());
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());

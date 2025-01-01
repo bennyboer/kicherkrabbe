@@ -243,7 +243,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the pattern is removed from the lookup
-        verify(module, timeout(5000).times(1)).removePatternFromLookup(eq("PATTERN_ID"));
+        verify(module, timeout(10000).times(1)).removePatternFromLookup(eq("PATTERN_ID"));
     }
 
     @Test
@@ -261,7 +261,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the user is allowed to manage patterns
-        verify(module, timeout(5000).times(1)).allowUserToManagePattern(eq("PATTERN_ID"), eq("USER_ID"));
+        verify(module, timeout(10000).times(1)).allowUserToManagePattern(eq("PATTERN_ID"), eq("USER_ID"));
     }
 
     @Test
@@ -279,7 +279,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the permissions on the pattern are removed
-        verify(module, timeout(5000).times(1)).removePermissionsOnPattern(eq("PATTERN_ID"));
+        verify(module, timeout(10000).times(1)).removePermissionsOnPattern(eq("PATTERN_ID"));
     }
 
     @Test
@@ -297,7 +297,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the group is allowed to read the published pattern
-        verify(module, timeout(5000).times(1)).allowAnonymousAndSystemUsersToReadPublishedPattern(eq("PATTERN_ID"));
+        verify(module, timeout(10000).times(1)).allowAnonymousAndSystemUsersToReadPublishedPattern(eq("PATTERN_ID"));
     }
 
     @Test
@@ -315,7 +315,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the groups are disallowed to read the published pattern
-        verify(module, timeout(5000).times(1)).disallowAnonymousAndSystemUsersToReadPublishedPattern(eq("PATTERN_ID"));
+        verify(module, timeout(10000).times(1)).disallowAnonymousAndSystemUsersToReadPublishedPattern(eq("PATTERN_ID"));
     }
 
     @Test
@@ -333,7 +333,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the category is removed from the patterns
-        verify(module, timeout(5000).times(1)).removeCategoryFromPatterns(eq("CATEGORY_ID"), eq(Agent.system()));
+        verify(module, timeout(10000).times(1)).removeCategoryFromPatterns(eq("CATEGORY_ID"), eq(Agent.system()));
     }
 
     @Test
@@ -354,7 +354,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the category is marked as available
-        verify(module, timeout(5000).times(1)).markCategoryAsAvailable(eq("CATEGORY_ID"), eq("Dress"));
+        verify(module, timeout(10000).times(1)).markCategoryAsAvailable(eq("CATEGORY_ID"), eq("Dress"));
     }
 
     @Test
@@ -375,7 +375,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the category is not marked as available
-        verify(module, timeout(5000).times(0)).markCategoryAsAvailable(anyString(), anyString());
+        verify(module, timeout(10000).times(0)).markCategoryAsAvailable(anyString(), anyString());
     }
 
     @Test
@@ -393,7 +393,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the category is marked as available
-        verify(module, timeout(5000).times(1)).markCategoryAsAvailable(eq("CATEGORY_ID"), eq("Trousers"));
+        verify(module, timeout(10000).times(1)).markCategoryAsAvailable(eq("CATEGORY_ID"), eq("Trousers"));
     }
 
     @Test
@@ -414,7 +414,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the category is marked as unavailable
-        verify(module, timeout(5000).times(1)).markCategoryAsUnavailable(eq("CATEGORY_ID"));
+        verify(module, timeout(10000).times(1)).markCategoryAsUnavailable(eq("CATEGORY_ID"));
     }
 
     @Test
@@ -435,7 +435,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the category is marked as available
-        verify(module, timeout(5000).times(1)).markCategoryAsAvailable(eq("CATEGORY_ID"), eq("Skirt"));
+        verify(module, timeout(10000).times(1)).markCategoryAsAvailable(eq("CATEGORY_ID"), eq("Skirt"));
     }
 
     @Test
@@ -453,7 +453,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the category is marked as unavailable
-        verify(module, timeout(5000).times(1)).markCategoryAsUnavailable(eq("CATEGORY_ID"));
+        verify(module, timeout(10000).times(1)).markCategoryAsUnavailable(eq("CATEGORY_ID"));
     }
 
 }

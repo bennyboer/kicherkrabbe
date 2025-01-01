@@ -6,6 +6,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.mailing.MailingModule;
 import de.bennyboer.kicherkrabbe.mailing.api.requests.ClearMailgunApiTokenRequest;
 import de.bennyboer.kicherkrabbe.mailing.api.requests.UpdateMailgunApiTokenRequest;
+import de.bennyboer.kicherkrabbe.mailing.api.requests.UpdateRateLimitRequest;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.ReactiveTransactionManager;
@@ -24,11 +25,48 @@ public class MailingHttpHandler {
 
     private final ReactiveTransactionManager transactionManager;
 
+    public Mono<ServerResponse> getMails(ServerRequest request) {
+        long skip = request.queryParam("skip")
+                .map(Long::parseLong)
+                .filter(s -> s > 0)
+                .orElse(0L);
+        long limit = request.queryParam("limit")
+                .map(Long::parseLong)
+                .filter(l -> l > 0)
+                .orElse(100L);
+
+        return toAgent(request)
+                .flatMap(agent -> module.getMails(skip, limit, agent))
+                .flatMap(mails -> ServerResponse.ok().bodyValue(mails))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
+    }
+
+    public Mono<ServerResponse> getMail(ServerRequest request) {
+        String mailId = request.pathVariable("mailId");
+
+        return toAgent(request)
+                .flatMap(agent -> module.getMail(mailId, agent))
+                .flatMap(mail -> ServerResponse.ok().bodyValue(mail))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
+    }
+
     public Mono<ServerResponse> getSettings(ServerRequest request) {
         return toAgent(request)
                 .flatMap(module::getSettings)
                 .flatMap(settings -> ServerResponse.ok().bodyValue(settings))
                 .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
+    }
+
+    public Mono<ServerResponse> updateRateLimitSettings(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        return request.bodyToMono(UpdateRateLimitRequest.class)
+                .flatMap(req -> toAgent(request)
+                        .flatMap(agent -> module.updateRateLimit(req, agent)))
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
+                .onErrorResume(AggregateVersionOutdatedError.class, e -> ServerResponse.status(CONFLICT).build())
+                .as(transactionalOperator::transactional);
     }
 
     public Mono<ServerResponse> updateMailgunApiToken(ServerRequest request) {

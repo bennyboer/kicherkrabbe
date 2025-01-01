@@ -1,13 +1,15 @@
-package de.bennyboer.kicherkrabbe.mailing.settings;
+package de.bennyboer.kicherkrabbe.mailing.mail;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import lombok.With;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
+@With(PRIVATE)
 @AllArgsConstructor(access = PRIVATE)
 public class Subject {
 
@@ -23,6 +25,10 @@ public class Subject {
     @Override
     public String toString() {
         return "Subject(%s)".formatted(value);
+    }
+
+    public Subject anonymized() {
+        return withValue("ANONYMIZED");
     }
 
 }

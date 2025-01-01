@@ -22,8 +22,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 
 import static java.util.stream.Collectors.toSet;
 import static org.springframework.http.HttpStatus.*;
@@ -111,11 +109,13 @@ public class PatternsHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorMap(AggregateNotFoundError.class, e -> new ResponseStatusException(
-                        NOT_FOUND,
-                        e.getMessage(),
-                        e
-                ));
+                .onErrorMap(
+                        AggregateNotFoundError.class, e -> new ResponseStatusException(
+                                NOT_FOUND,
+                                e.getMessage(),
+                                e
+                        )
+                );
     }
 
     public Mono<ServerResponse> getPublishedPatterns(ServerRequest request) {
@@ -160,8 +160,7 @@ public class PatternsHttpHandler {
         return request.bodyToMono(CreatePatternRequest.class)
                 .flatMap(req -> toAgent(request).flatMap(agent -> module.createPattern(
                         req.name,
-                        Optional.ofNullable(req.number).orElse("S-" + UUID.randomUUID()),
-                        // TODO Remove ofNullable after the frontend supports number input
+                        req.number,
                         req.description,
                         req.attribution,
                         req.categories,
@@ -176,22 +175,28 @@ public class PatternsHttpHandler {
                     return result;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
-                        BAD_REQUEST,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(CategoriesMissingError.class, e -> new ResponseStatusException(
-                        PRECONDITION_FAILED,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorResume(NumberAlreadyInUseError.class, e -> ServerResponse.status(PRECONDITION_FAILED)
-                        .bodyValue(Map.of(
-                                "reason", "NUMBER_ALREADY_IN_USE",
-                                "patternId", e.getConflictingPatternId().getValue(),
-                                "number", e.getNumber().getValue()
-                        )))
+                .onErrorMap(
+                        IllegalArgumentException.class, e -> new ResponseStatusException(
+                                BAD_REQUEST,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        CategoriesMissingError.class, e -> new ResponseStatusException(
+                                PRECONDITION_FAILED,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorResume(
+                        NumberAlreadyInUseError.class, e -> ServerResponse.status(PRECONDITION_FAILED)
+                                .bodyValue(Map.of(
+                                        "reason", "NUMBER_ALREADY_IN_USE",
+                                        "patternId", e.getConflictingPatternId().getValue(),
+                                        "number", e.getNumber().getValue()
+                                ))
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -213,16 +218,20 @@ public class PatternsHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
-                        CONFLICT,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
-                        BAD_REQUEST,
-                        e.getMessage(),
-                        e
-                ))
+                .onErrorMap(
+                        AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                                CONFLICT,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        IllegalArgumentException.class, e -> new ResponseStatusException(
+                                BAD_REQUEST,
+                                e.getMessage(),
+                                e
+                        )
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -245,16 +254,20 @@ public class PatternsHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
-                        CONFLICT,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(AlreadyPublishedError.class, e -> new ResponseStatusException(
-                        PRECONDITION_FAILED,
-                        e.getMessage(),
-                        e
-                ))
+                .onErrorMap(
+                        AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                                CONFLICT,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        AlreadyPublishedError.class, e -> new ResponseStatusException(
+                                PRECONDITION_FAILED,
+                                e.getMessage(),
+                                e
+                        )
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -277,16 +290,20 @@ public class PatternsHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
-                        CONFLICT,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(AlreadyUnpublishedError.class, e -> new ResponseStatusException(
-                        PRECONDITION_FAILED,
-                        e.getMessage(),
-                        e
-                ))
+                .onErrorMap(
+                        AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                                CONFLICT,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        AlreadyUnpublishedError.class, e -> new ResponseStatusException(
+                                PRECONDITION_FAILED,
+                                e.getMessage(),
+                                e
+                        )
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -308,16 +325,20 @@ public class PatternsHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
-                        CONFLICT,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
-                        BAD_REQUEST,
-                        e.getMessage(),
-                        e
-                ))
+                .onErrorMap(
+                        AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                                CONFLICT,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        IllegalArgumentException.class, e -> new ResponseStatusException(
+                                BAD_REQUEST,
+                                e.getMessage(),
+                                e
+                        )
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -339,16 +360,20 @@ public class PatternsHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
-                        CONFLICT,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
-                        BAD_REQUEST,
-                        e.getMessage(),
-                        e
-                ))
+                .onErrorMap(
+                        AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                                CONFLICT,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        IllegalArgumentException.class, e -> new ResponseStatusException(
+                                BAD_REQUEST,
+                                e.getMessage(),
+                                e
+                        )
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -370,21 +395,27 @@ public class PatternsHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
-                        CONFLICT,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
-                        BAD_REQUEST,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(CategoriesMissingError.class, e -> new ResponseStatusException(
-                        PRECONDITION_FAILED,
-                        e.getMessage(),
-                        e
-                ))
+                .onErrorMap(
+                        AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                                CONFLICT,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        IllegalArgumentException.class, e -> new ResponseStatusException(
+                                BAD_REQUEST,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        CategoriesMissingError.class, e -> new ResponseStatusException(
+                                PRECONDITION_FAILED,
+                                e.getMessage(),
+                                e
+                        )
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -406,16 +437,20 @@ public class PatternsHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
-                        CONFLICT,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
-                        BAD_REQUEST,
-                        e.getMessage(),
-                        e
-                ))
+                .onErrorMap(
+                        AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                                CONFLICT,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        IllegalArgumentException.class, e -> new ResponseStatusException(
+                                BAD_REQUEST,
+                                e.getMessage(),
+                                e
+                        )
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -437,16 +472,20 @@ public class PatternsHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
-                        CONFLICT,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
-                        BAD_REQUEST,
-                        e.getMessage(),
-                        e
-                ))
+                .onErrorMap(
+                        AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                                CONFLICT,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        IllegalArgumentException.class, e -> new ResponseStatusException(
+                                BAD_REQUEST,
+                                e.getMessage(),
+                                e
+                        )
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -468,16 +507,20 @@ public class PatternsHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
-                        CONFLICT,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
-                        BAD_REQUEST,
-                        e.getMessage(),
-                        e
-                ))
+                .onErrorMap(
+                        AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                                CONFLICT,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        IllegalArgumentException.class, e -> new ResponseStatusException(
+                                BAD_REQUEST,
+                                e.getMessage(),
+                                e
+                        )
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -499,22 +542,28 @@ public class PatternsHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
-                        CONFLICT,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
-                        BAD_REQUEST,
-                        e.getMessage(),
-                        e
-                ))
-                .onErrorResume(NumberAlreadyInUseError.class, e -> ServerResponse.status(PRECONDITION_FAILED)
-                        .bodyValue(Map.of(
-                                "reason", "NUMBER_ALREADY_IN_USE",
-                                "patternId", e.getConflictingPatternId().getValue(),
-                                "number", e.getNumber().getValue()
-                        )))
+                .onErrorMap(
+                        AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                                CONFLICT,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        IllegalArgumentException.class, e -> new ResponseStatusException(
+                                BAD_REQUEST,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorResume(
+                        NumberAlreadyInUseError.class, e -> ServerResponse.status(PRECONDITION_FAILED)
+                                .bodyValue(Map.of(
+                                        "reason", "NUMBER_ALREADY_IN_USE",
+                                        "patternId", e.getConflictingPatternId().getValue(),
+                                        "number", e.getNumber().getValue()
+                                ))
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -531,11 +580,13 @@ public class PatternsHttpHandler {
 
         return toAgent(request)
                 .flatMap(agent -> module.deletePattern(patternId, version, agent))
-                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
-                        CONFLICT,
-                        e.getMessage(),
-                        e
-                ))
+                .onErrorMap(
+                        AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                                CONFLICT,
+                                e.getMessage(),
+                                e
+                        )
+                )
                 .then(Mono.defer(() -> ServerResponse.ok().build()))
                 .as(transactionalOperator::transactional);
     }

@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.telegram;
 
+import de.bennyboer.kicherkrabbe.auth.SecurityConfig;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.telegram.external.TelegramApi;
 import de.bennyboer.kicherkrabbe.telegram.external.TelegramApiConfig;
@@ -17,7 +18,8 @@ import org.springframework.transaction.ReactiveTransactionManager;
         TelegramPermissionsConfig.class,
         TelegramHttpConfig.class,
         TelegramMessaging.class,
-        TelegramApiConfig.class
+        TelegramApiConfig.class,
+        SecurityConfig.class
 })
 @Configuration
 public class TelegramModuleConfig {

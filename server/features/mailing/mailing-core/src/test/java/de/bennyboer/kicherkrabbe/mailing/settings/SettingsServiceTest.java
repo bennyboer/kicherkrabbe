@@ -10,6 +10,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMem
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +37,34 @@ public class SettingsServiceTest {
         var settings = get(settingsId);
         assertThat(settings.getId()).isEqualTo(settingsId);
         assertThat(settings.getVersion()).isEqualTo(Version.zero());
+        assertThat(settings.getRateLimit()).isEqualTo(RateLimitSettings.init());
         assertThat(settings.getMailgun()).isEqualTo(MailgunSettings.init());
+    }
+
+    @Test
+    void shouldUpdateRateLimit() {
+        // given: initialized settings
+        var settingsId = init();
+
+        // when: updating the rate limit
+        var version = updateRateLimit(settingsId, Version.zero(), Duration.ofSeconds(10), 100);
+
+        // then: the rate limit is updated
+        var settings = get(settingsId);
+        assertThat(settings.getVersion()).isEqualTo(version);
+        assertThat(settings.getRateLimit().getDuration()).isEqualTo(Duration.ofSeconds(10));
+        assertThat(settings.getRateLimit().getLimit()).isEqualTo(100);
+    }
+
+    @Test
+    void shouldNotUpdateRateLimitGivenAnOutdatedVersion() {
+        // given: some initialized settings
+        var settingsId = init();
+        updateRateLimit(settingsId, Version.zero(), Duration.ofSeconds(10), 100);
+
+        // when: updating rate limit with an outdated version
+        assertThatThrownBy(() -> updateRateLimit(settingsId, Version.zero(), Duration.ofSeconds(10), 100))
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test
@@ -136,6 +164,10 @@ public class SettingsServiceTest {
 
     private Settings get(SettingsId id) {
         return settingsService.get(id).block();
+    }
+
+    private Version updateRateLimit(SettingsId id, Version version, Duration duration, long limit) {
+        return settingsService.updateRateLimit(id, version, duration, limit, Agent.system()).block();
     }
 
     private Version updateMailgunApiToken(SettingsId id, Version version, ApiToken apiToken) {

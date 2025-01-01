@@ -31,7 +31,7 @@ public class MailboxAggregateConfig {
         );
     }
 
-    @Bean
+    @Bean("mailboxMailService")
     public MailService mailService(
             @Qualifier("mailboxMailEventSourcingRepo") EventSourcingRepo eventSourcingRepo,
             @Qualifier("mailboxMailEventPublisher") MessagingEventPublisher eventPublisher,

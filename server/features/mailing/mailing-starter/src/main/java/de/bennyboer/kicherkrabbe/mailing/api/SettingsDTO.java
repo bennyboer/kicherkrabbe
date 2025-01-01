@@ -13,6 +13,8 @@ public class SettingsDTO {
 
     long version;
 
+    RateLimitSettingsDTO rateLimit;
+
     MailgunSettingsDTO mailgun;
 
 }

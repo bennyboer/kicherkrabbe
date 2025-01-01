@@ -24,15 +24,15 @@ import org.springframework.transaction.ReactiveTransactionManager;
 })
 public class MailboxModuleConfig {
 
-    @Bean
+    @Bean("mailboxMailLookupRepo")
     public MailLookupRepo mailLookupRepo(ReactiveMongoTemplate template) {
         return new MongoMailLookupRepo(template);
     }
 
     @Bean
     public MailboxModule mailboxModule(
-            MailService mailService,
-            MailLookupRepo mailLookupRepo,
+            @Qualifier("mailboxMailService") MailService mailService,
+            @Qualifier("mailboxMailLookupRepo") MailLookupRepo mailLookupRepo,
             @Qualifier("mailboxPermissionsService") PermissionsService permissionsService,
             ReactiveTransactionManager transactionManager
     ) {

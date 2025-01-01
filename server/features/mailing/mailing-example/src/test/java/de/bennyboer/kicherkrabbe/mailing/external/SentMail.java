@@ -1,10 +1,13 @@
 package de.bennyboer.kicherkrabbe.mailing.external;
 
-import de.bennyboer.kicherkrabbe.mailing.settings.EMail;
-import de.bennyboer.kicherkrabbe.mailing.settings.Subject;
-import de.bennyboer.kicherkrabbe.mailing.settings.Text;
+import de.bennyboer.kicherkrabbe.mailing.mail.Receiver;
+import de.bennyboer.kicherkrabbe.mailing.mail.Sender;
+import de.bennyboer.kicherkrabbe.mailing.mail.Subject;
+import de.bennyboer.kicherkrabbe.mailing.mail.Text;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+
+import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static lombok.AccessLevel.PRIVATE;
@@ -13,26 +16,26 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor(access = PRIVATE)
 public class SentMail {
 
-    EMail from;
+    Sender sender;
 
-    EMail to;
+    Set<Receiver> receivers;
 
     Subject subject;
 
     Text text;
 
     public static SentMail of(
-            EMail from,
-            EMail to,
+            Sender sender,
+            Set<Receiver> receivers,
             Subject subject,
             Text text
     ) {
-        notNull(from, "From email must be given");
-        notNull(to, "To email must be given");
+        notNull(sender, "Sender must be given");
+        notNull(receivers, "Receivers must be given");
         notNull(subject, "Subject must be given");
         notNull(text, "Text must be given");
 
-        return new SentMail(from, to, subject, text);
+        return new SentMail(sender, receivers, subject, text);
     }
 
 }

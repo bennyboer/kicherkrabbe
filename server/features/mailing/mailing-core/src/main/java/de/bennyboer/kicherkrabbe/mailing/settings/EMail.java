@@ -29,4 +29,8 @@ public class EMail {
         return "EMail(%s)".formatted(value);
     }
 
+    public EMail anonymized() {
+        return withValue("anonymized@kicherkrabbe.com");
+    }
+    
 }

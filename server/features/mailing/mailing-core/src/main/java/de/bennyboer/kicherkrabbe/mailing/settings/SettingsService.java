@@ -12,9 +12,11 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingR
 import de.bennyboer.kicherkrabbe.mailing.settings.init.InitCmd;
 import de.bennyboer.kicherkrabbe.mailing.settings.mailgun.apitoken.clear.ClearMailgunApiTokenCmd;
 import de.bennyboer.kicherkrabbe.mailing.settings.mailgun.apitoken.update.UpdateMailgunApiTokenCmd;
+import de.bennyboer.kicherkrabbe.mailing.settings.ratelimit.update.UpdateRateLimitCmd;
 import reactor.core.publisher.Mono;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.util.List;
 
 public class SettingsService extends AggregateService<Settings, SettingsId> {
@@ -35,8 +37,17 @@ public class SettingsService extends AggregateService<Settings, SettingsId> {
     }
 
     public Mono<AggregateIdAndVersion<SettingsId>> init(SettingsId id, Agent agent) {
-        return dispatchCommandToLatest(id, agent, InitCmd.of(MailgunSettings.init()))
+        return dispatchCommandToLatest(id, agent, InitCmd.of(RateLimitSettings.init(), MailgunSettings.init()))
                 .map(version -> AggregateIdAndVersion.of(id, version));
+    }
+
+    public Mono<Version> updateRateLimit(SettingsId id, Version version, Duration duration, long limit, Agent agent) {
+        return dispatchCommand(
+                id,
+                version,
+                agent,
+                UpdateRateLimitCmd.of(duration, limit)
+        );
     }
 
     public Mono<Version> updateMailgunApiToken(SettingsId id, Version version, ApiToken token, Agent agent) {
