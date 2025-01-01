@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Configuration
@@ -78,12 +79,22 @@ public class TelegramMessaging {
                     String title = (String) payload.get("title");
                     String message = (String) payload.get("message");
 
+                    Map<String, Object> origin = (Map<String, Object>) payload.get("origin");
+                    String originType = (String) origin.get("type");
+                    String originId = (String) origin.get("id");
+
                     var request = new SendMessageViaBotRequest();
                     request.chatId = chatId;
                     request.text = """
-                            __System-Benachrichtigung__: **%s**
+                            <em>System-Benachrichtigung</em>: <strong>%s</strong>
                             %s
                             """.formatted(title, message);
+
+                    getOriginUrl(originType, originId).ifPresent(url -> {
+                        request.text += """
+                                <a href="%s">Jetzt ansehen</a>
+                                """.formatted(url, url);
+                    });
 
                     return module.sendMessageViaBot(request, Agent.system())
                             .onErrorResume(
@@ -95,6 +106,13 @@ public class TelegramMessaging {
                             );
                 }
         );
+    }
+
+    private Optional<String> getOriginUrl(String originType, String originId) {
+        return switch (originType) {
+            case "MAIL" -> Optional.of("https://kicherkrabbe.com/admin/mailbox/%s".formatted(originId));
+            default -> Optional.empty();
+        };
     }
 
 }

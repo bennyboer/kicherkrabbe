@@ -23,7 +23,7 @@ public class TelegramHttpApi implements TelegramApi {
                 .bodyValue(Map.of(
                         "chat_id", chatId.getValue(),
                         "text", message.getValue(),
-                        "parse_mode", "Markdown"
+                        "parse_mode", "HTML"
                 ))
                 .retrieve()
                 .bodyToMono(Void.class);

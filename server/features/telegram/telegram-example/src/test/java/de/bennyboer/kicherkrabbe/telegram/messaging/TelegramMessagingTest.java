@@ -96,12 +96,18 @@ public class TelegramMessagingTest extends EventListenerTest {
                 Map.of(
                         "title", "New mail",
                         "message", "There is a new mail in your mailbox",
-                        "channels", List.of(Map.of(
-                                "type", "TELEGRAM",
-                                "telegram", Map.of(
-                                        "chatId", "CHAT_ID"
+                        "channels", List.of(
+                                Map.of(
+                                        "type", "TELEGRAM",
+                                        "telegram", Map.of(
+                                                "chatId", "CHAT_ID"
+                                        )
                                 )
-                        ))
+                        ),
+                        "origin", Map.of(
+                                "type", "MAIL",
+                                "id", "SOME_MAIL_ID"
+                        )
                 )
         );
 
@@ -109,8 +115,9 @@ public class TelegramMessagingTest extends EventListenerTest {
         var request = new SendMessageViaBotRequest();
         request.chatId = "CHAT_ID";
         request.text = """
-                __System-Benachrichtigung__: **New mail**
+                <em>System-Benachrichtigung</em>: <strong>New mail</strong>
                 There is a new mail in your mailbox
+                <a href="https://kicherkrabbe.com/admin/mailbox/SOME_MAIL_ID">Jetzt ansehen</a>
                 """;
         verify(module, timeout(10000).times(1)).sendMessageViaBot(eq(request), eq(Agent.system()));
     }
