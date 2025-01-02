@@ -1,0 +1,33 @@
+:host {
+  display: block;
+}
+
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mail-headers {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.mail-content-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-left: 2px solid var(--background-low-contrast);
+  padding-left: 12px;
+
+  & > label {
+    font-size: 0.8em;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .action-bar {
+    flex-direction: column;
+  }
+}

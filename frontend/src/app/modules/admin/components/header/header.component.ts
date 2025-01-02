@@ -80,6 +80,11 @@ const TELEGRAM = ManagementItem.of({
   route: 'telegram',
 });
 
+const MAILING = ManagementItem.of({
+  label: 'E-Mail Versand',
+  route: 'mailing',
+});
+
 const ESSENTIAL_MANAGEMENT_ITEMS = [
   TOPICS,
   FABRIC_TYPES,
@@ -91,6 +96,7 @@ const ESSENTIAL_MANAGEMENT_ITEMS = [
   INQUIRIES,
   NOTIFICATIONS,
   TELEGRAM,
+  MAILING,
 ].sort((a, b) => a.label.localeCompare(b.label));
 const MANAGEMENT_ITEMS = [DASHBOARD, ...ESSENTIAL_MANAGEMENT_ITEMS];
 

@@ -80,6 +80,11 @@ const routes: Routes = [
         title: 'Telegram',
         loadChildren: () => import('./modules/telegram/telegram.module').then((m) => m.TelegramModule),
       },
+      {
+        path: 'mailing',
+        title: 'E-Mail Versand',
+        loadChildren: () => import('./modules/mailing/mailing.module').then((m) => m.MailingModule),
+      },
     ],
   },
   {
