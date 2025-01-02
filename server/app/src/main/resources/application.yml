@@ -3,7 +3,7 @@ spring:
     name: kicherkrabbe-server
   data:
     mongodb:
-      uri: mongodb://localhost:27017/kicherkrabbe?replicaSet=replicaset-01
+      uri: mongodb://localhost:27017/kicherkrabbe?replicaSet=rs0
   rabbitmq:
     host: localhost
     port: 5672

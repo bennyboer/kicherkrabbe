@@ -36,4 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
+/.rabbitmq
+/.mongo
 app/src/main/resources/keys/key_pair.pem

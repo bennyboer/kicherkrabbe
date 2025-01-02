@@ -11,7 +11,7 @@ import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Flux;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 @Import(CredentialsMessaging.class)
 public class CredentialsMessagingTest extends EventListenerTest {
 
-    @MockBean
+    @MockitoBean
     private CredentialsModule module;
 
     @Autowired

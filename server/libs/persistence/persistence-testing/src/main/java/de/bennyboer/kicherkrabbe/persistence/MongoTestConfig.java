@@ -11,7 +11,7 @@ public class MongoTestConfig {
 
     @Bean(destroyMethod = "stop")
     public MongoDBContainer mongoDBContainer() {
-        var container = new MongoDBContainer("mongo:latest");
+        var container = new MongoDBContainer("mongo:8");
 
         container.start();
 

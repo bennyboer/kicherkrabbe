@@ -11,7 +11,7 @@ import de.bennyboer.kicherkrabbe.users.UsersModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Mono;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 @Import(UsersMessaging.class)
 public class UsersMessagingTest extends EventListenerTest {
 
-    @MockBean
+    @MockitoBean
     private UsersModule module;
 
     @Autowired

@@ -9,7 +9,7 @@ import de.bennyboer.kicherkrabbe.inquiries.InquiriesModule;
 import de.bennyboer.kicherkrabbe.testing.time.TestClock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
@@ -33,7 +33,7 @@ public class HttpHandlerTest {
     @Autowired
     TokenGenerator tokenGenerator;
 
-    @MockBean
+    @MockitoBean
     InquiriesModule module;
 
     public String createTokenForUser(String userId) {
