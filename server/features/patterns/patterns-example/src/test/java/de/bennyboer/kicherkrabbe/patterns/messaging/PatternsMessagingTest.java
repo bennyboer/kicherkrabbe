@@ -91,8 +91,8 @@ public class PatternsMessagingTest extends EventListenerTest {
     }
 
     @Test
-    void shouldUpdatePatternInLookupOnPatternCreatedOrUpdated() {
-        // when: some pattern events are published
+    void shouldUpdatePatternInLookupOnPatternCreated() {
+        // when: a pattern created event is published
         send(
                 AggregateType.of("PATTERN"),
                 AggregateId.of("PATTERN_ID"),
@@ -103,129 +103,207 @@ public class PatternsMessagingTest extends EventListenerTest {
                 Instant.now(),
                 Map.of()
         );
+
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
+    }
+
+    @Test
+    void shouldUpdatePatternInLookupOnPatternPublished() {
+        // when: a pattern published event is published
         send(
                 AggregateType.of("PATTERN"),
                 AggregateId.of("PATTERN_ID"),
-                Version.of(2),
+                Version.of(1),
                 EventName.of("PUBLISHED"),
-                Version.of(1),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
-        send(
-                AggregateType.of("PATTERN"),
-                AggregateId.of("PATTERN_ID"),
-                Version.of(2),
-                EventName.of("UNPUBLISHED"),
-                Version.of(1),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
-        send(
-                AggregateType.of("PATTERN"),
-                AggregateId.of("PATTERN_ID"),
-                Version.of(2),
-                EventName.of("RENAMED"),
-                Version.of(1),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
-        send(
-                AggregateType.of("PATTERN"),
-                AggregateId.of("PATTERN_ID"),
-                Version.of(2),
-                EventName.of("ATTRIBUTION_UPDATED"),
-                Version.of(1),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
-        send(
-                AggregateType.of("PATTERN"),
-                AggregateId.of("PATTERN_ID"),
-                Version.of(2),
-                EventName.of("CATEGORIES_UPDATED"),
-                Version.of(1),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
-        send(
-                AggregateType.of("PATTERN"),
-                AggregateId.of("PATTERN_ID"),
-                Version.of(2),
-                EventName.of("IMAGES_UPDATED"),
-                Version.of(1),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
-        send(
-                AggregateType.of("PATTERN"),
-                AggregateId.of("PATTERN_ID"),
-                Version.of(2),
-                EventName.of("VARIANTS_UPDATED"),
-                Version.of(1),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
-        send(
-                AggregateType.of("PATTERN"),
-                AggregateId.of("PATTERN_ID"),
-                Version.of(2),
-                EventName.of("EXTRAS_UPDATED"),
-                Version.of(1),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
-        send(
-                AggregateType.of("PATTERN"),
-                AggregateId.of("PATTERN_ID"),
-                Version.of(2),
-                EventName.of("DESCRIPTION_UPDATED"),
-                Version.of(1),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
-        send(
-                AggregateType.of("PATTERN"),
-                AggregateId.of("PATTERN_ID"),
-                Version.of(2),
-                EventName.of("NUMBER_UPDATED"),
-                Version.of(1),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
-        send(
-                AggregateType.of("PATTERN"),
-                AggregateId.of("PATTERN_ID"),
-                Version.of(2),
-                EventName.of("CATEGORY_REMOVED"),
-                Version.of(1),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
-        send(
-                AggregateType.of("PATTERN"),
-                AggregateId.of("PATTERN_ID"),
-                Version.of(3),
-                EventName.of("DELETED"),
-                Version.of(2),
+                Version.zero(),
                 Agent.system(),
                 Instant.now(),
                 Map.of()
         );
 
-        // then: the pattern is only updated on non-deleted events
-        verify(module, timeout(20000).times(12)).updatePatternInLookup(eq("PATTERN_ID"));
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
+    }
+
+    @Test
+    void shouldUpdatePatternInLookupOnPatternUnpublished() {
+        // when: a pattern unpublished event is published
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(1),
+                EventName.of("UNPUBLISHED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
+    }
+
+    @Test
+    void shouldUpdatePatternInLookupOnPatternRenamed() {
+        // when: a pattern renamed event is published
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(1),
+                EventName.of("RENAMED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
+    }
+
+    @Test
+    void shouldUpdatePatternInLookupOnPatternAttributionUpdated() {
+        // when: a pattern attribution updated event is published
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(1),
+                EventName.of("ATTRIBUTION_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
+    }
+
+    @Test
+    void shouldUpdatePatternInLookupOnPatternCategoriesUpdated() {
+        // when: a pattern categories updated event is published
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(1),
+                EventName.of("CATEGORIES_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
+    }
+
+    @Test
+    void shouldUpdatePatternInLookupOnPatternImagesUpdated() {
+        // when: a pattern images updated event is published
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(1),
+                EventName.of("IMAGES_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
+    }
+
+    @Test
+    void shouldUpdatePatternInLookupOnPatternVariantsUpdated() {
+        // when: a pattern variants updated event is published
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(1),
+                EventName.of("VARIANTS_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
+    }
+
+    @Test
+    void shouldUpdatePatternInLookupOnPatternExtrasUpdated() {
+        // when: a pattern extras updated event is published
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(1),
+                EventName.of("EXTRAS_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
+    }
+
+    @Test
+    void shouldUpdatePatternInLookupOnPatternDescriptionUpdated() {
+        // when: a pattern description updated event is published
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(1),
+                EventName.of("DESCRIPTION_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
+    }
+
+    @Test
+    void shouldUpdatePatternInLookupOnPatternNumberUpdated() {
+        // when: a pattern number updated event is published
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(1),
+                EventName.of("NUMBER_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
+    }
+
+    @Test
+    void shouldUpdatePatternInLookupOnPatternCategoryRemoved() {
+        // when: a pattern category removed event is published
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(1),
+                EventName.of("CATEGORY_REMOVED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
     }
 
     @Test

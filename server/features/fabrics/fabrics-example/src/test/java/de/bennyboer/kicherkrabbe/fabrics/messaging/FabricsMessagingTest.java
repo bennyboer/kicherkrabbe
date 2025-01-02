@@ -104,8 +104,8 @@ public class FabricsMessagingTest extends EventListenerTest {
     }
 
     @Test
-    void shouldUpdateFabricInLookupOnFabricCreatedOrUpdated() {
-        // when: some fabric events are published
+    void shouldUpdateFabricInLookupOnFabricCreated() {
+        // when: a fabric created event is published
         send(
                 AggregateType.of("FABRIC"),
                 AggregateId.of("FABRIC_ID"),
@@ -116,6 +116,14 @@ public class FabricsMessagingTest extends EventListenerTest {
                 Instant.now(),
                 Map.of()
         );
+
+        // then: the fabric is updated in the lookup
+        verify(module, timeout(5000).times(1)).updateFabricInLookup(eq("FABRIC_ID"));
+    }
+
+    @Test
+    void shouldUpdateFabricInLookupOnFabricUpdated() {
+        // when: a fabric renamed event is published
         send(
                 AggregateType.of("FABRIC"),
                 AggregateId.of("FABRIC_ID"),
@@ -126,19 +134,9 @@ public class FabricsMessagingTest extends EventListenerTest {
                 Instant.now(),
                 Map.of()
         );
-        send(
-                AggregateType.of("FABRIC"),
-                AggregateId.of("FABRIC_ID"),
-                Version.of(3),
-                EventName.of("DELETED"),
-                Version.of(2),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
 
-        // then: the fabric is only updated on non-deleted events
-        verify(module, timeout(5000).times(2)).updateFabricInLookup(eq("FABRIC_ID"));
+        // then: the fabric is updated in the lookup
+        verify(module, timeout(5000).times(1)).updateFabricInLookup(eq("FABRIC_ID"));
     }
 
     @Test
