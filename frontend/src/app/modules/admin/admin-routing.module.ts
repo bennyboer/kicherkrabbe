@@ -85,6 +85,11 @@ const routes: Routes = [
         title: 'E-Mail Versand',
         loadChildren: () => import('./modules/mailing/mailing.module').then((m) => m.MailingModule),
       },
+      {
+        path: 'products',
+        title: 'Produkte',
+        loadChildren: () => import('./modules/products/products.module').then((m) => m.ProductsModule),
+      },
     ],
   },
   {

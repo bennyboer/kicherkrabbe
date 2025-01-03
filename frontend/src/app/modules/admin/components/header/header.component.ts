@@ -85,6 +85,11 @@ const MAILING = ManagementItem.of({
   route: 'mailing',
 });
 
+const PRODUCTS = ManagementItem.of({
+  label: 'Produkte',
+  route: 'products',
+});
+
 const ESSENTIAL_MANAGEMENT_ITEMS = [
   TOPICS,
   FABRIC_TYPES,
@@ -97,15 +102,16 @@ const ESSENTIAL_MANAGEMENT_ITEMS = [
   NOTIFICATIONS,
   TELEGRAM,
   MAILING,
+  PRODUCTS,
 ].sort((a, b) => a.label.localeCompare(b.label));
 const MANAGEMENT_ITEMS = [DASHBOARD, ...ESSENTIAL_MANAGEMENT_ITEMS];
 
 @Component({
-    selector: 'app-admin-header',
-    templateUrl: './header.component.html',
-    styleUrls: ['./header.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-admin-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @ViewChild('dropdown')
