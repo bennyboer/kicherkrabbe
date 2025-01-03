@@ -18,10 +18,11 @@ import { MailingService } from '../../services';
 import { Mail } from '../../model';
 
 @Component({
-  selector: 'app-mail-page',
-  templateUrl: './mail.page.html',
-  styleUrls: ['./mail.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-mail-page',
+    templateUrl: './mail.page.html',
+    styleUrls: ['./mail.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class MailPage {
   private readonly mailId$: ReplaySubject<string> = new ReplaySubject<string>(1);

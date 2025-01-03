@@ -80,7 +80,7 @@ public class MessageListenerFactory {
                 .then(sender.declareQueue(queue(queueName)
                         .durable(false)
                         .autoDelete(true)
-                        .exclusive(true)))
+                        .arguments(Map.of("x-expires", 1_800_000))))
                 .then(sender.bind(queueBinding(
                         exchange.getName(),
                         routingKey.asString(),

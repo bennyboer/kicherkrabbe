@@ -7,10 +7,11 @@ import { Mail } from '../../model';
 const MAILS_LIMIT = 10;
 
 @Component({
-  selector: 'app-mails-page',
-  templateUrl: './mails.page.html',
-  styleUrls: ['./mails.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-mails-page',
+    templateUrl: './mails.page.html',
+    styleUrls: ['./mails.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class MailsPage {
   protected readonly loadingMails$ = new BehaviorSubject<boolean>(false);

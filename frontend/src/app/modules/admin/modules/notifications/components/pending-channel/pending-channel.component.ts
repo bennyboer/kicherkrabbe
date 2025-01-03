@@ -3,10 +3,11 @@ import { Channel, EMAIL, Telegram, TELEGRAM } from '../../model';
 import { BehaviorSubject, combineLatest, map } from 'rxjs';
 
 @Component({
-  selector: 'app-pending-channel',
-  templateUrl: './pending-channel.component.html',
-  styleUrls: ['./pending-channel.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-pending-channel',
+    templateUrl: './pending-channel.component.html',
+    styleUrls: ['./pending-channel.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PendingChannelComponent implements OnDestroy {
   @Input()

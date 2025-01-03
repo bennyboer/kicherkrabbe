@@ -25,13 +25,14 @@ export enum ButtonSize {
 }
 
 @Component({
-  selector: 'app-button',
-  templateUrl: './button.component.html',
-  styleUrls: ['./button.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    '[attr.tabindex]': '0',
-  },
+    selector: 'app-button',
+    templateUrl: './button.component.html',
+    styleUrls: ['./button.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    host: {
+        '[attr.tabindex]': '0',
+    },
+    standalone: false
 })
 export class ButtonComponent implements OnInit, OnDestroy {
   @HostBinding('class.active')

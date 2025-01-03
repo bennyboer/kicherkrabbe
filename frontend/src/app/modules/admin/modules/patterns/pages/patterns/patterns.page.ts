@@ -19,10 +19,11 @@ import { Pattern, PatternCategory } from '../../model';
 import { someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
-  selector: 'app-patterns-page',
-  templateUrl: './patterns.page.html',
-  styleUrls: ['./patterns.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-patterns-page',
+    templateUrl: './patterns.page.html',
+    styleUrls: ['./patterns.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PatternsPage implements OnInit, OnDestroy {
   protected readonly searchTerm$: BehaviorSubject<string> = new BehaviorSubject<string>('');

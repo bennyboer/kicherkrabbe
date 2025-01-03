@@ -56,10 +56,11 @@ class EditablePatternExtra {
 }
 
 @Component({
-  selector: 'app-extras',
-  templateUrl: './extras.component.html',
-  styleUrls: ['./extras.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-extras',
+    templateUrl: './extras.component.html',
+    styleUrls: ['./extras.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ExtrasComponent implements OnInit, OnDestroy {
   @Input()

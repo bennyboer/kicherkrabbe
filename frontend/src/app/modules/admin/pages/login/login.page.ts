@@ -5,10 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { someOrNone } from '../../../shared/modules/option';
 
 @Component({
-  selector: 'app-login-page',
-  templateUrl: './login.page.html',
-  styleUrls: ['./login.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-login-page',
+    templateUrl: './login.page.html',
+    styleUrls: ['./login.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LoginPage implements OnDestroy {
   private readonly username$: BehaviorSubject<string> = new BehaviorSubject<string>('');

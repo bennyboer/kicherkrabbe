@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, HostListen
 import { Overlay } from '../../models';
 
 @Component({
-  selector: 'app-overlay',
-  templateUrl: './overlay.component.html',
-  styleUrls: ['./overlay.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-overlay',
+    templateUrl: './overlay.component.html',
+    styleUrls: ['./overlay.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class OverlayComponent {
   @Input({ required: true })

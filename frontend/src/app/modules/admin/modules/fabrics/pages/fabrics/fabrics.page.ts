@@ -5,10 +5,11 @@ import { Fabric } from '../../model';
 import { environment } from '../../../../../../../environments';
 
 @Component({
-  selector: 'app-fabrics-page',
-  templateUrl: './fabrics.page.html',
-  styleUrls: ['./fabrics.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-fabrics-page',
+    templateUrl: './fabrics.page.html',
+    styleUrls: ['./fabrics.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FabricsPage implements OnDestroy {
   private readonly search$: BehaviorSubject<string> = new BehaviorSubject<string>('');

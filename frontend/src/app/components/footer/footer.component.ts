@@ -3,10 +3,11 @@ import { Theme, ThemeService } from '../../services';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-footer',
-  templateUrl: './footer.component.html',
-  styleUrls: ['./footer.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-footer',
+    templateUrl: './footer.component.html',
+    styleUrls: ['./footer.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FooterComponent implements OnDestroy {
   private readonly showHiddenThingsCounter$: BehaviorSubject<number> = new BehaviorSubject<number>(0);

@@ -11,10 +11,11 @@ import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { someOrNone } from '../../modules/option';
 
 @Component({
-  selector: 'app-radio',
-  templateUrl: './radio.component.html',
-  styleUrls: ['./radio.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-radio',
+    templateUrl: './radio.component.html',
+    styleUrls: ['./radio.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class RadioComponent implements OnDestroy {
   @Input()

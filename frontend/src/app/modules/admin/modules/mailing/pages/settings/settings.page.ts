@@ -6,10 +6,11 @@ import { Settings } from '../../model';
 import { NotificationService } from '../../../../../shared';
 
 @Component({
-  selector: 'app-settings-page',
-  templateUrl: './settings.page.html',
-  styleUrls: ['./settings.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-settings-page',
+    templateUrl: './settings.page.html',
+    styleUrls: ['./settings.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SettingsPage implements OnInit, OnDestroy {
   protected readonly settings$ = new BehaviorSubject<Option<Settings>>(none());

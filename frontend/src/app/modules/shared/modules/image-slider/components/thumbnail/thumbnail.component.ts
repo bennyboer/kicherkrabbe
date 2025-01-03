@@ -4,10 +4,11 @@ import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
 import { someOrNone } from '../../../option';
 
 @Component({
-  selector: 'app-image-slider-thumbnail',
-  templateUrl: './thumbnail.component.html',
-  styleUrls: ['./thumbnail.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-image-slider-thumbnail',
+    templateUrl: './thumbnail.component.html',
+    styleUrls: ['./thumbnail.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ThumbnailComponent implements OnDestroy {
   protected readonly image$: Subject<ImageSliderImage> = new ReplaySubject<ImageSliderImage>(1);

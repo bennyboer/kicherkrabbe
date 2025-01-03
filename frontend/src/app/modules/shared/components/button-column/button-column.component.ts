@@ -4,16 +4,17 @@ import { ButtonSize } from '../button/button.component';
 import { ButtonRegistry } from '../button/button-registry';
 
 @Component({
-  selector: 'app-button-column',
-  templateUrl: './button-column.component.html',
-  styleUrls: ['./button-column.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    {
-      provide: ButtonRegistry,
-      useClass: ButtonColumnService,
-    },
-  ],
+    selector: 'app-button-column',
+    templateUrl: './button-column.component.html',
+    styleUrls: ['./button-column.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [
+        {
+            provide: ButtonRegistry,
+            useClass: ButtonColumnService,
+        },
+    ],
+    standalone: false
 })
 export class ButtonColumnComponent {
   @Input('size')

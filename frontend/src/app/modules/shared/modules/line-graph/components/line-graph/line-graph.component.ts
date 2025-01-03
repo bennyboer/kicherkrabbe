@@ -12,10 +12,11 @@ import { BehaviorSubject, combineLatest, map, Subject, takeUntil } from 'rxjs';
 import { Theme, ThemeService } from '../../../../../../services';
 
 @Component({
-  selector: 'app-line-graph',
-  templateUrl: './line-graph.component.html',
-  styleUrls: ['./line-graph.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-line-graph',
+    templateUrl: './line-graph.component.html',
+    styleUrls: ['./line-graph.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LineGraphComponent implements AfterViewInit, OnDestroy {
   @Input()

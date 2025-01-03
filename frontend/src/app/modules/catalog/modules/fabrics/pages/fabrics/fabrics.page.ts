@@ -66,10 +66,11 @@ export class FabricsFilter {
 const FABRICS_LIMIT = 50;
 
 @Component({
-  selector: 'app-fabrics-page',
-  templateUrl: './fabrics.page.html',
-  styleUrls: ['./fabrics.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-fabrics-page',
+    templateUrl: './fabrics.page.html',
+    styleUrls: ['./fabrics.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FabricsPage implements OnInit, OnDestroy {
   @ViewChild('colorItemTemplate')

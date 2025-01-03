@@ -14,10 +14,11 @@ import { SlidingImageComponent } from '../sliding-image/sliding-image.component'
 import { someOrNone } from '../../../option';
 
 @Component({
-  selector: 'app-image-slider',
-  templateUrl: './image-slider.component.html',
-  styleUrls: ['./image-slider.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-image-slider',
+    templateUrl: './image-slider.component.html',
+    styleUrls: ['./image-slider.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ImageSliderComponent implements OnInit, OnDestroy {
   @ViewChild(SlidingImageComponent)

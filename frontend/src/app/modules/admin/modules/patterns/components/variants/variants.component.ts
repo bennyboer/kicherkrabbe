@@ -63,10 +63,11 @@ class EditablePatternVariant {
 }
 
 @Component({
-  selector: 'app-variants',
-  templateUrl: './variants.component.html',
-  styleUrls: ['./variants.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-variants',
+    templateUrl: './variants.component.html',
+    styleUrls: ['./variants.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class VariantsComponent implements OnInit, OnDestroy {
   @Input()

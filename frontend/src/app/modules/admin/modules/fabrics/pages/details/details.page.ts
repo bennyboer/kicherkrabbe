@@ -8,10 +8,11 @@ import { environment } from '../../../../../../../environments';
 import { none, Option, some, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
-  selector: 'app-fabric-details-page',
-  templateUrl: './details.page.html',
-  styleUrls: ['./details.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-fabric-details-page',
+    templateUrl: './details.page.html',
+    styleUrls: ['./details.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FabricDetailsPage implements OnInit, OnDestroy {
   private readonly transientName$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());

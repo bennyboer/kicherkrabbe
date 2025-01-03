@@ -22,10 +22,11 @@ import { DropdownComponent, DropdownItem, DropdownItemId, NotificationService } 
 import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
-  selector: 'app-category-page',
-  templateUrl: './category.page.html',
-  styleUrls: ['./category.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-category-page',
+    templateUrl: './category.page.html',
+    styleUrls: ['./category.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CategoryPage implements OnInit, OnDestroy {
   protected readonly category$: Subject<Category> = new ReplaySubject(1);

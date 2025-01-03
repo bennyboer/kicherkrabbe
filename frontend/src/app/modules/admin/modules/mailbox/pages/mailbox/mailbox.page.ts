@@ -21,10 +21,11 @@ import { none, Option, some, someOrNone } from '../../../../../shared/modules/op
 const MAILS_LIMIT = 10;
 
 @Component({
-  selector: 'app-mailbox-page',
-  templateUrl: './mailbox.page.html',
-  styleUrls: ['./mailbox.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-mailbox-page',
+    templateUrl: './mailbox.page.html',
+    styleUrls: ['./mailbox.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class MailboxPage implements OnInit, OnDestroy {
   protected readonly searchTerm$: BehaviorSubject<string> = new BehaviorSubject<string>('');

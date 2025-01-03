@@ -36,10 +36,11 @@ import { ContentChange } from 'ngx-quill';
 import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
-  selector: 'app-pattern-page',
-  templateUrl: './pattern.page.html',
-  styleUrls: ['./pattern.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-pattern-page',
+    templateUrl: './pattern.page.html',
+    styleUrls: ['./pattern.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PatternPage implements OnInit, OnDestroy {
   protected readonly patternId$: BehaviorSubject<Option<PatternId>> = new BehaviorSubject<Option<PatternId>>(none());

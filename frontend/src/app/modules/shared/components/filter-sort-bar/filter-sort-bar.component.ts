@@ -237,10 +237,11 @@ export class SortEvent {
 }
 
 @Component({
-  selector: 'app-filter-sort-bar',
-  templateUrl: './filter-sort-bar.component.html',
-  styleUrls: ['./filter-sort-bar.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-filter-sort-bar',
+    templateUrl: './filter-sort-bar.component.html',
+    styleUrls: ['./filter-sort-bar.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FilterSortBarComponent implements OnInit, OnDestroy {
   @Input('filters')

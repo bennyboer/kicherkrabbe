@@ -12,10 +12,11 @@ import {
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'app-loading-spinner',
-  templateUrl: './loading-spinner.component.html',
-  styleUrls: ['./loading-spinner.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-loading-spinner',
+    templateUrl: './loading-spinner.component.html',
+    styleUrls: ['./loading-spinner.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LoadingSpinnerComponent implements OnInit, OnDestroy {
   private readonly size$: BehaviorSubject<number> = new BehaviorSubject<number>(32);

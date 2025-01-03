@@ -19,6 +19,7 @@ import { none, Option, some } from '../../modules/shared/modules/option';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class HeaderComponent implements AfterViewInit, OnDestroy {
   protected headerHeight: Option<number> = none();
@@ -26,6 +27,8 @@ export class HeaderComponent implements AfterViewInit, OnDestroy {
   private readonly sticky$: Subject<boolean> = new BehaviorSubject(false);
   private readonly overlayActive$: Subject<boolean> = new BehaviorSubject(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
+
+  private resizeObserver: Option<ResizeObserver> = none();
 
   protected readonly ButtonSize = ButtonSize;
 
@@ -44,12 +47,18 @@ export class HeaderComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.headerHeight = some(this.elementRef.nativeElement.clientHeight);
+    const resizeObserver = new ResizeObserver(() => {
+      this.headerHeight = some(this.elementRef.nativeElement.clientHeight);
+    });
+    resizeObserver.observe(this.elementRef.nativeElement);
+    this.resizeObserver = some(resizeObserver);
 
     this.setupScrollListener();
   }
 
   ngOnDestroy(): void {
+    this.resizeObserver.ifSome((ro) => ro.disconnect());
+
     this.sticky$.complete();
     this.overlayActive$.complete();
 

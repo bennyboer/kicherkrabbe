@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { Option, someOrNone } from '../option';
 
 @Pipe({
-  name: 'ifSome',
+    name: 'ifSome',
+    standalone: false
 })
 export class IfSomePipe implements PipeTransform {
   transform<T>(value?: Option<T> | null): T | null | undefined {

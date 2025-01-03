@@ -6,10 +6,11 @@ import { InquiriesService } from '../../services';
 import { InquiriesStatus, Sender } from '../../models';
 
 @Component({
-  selector: 'app-contact-page',
-  templateUrl: './contact.page.html',
-  styleUrls: ['./contact.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-contact-page',
+    templateUrl: './contact.page.html',
+    styleUrls: ['./contact.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ContactPage implements OnInit, OnDestroy {
   protected readonly loadingInquiriesStatus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);

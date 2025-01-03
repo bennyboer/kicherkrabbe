@@ -7,10 +7,11 @@ import { FabricType } from '../../model';
 import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
-  selector: 'app-fabric-type-details-page',
-  templateUrl: './details.page.html',
-  styleUrls: ['./details.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-fabric-type-details-page',
+    templateUrl: './details.page.html',
+    styleUrls: ['./details.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FabricTypeDetailsPage implements OnDestroy {
   private readonly transientName$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());

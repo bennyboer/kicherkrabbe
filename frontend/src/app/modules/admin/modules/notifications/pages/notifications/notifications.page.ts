@@ -7,10 +7,11 @@ import { NotificationsService } from '../../services';
 const NOTIFICATIONS_LIMIT = 10;
 
 @Component({
-  selector: 'app-notifications-page',
-  templateUrl: './notifications.page.html',
-  styleUrls: ['./notifications.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-notifications-page',
+    templateUrl: './notifications.page.html',
+    styleUrls: ['./notifications.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NotificationsPage implements OnInit, OnDestroy {
   protected readonly loadingNotifications$ = new BehaviorSubject<boolean>(false);

@@ -19,10 +19,11 @@ import { CategoriesService } from '../../services';
 import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
-  selector: 'app-categories-page',
-  templateUrl: './categories.page.html',
-  styleUrls: ['./categories.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-categories-page',
+    templateUrl: './categories.page.html',
+    styleUrls: ['./categories.page.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CategoriesPage implements OnInit, OnDestroy {
   private readonly groups$: BehaviorSubject<CategoryGroup[]> = new BehaviorSubject<CategoryGroup[]>(GROUPS);
