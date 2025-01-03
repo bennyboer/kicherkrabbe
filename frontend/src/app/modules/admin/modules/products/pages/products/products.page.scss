@@ -1,0 +1,136 @@
+:host {
+  display: block;
+}
+
+.action-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.date-selector {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+}
+
+.image-placeholder {
+  display: block;
+  width: 100%;
+  height: 64px;
+  background-color: var(--background-low-contrast);
+  border-radius: 4px;
+}
+
+table.products-table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 16px;
+
+  a.table-row {
+    display: table-row;
+    text-decoration: none;
+    color: inherit;
+    vertical-align: middle;
+    transition: background-color 0.2s ease-out;
+
+    &:hover {
+      background-color: var(--background-low-contrast);
+    }
+
+    &:last-child {
+      td {
+        border-bottom: none;
+      }
+    }
+  }
+
+  th {
+    user-select: none;
+    padding: 8px 16px;
+    font-weight: normal;
+    font-size: 0.8em;
+    color: rgba(var(--text-rgb), 0.7);
+    border-bottom: 4px solid var(--background-low-contrast);
+
+    &.image {
+      text-align: center;
+    }
+
+    &.number {
+      text-align: left;
+    }
+
+    &.produced-at-date {
+      text-align: right;
+    }
+  }
+
+  td {
+    cursor: pointer;
+    padding: 16px 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid var(--background-low-contrast);
+
+    &.image {
+      & > img {
+        object-fit: cover;
+        border-radius: 4px;
+      }
+    }
+
+    &.produced-at-date {
+      font-size: 0.8em;
+      text-align: right;
+    }
+  }
+}
+
+.footer-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+}
+
+@media only screen and (max-width: 1000px) {
+  .action-bar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .date-selector {
+    justify-content: center;
+  }
+
+  table.products-table {
+    col {
+      &.produced-at-date {
+        display: none;
+      }
+    }
+
+    thead {
+      display: none;
+    }
+
+    th {
+      &.produced-at-date {
+        display: none;
+      }
+    }
+
+    td {
+      &.produced-at-date {
+        display: none;
+      }
+    }
+  }
+}
