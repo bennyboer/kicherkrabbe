@@ -74,9 +74,17 @@ import {
 } from '../model';
 import { environment } from '../../../../../../environments';
 
+interface QueryProductResponse {
+  product: ProductDTO;
+}
+
 interface QueryProductsResponse {
   total: number;
   products: ProductDTO[];
+}
+
+interface DeleteProductResponse {
+  version: number;
 }
 
 interface ProductDTO {
@@ -183,6 +191,57 @@ interface NotesDTO {
 export class ProductsService {
   constructor(private readonly http: HttpClient) {}
 
+  getProduct(productId: string): Observable<Product> {
+    return this.http.get<QueryProductResponse>(`${environment.apiUrl}/products/${productId}`).pipe(
+      map((response) => this.toInternalProduct(response.product)),
+      // TODO Remove error handler once backend is implemented
+      catchError((_) => {
+        return of(
+          this.toInternalProduct({
+            id: 'PRODUCT_ID_1',
+            version: 1,
+            number: '0000000001',
+            images: [
+              '14dc190d-5be8-4285-883e-408741b28723',
+              '7eff4b41-e828-47e8-8a8e-7e11e68e56db',
+              '01efafd3-41d6-4a85-a4f3-8777405ac37b',
+            ],
+            links: [
+              {
+                type: LinkTypeDTO.PATTERN,
+                id: 'PATTERN_ID_1',
+              },
+              {
+                type: LinkTypeDTO.FABRIC,
+                id: 'FABRIC_ID_1',
+              },
+            ],
+            fabricComposition: {
+              items: [
+                {
+                  fabricType: FabricTypeDTO.COTTON,
+                  percentage: 80,
+                },
+                {
+                  fabricType: FabricTypeDTO.POLYESTER,
+                  percentage: 20,
+                },
+              ],
+            },
+            notes: {
+              contains: '{"ops":[{"insert":"Stoff kommt von Hersteller soundso, etc. etc."}]}',
+              care: '{"ops":[{"insert":"Nicht über 30 Grad waschen, nicht in den Trockner, blabla"}]}',
+              safety:
+                '{"ops":[{"attributes":{"bold":true},"insert":"Achtung"},{"insert":"! Verschluckungsgefahr (Knöpfe)! Nur unter Aufsicht von Erwachsenen benutzen."}]}',
+            },
+            producedAt: '2024-12-28T12:30:00Z',
+            createdAt: '2024-12-28T13:00:00Z',
+          }),
+        );
+      }),
+    );
+  }
+
   getProducts(props: {
     searchValue: string;
     from?: Date | null;
@@ -223,8 +282,12 @@ export class ProductsService {
             {
               id: 'PRODUCT_ID_1',
               version: 1,
-              number: 'PRODUCT_NUMBER_1',
-              images: ['2905e300-f4e1-4fcc-94b0-28a243d3b54f'],
+              number: '0000000001',
+              images: [
+                '14dc190d-5be8-4285-883e-408741b28723',
+                '7eff4b41-e828-47e8-8a8e-7e11e68e56db',
+                '01efafd3-41d6-4a85-a4f3-8777405ac37b',
+              ],
               links: [
                 {
                   type: LinkTypeDTO.PATTERN,
@@ -248,9 +311,10 @@ export class ProductsService {
                 ],
               },
               notes: {
-                contains: 'Contains',
-                care: 'Care',
-                safety: 'Safety',
+                contains: '{"ops":[{"insert":"Stoff kommt von Hersteller soundso, etc. etc."}]}',
+                care: '{"ops":[{"insert":"Nicht über 30 Grad waschen, nicht in den Trockner, blabla"}]}',
+                safety:
+                  '{"ops":[{"attributes":{"bold":true},"insert":"Achtung"},{"insert":"! Verschluckungsgefahr (Knöpfe)! Nur unter Aufsicht von Erwachsenen benutzen."}]}',
               },
               producedAt: '2024-12-28T12:30:00Z',
               createdAt: '2024-12-28T13:00:00Z',
@@ -258,7 +322,7 @@ export class ProductsService {
             {
               id: 'PRODUCT_ID_2',
               version: 0,
-              number: 'PRODUCT_NUMBER_2',
+              number: '0000000002',
               images: [],
               links: [
                 {
@@ -294,6 +358,14 @@ export class ProductsService {
         });
       }),
     );
+  }
+
+  deleteProduct(id: string, version: number): Observable<number> {
+    return this.http
+      .delete<DeleteProductResponse>(`${environment.apiUrl}/products/${id}`, {
+        params: { version: version.toString() },
+      })
+      .pipe(map((response) => response.version));
   }
 
   private toInternalProducts(products: ProductDTO[]): Product[] {

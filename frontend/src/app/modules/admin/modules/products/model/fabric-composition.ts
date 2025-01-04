@@ -17,6 +17,10 @@ export class FabricComposition {
     });
   }
 
+  getSortedByPercentage(): FabricCompositionItem[] {
+    return [...this.items].sort((a, b) => b.percentage - a.percentage);
+  }
+
   private static validateItems(items: FabricCompositionItem[]): void {
     if (items.length === 0) {
       throw new Error('Fabric composition must contain at least one item');

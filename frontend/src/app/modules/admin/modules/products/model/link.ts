@@ -1,4 +1,4 @@
-import { LinkType } from './link-type';
+import { InternalLinkType, LinkType } from './link-type';
 import { validateProps } from '../../../../../util';
 
 export class Link {
@@ -17,5 +17,16 @@ export class Link {
       type: props.type,
       id: props.id,
     });
+  }
+
+  toHref(): string {
+    switch (this.type.internal) {
+      case InternalLinkType.PATTERN:
+        return `/admin/patterns/${this.id}`;
+      case InternalLinkType.FABRIC:
+        return `/admin/fabrics/${this.id}`;
+      default:
+        throw new Error(`Unknown link type: ${this.type.internal}`);
+    }
   }
 }

@@ -12,12 +12,17 @@ const routes: Routes = [
     component: CreatePage,
   },
   {
-    path: 'delete',
-    component: DeletePage,
-  },
-  {
     path: ':productId',
-    component: ProductPage,
+    children: [
+      {
+        path: '',
+        component: ProductPage,
+      },
+      {
+        path: 'delete',
+        component: DeletePage,
+      },
+    ],
   },
 ];
 

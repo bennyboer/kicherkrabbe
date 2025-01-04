@@ -43,7 +43,9 @@
                 @if (product.images.length > 0) {
                   <img [src]="getImageUrl(product.images[0])" width="64" height="64">
                 } @else {
-                  <span class="image-placeholder"></span>
+                  <span class="image-placeholder">
+                    <span class="material-icons">image</span>
+                  </span>
                 }
               </td>
               <td class="number">
