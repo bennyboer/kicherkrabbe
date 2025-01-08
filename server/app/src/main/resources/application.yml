@@ -13,3 +13,5 @@ server:
   compression:
     enabled: true
     min-response-size: 2048
+  http2:
+    enabled: true
