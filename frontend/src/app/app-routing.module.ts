@@ -35,6 +35,11 @@ const routes: Routes = [
     title: 'Startseiten',
     loadChildren: () => import('./modules/landing/landing.module').then((m) => m.LandingModule),
   },
+  {
+    path: 'test',
+    title: 'Test',
+    loadChildren: () => import('./modules/test/test.module').then((m) => m.TestModule),
+  },
   { path: '**', component: NotFoundPage },
 ];
 
