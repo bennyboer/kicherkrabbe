@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, Injector, OnDestroy, OnInit } from 
 import {
   BehaviorSubject,
   catchError,
+  distinctUntilChanged,
   finalize,
   first,
   map,
@@ -14,13 +15,18 @@ import {
 import { none, Option, some } from '../../../../../shared/modules/option';
 import { ActivatedRoute } from '@angular/router';
 import { ButtonSize, NotificationService } from '../../../../../shared';
-import { Product } from '../../model';
+import { Link, Product } from '../../model';
 import { ProductsService } from '../../services';
 import { environment } from '../../../../../../../environments';
 import { ImageSliderImage } from '../../../../../shared/modules/image-slider';
 import { Theme, ThemeService } from '../../../../../../services';
 import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
-import { AddLinkDialog, AddLinkDialogResult } from '../../dialogs';
+import {
+  AddLinkDialog,
+  AddLinkDialogResult,
+  EditFabricCompositionDialog,
+  EditFabricCompositionDialogResult,
+} from '../../dialogs';
 
 @Component({
   selector: 'app-product-page',
@@ -36,9 +42,18 @@ export class ProductPage implements OnInit, OnDestroy {
   private readonly loadingProduct$ = new BehaviorSubject<boolean>(false);
   protected readonly productLoaded$ = new BehaviorSubject<boolean>(false);
 
+  protected readonly removingLink$ = new BehaviorSubject<boolean>(false);
+
   protected readonly loading$ = this.loadingProduct$.asObservable();
   protected readonly images$: Observable<ImageSliderImage[]> = this.product$.pipe(
     map((product) => product.map((p) => this.toImageSliderImages(p.images)).orElse([])),
+    distinctUntilChanged((a, b) => {
+      if (a.length !== b.length) {
+        return false;
+      }
+
+      return a.every((image, index) => image.equals(b[index]));
+    }),
   );
   protected readonly theme$ = this.themeService
     .getTheme()
@@ -74,6 +89,8 @@ export class ProductPage implements OnInit, OnDestroy {
     this.productLoaded$.complete();
     this.loadingProduct$.complete();
 
+    this.removingLink$.complete();
+
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -100,7 +117,74 @@ export class ProductPage implements OnInit, OnDestroy {
     this.dialogService.waitUntilClosed(dialog.id).subscribe(() => {
       dialog
         .getResult()
-        .flatMap((result) => this.product$.value.map((product) => product.addLink(result.version, result.link)))
+        .map((result) => product.addLink(result.version, result.link))
+        .ifSome((updatedProduct) => this.product$.next(some(updatedProduct)));
+    });
+  }
+
+  removeLink(event: Event, product: Product, link: Link): void {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (this.removingLink$.value) {
+      return;
+    }
+    this.removingLink$.next(true);
+
+    this.productsService
+      .removeLink({
+        id: product.id,
+        version: product.version,
+        linkType: link.type,
+        linkId: link.id,
+      })
+      .pipe(
+        first(),
+        finalize(() => this.removingLink$.next(false)),
+      )
+      .subscribe({
+        next: (version) => {
+          const updatedProduct = product.removeLink(version, link.type, link.id);
+          this.product$.next(some(updatedProduct));
+
+          this.notificationService.publish({
+            message: 'Link wurde entfernt.',
+            type: 'success',
+          });
+        },
+        error: (e) => {
+          console.error('Failed to remove link', e);
+          this.notificationService.publish({
+            message: 'Link konnte nicht entfernt werden. Bitte versuche es erneut.',
+            type: 'error',
+          });
+        },
+      });
+  }
+
+  editFabricComposition(product: Product): void {
+    const dialog = Dialog.create<EditFabricCompositionDialogResult>({
+      title: 'Stoffzusammensetzung bearbeiten',
+      componentType: EditFabricCompositionDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: Product,
+            useValue: product,
+          },
+          {
+            provide: ProductsService,
+            useValue: this.productsService,
+          },
+        ],
+      }),
+    });
+
+    this.dialogService.open(dialog);
+    this.dialogService.waitUntilClosed(dialog.id).subscribe(() => {
+      dialog
+        .getResult()
+        .map((result) => product.updateFabricComposition(result.version, result.fabricComposition))
         .ifSome((updatedProduct) => this.product$.next(some(updatedProduct)));
     });
   }

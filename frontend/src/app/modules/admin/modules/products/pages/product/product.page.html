@@ -40,7 +40,7 @@
 
       <div class="product-detail">
         <label>Produkt-Nr.</label>
-        <span>{{ product.number }}</span>
+        <span class="product-number">{{ product.number }}</span>
       </div>
 
       <div class="product-detail">
@@ -51,11 +51,6 @@
               <span class="material-icons">add</span>
             </span>
           </app-button>
-          <app-button [size]="ButtonSize.SMALL">
-            <span class="icon-button">
-              <span class="material-icons">edit</span>
-            </span>
-          </app-button>
         </label>
         <div class="product-links">
           @if (product.links.length > 0) {
@@ -63,14 +58,11 @@
               @for (link of product.links; track link.type.internal) {
                 <li>
                   <a [routerLink]="link.toHref()">
-                    <span>{{ link.type.label }}: {{ link.name }}</span>
+                    <span>
+                      <strong>{{ link.type.label }}</strong>: {{ link.name }}
+                    </span>
                     <span class="actions">
-                      <app-button [size]="ButtonSize.SMALL">
-                        <span class="icon-button">
-                          <span class="material-icons">edit</span>
-                        </span>
-                      </app-button>
-                      <app-button [size]="ButtonSize.SMALL">
+                      <app-button color="warn" [size]="ButtonSize.SMALL" (click)="removeLink($event, product, link)">
                         <span class="icon-button">
                           <span class="material-icons">delete</span>
                         </span>
@@ -87,7 +79,14 @@
       </div>
 
       <div class="product-detail">
-        <label>Stoff-Zusammensetzung</label>
+        <label>
+          Stoffzusammensetzung
+          <app-button [size]="ButtonSize.SMALL" (click)="editFabricComposition(product)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
         <div class="fabric-composition">
           <table class="fabric-composition-table">
             <thead>

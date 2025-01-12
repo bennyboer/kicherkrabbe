@@ -3,6 +3,7 @@ import { FabricComposition } from './fabric-composition';
 import { Notes } from './notes';
 import { validateProps } from '../../../../../util';
 import { someOrNone } from '../../../../shared/modules/option';
+import { LinkType } from './link-type';
 
 type ProductId = string;
 type ImageId = string;
@@ -68,10 +69,29 @@ export class Product {
   }
 
   addLink(version: number, link: Link): Product {
+    const updatedLinks = [...this.links, link];
+    updatedLinks.sort((a, b) => a.type.label.localeCompare(b.type.label, 'de-de', { numeric: true }));
+
     return new Product({
       ...this,
       version,
       links: [...this.links, link],
+    });
+  }
+
+  removeLink(version: number, type: LinkType, id: string): Product {
+    return new Product({
+      ...this,
+      version,
+      links: this.links.filter((link) => !(link.type === type && link.id === id)),
+    });
+  }
+
+  updateFabricComposition(version: number, fabricComposition: FabricComposition): Product {
+    return new Product({
+      ...this,
+      version,
+      fabricComposition,
     });
   }
 }

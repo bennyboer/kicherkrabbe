@@ -33,6 +33,22 @@ label {
   }
 }
 
+.product-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4caf50, #2e8b57);
+  box-shadow: 0 4px 10px rgba(var(--shadow-rgba));
+  border: 1px solid #99e89c;
+  margin-right: auto;
+
+  &:hover {
+    background: linear-gradient(135deg, #66bb6a, #388e3c);
+  }
+}
+
 .product-images {
   display: flex;
   flex-direction: row;
@@ -79,6 +95,7 @@ label {
         justify-content: space-between;
         color: var(--text);
         padding: 16px 12px;
+        text-decoration: none;
 
         .actions {
           display: inline-flex;

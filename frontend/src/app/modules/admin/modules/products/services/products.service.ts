@@ -76,10 +76,17 @@ import { environment } from '../../../../../../environments';
 import { someOrNone } from '../../../../shared/modules/option';
 
 interface AddLinkRequest {
-  id: string;
   version: number;
   linkType: LinkTypeDTO;
   linkId: string;
+}
+
+interface AddLinkResponse {
+  version: number;
+}
+
+interface RemoveLinkResponse {
+  version: number;
 }
 
 interface QueryLinksResponse {
@@ -445,14 +452,35 @@ export class ProductsService {
   }
 
   addLink(props: { id: string; version: number; linkType: LinkType; linkId: string }): Observable<number> {
+    const productId = props.id;
     const request: AddLinkRequest = {
-      id: props.id,
       version: props.version,
       linkType: this.toApiLinkType(props.linkType),
       linkId: props.linkId,
     };
 
-    return this.http.post<number>(`${environment.apiUrl}/products/links`, request);
+    return this.http.post<AddLinkResponse>(`${environment.apiUrl}/products/${productId}/links`, request).pipe(
+      map((response) => response.version),
+      // TODO Remove error handler once backend is implemented
+      catchError((_) => of(props.version + 1)),
+    );
+  }
+
+  removeLink(props: { id: string; version: number; linkType: LinkType; linkId: string }): Observable<number> {
+    const productId = props.id;
+    const version = props.version;
+    const linkId = props.linkId;
+    const linkType = this.toApiLinkType(props.linkType);
+
+    return this.http
+      .delete<RemoveLinkResponse>(`${environment.apiUrl}/products/${productId}/links/${linkType}/${linkId}`, {
+        params: { version: version.toString() },
+      })
+      .pipe(
+        map((response) => response.version),
+        // TODO Remove error handler once backend is implemented
+        catchError((_) => of(version + 1)),
+      );
   }
 
   private toInternalProducts(products: ProductDTO[]): Product[] {
