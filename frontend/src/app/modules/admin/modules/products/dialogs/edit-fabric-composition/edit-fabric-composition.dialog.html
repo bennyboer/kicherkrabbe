@@ -1,0 +1,56 @@
+<table class="fabric-composition-table">
+  <colgroup>
+    <col span="1" style="width: auto"/>
+    <col span="1" style="width: 150px"/>
+  </colgroup>
+  <thead>
+  <tr>
+    <th class="fabric-type">Stoffart</th>
+    <th class="percentage">Anteil in %</th>
+  </tr>
+  </thead>
+  <tbody>
+    @if (fabricTypesDropdownItems$ | async; as fabricTypesDropdownItems) {
+      @if (compositionItems$ | async; as compositionItems) {
+        @for (item of compositionItems; let index = $index; track index) {
+          <tr>
+            <td class="fabric-type">
+              <app-dropdown #dropdown
+                            [selected]="[item.fabricType.internal]"
+                            [items]="fabricTypesDropdownItems"
+                            (selectionChanged)="updateFabricTypeForItem(dropdown, index, $event)">
+                <ng-template let-item>
+                  <span>{{ item.label }}</span>
+                </ng-template>
+              </app-dropdown>
+            </td>
+            <td class="percentage">
+              <input #percentage
+                     type="number"
+                     [value]="item.percentage"
+                     (input)="updatePercentageForItem(index, percentage.valueAsNumber)"
+                     min="0"
+                     max="100">
+            </td>
+          </tr>
+        }
+      }
+    }
+  </tbody>
+</table>
+
+@if (error$ | async | ifSome; as error) {
+  <div class="error-container">
+    <app-note level="error">{{ error }}</app-note>
+  </div>
+}
+
+<div class="footer">
+  <app-button (click)="addCompositionItem()">
+    <span class="icon-button">
+      <span class="material-icons">add</span>
+      <span>Stoffart hinzufügen</span>
+    </span>
+  </app-button>
+  <app-button color="primary" [disabled]="hasError$ | async" (click)="save()">Speichern</app-button>
+</div>

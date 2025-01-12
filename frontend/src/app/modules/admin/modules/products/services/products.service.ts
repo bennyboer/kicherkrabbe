@@ -33,6 +33,7 @@ import {
   HEMP,
   HENEQUEN,
   HORSE_HAIR,
+  InternalFabricType,
   JUTE,
   KAPOK,
   KENAF,
@@ -86,6 +87,15 @@ interface AddLinkResponse {
 }
 
 interface RemoveLinkResponse {
+  version: number;
+}
+
+interface UpdateFabricCompositionRequest {
+  version: number;
+  fabricComposition: FabricCompositionDTO;
+}
+
+interface UpdateFabricCompositionResponse {
   version: number;
 }
 
@@ -483,6 +493,29 @@ export class ProductsService {
       );
   }
 
+  updateFabricComposition(props: {
+    id: string;
+    version: number;
+    fabricComposition: FabricComposition;
+  }): Observable<number> {
+    const productId = props.id;
+    const request: UpdateFabricCompositionRequest = {
+      version: props.version,
+      fabricComposition: this.toApiFabricComposition(props.fabricComposition),
+    };
+
+    return this.http
+      .post<UpdateFabricCompositionResponse>(
+        `${environment.apiUrl}/products/${productId}/fabric-composition/update`,
+        request,
+      )
+      .pipe(
+        map((response) => response.version),
+        // TODO Remove error handler once backend is implemented
+        catchError((_) => of(props.version + 1)),
+      );
+  }
+
   private toInternalProducts(products: ProductDTO[]): Product[] {
     return products.map((product) => this.toInternalProduct(product));
   }
@@ -549,8 +582,18 @@ export class ProductsService {
     });
   }
 
+  private toApiFabricComposition(composition: FabricComposition): FabricCompositionDTO {
+    return {
+      items: this.toApiFabricCompositionItems(composition.items),
+    };
+  }
+
   private toInternalFabricCompositionItems(items: FabricCompositionItemDTO[]): FabricCompositionItem[] {
     return items.map((item) => this.toInternalFabricCompositionItem(item));
+  }
+
+  private toApiFabricCompositionItems(items: FabricCompositionItem[]): FabricCompositionItemDTO[] {
+    return items.map((item) => this.toApiFabricCompositionItem(item));
   }
 
   private toInternalFabricCompositionItem(item: FabricCompositionItemDTO): FabricCompositionItem {
@@ -558,6 +601,13 @@ export class ProductsService {
       fabricType: this.toInternalFabricType(item.fabricType),
       percentage: item.percentage,
     });
+  }
+
+  private toApiFabricCompositionItem(item: FabricCompositionItem): FabricCompositionItemDTO {
+    return {
+      fabricType: this.toApiFabricType(item.fabricType),
+      percentage: item.percentage,
+    };
   }
 
   private toInternalFabricType(type: FabricTypeDTO): FabricType {
@@ -683,6 +733,131 @@ export class ProductsService {
       case FabricTypeDTO.UNKNOWN:
       default:
         return UNKNOWN;
+    }
+  }
+
+  private toApiFabricType(type: FabricType): FabricTypeDTO {
+    switch (type.internal) {
+      case InternalFabricType.ABACA:
+        return FabricTypeDTO.ABACA;
+      case InternalFabricType.ALFA:
+        return FabricTypeDTO.ALFA;
+      case InternalFabricType.BAMBOO:
+        return FabricTypeDTO.BAMBOO;
+      case InternalFabricType.HEMP:
+        return FabricTypeDTO.HEMP;
+      case InternalFabricType.COTTON:
+        return FabricTypeDTO.COTTON;
+      case InternalFabricType.COCONUT:
+        return FabricTypeDTO.COCONUT;
+      case InternalFabricType.CASHMERE:
+        return FabricTypeDTO.CASHMERE;
+      case InternalFabricType.HENEQUEN:
+        return FabricTypeDTO.HENEQUEN;
+      case InternalFabricType.HALF_LINEN:
+        return FabricTypeDTO.HALF_LINEN;
+      case InternalFabricType.JUTE:
+        return FabricTypeDTO.JUTE;
+      case InternalFabricType.KENAF:
+        return FabricTypeDTO.KENAF;
+      case InternalFabricType.KAPOK:
+        return FabricTypeDTO.KAPOK;
+      case InternalFabricType.LINEN:
+        return FabricTypeDTO.LINEN;
+      case InternalFabricType.MAGUEY:
+        return FabricTypeDTO.MAGUEY;
+      case InternalFabricType.RAMIE:
+        return FabricTypeDTO.RAMIE;
+      case InternalFabricType.SISAL:
+        return FabricTypeDTO.SISAL;
+      case InternalFabricType.SUNN:
+        return FabricTypeDTO.SUNN;
+      case InternalFabricType.CELLULOSE_ACETATE:
+        return FabricTypeDTO.CELLULOSE_ACETATE;
+      case InternalFabricType.CUPRO:
+        return FabricTypeDTO.CUPRO;
+      case InternalFabricType.LYOCELL:
+        return FabricTypeDTO.LYOCELL;
+      case InternalFabricType.MODAL:
+        return FabricTypeDTO.MODAL;
+      case InternalFabricType.PAPER:
+        return FabricTypeDTO.PAPER;
+      case InternalFabricType.TRIACETATE:
+        return FabricTypeDTO.TRIACETATE;
+      case InternalFabricType.VISCOSE:
+        return FabricTypeDTO.VISCOSE;
+      case InternalFabricType.ARAMID:
+        return FabricTypeDTO.ARAMID;
+      case InternalFabricType.CARBON_FIBER:
+        return FabricTypeDTO.CARBON_FIBER;
+      case InternalFabricType.CHLORO_FIBER:
+        return FabricTypeDTO.CHLORO_FIBER;
+      case InternalFabricType.ELASTANE:
+        return FabricTypeDTO.ELASTANE;
+      case InternalFabricType.FLUOR_FIBER:
+        return FabricTypeDTO.FLUOR_FIBER;
+      case InternalFabricType.LUREX:
+        return FabricTypeDTO.LUREX;
+      case InternalFabricType.MODACRYLIC:
+        return FabricTypeDTO.MODACRYLIC;
+      case InternalFabricType.NYLON:
+        return FabricTypeDTO.NYLON;
+      case InternalFabricType.POLYAMIDE:
+        return FabricTypeDTO.POLYAMIDE;
+      case InternalFabricType.POLYCARBAMIDE:
+        return FabricTypeDTO.POLYCARBAMIDE;
+      case InternalFabricType.ACRYLIC:
+        return FabricTypeDTO.ACRYLIC;
+      case InternalFabricType.POLYETHYLENE:
+        return FabricTypeDTO.POLYETHYLENE;
+      case InternalFabricType.POLYESTER:
+        return FabricTypeDTO.POLYESTER;
+      case InternalFabricType.POLYPROPYLENE:
+        return FabricTypeDTO.POLYPROPYLENE;
+      case InternalFabricType.POLYURETHANE:
+        return FabricTypeDTO.POLYURETHANE;
+      case InternalFabricType.POLYVINYL_CHLORIDE:
+        return FabricTypeDTO.POLYVINYL_CHLORIDE;
+      case InternalFabricType.TETORON_COTTON:
+        return FabricTypeDTO.TETORON_COTTON;
+      case InternalFabricType.TRIVINYL:
+        return FabricTypeDTO.TRIVINYL;
+      case InternalFabricType.VINYL:
+        return FabricTypeDTO.VINYL;
+      case InternalFabricType.HAIR:
+        return FabricTypeDTO.HAIR;
+      case InternalFabricType.COW_HAIR:
+        return FabricTypeDTO.COW_HAIR;
+      case InternalFabricType.HORSE_HAIR:
+        return FabricTypeDTO.HORSE_HAIR;
+      case InternalFabricType.GOAT_HAIR:
+        return FabricTypeDTO.GOAT_HAIR;
+      case InternalFabricType.SILK:
+        return FabricTypeDTO.SILK;
+      case InternalFabricType.ANGORA_WOOL:
+        return FabricTypeDTO.ANGORA_WOOL;
+      case InternalFabricType.BEAVER:
+        return FabricTypeDTO.BEAVER;
+      case InternalFabricType.CASHGORA_GOAT:
+        return FabricTypeDTO.CASHGORA_GOAT;
+      case InternalFabricType.CAMEL:
+        return FabricTypeDTO.CAMEL;
+      case InternalFabricType.LAMA:
+        return FabricTypeDTO.LAMA;
+      case InternalFabricType.ANGORA_GOAT:
+        return FabricTypeDTO.ANGORA_GOAT;
+      case InternalFabricType.WOOL:
+        return FabricTypeDTO.WOOL;
+      case InternalFabricType.ALPAKA:
+        return FabricTypeDTO.ALPAKA;
+      case InternalFabricType.OTTER:
+        return FabricTypeDTO.OTTER;
+      case InternalFabricType.VIRGIN_WOOL:
+        return FabricTypeDTO.VIRGIN_WOOL;
+      case InternalFabricType.YAK:
+        return FabricTypeDTO.YAK;
+      case InternalFabricType.UNKNOWN:
+        throw new Error('Unknown fabric type');
     }
   }
 }
