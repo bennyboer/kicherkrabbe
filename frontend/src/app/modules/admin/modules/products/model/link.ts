@@ -3,18 +3,21 @@ import { validateProps } from '../../../../../util';
 
 export class Link {
   readonly type: LinkType;
+  readonly name: string;
   readonly id: string;
 
-  private constructor(props: { type: LinkType; id: string }) {
+  private constructor(props: { type: LinkType; name: string; id: string }) {
     validateProps(props);
 
     this.type = props.type;
+    this.name = props.name;
     this.id = props.id;
   }
 
-  static of(props: { type: LinkType; id: string }): Link {
+  static of(props: { type: LinkType; name: string; id: string }): Link {
     return new Link({
       type: props.type,
+      name: props.name,
       id: props.id,
     });
   }

@@ -21,6 +21,10 @@ body {
   font-family: Lexend, sans-serif;
   background-color: var(--footer);
   transition: background-color 0.5s ease-in-out;
+
+  &.prevent-scrolling {
+    overflow: hidden;
+  }
 }
 
 p {

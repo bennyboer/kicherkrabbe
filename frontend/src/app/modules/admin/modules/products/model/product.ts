@@ -66,4 +66,12 @@ export class Product {
       createdAt: props.createdAt,
     });
   }
+
+  addLink(version: number, link: Link): Product {
+    return new Product({
+      ...this,
+      version,
+      links: [...this.links, link],
+    });
+  }
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Injector, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
@@ -13,12 +13,14 @@ import {
 } from 'rxjs';
 import { none, Option, some } from '../../../../../shared/modules/option';
 import { ActivatedRoute } from '@angular/router';
-import { NotificationService } from '../../../../../shared';
+import { ButtonSize, NotificationService } from '../../../../../shared';
 import { Product } from '../../model';
 import { ProductsService } from '../../services';
 import { environment } from '../../../../../../../environments';
 import { ImageSliderImage } from '../../../../../shared/modules/image-slider';
 import { Theme, ThemeService } from '../../../../../../services';
+import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
+import { AddLinkDialog, AddLinkDialogResult } from '../../dialogs';
 
 @Component({
   selector: 'app-product-page',
@@ -44,11 +46,14 @@ export class ProductPage implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
+  protected readonly ButtonSize = ButtonSize;
+
   constructor(
     private readonly route: ActivatedRoute,
     private readonly productsService: ProductsService,
     private readonly notificationService: NotificationService,
     private readonly themeService: ThemeService,
+    private readonly dialogService: DialogService,
   ) {}
 
   ngOnInit(): void {
@@ -71,6 +76,33 @@ export class ProductPage implements OnInit, OnDestroy {
 
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  addLink(product: Product): void {
+    const dialog = Dialog.create<AddLinkDialogResult>({
+      title: 'Link hinzufügen',
+      componentType: AddLinkDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: Product,
+            useValue: product,
+          },
+          {
+            provide: ProductsService,
+            useValue: this.productsService,
+          },
+        ],
+      }),
+    });
+
+    this.dialogService.open(dialog);
+    this.dialogService.waitUntilClosed(dialog.id).subscribe(() => {
+      dialog
+        .getResult()
+        .flatMap((result) => this.product$.value.map((product) => product.addLink(result.version, result.link)))
+        .ifSome((updatedProduct) => this.product$.next(some(updatedProduct)));
+    });
   }
 
   private toImageSliderImages(images: string[]): ImageSliderImage[] {

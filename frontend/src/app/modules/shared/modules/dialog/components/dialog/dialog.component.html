@@ -1,0 +1,9 @@
+<div class="content-container">
+  <div class="dialog-header">
+    <h2>{{ dialog.title }}</h2>
+    <span class="material-icons close" (click)="close()">close</span>
+  </div>
+  <div class="dialog-content">
+    <ng-container #outlet></ng-container>
+  </div>
+</div>

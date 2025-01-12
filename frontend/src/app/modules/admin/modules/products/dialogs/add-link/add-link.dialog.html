@@ -1,0 +1,44 @@
+<div class="filters">
+  <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)"/>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (linksLoaded$ | async) {
+  @if (links$ | async; as links) {
+    @if (links.length == 0) {
+      <app-note level="info">Keine Links gefunden.</app-note>
+    } @else {
+      <table class="links-table">
+        <colgroup>
+          <col span="1" style="width: auto"/>
+          <col span="1" style="width: 200px"/>
+        </colgroup>
+        <thead>
+        <tr>
+          <th class="name">Name</th>
+          <th class="type">Art</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (link of links; track link.id) {
+            <tr (click)="addLink(link)">
+              <td class="name" [title]="link.name">{{ link.name }}</td>
+              <td class="type">{{ link.type.label }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      @if (moreLinksAvailable$ | async) {
+        <div class="footer-actions">
+          <app-button (click)="loadMoreLinks()">Mehr laden... ({{ remainingLinksCount$ | async }})</app-button>
+        </div>
+      } @else {
+        <div class="footer-actions">
+          <app-note level="info">Keine weiteren Links vorhanden.</app-note>
+        </div>
+      }
+    }
+  }
+}

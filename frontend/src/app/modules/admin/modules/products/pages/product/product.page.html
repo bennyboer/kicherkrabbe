@@ -44,14 +44,38 @@
       </div>
 
       <div class="product-detail">
-        <label>Links</label>
+        <label>
+          Links
+          <app-button [size]="ButtonSize.SMALL" (click)="addLink(product)">
+            <span class="icon-button">
+              <span class="material-icons">add</span>
+            </span>
+          </app-button>
+          <app-button [size]="ButtonSize.SMALL">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
         <div class="product-links">
           @if (product.links.length > 0) {
             <ul class="product-links-list">
               @for (link of product.links; track link.type.internal) {
                 <li>
                   <a [routerLink]="link.toHref()">
-                    {{ link.type.label }}
+                    <span>{{ link.type.label }}: {{ link.name }}</span>
+                    <span class="actions">
+                      <app-button [size]="ButtonSize.SMALL">
+                        <span class="icon-button">
+                          <span class="material-icons">edit</span>
+                        </span>
+                      </app-button>
+                      <app-button [size]="ButtonSize.SMALL">
+                        <span class="icon-button">
+                          <span class="material-icons">delete</span>
+                        </span>
+                      </app-button>
+                    </span>
                   </a>
                 </li>
               }

@@ -73,6 +73,19 @@ import {
   YAK,
 } from '../model';
 import { environment } from '../../../../../../environments';
+import { someOrNone } from '../../../../shared/modules/option';
+
+interface AddLinkRequest {
+  id: string;
+  version: number;
+  linkType: LinkTypeDTO;
+  linkId: string;
+}
+
+interface QueryLinksResponse {
+  total: number;
+  links: LinkDTO[];
+}
 
 interface QueryProductResponse {
   product: ProductDTO;
@@ -101,6 +114,7 @@ interface ProductDTO {
 
 interface LinkDTO {
   type: LinkTypeDTO;
+  name: string;
   id: string;
 }
 
@@ -209,10 +223,12 @@ export class ProductsService {
             links: [
               {
                 type: LinkTypeDTO.PATTERN,
+                name: 'Pattern 1',
                 id: 'PATTERN_ID_1',
               },
               {
                 type: LinkTypeDTO.FABRIC,
+                name: 'Fabric 1',
                 id: 'FABRIC_ID_1',
               },
             ],
@@ -291,10 +307,12 @@ export class ProductsService {
               links: [
                 {
                   type: LinkTypeDTO.PATTERN,
+                  name: 'Pattern 1',
                   id: 'PATTERN_ID_1',
                 },
                 {
                   type: LinkTypeDTO.FABRIC,
+                  name: 'Fabric 1',
                   id: 'FABRIC_ID_1',
                 },
               ],
@@ -327,10 +345,12 @@ export class ProductsService {
               links: [
                 {
                   type: LinkTypeDTO.PATTERN,
+                  name: 'Pattern 2',
                   id: 'PATTERN_ID_2',
                 },
                 {
                   type: LinkTypeDTO.FABRIC,
+                  name: 'Fabric 2',
                   id: 'FABRIC_ID_2',
                 },
               ],
@@ -368,6 +388,73 @@ export class ProductsService {
       .pipe(map((response) => response.version));
   }
 
+  getLinks(props: {
+    searchTerm?: string;
+    skip?: number;
+    limit?: number;
+  }): Observable<{ total: number; links: Link[] }> {
+    const searchTerm = someOrNone(props.searchTerm).orElse('');
+    const skip = someOrNone(props.skip).orElse(0);
+    const limit = someOrNone(props.limit).orElse(10);
+
+    let params = new HttpParams();
+    if (searchTerm.length > 0) {
+      params = params.set('searchTerm', searchTerm);
+    }
+    if (skip > 0) {
+      params = params.set('skip', skip.toString());
+    }
+    params = params.set('limit', limit.toString());
+
+    return this.http.get<QueryLinksResponse>(`${environment.apiUrl}/products/links`, { params }).pipe(
+      map((response) => ({
+        total: response.total,
+        links: response.links.map((link) => this.toInternalLink(link)),
+      })),
+      // TODO Remove error handler once backend is implemented
+      catchError((_) => {
+        const MOCK_FILTERED_LINKS = [
+          Link.of({
+            type: PATTERN,
+            name: 'Pattern 1',
+            id: 'PATTERN_ID_1',
+          }),
+          Link.of({
+            type: FABRIC,
+            name: 'Fabric 1',
+            id: 'FABRIC_ID_1',
+          }),
+          Link.of({
+            type: PATTERN,
+            name: 'Pattern 2',
+            id: 'PATTERN_ID_2',
+          }),
+          Link.of({
+            type: FABRIC,
+            name: 'Ein Stoff mit einem sehr langen Namen, der über mehrere Zeilen geht',
+            id: 'FABRIC_ID_2',
+          }),
+        ].filter((link) => link.name.includes(searchTerm));
+
+        return of({
+          total: MOCK_FILTERED_LINKS.length,
+          links: MOCK_FILTERED_LINKS.filter((_, index) => index >= skip && index < skip + limit),
+        });
+      }),
+    );
+  }
+
+  addLink(props: { id: string; version: number; linkType: LinkType; linkId: string }): Observable<number> {
+    const request: AddLinkRequest = {
+      id: props.id,
+      version: props.version,
+      linkType: this.toApiLinkType(props.linkType),
+      linkId: props.linkId,
+    };
+
+    return this.http.post<number>(`${environment.apiUrl}/products/links`, request);
+  }
+
   private toInternalProducts(products: ProductDTO[]): Product[] {
     return products.map((product) => this.toInternalProduct(product));
   }
@@ -401,6 +488,7 @@ export class ProductsService {
   private toInternalLink(link: LinkDTO): Link {
     return Link.of({
       type: this.toInternalLinkType(link.type),
+      name: link.name,
       id: link.id,
     });
   }
@@ -411,6 +499,17 @@ export class ProductsService {
         return PATTERN;
       case LinkTypeDTO.FABRIC:
         return FABRIC;
+      default:
+        throw new Error(`Unknown link type: ${type}`);
+    }
+  }
+
+  private toApiLinkType(type: LinkType): LinkTypeDTO {
+    switch (type) {
+      case PATTERN:
+        return LinkTypeDTO.PATTERN;
+      case FABRIC:
+        return LinkTypeDTO.FABRIC;
       default:
         throw new Error(`Unknown link type: ${type}`);
     }

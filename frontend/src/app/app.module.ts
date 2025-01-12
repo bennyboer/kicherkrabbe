@@ -12,6 +12,7 @@ import { RoutingTitleStrategy } from './routing-title-strategy';
 import { QuillModule } from 'ngx-quill';
 import { registerLocaleData } from '@angular/common';
 import de from '@angular/common/locales/de';
+import { DialogModule } from './modules/shared/modules/dialog';
 
 const COMPONENTS = [AppComponent, HeaderComponent, DarkModeToggleComponent, FooterComponent];
 const PAGES = [StartPage, NotFoundPage];
@@ -23,6 +24,7 @@ const PAGES = [StartPage, NotFoundPage];
     BrowserAnimationsModule,
     AppRoutingModule,
     SharedModule.forRoot(),
+    DialogModule.forRoot(),
     SortablejsModule.forRoot({
       animation: 150,
       handle: '.drag-handle',

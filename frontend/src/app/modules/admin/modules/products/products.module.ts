@@ -8,10 +8,20 @@ import { SERVICES } from './services';
 import { OptionModule } from '../../../shared/modules/option';
 import { ImageSliderModule } from '../../../shared/modules/image-slider';
 import { QuillViewComponent } from 'ngx-quill';
+import { DialogModule } from '../../../shared/modules/dialog';
+import { DIALOGS } from './dialogs';
 
 @NgModule({
-  imports: [CommonModule, ProductsRoutingModule, SharedModule, OptionModule, ImageSliderModule, QuillViewComponent],
-  declarations: [...PAGES],
+  imports: [
+    CommonModule,
+    ProductsRoutingModule,
+    SharedModule,
+    OptionModule,
+    ImageSliderModule,
+    QuillViewComponent,
+    DialogModule.forChild(),
+  ],
+  declarations: [...PAGES, ...DIALOGS],
   providers: [provideHttpClient(withInterceptorsFromDi()), ...SERVICES],
 })
 export class ProductsModule {}
