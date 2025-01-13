@@ -99,6 +99,33 @@ interface UpdateFabricCompositionResponse {
   version: number;
 }
 
+interface UpdateNotesRequest {
+  version: number;
+  notes: NotesDTO;
+}
+
+interface UpdateNotesResponse {
+  version: number;
+}
+
+interface UpdateImagesRequest {
+  version: number;
+  images: string[];
+}
+
+interface UpdateImagesResponse {
+  version: number;
+}
+
+interface UpdateProducedAtDateRequest {
+  version: number;
+  producedAt: string;
+}
+
+interface UpdateProducedAtDateResponse {
+  version: number;
+}
+
 interface QueryLinksResponse {
   total: number;
   links: LinkDTO[];
@@ -516,6 +543,54 @@ export class ProductsService {
       );
   }
 
+  updateNotes(props: { id: string; version: number; notes: Notes }): Observable<number> {
+    const productId = props.id;
+    const request: UpdateNotesRequest = {
+      version: props.version,
+      notes: this.toApiNotes(props.notes),
+    };
+
+    return this.http
+      .post<UpdateNotesResponse>(`${environment.apiUrl}/products/${productId}/notes/update`, request)
+      .pipe(
+        map((response) => response.version),
+        // TODO Remove error handler once backend is implemented
+        catchError((_) => of(props.version + 1)),
+      );
+  }
+
+  updateProducedAtDate(props: { id: string; version: number; date: Date }): Observable<number> {
+    const productId = props.id;
+    const request: UpdateProducedAtDateRequest = {
+      version: props.version,
+      producedAt: props.date.toISOString(),
+    };
+
+    return this.http
+      .post<UpdateProducedAtDateResponse>(`${environment.apiUrl}/products/${productId}/produced-at/update`, request)
+      .pipe(
+        map((response) => response.version),
+        // TODO Remove error handler once backend is implemented
+        catchError((_) => of(props.version + 1)),
+      );
+  }
+
+  updateImages(props: { id: string; version: number; imageIds: string[] }): Observable<number> {
+    const productId = props.id;
+    const request: UpdateImagesRequest = {
+      version: props.version,
+      images: props.imageIds,
+    };
+
+    return this.http
+      .post<UpdateImagesResponse>(`${environment.apiUrl}/products/${productId}/images/update`, request)
+      .pipe(
+        map((response) => response.version),
+        // TODO Remove error handler once backend is implemented
+        catchError((_) => of(props.version + 1)),
+      );
+  }
+
   private toInternalProducts(products: ProductDTO[]): Product[] {
     return products.map((product) => this.toInternalProduct(product));
   }
@@ -540,6 +615,14 @@ export class ProductsService {
       care: notes.care,
       safety: notes.safety,
     });
+  }
+
+  private toApiNotes(notes: Notes): NotesDTO {
+    return {
+      contains: notes.contains,
+      care: notes.care,
+      safety: notes.safety,
+    };
   }
 
   private toInternalLinks(links: LinkDTO[]): Link[] {

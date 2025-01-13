@@ -94,4 +94,28 @@ export class Product {
       fabricComposition,
     });
   }
+
+  updateNotes(version: number, notes: Notes): Product {
+    return new Product({
+      ...this,
+      version,
+      notes,
+    });
+  }
+
+  updateProducedAt(version: number, date: Date): Product {
+    return new Product({
+      ...this,
+      version,
+      producedAt: date,
+    });
+  }
+
+  updateImages(version: number, images: ImageId[]): Product {
+    return new Product({
+      ...this,
+      version,
+      images,
+    });
+  }
 }

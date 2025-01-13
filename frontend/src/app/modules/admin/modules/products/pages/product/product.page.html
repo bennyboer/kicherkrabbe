@@ -20,7 +20,14 @@
   @if (product$ | async | ifSome; as product) {
     <div class="product-details">
       <div class="product-detail">
-        <label>Bilder</label>
+        <label>
+          Bilder
+          <app-button [size]="ButtonSize.SMALL" (click)="editImages(product)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
         <div class="product-images">
           @if (images$ | async; as images) {
             @if (images.length > 0) {
@@ -108,7 +115,14 @@
       </div>
 
       <div class="product-detail">
-        <label>Inhaltsangaben</label>
+        <label>
+          Inhaltsangaben
+          <app-button [size]="ButtonSize.SMALL" (click)="editContainsNote(product)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
         <div class="product-contains">
           <quill-view [content]="product.notes.contains"
                       format="json"
@@ -119,7 +133,14 @@
       </div>
 
       <div class="product-detail">
-        <label>Pflegehinweise</label>
+        <label>
+          Pflegehinweise
+          <app-button [size]="ButtonSize.SMALL" (click)="editCareNote(product)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
         <div class="product-care">
           <quill-view [content]="product.notes.care"
                       format="json"
@@ -130,7 +151,14 @@
       </div>
 
       <div class="product-detail">
-        <label>Sicherheitshinweise</label>
+        <label>
+          Sicherheitshinweise
+          <app-button [size]="ButtonSize.SMALL" (click)="editSafetyNote(product)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
         <div class="product-safety">
           <quill-view [content]="product.notes.safety"
                       format="json"
@@ -141,7 +169,14 @@
       </div>
 
       <div class="product-detail">
-        <label>Produziert am</label>
+        <label>
+          Produziert am
+          <app-button [size]="ButtonSize.SMALL" (click)="editProducedAtDate(product)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
         <span class="product-produced-at">{{ product.producedAt | date: 'dd.MM.yyyy' }}
           um {{ product.producedAt | date: 'HH:mm' }}</span>
       </div>

@@ -39,11 +39,13 @@
   </tbody>
 </table>
 
-@if (error$ | async | ifSome; as error) {
-  <div class="error-container">
+<div class="validation-container">
+  @if (error$ | async | ifSome; as error) {
     <app-note level="error">{{ error }}</app-note>
-  </div>
-}
+  } @else {
+    <app-note level="success">Keine Fehler gefunden</app-note>
+  }
+</div>
 
 <div class="footer">
   <app-button (click)="addCompositionItem()">

@@ -26,7 +26,15 @@ import {
   AddLinkDialogResult,
   EditFabricCompositionDialog,
   EditFabricCompositionDialogResult,
+  EditImagesDialog,
+  EditImagesDialogResult,
+  EditNoteDialog,
+  EditNoteDialogResult,
+  EditProducedAtDateDialog,
+  EditProducedAtDateDialogResult,
+  NoteType,
 } from '../../dialogs';
+import { AssetsService } from '../../../assets/services/assets.service';
 
 @Component({
   selector: 'app-product-page',
@@ -66,6 +74,7 @@ export class ProductPage implements OnInit, OnDestroy {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly productsService: ProductsService,
+    private readonly assetsService: AssetsService,
     private readonly notificationService: NotificationService,
     private readonly themeService: ThemeService,
     private readonly dialogService: DialogService,
@@ -162,6 +171,37 @@ export class ProductPage implements OnInit, OnDestroy {
       });
   }
 
+  editImages(product: Product): void {
+    const dialog = Dialog.create<EditImagesDialogResult>({
+      title: 'Bilder bearbeiten',
+      componentType: EditImagesDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: Product,
+            useValue: product,
+          },
+          {
+            provide: ProductsService,
+            useValue: this.productsService,
+          },
+          {
+            provide: AssetsService,
+            useValue: this.assetsService,
+          },
+        ],
+      }),
+    });
+
+    this.dialogService.open(dialog);
+    this.dialogService.waitUntilClosed(dialog.id).subscribe(() => {
+      dialog
+        .getResult()
+        .map((result) => product.updateImages(result.version, result.images))
+        .ifSome((updatedProduct) => this.product$.next(some(updatedProduct)));
+    });
+  }
+
   editFabricComposition(product: Product): void {
     const dialog = Dialog.create<EditFabricCompositionDialogResult>({
       title: 'Stoffzusammensetzung bearbeiten',
@@ -185,6 +225,126 @@ export class ProductPage implements OnInit, OnDestroy {
       dialog
         .getResult()
         .map((result) => product.updateFabricComposition(result.version, result.fabricComposition))
+        .ifSome((updatedProduct) => this.product$.next(some(updatedProduct)));
+    });
+  }
+
+  editContainsNote(product: Product): void {
+    const dialog = Dialog.create<EditNoteDialogResult>({
+      title: 'Inhaltsangaben bearbeiten',
+      componentType: EditNoteDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: NoteType,
+            useValue: NoteType.CONTAINS,
+          },
+          {
+            provide: Product,
+            useValue: product,
+          },
+          {
+            provide: ProductsService,
+            useValue: this.productsService,
+          },
+        ],
+      }),
+    });
+
+    this.dialogService.open(dialog);
+    this.dialogService.waitUntilClosed(dialog.id).subscribe(() => {
+      dialog
+        .getResult()
+        .map((result) => product.updateNotes(result.version, result.notes))
+        .ifSome((updatedProduct) => this.product$.next(some(updatedProduct)));
+    });
+  }
+
+  editCareNote(product: Product): void {
+    const dialog = Dialog.create<EditNoteDialogResult>({
+      title: 'Pflegehinweise bearbeiten',
+      componentType: EditNoteDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: NoteType,
+            useValue: NoteType.CARE,
+          },
+          {
+            provide: Product,
+            useValue: product,
+          },
+          {
+            provide: ProductsService,
+            useValue: this.productsService,
+          },
+        ],
+      }),
+    });
+
+    this.dialogService.open(dialog);
+    this.dialogService.waitUntilClosed(dialog.id).subscribe(() => {
+      dialog
+        .getResult()
+        .map((result) => product.updateNotes(result.version, result.notes))
+        .ifSome((updatedProduct) => this.product$.next(some(updatedProduct)));
+    });
+  }
+
+  editSafetyNote(product: Product): void {
+    const dialog = Dialog.create<EditNoteDialogResult>({
+      title: 'Sicherheitshinweise bearbeiten',
+      componentType: EditNoteDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: NoteType,
+            useValue: NoteType.SAFETY,
+          },
+          {
+            provide: Product,
+            useValue: product,
+          },
+          {
+            provide: ProductsService,
+            useValue: this.productsService,
+          },
+        ],
+      }),
+    });
+
+    this.dialogService.open(dialog);
+    this.dialogService.waitUntilClosed(dialog.id).subscribe(() => {
+      dialog
+        .getResult()
+        .map((result) => product.updateNotes(result.version, result.notes))
+        .ifSome((updatedProduct) => this.product$.next(some(updatedProduct)));
+    });
+  }
+
+  editProducedAtDate(product: Product): void {
+    const dialog = Dialog.create<EditProducedAtDateDialogResult>({
+      title: 'Produktionsdatum bearbeiten',
+      componentType: EditProducedAtDateDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: Product,
+            useValue: product,
+          },
+          {
+            provide: ProductsService,
+            useValue: this.productsService,
+          },
+        ],
+      }),
+    });
+
+    this.dialogService.open(dialog);
+    this.dialogService.waitUntilClosed(dialog.id).subscribe(() => {
+      dialog
+        .getResult()
+        .map((result) => product.updateProducedAt(result.version, result.date))
         .ifSome((updatedProduct) => this.product$.next(some(updatedProduct)));
     });
   }

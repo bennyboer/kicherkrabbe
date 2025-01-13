@@ -34,7 +34,7 @@ p {
 a {
   cursor: pointer;
   text-decoration: none;
-  color: var(--primary-1);
+  color: var(--link);
 
   &:hover {
     text-decoration: underline;
@@ -98,7 +98,8 @@ input[type="password"],
 input[type="email"],
 input[type="tel"],
 input[type="number"],
-input[type="date"] {
+input[type="date"],
+input[type="time"] {
   box-sizing: border-box;
   appearance: none;
   background-color: var(--contrast);

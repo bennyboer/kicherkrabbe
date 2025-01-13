@@ -7,9 +7,11 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { SERVICES } from './services';
 import { OptionModule } from '../../../shared/modules/option';
 import { ImageSliderModule } from '../../../shared/modules/image-slider';
-import { QuillViewComponent } from 'ngx-quill';
+import { QuillEditorComponent, QuillViewComponent } from 'ngx-quill';
 import { DialogModule } from '../../../shared/modules/dialog';
 import { DIALOGS } from './dialogs';
+import { AssetsModule } from '../assets/assets.module';
+import { SortablejsModule } from 'nxt-sortablejs';
 
 @NgModule({
   imports: [
@@ -18,8 +20,11 @@ import { DIALOGS } from './dialogs';
     SharedModule,
     OptionModule,
     ImageSliderModule,
+    AssetsModule,
     QuillViewComponent,
     DialogModule.forChild(),
+    QuillEditorComponent,
+    SortablejsModule,
   ],
   declarations: [...PAGES, ...DIALOGS],
   providers: [provideHttpClient(withInterceptorsFromDi()), ...SERVICES],

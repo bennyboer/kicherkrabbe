@@ -1,0 +1,11 @@
+<div class="form">
+  <input #date type="date" (input)="updateDate(date.valueAsDate)"/>
+  <input #time type="time" (input)="updateTime(time.valueAsDate)"/>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+<div class="footer">
+  <app-button (click)="cancel()">Abbrechen</app-button>
+  <app-button color="primary" [disabled]="cannotSave$ | async" (click)="save()">Speichern</app-button>
+</div>

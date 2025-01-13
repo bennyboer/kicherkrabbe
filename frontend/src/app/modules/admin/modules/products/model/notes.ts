@@ -25,4 +25,25 @@ export class Notes {
   static empty(): Notes {
     return Notes.of({});
   }
+
+  updateContains(note: string): Notes {
+    return new Notes({
+      ...this,
+      contains: note,
+    });
+  }
+
+  updateCare(note: string): Notes {
+    return new Notes({
+      ...this,
+      care: note,
+    });
+  }
+
+  updateSafety(note: string): Notes {
+    return new Notes({
+      ...this,
+      safety: note,
+    });
+  }
 }
