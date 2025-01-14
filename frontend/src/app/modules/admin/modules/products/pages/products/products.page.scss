@@ -6,7 +6,22 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
+
+  & > .left-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+  }
+
+  & > .right-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+  }
 }
 
 .date-selector {
@@ -109,8 +124,17 @@ table.products-table {
 @media only screen and (max-width: 1000px) {
   .action-bar {
     flex-direction: column;
-    gap: 12px;
     align-items: stretch;
+
+    & > .left-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    & > .right-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
   }
 
   .date-selector {

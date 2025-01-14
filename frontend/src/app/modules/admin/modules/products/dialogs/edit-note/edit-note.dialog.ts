@@ -2,11 +2,38 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
 import { NotificationService } from '../../../../../shared';
 import { ProductsService } from '../../services';
-import { someOrNone } from '../../../../../shared/modules/option';
+import { Option, someOrNone } from '../../../../../shared/modules/option';
 import { ContentChange } from 'ngx-quill';
 import Quill, { Delta } from 'quill/core';
 import { BehaviorSubject, combineLatest, finalize, first, ReplaySubject, Subject, takeUntil } from 'rxjs';
-import { Notes, Product } from '../../model';
+import { Notes } from '../../model';
+import { validateProps } from '../../../../../../util';
+
+export class EditNoteDialogData {
+  readonly product: Option<{ id: string; version: number }>;
+  readonly notes: Notes;
+  readonly noteType: NoteType;
+
+  private constructor(props: { product: Option<{ id: string; version: number }>; notes: Notes; noteType: NoteType }) {
+    validateProps(props);
+
+    this.product = props.product;
+    this.notes = props.notes;
+    this.noteType = props.noteType;
+  }
+
+  static of(props: {
+    product?: { id: string; version: number };
+    notes?: Notes;
+    noteType: NoteType;
+  }): EditNoteDialogData {
+    return new EditNoteDialogData({
+      product: someOrNone(props.product),
+      notes: someOrNone(props.notes).orElse(Notes.empty()),
+      noteType: props.noteType,
+    });
+  }
+}
 
 export interface EditNoteDialogResult {
   version: number;
@@ -47,26 +74,25 @@ export class EditNoteDialog implements OnDestroy, OnInit {
   };
 
   constructor(
-    private readonly noteType: NoteType,
-    private readonly product: Product,
+    private readonly data: EditNoteDialogData,
     private readonly dialog: Dialog<EditNoteDialogResult>,
     private readonly dialogService: DialogService,
     private readonly productsService: ProductsService,
     private readonly notificationService: NotificationService,
   ) {
     let note = '';
-    switch (noteType) {
+    switch (data.noteType) {
       case NoteType.CONTAINS:
-        note = product.notes.contains;
+        note = data.notes.contains;
         break;
       case NoteType.CARE:
-        note = product.notes.care;
+        note = data.notes.care;
         break;
       case NoteType.SAFETY:
-        note = product.notes.safety;
+        note = data.notes.safety;
         break;
       default:
-        throw new Error(`Unknown note type: ${noteType}`);
+        throw new Error(`Unknown note type: ${data.noteType}`);
     }
 
     this.note$.next(note.length > 0 ? new Delta(JSON.parse(note)) : new Delta());
@@ -127,8 +153,8 @@ export class EditNoteDialog implements OnDestroy, OnInit {
 
     const note = this.note$.value.ops.length > 0 ? JSON.stringify(this.note$.value) : '';
 
-    let updatedNotes = this.product.notes;
-    switch (this.noteType) {
+    let updatedNotes = this.data.notes;
+    switch (this.data.noteType) {
       case NoteType.CONTAINS:
         updatedNotes = updatedNotes.updateContains(note);
         break;
@@ -139,44 +165,54 @@ export class EditNoteDialog implements OnDestroy, OnInit {
         updatedNotes = updatedNotes.updateSafety(note);
         break;
       default:
-        throw new Error(`Unknown note type: ${this.noteType}`);
+        throw new Error(`Unknown note type: ${this.data.noteType}`);
     }
 
-    this.productsService
-      .updateNotes({
-        id: this.product.id,
-        version: this.product.version,
-        notes: updatedNotes,
-      })
-      .pipe(
-        first(),
-        finalize(() => this.saving$.next(false)),
-      )
-      .subscribe({
-        next: (version) => {
-          this.notificationService.publish({
-            message: `${this.getNoteType()} wurde gespeichert.`,
-            type: 'success',
-          });
-
-          this.dialog.attachResult({
-            version,
+    this.data.product.ifSomeOrElse(
+      (product) =>
+        this.productsService
+          .updateNotes({
+            id: product.id,
+            version: product.version,
             notes: updatedNotes,
-          });
-          this.dialogService.close(this.dialog.id);
-        },
-        error: (e) => {
-          console.error('Failed to save note', e);
-          this.notificationService.publish({
-            message: `${this.getNoteType()} konnte nicht gespeichert werden. Bitte versuche es erneut.`,
-            type: 'error',
-          });
-        },
-      });
+          })
+          .pipe(
+            first(),
+            finalize(() => this.saving$.next(false)),
+          )
+          .subscribe({
+            next: (version) => {
+              this.notificationService.publish({
+                message: `${this.getNoteType()} wurde gespeichert.`,
+                type: 'success',
+              });
+
+              this.dialog.attachResult({
+                version,
+                notes: updatedNotes,
+              });
+              this.dialogService.close(this.dialog.id);
+            },
+            error: (e) => {
+              console.error('Failed to save note', e);
+              this.notificationService.publish({
+                message: `${this.getNoteType()} konnte nicht gespeichert werden. Bitte versuche es erneut.`,
+                type: 'error',
+              });
+            },
+          }),
+      () => {
+        this.dialog.attachResult({
+          version: 0,
+          notes: updatedNotes,
+        });
+        this.dialogService.close(this.dialog.id);
+      },
+    );
   }
 
   private getNoteType(): string {
-    switch (this.noteType) {
+    switch (this.data.noteType) {
       case NoteType.CONTAINS:
         return 'Inhaltsangabe';
       case NoteType.CARE:
@@ -184,7 +220,7 @@ export class EditNoteDialog implements OnDestroy, OnInit {
       case NoteType.SAFETY:
         return 'Sicherheitshinweise';
       default:
-        throw new Error(`Unknown note type: ${this.noteType}`);
+        throw new Error(`Unknown note type: ${this.data.noteType}`);
     }
   }
 }

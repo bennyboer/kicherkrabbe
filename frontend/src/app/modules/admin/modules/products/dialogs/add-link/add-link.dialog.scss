@@ -50,6 +50,7 @@ table.links-table {
 
   tbody {
     tr {
+      cursor: pointer;
       vertical-align: middle;
       transition: background-color 0.2s ease;
 
@@ -62,11 +63,15 @@ table.links-table {
           border-bottom: none;
         }
       }
+
+      &.already-added {
+        cursor: not-allowed;
+        color: rgba(var(--text-rgb), 0.5);
+      }
     }
   }
 
   td {
-    cursor: pointer;
     padding: 16px 16px;
     overflow: hidden;
     white-space: nowrap;
@@ -81,6 +86,10 @@ table.links-table {
       text-align: center;
     }
   }
+}
+
+.already-added-note {
+  font-size: 12px;
 }
 
 .footer-actions {

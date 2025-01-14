@@ -1,12 +1,32 @@
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { BehaviorSubject, finalize, first } from 'rxjs';
-import { Product } from '../../model';
 import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
 import { NotificationService } from '../../../../../shared';
 import { ProductsService } from '../../services';
 import { environment } from '../../../../../../../environments';
+import { Option, someOrNone } from '../../../../../shared/modules/option';
+import { validateProps } from '../../../../../../util';
 
 type ImageId = string;
+
+export class EditImagesDialogData {
+  readonly product: Option<{ id: string; version: number }>;
+  readonly images: ImageId[];
+
+  private constructor(props: { product: Option<{ id: string; version: number }>; images: ImageId[] }) {
+    validateProps(props);
+
+    this.product = props.product;
+    this.images = props.images;
+  }
+
+  static of(props: { product?: { id: string; version: number }; images?: ImageId[] }): EditImagesDialogData {
+    return new EditImagesDialogData({
+      product: someOrNone(props.product),
+      images: someOrNone(props.images).orElse([]),
+    });
+  }
+}
 
 export interface EditImagesDialogResult {
   version: number;
@@ -38,13 +58,13 @@ export class EditImagesDialog implements OnDestroy {
   };
 
   constructor(
-    private readonly product: Product,
+    private readonly data: EditImagesDialogData,
     private readonly dialog: Dialog<EditImagesDialogResult>,
     private readonly dialogService: DialogService,
     private readonly productsService: ProductsService,
     private readonly notificationService: NotificationService,
   ) {
-    this.imageIds$.next(this.product.images);
+    this.imageIds$.next(this.data.images);
   }
 
   ngOnDestroy(): void {
@@ -83,36 +103,46 @@ export class EditImagesDialog implements OnDestroy {
 
     const imageIds = this.imageIds$.value;
 
-    this.productsService
-      .updateImages({
-        id: this.product.id,
-        version: this.product.version,
-        imageIds,
-      })
-      .pipe(
-        first(),
-        finalize(() => this.saving$.next(false)),
-      )
-      .subscribe({
-        next: (version) => {
-          this.notificationService.publish({
-            message: 'Bilder wurden erfolgreich aktualisiert',
-            type: 'success',
-          });
+    this.data.product.ifSomeOrElse(
+      (product) =>
+        this.productsService
+          .updateImages({
+            id: product.id,
+            version: product.version,
+            imageIds,
+          })
+          .pipe(
+            first(),
+            finalize(() => this.saving$.next(false)),
+          )
+          .subscribe({
+            next: (version) => {
+              this.notificationService.publish({
+                message: 'Bilder wurden erfolgreich aktualisiert',
+                type: 'success',
+              });
 
-          this.dialog.attachResult({
-            version,
-            images: imageIds,
-          });
-          this.dialogService.close(this.dialog.id);
-        },
-        error: (e) => {
-          console.error('Failed to update images', e);
-          this.notificationService.publish({
-            message: 'Bilder konnten nicht aktualisiert werden. Bitte versuchen Sie es erneut.',
-            type: 'error',
-          });
-        },
-      });
+              this.dialog.attachResult({
+                version,
+                images: imageIds,
+              });
+              this.dialogService.close(this.dialog.id);
+            },
+            error: (e) => {
+              console.error('Failed to update images', e);
+              this.notificationService.publish({
+                message: 'Bilder konnten nicht aktualisiert werden. Bitte versuchen Sie es erneut.',
+                type: 'error',
+              });
+            },
+          }),
+      () => {
+        this.dialog.attachResult({
+          version: 0,
+          images: imageIds,
+        });
+        this.dialogService.close(this.dialog.id);
+      },
+    );
   }
 }

@@ -1,12 +1,14 @@
 <table class="fabric-composition-table">
   <colgroup>
     <col span="1" style="width: auto"/>
-    <col span="1" style="width: 150px"/>
+    <col span="1" style="width: 140px"/>
+    <col span="1" style="width: 90px"/>
   </colgroup>
   <thead>
   <tr>
     <th class="fabric-type">Stoffart</th>
     <th class="percentage">Anteil in %</th>
+    <th class="actions"></th>
   </tr>
   </thead>
   <tbody>
@@ -31,6 +33,13 @@
                      (input)="updatePercentageForItem(index, percentage.valueAsNumber)"
                      min="0"
                      max="100">
+            </td>
+            <td>
+              <app-button color="warn" (click)="removeCompositionItem(index)">
+                <span class="icon-button">
+                  <span class="material-icons">delete</span>
+                </span>
+              </app-button>
             </td>
           </tr>
         }

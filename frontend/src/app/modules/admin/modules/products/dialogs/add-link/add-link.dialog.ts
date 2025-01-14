@@ -12,11 +12,31 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
-import { Link, Product } from '../../model';
-import { someOrNone } from '../../../../../shared/modules/option';
+import { Link } from '../../model';
+import { Option, someOrNone } from '../../../../../shared/modules/option';
 import { NotificationService } from '../../../../../shared';
+import { validateProps } from '../../../../../../util';
 
 const LINKS_LIMIT = 20;
+
+export class AddLinkDialogData {
+  readonly product: Option<{ id: string; version: number }>;
+  readonly links: Link[];
+
+  private constructor(props: { product: Option<{ id: string; version: number }>; links: Link[] }) {
+    validateProps(props);
+
+    this.product = props.product;
+    this.links = props.links;
+  }
+
+  static of(props: { product?: { id: string; version: number }; links?: Link[] }): AddLinkDialogData {
+    return new AddLinkDialogData({
+      product: someOrNone(props.product),
+      links: someOrNone(props.links).orElse([]),
+    });
+  }
+}
 
 export interface AddLinkDialogResult {
   version: number;
@@ -50,15 +70,18 @@ export class AddLinkDialog implements OnInit, OnDestroy {
     map((remainingLinksCount) => remainingLinksCount > 0),
   );
 
+  protected readonly alreadyAddedLinkIdentifiers = new Set<string>();
   private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private readonly product: Product,
+    private readonly data: AddLinkDialogData,
     private readonly dialog: Dialog<AddLinkDialogResult>,
     private readonly dialogService: DialogService,
     private readonly productsService: ProductsService,
     private readonly notificationService: NotificationService,
-  ) {}
+  ) {
+    this.data.links.forEach((link) => this.alreadyAddedLinkIdentifiers.add(`${link.type.internal}-${link.id}`));
+  }
 
   ngOnInit(): void {
     this.searchTerm$.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe((searchTerm) =>
@@ -79,47 +102,65 @@ export class AddLinkDialog implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  isAlreadyAdded(link: Link): boolean {
+    return this.alreadyAddedLinkIdentifiers.has(`${link.type.internal}-${link.id}`);
+  }
+
   close(): void {
     this.dialogService.close(this.dialog.id);
   }
 
   addLink(link: Link): void {
+    if (this.isAlreadyAdded(link)) {
+      return;
+    }
+
     if (this.addingLink$.value) {
       return;
     }
     this.addingLink$.next(true);
 
-    this.productsService
-      .addLink({
-        id: this.product.id,
-        version: this.product.version,
-        linkType: link.type,
-        linkId: link.id,
-      })
-      .pipe(
-        first(),
-        finalize(() => this.addingLink$.next(false)),
-      )
-      .subscribe({
-        next: (version) => {
-          this.notificationService.publish({
-            message: 'Link wurde hinzugefügt.',
-            type: 'success',
-          });
-          this.dialog.attachResult({
-            version,
-            link,
-          });
-          this.close();
-        },
-        error: (e) => {
-          console.error('Failed to add link', e);
-          this.notificationService.publish({
-            message: 'Link konnte nicht hinzugefügt werden. Bitte versuche es erneut.',
-            type: 'error',
-          });
-        },
-      });
+    this.data.product.ifSomeOrElse(
+      (product) =>
+        this.productsService
+          .addLink({
+            id: product.id,
+            version: product.version,
+            linkType: link.type,
+            linkId: link.id,
+          })
+          .pipe(
+            first(),
+            finalize(() => this.addingLink$.next(false)),
+          )
+          .subscribe({
+            next: (version) => {
+              this.notificationService.publish({
+                message: 'Link wurde hinzugefügt.',
+                type: 'success',
+              });
+              this.dialog.attachResult({
+                version,
+                link,
+              });
+              this.close();
+            },
+            error: (e) => {
+              console.error('Failed to add link', e);
+              this.notificationService.publish({
+                message: 'Link konnte nicht hinzugefügt werden. Bitte versuche es erneut.',
+                type: 'error',
+              });
+            },
+          }),
+      () => {
+        this.dialog.attachResult({
+          version: 0,
+          link,
+        });
+        this.close();
+      },
+    );
   }
 
   updateSearchTerm(value: string): void {

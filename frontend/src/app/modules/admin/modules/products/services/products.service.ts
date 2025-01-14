@@ -76,6 +76,19 @@ import {
 import { environment } from '../../../../../../environments';
 import { someOrNone } from '../../../../shared/modules/option';
 
+interface CreateProductRequest {
+  images: string[];
+  links: LinkDTO[];
+  fabricComposition: FabricCompositionDTO;
+  notes: NotesDTO;
+  producedAt: string;
+}
+
+interface CreateProductResponse {
+  id: string;
+  version: number;
+}
+
 interface AddLinkRequest {
   version: number;
   linkType: LinkTypeDTO;
@@ -591,6 +604,28 @@ export class ProductsService {
       );
   }
 
+  createProduct(props: {
+    images: string[];
+    links: Link[];
+    fabricComposition: FabricComposition;
+    notes: Notes;
+    producedAt: Date;
+  }): Observable<string> {
+    const request: CreateProductRequest = {
+      images: props.images,
+      links: this.toApiLinks(props.links),
+      fabricComposition: this.toApiFabricComposition(props.fabricComposition),
+      notes: this.toApiNotes(props.notes),
+      producedAt: props.producedAt.toISOString(),
+    };
+
+    return this.http.post<CreateProductResponse>(`${environment.apiUrl}/products/create`, request).pipe(
+      map((response) => response.id),
+      // TODO Remove error handler once backend is implemented
+      catchError((_) => of('PRODUCT_ID_1')),
+    );
+  }
+
   private toInternalProducts(products: ProductDTO[]): Product[] {
     return products.map((product) => this.toInternalProduct(product));
   }
@@ -629,12 +664,24 @@ export class ProductsService {
     return links.map((link) => this.toInternalLink(link));
   }
 
+  private toApiLinks(links: Link[]): LinkDTO[] {
+    return links.map((link) => this.toApiLink(link));
+  }
+
   private toInternalLink(link: LinkDTO): Link {
     return Link.of({
       type: this.toInternalLinkType(link.type),
       name: link.name,
       id: link.id,
     });
+  }
+
+  private toApiLink(link: Link): LinkDTO {
+    return {
+      type: this.toApiLinkType(link.type),
+      name: link.name,
+      id: link.id,
+    };
   }
 
   private toInternalLinkType(type: LinkTypeDTO): LinkType {

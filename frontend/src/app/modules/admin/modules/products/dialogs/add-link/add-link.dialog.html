@@ -22,8 +22,13 @@
         </thead>
         <tbody>
           @for (link of links; track link.id) {
-            <tr (click)="addLink(link)">
-              <td class="name" [title]="link.name">{{ link.name }}</td>
+            <tr [class.already-added]="isAlreadyAdded(link)" (click)="addLink(link)">
+              <td class="name" [title]="link.name">
+                {{ link.name }}
+                @if (isAlreadyAdded(link)) {
+                  <span class="already-added-note">(bereits verlinkt)</span>
+                }
+              </td>
               <td class="type">{{ link.type.label }}</td>
             </tr>
           }

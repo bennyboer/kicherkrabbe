@@ -24,6 +24,10 @@ table.fabric-composition-table {
       &.percentage {
         text-align: left;
       }
+
+      &.actions {
+        text-align: center;
+      }
     }
   }
 
@@ -62,6 +66,14 @@ table.fabric-composition-table {
 
     &.percentage {
       text-align: left;
+
+      input {
+        width: 100%;
+      }
+    }
+
+    &.actions {
+      text-align: center;
     }
   }
 }

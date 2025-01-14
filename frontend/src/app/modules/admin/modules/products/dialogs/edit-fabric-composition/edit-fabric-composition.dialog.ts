@@ -5,13 +5,38 @@ import {
   FabricCompositionItem,
   FabricCompositionValidationError,
   FabricType,
-  Product,
 } from '../../model';
 import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
 import { ProductsService } from '../../services';
 import { BehaviorSubject, map, shareReplay } from 'rxjs';
-import { DropdownComponent, DropdownItemId, NotificationService } from '../../../../../shared';
-import { none, some } from '../../../../../shared/modules/option';
+import { ButtonSize, DropdownComponent, DropdownItemId, NotificationService } from '../../../../../shared';
+import { none, Option, some, someOrNone } from '../../../../../shared/modules/option';
+import { validateProps } from '../../../../../../util';
+
+export class EditFabricCompositionDialogData {
+  readonly product: Option<{ id: string; version: number }>;
+  readonly fabricComposition: Option<FabricComposition>;
+
+  private constructor(props: {
+    product: Option<{ id: string; version: number }>;
+    fabricComposition: Option<FabricComposition>;
+  }) {
+    validateProps(props);
+
+    this.product = props.product;
+    this.fabricComposition = props.fabricComposition;
+  }
+
+  static of(props: {
+    product?: { id: string; version: number };
+    fabricComposition?: FabricComposition | null;
+  }): EditFabricCompositionDialogData {
+    return new EditFabricCompositionDialogData({
+      product: someOrNone(props.product),
+      fabricComposition: someOrNone(props.fabricComposition),
+    });
+  }
+}
 
 export interface EditFabricCompositionDialogResult {
   version: number;
@@ -32,10 +57,14 @@ interface PendingCompositionItem {
 })
 export class EditFabricCompositionDialog implements OnDestroy {
   protected readonly compositionItems$ = new BehaviorSubject<PendingCompositionItem[]>(
-    this.product.fabricComposition.items.map((item) => ({
-      fabricType: item.fabricType,
-      percentage: item.percentage,
-    })),
+    this.data.fabricComposition
+      .map((composition) =>
+        composition.items.map((item) => ({
+          fabricType: item.fabricType,
+          percentage: item.percentage,
+        })),
+      )
+      .orElse([]),
   );
   protected readonly fabricTypes$ = new BehaviorSubject<FabricType[]>(FABRIC_TYPES);
 
@@ -67,8 +96,10 @@ export class EditFabricCompositionDialog implements OnDestroy {
   );
   protected readonly hasError$ = this.error$.pipe(map((error) => error.isSome()));
 
+  protected readonly ButtonSize = ButtonSize;
+
   constructor(
-    protected readonly product: Product,
+    protected readonly data: EditFabricCompositionDialogData,
     private readonly dialog: Dialog<EditFabricCompositionDialogResult>,
     private readonly dialogService: DialogService,
     private readonly productsService: ProductsService,
@@ -114,6 +145,10 @@ export class EditFabricCompositionDialog implements OnDestroy {
     this.compositionItems$.next([...this.compositionItems$.value, { fabricType: FABRIC_TYPES[0], percentage: 0 }]);
   }
 
+  removeCompositionItem(index: number): void {
+    this.compositionItems$.next(this.compositionItems$.value.filter((_, i) => i !== index));
+  }
+
   save(): void {
     if (this.saving$.value) {
       return;
@@ -121,35 +156,46 @@ export class EditFabricCompositionDialog implements OnDestroy {
     this.saving$.next(true);
 
     const composition = this.toFabricComposition(this.compositionItems$.value);
-    this.productsService
-      .updateFabricComposition({
-        id: this.product.id,
-        version: this.product.version,
-        fabricComposition: composition,
-      })
-      .subscribe({
-        next: (version) => {
-          this.notificationService.publish({
-            message: 'Die Stoffzusammensetzung wurde erfolgreich gespeichert',
-            type: 'success',
-          });
 
-          const result: EditFabricCompositionDialogResult = {
-            version,
+    this.data.product.ifSomeOrElse(
+      (product) =>
+        this.productsService
+          .updateFabricComposition({
+            id: product.id,
+            version: product.version,
             fabricComposition: composition,
-          };
+          })
+          .subscribe({
+            next: (version) => {
+              this.notificationService.publish({
+                message: 'Die Stoffzusammensetzung wurde erfolgreich gespeichert',
+                type: 'success',
+              });
 
-          this.dialog.attachResult(result);
-          this.dialogService.close(this.dialog.id);
-        },
-        error: (e) => {
-          console.error(e);
-          this.notificationService.publish({
-            message: 'Die Stoffzusammensetzung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.',
-            type: 'error',
-          });
-        },
-      });
+              const result: EditFabricCompositionDialogResult = {
+                version,
+                fabricComposition: composition,
+              };
+
+              this.dialog.attachResult(result);
+              this.dialogService.close(this.dialog.id);
+            },
+            error: (e) => {
+              console.error(e);
+              this.notificationService.publish({
+                message: 'Die Stoffzusammensetzung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.',
+                type: 'error',
+              });
+            },
+          }),
+      () => {
+        this.dialog.attachResult({
+          version: 0,
+          fabricComposition: composition,
+        });
+        this.dialogService.close(this.dialog.id);
+      },
+    );
   }
 
   private toFabricComposition(items: PendingCompositionItem[]): FabricComposition {

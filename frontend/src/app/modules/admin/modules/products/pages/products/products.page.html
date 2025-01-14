@@ -1,19 +1,23 @@
 <div class="action-bar">
-  <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)"/>
-  <div class="from-selector date-selector">
-    <label for="from">Von</label>
-    <input #from type="date" id="from" (input)="updateFrom(from.valueAsDate)"/>
+  <div class="left-actions">
+    <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)"/>
+    <div class="from-selector date-selector">
+      <label for="from">Von</label>
+      <input #from type="date" id="from" (input)="updateFrom(from.valueAsDate)"/>
+    </div>
+    <div class="to-selector date-selector">
+      <label for="to">Bis</label>
+      <input #to type="date" id="to" (input)="updateTo(to.valueAsDate)"/>
+    </div>
   </div>
-  <div class="to-selector date-selector">
-    <label for="to">Bis</label>
-    <input #to type="date" id="to" (input)="updateTo(to.valueAsDate)"/>
+  <div class="right-actions">
+    <app-button routerLink="create">
+      <span class="icon-button">
+        <span class="material-icons">add</span>
+        <span>Neues Produkt</span>
+      </span>
+    </app-button>
   </div>
-  <app-button routerLink="create">
-    <span class="icon-button">
-      <span class="material-icons">add</span>
-      <span>Neues Produkt</span>
-    </span>
-  </app-button>
 </div>
 
 <app-loading-bar [visible]="loading$ | async"></app-loading-bar>

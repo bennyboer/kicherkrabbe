@@ -43,8 +43,6 @@
         </div>
       </div>
 
-      <hr>
-
       <div class="product-detail">
         <label>Produkt-Nr.</label>
         <span class="product-number">{{ product.number }}</span>
@@ -124,11 +122,15 @@
           </app-button>
         </label>
         <div class="product-contains">
-          <quill-view [content]="product.notes.contains"
-                      format="json"
-                      theme="bubble"
-                      style="display: block">
-          </quill-view>
+          @if (product.notes.contains.length > 0) {
+            <quill-view [content]="product.notes.contains"
+                        format="json"
+                        theme="bubble"
+                        style="display: block">
+            </quill-view>
+          } @else {
+            <app-note>Keine Inhaltsangaben vorhanden</app-note>
+          }
         </div>
       </div>
 
@@ -142,11 +144,15 @@
           </app-button>
         </label>
         <div class="product-care">
-          <quill-view [content]="product.notes.care"
-                      format="json"
-                      theme="bubble"
-                      style="display: block">
-          </quill-view>
+          @if (product.notes.care.length > 0) {
+            <quill-view [content]="product.notes.care"
+                        format="json"
+                        theme="bubble"
+                        style="display: block">
+            </quill-view>
+          } @else {
+            <app-note>Keine Pflegehinweise vorhanden</app-note>
+          }
         </div>
       </div>
 
@@ -160,11 +166,15 @@
           </app-button>
         </label>
         <div class="product-safety">
-          <quill-view [content]="product.notes.safety"
-                      format="json"
-                      theme="bubble"
-                      style="display: block">
-          </quill-view>
+          @if (product.notes.safety.length > 0) {
+            <quill-view [content]="product.notes.safety"
+                        format="json"
+                        theme="bubble"
+                        style="display: block">
+            </quill-view>
+          } @else {
+            <app-note>Keine Sicherheitshinweise vorhanden</app-note>
+          }
         </div>
       </div>
 

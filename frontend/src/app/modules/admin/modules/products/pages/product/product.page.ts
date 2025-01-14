@@ -23,14 +23,19 @@ import { Theme, ThemeService } from '../../../../../../services';
 import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
 import {
   AddLinkDialog,
+  AddLinkDialogData,
   AddLinkDialogResult,
   EditFabricCompositionDialog,
+  EditFabricCompositionDialogData,
   EditFabricCompositionDialogResult,
   EditImagesDialog,
+  EditImagesDialogData,
   EditImagesDialogResult,
   EditNoteDialog,
+  EditNoteDialogData,
   EditNoteDialogResult,
   EditProducedAtDateDialog,
+  EditProducedAtDateDialogData,
   EditProducedAtDateDialogResult,
   NoteType,
 } from '../../dialogs';
@@ -111,8 +116,14 @@ export class ProductPage implements OnInit, OnDestroy {
       injector: Injector.create({
         providers: [
           {
-            provide: Product,
-            useValue: product,
+            provide: AddLinkDialogData,
+            useValue: AddLinkDialogData.of({
+              product: {
+                id: product.id,
+                version: product.version,
+              },
+              links: product.links,
+            }),
           },
           {
             provide: ProductsService,
@@ -178,8 +189,14 @@ export class ProductPage implements OnInit, OnDestroy {
       injector: Injector.create({
         providers: [
           {
-            provide: Product,
-            useValue: product,
+            provide: EditImagesDialogData,
+            useValue: EditImagesDialogData.of({
+              product: {
+                id: product.id,
+                version: product.version,
+              },
+              images: product.images,
+            }),
           },
           {
             provide: ProductsService,
@@ -209,8 +226,14 @@ export class ProductPage implements OnInit, OnDestroy {
       injector: Injector.create({
         providers: [
           {
-            provide: Product,
-            useValue: product,
+            provide: EditFabricCompositionDialogData,
+            useValue: EditFabricCompositionDialogData.of({
+              product: {
+                id: product.id,
+                version: product.version,
+              },
+              fabricComposition: product.fabricComposition,
+            }),
           },
           {
             provide: ProductsService,
@@ -236,12 +259,15 @@ export class ProductPage implements OnInit, OnDestroy {
       injector: Injector.create({
         providers: [
           {
-            provide: NoteType,
-            useValue: NoteType.CONTAINS,
-          },
-          {
-            provide: Product,
-            useValue: product,
+            provide: EditNoteDialogData,
+            useValue: EditNoteDialogData.of({
+              product: {
+                id: product.id,
+                version: product.version,
+              },
+              notes: product.notes,
+              noteType: NoteType.CONTAINS,
+            }),
           },
           {
             provide: ProductsService,
@@ -267,12 +293,15 @@ export class ProductPage implements OnInit, OnDestroy {
       injector: Injector.create({
         providers: [
           {
-            provide: NoteType,
-            useValue: NoteType.CARE,
-          },
-          {
-            provide: Product,
-            useValue: product,
+            provide: EditNoteDialogData,
+            useValue: EditNoteDialogData.of({
+              product: {
+                id: product.id,
+                version: product.version,
+              },
+              notes: product.notes,
+              noteType: NoteType.CARE,
+            }),
           },
           {
             provide: ProductsService,
@@ -298,12 +327,15 @@ export class ProductPage implements OnInit, OnDestroy {
       injector: Injector.create({
         providers: [
           {
-            provide: NoteType,
-            useValue: NoteType.SAFETY,
-          },
-          {
-            provide: Product,
-            useValue: product,
+            provide: EditNoteDialogData,
+            useValue: EditNoteDialogData.of({
+              product: {
+                id: product.id,
+                version: product.version,
+              },
+              notes: product.notes,
+              noteType: NoteType.SAFETY,
+            }),
           },
           {
             provide: ProductsService,
@@ -329,8 +361,13 @@ export class ProductPage implements OnInit, OnDestroy {
       injector: Injector.create({
         providers: [
           {
-            provide: Product,
-            useValue: product,
+            provide: EditProducedAtDateDialogData,
+            useValue: EditProducedAtDateDialogData.of({
+              product: {
+                id: product.id,
+                version: product.version,
+              },
+            }),
           },
           {
             provide: ProductsService,
