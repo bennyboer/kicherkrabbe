@@ -18,7 +18,7 @@ import static de.bennyboer.kicherkrabbe.notifications.notification.OriginType.MA
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class SettingsServiceTest {
+public class NotificationServiceTest {
 
     private final EventSourcingRepo repo = new InMemoryEventSourcingRepo();
 

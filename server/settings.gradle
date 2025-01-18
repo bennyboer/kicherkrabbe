@@ -124,3 +124,8 @@ include('features:telegram:telegram-example')
 include('features:mailing:mailing-core')
 include('features:mailing:mailing-starter')
 include('features:mailing:mailing-example')
+
+// Products
+include('features:products:products-core')
+include('features:products:products-starter')
+include('features:products:products-example')

@@ -97,6 +97,20 @@ table.fabric-composition-table {
     height: auto;
   }
 
+  table.fabric-composition-table {
+    thead {
+      th {
+        padding: 8px 8px;
+      }
+    }
+
+    tbody {
+      td {
+        padding: 8px 8px;
+      }
+    }
+  }
+
   .footer {
     flex-direction: column;
     align-items: stretch;
