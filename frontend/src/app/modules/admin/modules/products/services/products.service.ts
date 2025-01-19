@@ -509,7 +509,7 @@ export class ProductsService {
       linkId: props.linkId,
     };
 
-    return this.http.post<AddLinkResponse>(`${environment.apiUrl}/products/${productId}/links`, request).pipe(
+    return this.http.post<AddLinkResponse>(`${environment.apiUrl}/products/${productId}/links/add`, request).pipe(
       map((response) => response.version),
       // TODO Remove error handler once backend is implemented
       catchError((_) => of(props.version + 1)),
