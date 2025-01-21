@@ -20,8 +20,6 @@ public class Actions {
 
     public static Action UPDATE_IMAGES = Action.of("UPDATE_IMAGES");
 
-    public static Action UPDATE_LINKS = Action.of("UPDATE_LINKS");
-
     public static Action DELETE = Action.of("DELETE");
 
 }

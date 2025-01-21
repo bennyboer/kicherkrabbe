@@ -137,7 +137,8 @@ public class Product implements Aggregate {
                     .withLinks(e.getLinks())
                     .withFabricComposition(e.getFabricComposition())
                     .withNotes(e.getNotes())
-                    .withProducedAt(e.getProducedAt());
+                    .withProducedAt(e.getProducedAt())
+                    .withCreatedAt(metadata.getDate());
             case DeletedEvent ignored -> withDeletedAt(metadata.getDate());
             case LinkAddedEvent e -> withLinks(getLinks().add(e.getLink()));
             case LinkRemovedEvent e -> withLinks(getLinks().remove(e.getLinkType(), e.getLinkId()));

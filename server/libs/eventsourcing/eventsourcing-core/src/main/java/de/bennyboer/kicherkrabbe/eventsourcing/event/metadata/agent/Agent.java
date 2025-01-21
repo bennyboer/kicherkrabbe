@@ -45,6 +45,10 @@ public class Agent {
         return type == ANONYMOUS;
     }
 
+    public boolean isUser() {
+        return type == USER;
+    }
+
     @Override
     public String toString() {
         return String.format("Agent(%s, %s)", type, id);
