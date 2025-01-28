@@ -100,13 +100,14 @@ public class Pattern implements Aggregate {
                 List.of(),
                 List.of(),
                 List.of(),
-                Instant.now(),
+                null,
                 null
         );
     }
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isCreated() || cmd instanceof CreateCmd, "Cannot apply command to not yet created aggregate");
         check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
@@ -224,6 +225,10 @@ public class Pattern implements Aggregate {
 
     public boolean isNotDeleted() {
         return !isDeleted();
+    }
+
+    private boolean isCreated() {
+        return createdAt != null;
     }
 
 }

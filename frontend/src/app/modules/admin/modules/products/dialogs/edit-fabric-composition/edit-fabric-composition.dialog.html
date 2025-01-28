@@ -29,7 +29,7 @@
             <td class="percentage">
               <input #percentage
                      type="number"
-                     [value]="item.percentage"
+                     [value]="item.percentage / 100"
                      (input)="updatePercentageForItem(index, percentage.valueAsNumber)"
                      min="0"
                      max="100">

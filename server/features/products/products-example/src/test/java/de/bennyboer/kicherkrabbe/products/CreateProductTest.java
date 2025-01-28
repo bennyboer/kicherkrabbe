@@ -19,7 +19,7 @@ public class CreateProductTest extends ProductsModuleTest {
     @Test
     void shouldCreateProduct() {
         // given: a user is allowed to create products
-        allowUserToCreateProducts("USER_ID");
+        allowUserToCreateProductsAndReadLinks("USER_ID");
 
         // and: we are at a fixed point in time
         setTime(Instant.parse("2024-11-08T12:45:00.000Z"));
@@ -135,7 +135,7 @@ public class CreateProductTest extends ProductsModuleTest {
     @Test
     void shouldNotAcceptInvalidRequests() {
         // given: a user is allowed to create products
-        allowUserToCreateProducts("USER_ID");
+        allowUserToCreateProductsAndReadLinks("USER_ID");
 
         // and: a request to create a product
         var link1 = new LinkDTO();

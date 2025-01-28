@@ -60,13 +60,14 @@ public class Inquiry implements Aggregate {
                 null,
                 null,
                 null,
-                Instant.now(),
+                null,
                 null
         );
     }
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isSent() || cmd instanceof SendCmd, "Cannot apply command to not yet sent aggregate");
         check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
@@ -131,6 +132,10 @@ public class Inquiry implements Aggregate {
 
     public boolean isNotDeleted() {
         return !isDeleted();
+    }
+
+    private boolean isSent() {
+        return createdAt != null;
     }
 
 }

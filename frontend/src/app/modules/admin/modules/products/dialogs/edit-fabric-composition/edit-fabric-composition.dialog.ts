@@ -137,7 +137,8 @@ export class EditFabricCompositionDialog implements OnDestroy {
     if (!pendingItem) {
       return;
     }
-    pendingItem.percentage = percentage;
+
+    pendingItem.percentage = Math.floor(percentage * 100);
     this.compositionItems$.next(this.compositionItems$.value);
   }
 

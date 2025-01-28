@@ -15,6 +15,7 @@ import de.bennyboer.kicherkrabbe.products.product.fabric.composition.update.Upda
 import de.bennyboer.kicherkrabbe.products.product.images.update.UpdateImagesCmd;
 import de.bennyboer.kicherkrabbe.products.product.links.add.AddLinkCmd;
 import de.bennyboer.kicherkrabbe.products.product.links.remove.RemoveLinkCmd;
+import de.bennyboer.kicherkrabbe.products.product.links.update.UpdateLinkCmd;
 import de.bennyboer.kicherkrabbe.products.product.notes.update.UpdateNotesCmd;
 import de.bennyboer.kicherkrabbe.products.product.produced.update.UpdateProducedAtCmd;
 import reactor.core.publisher.Mono;
@@ -63,6 +64,10 @@ public class ProductService extends AggregateService<Product, ProductId> {
         return dispatchCommand(id, version, agent, AddLinkCmd.of(link));
     }
 
+    public Mono<Version> updateLink(ProductId id, Version version, Link link, Agent agent) {
+        return dispatchCommand(id, version, agent, UpdateLinkCmd.of(link));
+    }
+
     public Mono<Version> removeLink(ProductId id, Version version, LinkType linkType, LinkId linkId, Agent agent) {
         return dispatchCommand(id, version, agent, RemoveLinkCmd.of(linkType, linkId));
     }
@@ -84,7 +89,7 @@ public class ProductService extends AggregateService<Product, ProductId> {
     }
 
     public Mono<Version> delete(ProductId id, Version version, Agent agent) {
-        return dispatchCommand(id, Version.zero(), agent, DeleteCmd.of());
+        return dispatchCommand(id, version, agent, DeleteCmd.of());
     }
 
     @Override

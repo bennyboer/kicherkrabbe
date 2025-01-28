@@ -18,6 +18,9 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.With;
 
+import java.time.Instant;
+
+import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
@@ -33,16 +36,21 @@ public class Counter implements Aggregate {
 
     long value;
 
+    Instant initAt;
+
     public static Counter init() {
         return new Counter(
                 null,
                 Version.zero(),
-                0L
+                0L,
+                null
         );
     }
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isInitialized() || cmd instanceof InitCmd, "Cannot apply command to not yet initialized counter");
+
         return switch (cmd) {
             case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(getValue()));
             case InitCmd ignored -> ApplyCommandResult.of(InitEvent.of());
@@ -57,11 +65,18 @@ public class Counter implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id).withValue(e.getValue());
-            case InitEvent ignored -> withId(id);
+            case SnapshottedEvent e -> withId(id)
+                    .withValue(e.getValue())
+                    .withInitAt(metadata.getDate());
+            case InitEvent ignored -> withId(id)
+                    .withInitAt(metadata.getDate());
             case IncrementedEvent ignored -> withId(id).withValue(value + 1);
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());
         }).withVersion(version);
+    }
+
+    private boolean isInitialized() {
+        return initAt != null;
     }
 
 }

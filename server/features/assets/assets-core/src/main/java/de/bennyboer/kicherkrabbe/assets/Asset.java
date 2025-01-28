@@ -46,11 +46,12 @@ public class Asset implements Aggregate {
     Instant deletedAt;
 
     public static Asset init() {
-        return new Asset(null, Version.zero(), null, null, Instant.now(), null);
+        return new Asset(null, Version.zero(), null, null, null, null);
     }
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isCreated() || cmd instanceof CreateCmd, "Cannot apply command to not yet created aggregate");
         check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
@@ -96,6 +97,10 @@ public class Asset implements Aggregate {
 
     public boolean isNotDeleted() {
         return !isDeleted();
+    }
+
+    private boolean isCreated() {
+        return createdAt != null;
     }
 
 }

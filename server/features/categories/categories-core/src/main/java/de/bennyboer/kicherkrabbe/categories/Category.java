@@ -50,11 +50,12 @@ public class Category implements Aggregate {
     Instant deletedAt;
 
     public static Category init() {
-        return new Category(null, Version.zero(), null, null, Instant.now(), null);
+        return new Category(null, Version.zero(), null, null, null, null);
     }
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isCreated() || cmd instanceof CreateCmd, "Cannot apply command to not yet created aggregate");
         check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
@@ -106,4 +107,8 @@ public class Category implements Aggregate {
         return !isDeleted();
     }
 
+    private boolean isCreated() {
+        return createdAt != null;
+    }
+    
 }

@@ -58,6 +58,10 @@ public class Credentials implements Aggregate {
 
     @Nullable
     @Getter(NONE)
+    Instant createdAt;
+
+    @Nullable
+    @Getter(NONE)
     Instant deletedAt;
 
     public static Credentials init() {
@@ -69,12 +73,14 @@ public class Credentials implements Aggregate {
                 null,
                 0,
                 null,
+                null,
                 null
         );
     }
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isCreated() || cmd instanceof CreateCmd, "Cannot apply command to not yet created aggregate");
         check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
@@ -84,7 +90,8 @@ public class Credentials implements Aggregate {
                     getUserId(),
                     getFailedUsageAttempts(),
                     getLastUsedAt().orElse(null),
-                    getDeletedAt().orElse(null)
+                    getDeletedAt().orElse(null),
+                    getCreatedAt().orElse(null)
             ));
             case CreateCmd c -> ApplyCommandResult.of(CreatedEvent.of(
                     c.getName(),
@@ -109,11 +116,13 @@ public class Credentials implements Aggregate {
                     .withUserId(e.getUserId())
                     .withFailedUsageAttempts(e.getFailedUsageAttempts())
                     .withLastUsedAt(e.getLastUsedAt().orElse(null))
-                    .withDeletedAt(e.getDeletedAt().orElse(null));
+                    .withDeletedAt(e.getDeletedAt().orElse(null))
+                    .withCreatedAt(e.getCreatedAt().orElse(metadata.getDate()));
             case CreatedEvent e -> withId(id)
                     .withName(e.getName())
                     .withEncodedPassword(e.getEncodedPassword())
-                    .withUserId(e.getUserId());
+                    .withUserId(e.getUserId())
+                    .withCreatedAt(metadata.getDate());
             case UsageFailedEvent e -> withFailedUsageAttempts(Math.min(failedUsageAttempts + 1, 999))
                     .withLastUsedAt(e.getDate());
             case UsageSucceededEvent e -> withFailedUsageAttempts(0)
@@ -131,6 +140,10 @@ public class Credentials implements Aggregate {
 
     public Optional<Instant> getDeletedAt() {
         return Optional.ofNullable(deletedAt);
+    }
+
+    public Optional<Instant> getCreatedAt() {
+        return Optional.ofNullable(createdAt);
     }
 
     public boolean isDeleted() {
@@ -188,6 +201,10 @@ public class Credentials implements Aggregate {
         }
 
         return UsageFailedEvent.of(clock.instant());
+    }
+
+    private boolean isCreated() {
+        return createdAt != null;
     }
 
 }

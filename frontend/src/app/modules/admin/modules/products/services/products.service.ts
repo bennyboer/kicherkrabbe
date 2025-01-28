@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { catchError, map, Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import {
   ABACA,
   ACRYLIC,
@@ -263,56 +263,9 @@ export class ProductsService {
   constructor(private readonly http: HttpClient) {}
 
   getProduct(productId: string): Observable<Product> {
-    return this.http.get<QueryProductResponse>(`${environment.apiUrl}/products/${productId}`).pipe(
-      map((response) => this.toInternalProduct(response.product)),
-      // TODO Remove error handler once backend is implemented
-      catchError((_) => {
-        return of(
-          this.toInternalProduct({
-            id: 'PRODUCT_ID_1',
-            version: 1,
-            number: '0000000001',
-            images: [
-              '14dc190d-5be8-4285-883e-408741b28723',
-              '7eff4b41-e828-47e8-8a8e-7e11e68e56db',
-              '01efafd3-41d6-4a85-a4f3-8777405ac37b',
-            ],
-            links: [
-              {
-                type: LinkTypeDTO.PATTERN,
-                name: 'Pattern 1',
-                id: 'PATTERN_ID_1',
-              },
-              {
-                type: LinkTypeDTO.FABRIC,
-                name: 'Fabric 1',
-                id: 'FABRIC_ID_1',
-              },
-            ],
-            fabricComposition: {
-              items: [
-                {
-                  fabricType: FabricTypeDTO.COTTON,
-                  percentage: 80,
-                },
-                {
-                  fabricType: FabricTypeDTO.POLYESTER,
-                  percentage: 20,
-                },
-              ],
-            },
-            notes: {
-              contains: '{"ops":[{"insert":"Stoff kommt von Hersteller soundso, etc. etc."}]}',
-              care: '{"ops":[{"insert":"Nicht über 30 Grad waschen, nicht in den Trockner, blabla"}]}',
-              safety:
-                '{"ops":[{"attributes":{"bold":true},"insert":"Achtung"},{"insert":"! Verschluckungsgefahr (Knöpfe)! Nur unter Aufsicht von Erwachsenen benutzen."}]}',
-            },
-            producedAt: '2024-12-28T12:30:00Z',
-            createdAt: '2024-12-28T13:00:00Z',
-          }),
-        );
-      }),
-    );
+    return this.http
+      .get<QueryProductResponse>(`${environment.apiUrl}/products/${productId}`)
+      .pipe(map((response) => this.toInternalProduct(response.product)));
   }
 
   getProducts(props: {
@@ -325,7 +278,7 @@ export class ProductsService {
     let params = new HttpParams();
 
     if (props.searchValue.trim().length > 0) {
-      params = params.set('searchValue', props.searchValue);
+      params = params.set('searchTerm', props.searchValue);
     }
     if (props.from) {
       params = params.set('from', props.from.toISOString());
@@ -346,93 +299,6 @@ export class ProductsService {
           total: response.total,
           products: this.toInternalProducts(response.products),
         };
-      }),
-      // TODO Remove error handler once backend is implemented
-      catchError((_) => {
-        return of({
-          total: 2,
-          products: this.toInternalProducts([
-            {
-              id: 'PRODUCT_ID_1',
-              version: 1,
-              number: '0000000001',
-              images: [
-                '14dc190d-5be8-4285-883e-408741b28723',
-                '7eff4b41-e828-47e8-8a8e-7e11e68e56db',
-                '01efafd3-41d6-4a85-a4f3-8777405ac37b',
-              ],
-              links: [
-                {
-                  type: LinkTypeDTO.PATTERN,
-                  name: 'Pattern 1',
-                  id: 'PATTERN_ID_1',
-                },
-                {
-                  type: LinkTypeDTO.FABRIC,
-                  name: 'Fabric 1',
-                  id: 'FABRIC_ID_1',
-                },
-              ],
-              fabricComposition: {
-                items: [
-                  {
-                    fabricType: FabricTypeDTO.COTTON,
-                    percentage: 80,
-                  },
-                  {
-                    fabricType: FabricTypeDTO.POLYESTER,
-                    percentage: 20,
-                  },
-                ],
-              },
-              notes: {
-                contains: '{"ops":[{"insert":"Stoff kommt von Hersteller soundso, etc. etc."}]}',
-                care: '{"ops":[{"insert":"Nicht über 30 Grad waschen, nicht in den Trockner, blabla"}]}',
-                safety:
-                  '{"ops":[{"attributes":{"bold":true},"insert":"Achtung"},{"insert":"! Verschluckungsgefahr (Knöpfe)! Nur unter Aufsicht von Erwachsenen benutzen."}]}',
-              },
-              producedAt: '2024-12-28T12:30:00Z',
-              createdAt: '2024-12-28T13:00:00Z',
-            },
-            {
-              id: 'PRODUCT_ID_2',
-              version: 0,
-              number: '0000000002',
-              images: [],
-              links: [
-                {
-                  type: LinkTypeDTO.PATTERN,
-                  name: 'Pattern 2',
-                  id: 'PATTERN_ID_2',
-                },
-                {
-                  type: LinkTypeDTO.FABRIC,
-                  name: 'Fabric 2',
-                  id: 'FABRIC_ID_2',
-                },
-              ],
-              fabricComposition: {
-                items: [
-                  {
-                    fabricType: FabricTypeDTO.ELASTANE,
-                    percentage: 60,
-                  },
-                  {
-                    fabricType: FabricTypeDTO.POLYESTER,
-                    percentage: 40,
-                  },
-                ],
-              },
-              notes: {
-                contains: 'Contains',
-                care: 'Care',
-                safety: 'Safety',
-              },
-              producedAt: '2024-12-29T12:30:00Z',
-              createdAt: '2024-12-29T13:00:00Z',
-            },
-          ]),
-        });
       }),
     );
   }
@@ -468,36 +334,6 @@ export class ProductsService {
         total: response.total,
         links: response.links.map((link) => this.toInternalLink(link)),
       })),
-      // TODO Remove error handler once backend is implemented
-      catchError((_) => {
-        const MOCK_FILTERED_LINKS = [
-          Link.of({
-            type: PATTERN,
-            name: 'Pattern 1',
-            id: 'PATTERN_ID_1',
-          }),
-          Link.of({
-            type: FABRIC,
-            name: 'Fabric 1',
-            id: 'FABRIC_ID_1',
-          }),
-          Link.of({
-            type: PATTERN,
-            name: 'Pattern 2',
-            id: 'PATTERN_ID_2',
-          }),
-          Link.of({
-            type: FABRIC,
-            name: 'Ein Stoff mit einem sehr langen Namen, der über mehrere Zeilen geht',
-            id: 'FABRIC_ID_2',
-          }),
-        ].filter((link) => link.name.includes(searchTerm));
-
-        return of({
-          total: MOCK_FILTERED_LINKS.length,
-          links: MOCK_FILTERED_LINKS.filter((_, index) => index >= skip && index < skip + limit),
-        });
-      }),
     );
   }
 
@@ -509,11 +345,9 @@ export class ProductsService {
       linkId: props.linkId,
     };
 
-    return this.http.post<AddLinkResponse>(`${environment.apiUrl}/products/${productId}/links/add`, request).pipe(
-      map((response) => response.version),
-      // TODO Remove error handler once backend is implemented
-      catchError((_) => of(props.version + 1)),
-    );
+    return this.http
+      .post<AddLinkResponse>(`${environment.apiUrl}/products/${productId}/links/add`, request)
+      .pipe(map((response) => response.version));
   }
 
   removeLink(props: { id: string; version: number; linkType: LinkType; linkId: string }): Observable<number> {
@@ -526,11 +360,7 @@ export class ProductsService {
       .delete<RemoveLinkResponse>(`${environment.apiUrl}/products/${productId}/links/${linkType}/${linkId}`, {
         params: { version: version.toString() },
       })
-      .pipe(
-        map((response) => response.version),
-        // TODO Remove error handler once backend is implemented
-        catchError((_) => of(version + 1)),
-      );
+      .pipe(map((response) => response.version));
   }
 
   updateFabricComposition(props: {
@@ -549,11 +379,7 @@ export class ProductsService {
         `${environment.apiUrl}/products/${productId}/fabric-composition/update`,
         request,
       )
-      .pipe(
-        map((response) => response.version),
-        // TODO Remove error handler once backend is implemented
-        catchError((_) => of(props.version + 1)),
-      );
+      .pipe(map((response) => response.version));
   }
 
   updateNotes(props: { id: string; version: number; notes: Notes }): Observable<number> {
@@ -565,11 +391,7 @@ export class ProductsService {
 
     return this.http
       .post<UpdateNotesResponse>(`${environment.apiUrl}/products/${productId}/notes/update`, request)
-      .pipe(
-        map((response) => response.version),
-        // TODO Remove error handler once backend is implemented
-        catchError((_) => of(props.version + 1)),
-      );
+      .pipe(map((response) => response.version));
   }
 
   updateProducedAtDate(props: { id: string; version: number; date: Date }): Observable<number> {
@@ -581,11 +403,7 @@ export class ProductsService {
 
     return this.http
       .post<UpdateProducedAtDateResponse>(`${environment.apiUrl}/products/${productId}/produced-at/update`, request)
-      .pipe(
-        map((response) => response.version),
-        // TODO Remove error handler once backend is implemented
-        catchError((_) => of(props.version + 1)),
-      );
+      .pipe(map((response) => response.version));
   }
 
   updateImages(props: { id: string; version: number; imageIds: string[] }): Observable<number> {
@@ -597,11 +415,7 @@ export class ProductsService {
 
     return this.http
       .post<UpdateImagesResponse>(`${environment.apiUrl}/products/${productId}/images/update`, request)
-      .pipe(
-        map((response) => response.version),
-        // TODO Remove error handler once backend is implemented
-        catchError((_) => of(props.version + 1)),
-      );
+      .pipe(map((response) => response.version));
   }
 
   createProduct(props: {
@@ -619,11 +433,9 @@ export class ProductsService {
       producedAt: props.producedAt.toISOString(),
     };
 
-    return this.http.post<CreateProductResponse>(`${environment.apiUrl}/products/create`, request).pipe(
-      map((response) => response.id),
-      // TODO Remove error handler once backend is implemented
-      catchError((_) => of('PRODUCT_ID_1')),
-    );
+    return this.http
+      .post<CreateProductResponse>(`${environment.apiUrl}/products/create`, request)
+      .pipe(map((response) => response.id));
   }
 
   private toInternalProducts(products: ProductDTO[]): Product[] {

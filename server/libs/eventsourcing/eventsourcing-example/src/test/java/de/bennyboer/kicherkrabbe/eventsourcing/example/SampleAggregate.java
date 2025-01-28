@@ -19,6 +19,7 @@ import lombok.With;
 
 import java.time.Instant;
 
+import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
@@ -33,15 +34,18 @@ public class SampleAggregate implements Aggregate {
 
     String description;
 
+    Instant createdAt;
+
     @Nullable
     Instant deletedAt;
 
     public static SampleAggregate init() {
-        return new SampleAggregate(null, null, null, null);
+        return new SampleAggregate(null, null, null, null, null);
     }
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent ignoredAgent) {
+        check(isCreated() || cmd instanceof CreateCmd, "Cannot apply command to not yet created aggregate");
         if (deletedAt != null) {
             throw new IllegalStateException("Cannot apply command to deleted aggregate");
         }
@@ -50,6 +54,7 @@ public class SampleAggregate implements Aggregate {
             case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
                     getTitle(),
                     getDescription(),
+                    getCreatedAt(),
                     getDeletedAt()
             ));
             case CreateCmd c -> ApplyCommandResult.of(CreatedEvent2.of(
@@ -70,11 +75,13 @@ public class SampleAggregate implements Aggregate {
             case SnapshottedEvent e -> withId(metadata.getAggregateId().getValue())
                     .withTitle(e.getTitle())
                     .withDescription(e.getDescription())
+                    .withCreatedAt(e.getCreatedAt())
                     .withDeletedAt(e.getDeletedAt().orElse(null));
             case CreatedEvent2 e -> withId(metadata.getAggregateId().getValue())
                     .withTitle(e.getTitle())
                     .withDescription(e.getDescription())
-                    .withDeletedAt(e.getDeletedAt().orElse(null));
+                    .withDeletedAt(e.getDeletedAt().orElse(null))
+                    .withCreatedAt(metadata.getDate());
             case DeletedEvent ignored -> withDeletedAt(metadata.getDate());
             case TitleUpdatedEvent e -> withTitle(e.getTitle());
             case DescriptionUpdatedEvent e -> withDescription(e.getDescription());
@@ -84,6 +91,10 @@ public class SampleAggregate implements Aggregate {
 
     public boolean isDeleted() {
         return deletedAt != null;
+    }
+
+    public boolean isCreated() {
+        return createdAt != null;
     }
 
 }

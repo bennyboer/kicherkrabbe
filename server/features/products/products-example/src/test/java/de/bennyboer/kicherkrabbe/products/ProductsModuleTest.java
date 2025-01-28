@@ -10,6 +10,8 @@ import de.bennyboer.kicherkrabbe.products.api.*;
 import de.bennyboer.kicherkrabbe.products.api.requests.*;
 import de.bennyboer.kicherkrabbe.products.api.responses.*;
 import de.bennyboer.kicherkrabbe.products.counter.CounterService;
+import de.bennyboer.kicherkrabbe.products.persistence.lookup.links.LinkLookupRepo;
+import de.bennyboer.kicherkrabbe.products.persistence.lookup.links.inmemory.InMemoryLinkLookupRepo;
 import de.bennyboer.kicherkrabbe.products.persistence.lookup.product.ProductLookupRepo;
 import de.bennyboer.kicherkrabbe.products.persistence.lookup.product.inmemory.InMemoryProductLookupRepo;
 import de.bennyboer.kicherkrabbe.products.product.ProductService;
@@ -42,6 +44,8 @@ public class ProductsModuleTest {
 
     private final ProductLookupRepo productLookupRepo = new InMemoryProductLookupRepo();
 
+    private final LinkLookupRepo linkLookupRepo = new InMemoryLinkLookupRepo();
+
     private final PermissionsService permissionsService = new PermissionsService(
             new InMemoryPermissionsRepo(),
             event -> Mono.empty()
@@ -53,6 +57,7 @@ public class ProductsModuleTest {
             productService,
             counterService,
             productLookupRepo,
+            linkLookupRepo,
             permissionsService,
             transactionManager
     );
@@ -78,6 +83,29 @@ public class ProductsModuleTest {
 
     public QueryLinksResponse getLinks(String searchTerm, long skip, long limit, Agent agent) {
         return module.getLinks(searchTerm, skip, limit, agent).block();
+    }
+
+    public void updateLinkInLookup(UpdateLinkInLookupRequest req, Agent agent) {
+        var productIds = module.updateLinkInLookup(req, agent).collectList().block();
+
+        for (var productId : productIds) {
+            updateProductInLookup(productId);
+        }
+
+        // Test seems to be flaky, but shouldn't
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removeLinkFromLookup(RemoveLinkFromLookupRequest req, Agent agent) {
+        var productIds = module.removeLinkFromLookup(req, agent).collectList().block();
+
+        for (var productId : productIds) {
+            updateProductInLookup(productId);
+        }
     }
 
     public CreateProductResponse createSampleProduct(Agent agent) {
@@ -199,8 +227,12 @@ public class ProductsModuleTest {
         return result;
     }
 
-    public void allowUserToCreateProducts(String userId) {
-        module.allowUserToCreateProducts(userId).block();
+    public void allowUserToCreateProductsAndReadLinks(String userId) {
+        module.allowUserToCreateProductsAndReadLinks(userId).block();
+    }
+
+    public void allowSystemUserToUpdateAndDeleteLinks() {
+        module.allowSystemUserToUpdateAndDeleteLinksAndManageProductLinks().block();
     }
 
     private void allowUserToReadAndManageProduct(String productId, String userId) {

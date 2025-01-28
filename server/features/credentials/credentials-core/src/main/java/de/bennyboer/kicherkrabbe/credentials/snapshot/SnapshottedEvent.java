@@ -42,19 +42,24 @@ public class SnapshottedEvent implements Event {
     @Getter(NONE)
     Instant deletedAt;
 
+    @Nullable
+    @Getter(NONE)
+    Instant createdAt;
+
     public static SnapshottedEvent of(
             Name name,
             EncodedPassword encodedPassword,
             UserId userId,
             int failedUsageAttempts,
             @Nullable Instant lastUsedAt,
-            @Nullable Instant deletedAt
+            @Nullable Instant deletedAt,
+            @Nullable Instant createdAt
     ) {
         notNull(name, "Name must be given");
         notNull(encodedPassword, "Encoded password must be given");
         notNull(userId, "User ID must be given");
 
-        return new SnapshottedEvent(name, encodedPassword, userId, failedUsageAttempts, lastUsedAt, deletedAt);
+        return new SnapshottedEvent(name, encodedPassword, userId, failedUsageAttempts, lastUsedAt, deletedAt, createdAt);
     }
 
     @Override
@@ -78,6 +83,10 @@ public class SnapshottedEvent implements Event {
 
     public Optional<Instant> getLastUsedAt() {
         return Optional.ofNullable(lastUsedAt);
+    }
+
+    public Optional<Instant> getCreatedAt() {
+        return Optional.ofNullable(createdAt);
     }
 
 }

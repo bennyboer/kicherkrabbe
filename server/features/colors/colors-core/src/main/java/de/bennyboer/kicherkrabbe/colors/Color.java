@@ -1,5 +1,12 @@
 package de.bennyboer.kicherkrabbe.colors;
 
+import de.bennyboer.kicherkrabbe.colors.create.CreateCmd;
+import de.bennyboer.kicherkrabbe.colors.create.CreatedEvent;
+import de.bennyboer.kicherkrabbe.colors.delete.DeleteCmd;
+import de.bennyboer.kicherkrabbe.colors.delete.DeletedEvent;
+import de.bennyboer.kicherkrabbe.colors.snapshot.SnapshottedEvent;
+import de.bennyboer.kicherkrabbe.colors.update.UpdateCmd;
+import de.bennyboer.kicherkrabbe.colors.update.UpdatedEvent;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
@@ -9,13 +16,6 @@ import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
-import de.bennyboer.kicherkrabbe.colors.create.CreateCmd;
-import de.bennyboer.kicherkrabbe.colors.create.CreatedEvent;
-import de.bennyboer.kicherkrabbe.colors.delete.DeleteCmd;
-import de.bennyboer.kicherkrabbe.colors.delete.DeletedEvent;
-import de.bennyboer.kicherkrabbe.colors.snapshot.SnapshottedEvent;
-import de.bennyboer.kicherkrabbe.colors.update.UpdateCmd;
-import de.bennyboer.kicherkrabbe.colors.update.UpdatedEvent;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -52,11 +52,12 @@ public class Color implements Aggregate {
     Instant deletedAt;
 
     public static Color init() {
-        return new Color(null, Version.zero(), null, 0, 0, 0, Instant.now(), null);
+        return new Color(null, Version.zero(), null, 0, 0, 0, null, null);
     }
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isCreated() || cmd instanceof CreateCmd, "Cannot apply command to not yet created aggregate");
         check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
@@ -123,6 +124,10 @@ public class Color implements Aggregate {
 
     public boolean isNotDeleted() {
         return !isDeleted();
+    }
+
+    private boolean isCreated() {
+        return createdAt != null;
     }
 
 }

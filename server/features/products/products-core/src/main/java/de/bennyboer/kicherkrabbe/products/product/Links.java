@@ -30,11 +30,23 @@ public class Links {
         return withLinks(updatedLinks);
     }
 
+    public Links update(Link link) {
+        var updatedLinks = new HashSet<>(links);
+        updatedLinks.removeIf(existingLink -> existingLink.getType().equals(link.getType()));
+        updatedLinks.add(link);
+
+        return withLinks(updatedLinks);
+    }
+
     public Links remove(LinkType linkType, LinkId linkId) {
         var updatedLinks = new HashSet<>(links);
         updatedLinks.removeIf(link -> link.getType().equals(linkType) && link.getId().equals(linkId));
 
         return withLinks(updatedLinks);
     }
-    
+
+    public boolean contains(LinkType linkType, LinkId linkId) {
+        return links.stream().anyMatch(link -> link.getType().equals(linkType) && link.getId().equals(linkId));
+    }
+
 }

@@ -66,7 +66,7 @@ public class Mail implements Aggregate {
                 null,
                 null,
                 null,
-                Instant.now(),
+                null,
                 null,
                 null
         );
@@ -74,6 +74,7 @@ public class Mail implements Aggregate {
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isReceived() || cmd instanceof ReceiveCmd, "Cannot apply command to not yet received aggregate");
         check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
@@ -167,6 +168,10 @@ public class Mail implements Aggregate {
 
     public Status getStatus() {
         return getReadAt().map(ignored -> READ).orElse(UNREAD);
+    }
+
+    private boolean isReceived() {
+        return receivedAt != null;
     }
 
 }

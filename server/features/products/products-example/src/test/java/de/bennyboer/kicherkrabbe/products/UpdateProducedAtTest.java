@@ -15,9 +15,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class UpdateProducedAtTest extends ProductsModuleTest {
 
     @Test
-    void shouldUpdatedProducedAtDate() {
+    void shouldUpdateProducedAtDate() {
         // given: the user is allowed to create products
-        allowUserToCreateProducts("USER_ID");
+        allowUserToCreateProductsAndReadLinks("USER_ID");
 
         // and: a product
         var result = createSampleProduct(Agent.user(AgentId.of("USER_ID")));
@@ -36,7 +36,7 @@ public class UpdateProducedAtTest extends ProductsModuleTest {
     @Test
     void shouldNotUpdateProducedAtDateGivenNoPermission() {
         // given: the user is allowed to create products
-        allowUserToCreateProducts("USER_ID");
+        allowUserToCreateProductsAndReadLinks("USER_ID");
 
         // and: a product
         var result = createSampleProduct(Agent.user(AgentId.of("USER_ID")));
@@ -55,7 +55,7 @@ public class UpdateProducedAtTest extends ProductsModuleTest {
     @Test
     void shouldRaiseErrorWhenTheVersionIsNotUpToDate() {
         // given: the user is allowed to create products
-        allowUserToCreateProducts("USER_ID");
+        allowUserToCreateProductsAndReadLinks("USER_ID");
 
         // and: a product
         var result = createSampleProduct(Agent.user(AgentId.of("USER_ID")));
@@ -77,7 +77,7 @@ public class UpdateProducedAtTest extends ProductsModuleTest {
     @Test
     void shouldRaiseErrorIfTryingToResetProducedAtDate() {
         // given: the user is allowed to create products
-        allowUserToCreateProducts("USER_ID");
+        allowUserToCreateProductsAndReadLinks("USER_ID");
 
         // and: a product
         var result = createSampleProduct(Agent.user(AgentId.of("USER_ID")));

@@ -17,6 +17,7 @@ dependencies {
     implementation project(':features:mailing:mailing-starter')
     implementation project(':features:notifications:notifications-starter')
     implementation project(':features:patterns:patterns-starter')
+    implementation project(':features:products:products-starter')
     implementation project(':features:telegram:telegram-starter')
     implementation project(':features:topics:topics-starter')
     implementation project(':features:users:users-starter')

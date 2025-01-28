@@ -74,6 +74,20 @@ public class ProductServiceTest {
     }
 
     @Test
+    void shouldNotAllowAddingLinkToNotYetCreatedProduct() {
+        // given: a product that has not yet been created
+        var id = ProductId.of("PRODUCT_ID");
+
+        // when: adding a link to the product; then an error is raised
+        assertThatThrownBy(() -> addLink(id, Version.zero(), Link.of(
+                PATTERN,
+                LinkId.of("PATTERN_ID"),
+                LinkName.of("Pattern")
+        ))).matches(e -> e instanceof IllegalArgumentException && e.getMessage()
+                .equals("Cannot apply command to not yet created aggregate"));
+    }
+
+    @Test
     void shouldAddLink() {
         // given: a product
         var id = create(
@@ -144,6 +158,79 @@ public class ProductServiceTest {
                 PATTERN,
                 LinkId.of("PATTERN_ID_3"),
                 LinkName.of("Pattern 3")
+        ))).matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
+    void shouldUpdateLink() {
+        // given: a product
+        var id = create(
+                ProductNumber.of("0000000001"),
+                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
+                Links.of(Set.of(
+                        Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
+                        Link.of(FABRIC, LinkId.of("FABRIC_ID"), LinkName.of("Fabric"))
+                )),
+                FabricComposition.of(Set.of(
+                        FabricCompositionItem.of(COTTON, LowPrecisionFloat.of(8000)),
+                        FabricCompositionItem.of(ELASTANE, LowPrecisionFloat.of(2000))
+                )),
+                Notes.of(
+                        Note.of("This product contains stuff."),
+                        Note.of("This product does not need much care!"),
+                        Note.of("This product is not very dangerous.")
+                ),
+                Instant.parse("2024-12-10T12:30:00.00Z")
+        );
+
+        // when: adding a link
+        var version = updateLink(id, Version.zero(), Link.of(
+                PATTERN,
+                LinkId.of("PATTERN_ID"),
+                LinkName.of("New name")
+        ));
+
+        // then: the link is updated
+        var product = get(id);
+        assertThat(product.getVersion()).isEqualTo(version);
+        assertThat(product.getLinks()).isEqualTo(Links.of(Set.of(
+                Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("New name")),
+                Link.of(FABRIC, LinkId.of("FABRIC_ID"), LinkName.of("Fabric"))
+        )));
+    }
+
+    @Test
+    void shouldNotUpdateLinkGivenAnOutdatedVersion() {
+        // given: a product
+        var id = create(
+                ProductNumber.of("0000000001"),
+                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
+                Links.of(Set.of(
+                        Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
+                        Link.of(FABRIC, LinkId.of("FABRIC_ID"), LinkName.of("Fabric"))
+                )),
+                FabricComposition.of(Set.of(
+                        FabricCompositionItem.of(COTTON, LowPrecisionFloat.of(8000)),
+                        FabricCompositionItem.of(ELASTANE, LowPrecisionFloat.of(2000))
+                )),
+                Notes.of(
+                        Note.of("This product contains stuff."),
+                        Note.of("This product does not need much care!"),
+                        Note.of("This product is not very dangerous.")
+                ),
+                Instant.parse("2024-12-10T12:30:00.00Z")
+        );
+        updateLink(id, Version.zero(), Link.of(
+                PATTERN,
+                LinkId.of("PATTERN_ID"),
+                LinkName.of("New name")
+        ));
+
+        // when: a link is updated with an outdated version; then an error is raised
+        assertThatThrownBy(() -> updateLink(id, Version.zero(), Link.of(
+                PATTERN,
+                LinkId.of("PATTERN_ID"),
+                LinkName.of("New name 2")
         ))).matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
@@ -618,6 +705,10 @@ public class ProductServiceTest {
 
     private Version addLink(ProductId id, Version version, Link link) {
         return productService.addLink(id, version, link, Agent.system()).block();
+    }
+
+    private Version updateLink(ProductId id, Version version, Link link) {
+        return productService.updateLink(id, version, link, Agent.system()).block();
     }
 
     private Version removeLink(ProductId id, Version version, LinkType linkType, LinkId linkId) {

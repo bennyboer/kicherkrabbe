@@ -20,17 +20,20 @@ public class SnapshottedEvent implements Event {
 
     String description;
 
+    Instant createdAt;
+
     @Nullable
     Instant deletedAt;
 
-    private SnapshottedEvent(String title, String description, @Nullable Instant deletedAt) {
+    private SnapshottedEvent(String title, String description, Instant createdAt, @Nullable Instant deletedAt) {
         this.title = title;
         this.description = description;
+        this.createdAt = createdAt;
         this.deletedAt = deletedAt;
     }
 
-    public static SnapshottedEvent of(String title, String description, Instant deletedAt) {
-        return new SnapshottedEvent(title, description, deletedAt);
+    public static SnapshottedEvent of(String title, String description, Instant createdAt, @Nullable Instant deletedAt) {
+        return new SnapshottedEvent(title, description, createdAt, deletedAt);
     }
 
     @Override

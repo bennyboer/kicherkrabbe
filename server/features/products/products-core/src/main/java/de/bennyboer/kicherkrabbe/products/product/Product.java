@@ -21,6 +21,8 @@ import de.bennyboer.kicherkrabbe.products.product.links.add.AddLinkCmd;
 import de.bennyboer.kicherkrabbe.products.product.links.add.LinkAddedEvent;
 import de.bennyboer.kicherkrabbe.products.product.links.remove.LinkRemovedEvent;
 import de.bennyboer.kicherkrabbe.products.product.links.remove.RemoveLinkCmd;
+import de.bennyboer.kicherkrabbe.products.product.links.update.LinkUpdatedEvent;
+import de.bennyboer.kicherkrabbe.products.product.links.update.UpdateLinkCmd;
 import de.bennyboer.kicherkrabbe.products.product.notes.update.NotesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.notes.update.UpdateNotesCmd;
 import de.bennyboer.kicherkrabbe.products.product.produced.update.ProducedAtUpdatedEvent;
@@ -76,13 +78,14 @@ public class Product implements Aggregate {
                 null,
                 null,
                 null,
-                Instant.now(),
+                null,
                 null
         );
     }
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isCreated() || cmd instanceof CreateCmd, "Cannot apply command to not yet created aggregate");
         check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
@@ -106,6 +109,7 @@ public class Product implements Aggregate {
             ));
             case DeleteCmd ignored -> ApplyCommandResult.of(DeletedEvent.of());
             case AddLinkCmd c -> ApplyCommandResult.of(LinkAddedEvent.of(c.getLink()));
+            case UpdateLinkCmd c -> ApplyCommandResult.of(LinkUpdatedEvent.of(c.getLink()));
             case RemoveLinkCmd c -> ApplyCommandResult.of(LinkRemovedEvent.of(c.getLinkType(), c.getLinkId()));
             case UpdateProducedAtCmd c -> ApplyCommandResult.of(ProducedAtUpdatedEvent.of(c.getProducedAt()));
             case UpdateImagesCmd c -> ApplyCommandResult.of(ImagesUpdatedEvent.of(c.getImages()));
@@ -141,6 +145,7 @@ public class Product implements Aggregate {
                     .withCreatedAt(metadata.getDate());
             case DeletedEvent ignored -> withDeletedAt(metadata.getDate());
             case LinkAddedEvent e -> withLinks(getLinks().add(e.getLink()));
+            case LinkUpdatedEvent e -> withLinks(getLinks().update(e.getLink()));
             case LinkRemovedEvent e -> withLinks(getLinks().remove(e.getLinkType(), e.getLinkId()));
             case ProducedAtUpdatedEvent e -> withProducedAt(e.getProducedAt());
             case ImagesUpdatedEvent e -> withImages(e.getImages());
@@ -160,6 +165,10 @@ public class Product implements Aggregate {
 
     public boolean isNotDeleted() {
         return !isDeleted();
+    }
+
+    private boolean isCreated() {
+        return createdAt != null;
     }
 
 }

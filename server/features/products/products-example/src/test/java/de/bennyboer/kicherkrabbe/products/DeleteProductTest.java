@@ -16,7 +16,7 @@ public class DeleteProductTest extends ProductsModuleTest {
     @Test
     void shouldDeleteProduct() {
         // given: a user is allowed to create products
-        allowUserToCreateProducts("USER_ID");
+        allowUserToCreateProductsAndReadLinks("USER_ID");
 
         // and: a product
         var result = createSampleProduct(Agent.user(AgentId.of("USER_ID")));
@@ -32,7 +32,7 @@ public class DeleteProductTest extends ProductsModuleTest {
     @Test
     void shouldNotDeleteProductWhenUserDoesNotHavePermission() {
         // given: a user is allowed to create products
-        allowUserToCreateProducts("USER_ID");
+        allowUserToCreateProductsAndReadLinks("USER_ID");
 
         // and: a product
         var result = createSampleProduct(Agent.user(AgentId.of("USER_ID")));
@@ -45,7 +45,7 @@ public class DeleteProductTest extends ProductsModuleTest {
     @Test
     void shouldRaiseErrorWhenTheVersionIsNotUpToDate() {
         // given: the user is allowed to create products
-        allowUserToCreateProducts("USER_ID");
+        allowUserToCreateProductsAndReadLinks("USER_ID");
 
         // and: a product
         var result = createSampleProduct(Agent.user(AgentId.of("USER_ID")));
@@ -64,7 +64,7 @@ public class DeleteProductTest extends ProductsModuleTest {
     @Test
     void shouldAllowNoFurtherOperationsOnDeletedProduct() {
         // given: a user is allowed to create products
-        allowUserToCreateProducts("USER_ID");
+        allowUserToCreateProductsAndReadLinks("USER_ID");
 
         // and: a deleted product
         var result = createSampleProduct(Agent.user(AgentId.of("USER_ID")));

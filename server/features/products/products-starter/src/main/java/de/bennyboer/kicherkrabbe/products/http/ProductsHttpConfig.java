@@ -30,8 +30,8 @@ public class ProductsHttpConfig {
                 path("/api/products"),
                 route(GET(""), handler::getProducts)
                         .andRoute(POST("/create"), handler::createProduct)
-                        .andNest(path("/{productId}"), buildProductRoutes(handler))
                         .andNest(path("/links"), buildLinksRoutes(handler))
+                        .andNest(path("/{productId}"), buildProductRoutes(handler))
         );
     }
 

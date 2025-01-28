@@ -4,7 +4,15 @@ import de.bennyboer.kicherkrabbe.products.api.ProductDTO;
 import de.bennyboer.kicherkrabbe.products.persistence.lookup.product.LookupProduct;
 import de.bennyboer.kicherkrabbe.products.product.ImageId;
 
+import java.util.List;
+
 public class LookupProductTransformer {
+
+    public static List<ProductDTO> toApi(List<LookupProduct> products) {
+        return products.stream()
+                .map(LookupProductTransformer::toApi)
+                .toList();
+    }
 
     public static ProductDTO toApi(LookupProduct product) {
         var result = new ProductDTO();

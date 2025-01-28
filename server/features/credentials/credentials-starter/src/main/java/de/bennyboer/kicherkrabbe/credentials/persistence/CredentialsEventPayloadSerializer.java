@@ -37,6 +37,7 @@ public class CredentialsEventPayloadSerializer implements EventSerializer {
 
                 e.getLastUsedAt().ifPresent(lastUsedAt -> result.put("lastUsedAt", lastUsedAt.toString()));
                 e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
+                e.getCreatedAt().ifPresent(createdAt -> result.put("createdAt", createdAt.toString()));
 
                 yield result;
             }
@@ -65,7 +66,8 @@ public class CredentialsEventPayloadSerializer implements EventSerializer {
                     UserId.of((String) payload.get("userId")),
                     (int) payload.get("failedUsageAttempts"),
                     payload.containsKey("lastUsedAt") ? Instant.parse((String) payload.get("lastUsedAt")) : null,
-                    payload.containsKey("deletedAt") ? Instant.parse((String) payload.get("deletedAt")) : null
+                    payload.containsKey("deletedAt") ? Instant.parse((String) payload.get("deletedAt")) : null,
+                    payload.containsKey("createdAt") ? Instant.parse((String) payload.get("createdAt")) : null
             );
             case "USAGE_SUCCEEDED" -> UsageSucceededEvent.of(Instant.parse((String) payload.get("date")));
             case "USAGE_FAILED" -> UsageFailedEvent.of(Instant.parse((String) payload.get("date")));

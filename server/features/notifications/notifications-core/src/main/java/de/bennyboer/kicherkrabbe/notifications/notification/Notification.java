@@ -9,12 +9,12 @@ import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.notifications.channel.Channel;
 import de.bennyboer.kicherkrabbe.notifications.notification.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.notifications.notification.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.notifications.notification.send.SendCmd;
 import de.bennyboer.kicherkrabbe.notifications.notification.send.SentEvent;
 import de.bennyboer.kicherkrabbe.notifications.notification.snapshot.SnapshottedEvent;
-import de.bennyboer.kicherkrabbe.notifications.channel.Channel;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -62,13 +62,14 @@ public class Notification implements Aggregate {
                 Set.of(),
                 null,
                 null,
-                Instant.now(),
+                null,
                 null
         );
     }
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isSent() || cmd instanceof SendCmd, "Cannot apply command to not yet sent aggregate");
         check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
@@ -131,6 +132,10 @@ public class Notification implements Aggregate {
 
     public boolean isNotDeleted() {
         return !isDeleted();
+    }
+
+    private boolean isSent() {
+        return sentAt != null;
     }
 
 }

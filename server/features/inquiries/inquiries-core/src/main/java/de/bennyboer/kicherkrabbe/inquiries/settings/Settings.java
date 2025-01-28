@@ -22,6 +22,9 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.With;
 
+import java.time.Instant;
+
+import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
@@ -39,12 +42,16 @@ public class Settings implements Aggregate {
 
     RateLimits rateLimits;
 
+    Instant initAt;
+
     public static Settings init() {
-        return new Settings(null, Version.zero(), false, RateLimits.init());
+        return new Settings(null, Version.zero(), false, RateLimits.init(), null);
     }
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isInit() || cmd instanceof InitCmd, "Cannot apply command to not yet initialized aggregate");
+
         return switch (cmd) {
             case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(isEnabled(), getRateLimits()));
             case InitCmd ignored -> ApplyCommandResult.of(InitEvent.of(isEnabled(), getRateLimits()));
@@ -63,10 +70,12 @@ public class Settings implements Aggregate {
         return (switch (event) {
             case SnapshottedEvent e -> withId(id)
                     .withEnabled(e.isEnabled())
-                    .withRateLimits(e.getRateLimits());
+                    .withRateLimits(e.getRateLimits())
+                    .withInitAt(metadata.getDate());
             case InitEvent e -> withId(id)
                     .withEnabled(e.isEnabled())
-                    .withRateLimits(e.getRateLimits());
+                    .withRateLimits(e.getRateLimits())
+                    .withInitAt(metadata.getDate());
             case EnabledEvent ignored -> withEnabled(true);
             case DisabledEvent ignored -> withEnabled(false);
             case RateLimitsUpdatedEvent e -> withRateLimits(e.getRateLimits());
@@ -76,6 +85,10 @@ public class Settings implements Aggregate {
 
     public boolean isDisabled() {
         return !isEnabled();
+    }
+
+    private boolean isInit() {
+        return initAt != null;
     }
 
 }

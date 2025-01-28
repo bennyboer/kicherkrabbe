@@ -8,7 +8,6 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.permissions.*;
 import de.bennyboer.kicherkrabbe.products.Actions;
-import de.bennyboer.kicherkrabbe.products.api.LinkDTO;
 import de.bennyboer.kicherkrabbe.products.api.LinkTypeDTO;
 import de.bennyboer.kicherkrabbe.products.api.requests.AddLinkToProductRequest;
 import de.bennyboer.kicherkrabbe.products.api.responses.AddLinkToProductResponse;
@@ -29,10 +28,8 @@ public class AddLinkHttpHandlerTest extends HttpHandlerTest {
         // and: a request to add a link
         var request = new AddLinkToProductRequest();
         request.version = 2L;
-        request.link = new LinkDTO();
-        request.link.type = LinkTypeDTO.PATTERN;
-        request.link.id = "PATTERN_ID";
-        request.link.name = "Pattern Name";
+        request.linkType = LinkTypeDTO.PATTERN;
+        request.linkId = "PATTERN_ID";
 
         // and: the module is configured to return a successful response
         var response = new AddLinkToProductResponse();
@@ -68,10 +65,8 @@ public class AddLinkHttpHandlerTest extends HttpHandlerTest {
         // and: a request to add a link
         var request = new AddLinkToProductRequest();
         request.version = 2L;
-        request.link = new LinkDTO();
-        request.link.type = LinkTypeDTO.PATTERN;
-        request.link.id = "PATTERN_ID";
-        request.link.name = "Pattern Name";
+        request.linkType = LinkTypeDTO.PATTERN;
+        request.linkId = "PATTERN_ID";
 
         // and: the module is configured to return an empty response
         var response = new AddLinkToProductResponse();
@@ -129,10 +124,8 @@ public class AddLinkHttpHandlerTest extends HttpHandlerTest {
         // and: a request to add a link
         var request = new AddLinkToProductRequest();
         request.version = 2L;
-        request.link = new LinkDTO();
-        request.link.type = LinkTypeDTO.PATTERN;
-        request.link.id = "PATTERN_ID";
-        request.link.name = "Pattern Name";
+        request.linkType = LinkTypeDTO.PATTERN;
+        request.linkId = "PATTERN_ID";
 
         // and: the module is configured to return an error
         when(module.addLinkToProduct(
@@ -165,10 +158,8 @@ public class AddLinkHttpHandlerTest extends HttpHandlerTest {
         // and: a request to add a link
         var request = new AddLinkToProductRequest();
         request.version = 2L;
-        request.link = new LinkDTO();
-        request.link.type = LinkTypeDTO.PATTERN;
-        request.link.id = "PATTERN_ID";
-        request.link.name = "Pattern Name";
+        request.linkType = LinkTypeDTO.PATTERN;
+        request.linkId = "PATTERN_ID";
 
         // and: the module is configured to return an error
         when(module.addLinkToProduct(
@@ -200,10 +191,8 @@ public class AddLinkHttpHandlerTest extends HttpHandlerTest {
         // and: a request to add a link
         var request = new AddLinkToProductRequest();
         request.version = -1L;
-        request.link = new LinkDTO();
-        request.link.type = LinkTypeDTO.PATTERN;
-        request.link.id = "PATTERN_ID";
-        request.link.name = "Pattern Name";
+        request.linkType = LinkTypeDTO.PATTERN;
+        request.linkId = "PATTERN_ID";
 
         // when: posting the request
         var exchange = client.post()

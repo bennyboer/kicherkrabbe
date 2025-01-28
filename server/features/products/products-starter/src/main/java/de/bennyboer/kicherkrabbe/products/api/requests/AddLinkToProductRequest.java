@@ -1,6 +1,6 @@
 package de.bennyboer.kicherkrabbe.products.api.requests;
 
-import de.bennyboer.kicherkrabbe.products.api.LinkDTO;
+import de.bennyboer.kicherkrabbe.products.api.LinkTypeDTO;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -14,6 +14,8 @@ public class AddLinkToProductRequest {
 
     long version;
 
-    LinkDTO link;
+    LinkTypeDTO linkType;
+
+    String linkId;
 
 }

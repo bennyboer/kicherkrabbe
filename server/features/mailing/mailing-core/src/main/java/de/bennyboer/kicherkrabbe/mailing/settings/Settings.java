@@ -22,6 +22,9 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.With;
 
+import java.time.Instant;
+
+import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
@@ -39,10 +42,13 @@ public class Settings implements Aggregate {
 
     MailgunSettings mailgun;
 
+    Instant initAt;
+
     public static Settings init() {
         return new Settings(
                 null,
                 Version.zero(),
+                null,
                 null,
                 null
         );
@@ -50,6 +56,8 @@ public class Settings implements Aggregate {
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isInit() || cmd instanceof InitCmd, "Cannot apply command to not yet initialized aggregate");
+
         return switch (cmd) {
             case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(getRateLimit(), getMailgun()));
             case InitCmd c -> ApplyCommandResult.of(InitEvent.of(c.getRateLimit(), c.getMailgun()));
@@ -68,15 +76,21 @@ public class Settings implements Aggregate {
         return (switch (event) {
             case SnapshottedEvent e -> withId(id)
                     .withRateLimit(e.getRateLimit())
-                    .withMailgun(e.getMailgun());
+                    .withMailgun(e.getMailgun())
+                    .withInitAt(metadata.getDate());
             case InitEvent e -> withId(id)
                     .withRateLimit(e.getRateLimit())
-                    .withMailgun(e.getMailgun());
+                    .withMailgun(e.getMailgun())
+                    .withInitAt(metadata.getDate());
             case RateLimitUpdatedEvent e -> withRateLimit(getRateLimit().update(e.getDuration(), e.getLimit()));
             case MailgunApiTokenUpdatedEvent e -> withMailgun(getMailgun().updateApiToken(e.getApiToken()));
             case MailgunApiTokenClearedEvent ignored -> withMailgun(getMailgun().clearApiToken());
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());
         }).withVersion(version);
+    }
+
+    private boolean isInit() {
+        return initAt != null;
     }
 
 }

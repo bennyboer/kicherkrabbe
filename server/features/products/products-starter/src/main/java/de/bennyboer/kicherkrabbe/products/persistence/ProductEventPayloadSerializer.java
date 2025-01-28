@@ -11,6 +11,7 @@ import de.bennyboer.kicherkrabbe.products.product.fabric.composition.update.Fabr
 import de.bennyboer.kicherkrabbe.products.product.images.update.ImagesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.links.add.LinkAddedEvent;
 import de.bennyboer.kicherkrabbe.products.product.links.remove.LinkRemovedEvent;
+import de.bennyboer.kicherkrabbe.products.product.links.update.LinkUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.notes.update.NotesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.produced.update.ProducedAtUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.snapshot.SnapshottedEvent;
@@ -60,6 +61,7 @@ public class ProductEventPayloadSerializer implements EventSerializer {
                     "producedAt", e.getProducedAt().toString()
             );
             case LinkAddedEvent e -> serializeLink(e.getLink());
+            case LinkUpdatedEvent e -> serializeLink(e.getLink());
             case LinkRemovedEvent e -> Map.of(
                     "type", serializeLinkType(e.getLinkType()),
                     "id", e.getLinkId().getValue()
@@ -103,6 +105,9 @@ public class ProductEventPayloadSerializer implements EventSerializer {
                     Instant.parse((String) payload.get("producedAt"))
             );
             case "LINK_ADDED" -> LinkAddedEvent.of(
+                    deserializeLink(payload)
+            );
+            case "LINK_UPDATED" -> LinkUpdatedEvent.of(
                     deserializeLink(payload)
             );
             case "LINK_REMOVED" -> LinkRemovedEvent.of(

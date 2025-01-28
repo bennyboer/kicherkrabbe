@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.products.product.fabric.composition.update.Fabr
 import de.bennyboer.kicherkrabbe.products.product.images.update.ImagesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.links.add.LinkAddedEvent;
 import de.bennyboer.kicherkrabbe.products.product.links.remove.LinkRemovedEvent;
+import de.bennyboer.kicherkrabbe.products.product.links.update.LinkUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.notes.update.NotesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.produced.update.ProducedAtUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.snapshot.SnapshottedEvent;
@@ -177,40 +178,43 @@ public class ProductEventPayloadSerializerTest {
         var serialized2 = serializer.serialize(event2);
 
         // then: the serialized form is correct
-        assertThat(serialized2).isEqualTo(Map.of(
-                "number", "0000000001",
-                "images", List.of("IMAGE_ID_1", "IMAGE_ID_2"),
-                "links", List.of(
-                        Map.of(
-                                "type", "PATTERN",
-                                "id", "PATTERN_ID",
-                                "name", "Pattern"
+        assertThat(serialized2)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrderInFields("links", "images", "fabricComposition")
+                .isEqualTo(Map.of(
+                        "number", "0000000001",
+                        "images", List.of("IMAGE_ID_1", "IMAGE_ID_2"),
+                        "links", List.of(
+                                Map.of(
+                                        "type", "PATTERN",
+                                        "id", "PATTERN_ID",
+                                        "name", "Pattern"
+                                ),
+                                Map.of(
+                                        "type", "FABRIC",
+                                        "id", "FABRIC_ID",
+                                        "name", "Fabric"
+                                )
                         ),
-                        Map.of(
-                                "type", "FABRIC",
-                                "id", "FABRIC_ID",
-                                "name", "Fabric"
-                        )
-                ),
-                "fabricComposition", List.of(
-                        Map.of(
-                                "fabricType", "COTTON",
-                                "percentage", 8000L
+                        "fabricComposition", List.of(
+                                Map.of(
+                                        "fabricType", "COTTON",
+                                        "percentage", 8000L
+                                ),
+                                Map.of(
+                                        "fabricType", "POLYESTER",
+                                        "percentage", 2000L
+                                )
                         ),
-                        Map.of(
-                                "fabricType", "POLYESTER",
-                                "percentage", 2000L
-                        )
-                ),
-                "notes", Map.of(
-                        "contains", "Contains",
-                        "care", "Care",
-                        "safety", "Safety"
-                ),
-                "producedAt", "2024-12-08T12:30:00Z",
-                "createdAt", "2024-12-08T12:31:00Z",
-                "deletedAt", "2024-12-08T12:32:00Z"
-        ));
+                        "notes", Map.of(
+                                "contains", "Contains",
+                                "care", "Care",
+                                "safety", "Safety"
+                        ),
+                        "producedAt", "2024-12-08T12:30:00Z",
+                        "createdAt", "2024-12-08T12:31:00Z",
+                        "deletedAt", "2024-12-08T12:32:00Z"
+                ));
 
         // when: the serialized form is deserialized
         var deserialized = serializer.deserialize(SnapshottedEvent.NAME, SnapshottedEvent.VERSION, serialized);
@@ -289,6 +293,28 @@ public class ProductEventPayloadSerializerTest {
 
         // when: the serialized form is deserialized
         var deserialized = serializer.deserialize(LinkAddedEvent.NAME, LinkAddedEvent.VERSION, serialized);
+
+        // then: the deserialized form is correct
+        assertThat(deserialized).isEqualTo(event);
+    }
+
+    @Test
+    void shouldSerializeAndDeserializeLinkUpdatedEvent() {
+        // when: a link updated event is serialized
+        var event = LinkUpdatedEvent.of(
+                Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern"))
+        );
+        var serialized = serializer.serialize(event);
+
+        // then: the serialized form is correct
+        assertThat(serialized).isEqualTo(Map.of(
+                "type", "PATTERN",
+                "id", "PATTERN_ID",
+                "name", "Pattern"
+        ));
+
+        // when: the serialized form is deserialized
+        var deserialized = serializer.deserialize(LinkUpdatedEvent.NAME, LinkUpdatedEvent.VERSION, serialized);
 
         // then: the deserialized form is correct
         assertThat(deserialized).isEqualTo(event);

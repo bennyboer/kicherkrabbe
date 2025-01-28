@@ -20,6 +20,9 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.With;
 
+import java.time.Instant;
+
+import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
@@ -35,16 +38,21 @@ public class Settings implements Aggregate {
 
     BotSettings botSettings;
 
+    Instant initAt;
+
     public static Settings init() {
         return new Settings(
                 null,
                 Version.zero(),
+                null,
                 null
         );
     }
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isInit() || cmd instanceof InitCmd, "Cannot apply command to not yet initialized aggregate");
+
         return switch (cmd) {
             case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(getBotSettings()));
             case InitCmd c -> ApplyCommandResult.of(InitEvent.of(c.getBotSettings()));
@@ -61,13 +69,19 @@ public class Settings implements Aggregate {
 
         return (switch (event) {
             case SnapshottedEvent e -> withId(id)
-                    .withBotSettings(e.getBotSettings());
+                    .withBotSettings(e.getBotSettings())
+                    .withInitAt(metadata.getDate());
             case InitEvent e -> withId(id)
-                    .withBotSettings(e.getBotSettings());
+                    .withBotSettings(e.getBotSettings())
+                    .withInitAt(metadata.getDate());
             case BotApiTokenUpdatedEvent e -> withBotSettings(getBotSettings().updateApiToken(e.getApiToken()));
             case BotApiTokenClearedEvent ignored -> withBotSettings(getBotSettings().clearApiToken());
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());
         }).withVersion(version);
+    }
+
+    private boolean isInit() {
+        return initAt != null;
     }
 
 }

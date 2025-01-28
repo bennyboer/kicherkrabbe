@@ -8,7 +8,11 @@ public class Actions {
 
     public static Action CREATE = Action.of("CREATE");
 
+    public static Action UPDATE = Action.of("UPDATE");
+
     public static Action ADD_LINKS = Action.of("ADD_LINKS");
+
+    public static Action UPDATE_LINKS = Action.of("UPDATE_LINKS");
 
     public static Action REMOVE_LINKS = Action.of("REMOVE_LINKS");
 

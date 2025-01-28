@@ -43,7 +43,7 @@ export class FabricComposition {
     }
 
     const sum = items.reduce((acc, item) => acc + item.percentage, 0);
-    if (sum !== 100) {
+    if (sum !== 10000) {
       throw new Error(FabricCompositionValidationError.INVALID_PERCENTAGE_SUM);
     }
   }

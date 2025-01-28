@@ -26,6 +26,9 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.With;
 
+import java.time.Instant;
+
+import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
@@ -41,16 +44,21 @@ public class Settings implements Aggregate {
 
     SystemSettings systemSettings;
 
+    Instant initAt;
+
     public static Settings init() {
         return new Settings(
                 null,
                 Version.zero(),
+                null,
                 null
         );
     }
 
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
+        check(isInit() || cmd instanceof InitCmd, "Cannot apply command to not yet initialized aggregate");
+
         return switch (cmd) {
             case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(getSystemSettings()));
             case InitCmd c -> ApplyCommandResult.of(InitEvent.of(c.getSystemSettings()));
@@ -72,9 +80,11 @@ public class Settings implements Aggregate {
 
         return (switch (event) {
             case SnapshottedEvent e -> withId(id)
-                    .withSystemSettings(e.getSystemSettings());
+                    .withSystemSettings(e.getSystemSettings())
+                    .withInitAt(metadata.getDate());
             case InitEvent e -> withId(id)
-                    .withSystemSettings(e.getSystemSettings());
+                    .withSystemSettings(e.getSystemSettings())
+                    .withInitAt(metadata.getDate());
             case SystemNotificationsEnabledEvent ignored -> withSystemSettings(getSystemSettings().enable());
             case SystemNotificationsDisabledEvent ignored -> withSystemSettings(getSystemSettings().disable());
             case SystemChannelUpdatedEvent e -> withSystemSettings(getSystemSettings().updateChannel(e.getChannel()));
@@ -84,6 +94,10 @@ public class Settings implements Aggregate {
                     withSystemSettings(getSystemSettings().deactivateChannel(e.getChannelType()));
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());
         }).withVersion(version);
+    }
+
+    private boolean isInit() {
+        return initAt != null;
     }
 
 }
