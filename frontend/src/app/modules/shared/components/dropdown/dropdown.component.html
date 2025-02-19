@@ -2,7 +2,9 @@
   <span class="content">
     <span class="placeholder">
       @if (getSelected() | async; as selected) {
-        @if (multiple) {
+        @if (searching$ | async) {
+          {{ searchTerm$ | async }}
+        } @else if (multiple) {
           {{ label }}
           @if (selected.length > 0 && showSelectionIndicator) {
             <span class="multi-selection-indicator">{{ selected.length }}</span>
@@ -33,9 +35,9 @@
               <div class="dropdown-item">
                 <div class="dropdown-item-prefix">
                   @if (multiple) {
-                    <app-checkbox [checked]="isSelected(item.id) | async" [passive]="true"> </app-checkbox>
+                    <app-checkbox [checked]="isSelected(item.id) | async" [passive]="true"></app-checkbox>
                   } @else if (useRadioButtonForSingleSelection) {
-                    <app-radio [checked]="isSelected(item.id) | async" [passive]="true"> </app-radio>
+                    <app-radio [checked]="isSelected(item.id) | async" [passive]="true"></app-radio>
                   }
                 </div>
                 <div class="dropdown-item-content">

@@ -1,9 +1,12 @@
 import {
+  AfterViewInit,
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   ContentChild,
   ElementRef,
   EventEmitter,
+  HostListener,
   Input,
   OnDestroy,
   OnInit,
@@ -11,7 +14,7 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { BehaviorSubject, filter, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { Point, Rect, Size } from '../../../../util';
 import { OverlayRef, OverlayService } from '../../services';
 import { ButtonSize as ButtonSize } from '../button/button.component';
@@ -30,13 +33,13 @@ interface SelectedEvent {
 }
 
 @Component({
-    selector: 'app-dropdown',
-    templateUrl: './dropdown.component.html',
-    styleUrls: ['./dropdown.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-dropdown',
+  templateUrl: './dropdown.component.html',
+  styleUrls: ['./dropdown.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
-export class DropdownComponent implements OnDestroy, OnInit {
+export class DropdownComponent implements OnDestroy, OnInit, AfterViewInit {
   @ContentChild(TemplateRef)
   itemTemplate!: TemplateRef<any>;
 
@@ -54,6 +57,11 @@ export class DropdownComponent implements OnDestroy, OnInit {
 
   @Input()
   showSelectionIndicator: boolean = false;
+
+  @Input({ transform: booleanAttribute })
+  set searchEnabled(value: boolean) {
+    this.searchEnabled$.next(value);
+  }
 
   @Input('items')
   set setItems(items: DropdownItem[] | null) {
@@ -74,6 +82,10 @@ export class DropdownComponent implements OnDestroy, OnInit {
   selectionChanged: EventEmitter<DropdownItemId[]> = new EventEmitter<DropdownItemId[]>();
 
   protected readonly ButtonSize = ButtonSize;
+
+  private readonly searchEnabled$ = new BehaviorSubject<boolean>(false);
+  protected readonly searchTerm$ = new BehaviorSubject<string>('');
+  protected readonly searching$ = this.searchTerm$.pipe(map((term) => term.length > 0));
 
   private readonly items$: BehaviorSubject<DropdownItem[]> = new BehaviorSubject<DropdownItem[]>([]);
   private readonly selected$: BehaviorSubject<SelectedEvent> = new BehaviorSubject<SelectedEvent>({
@@ -99,8 +111,21 @@ export class DropdownComponent implements OnDestroy, OnInit {
       .subscribe((event) => this.selectionChanged.emit(Array.from(event.selected)));
   }
 
+  ngAfterViewInit(): void {
+    this.isOpened()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((opened) => {
+        if (!opened) {
+          this.searchTerm$.next('');
+        }
+      });
+  }
+
   ngOnDestroy(): void {
     this.closeOpenedOverlay();
+
+    this.searchEnabled$.complete();
+    this.searchTerm$.complete();
 
     this.openedOverlay$.complete();
     this.items$.complete();
@@ -151,7 +176,15 @@ export class DropdownComponent implements OnDestroy, OnInit {
   }
 
   getItems(): Observable<DropdownItem[]> {
-    return this.items$.asObservable();
+    return combineLatest([this.items$, this.searchTerm$]).pipe(
+      map(([items, searchTerm]) => {
+        if (searchTerm.length === 0) {
+          return items;
+        }
+
+        return items.filter((item) => item.label.toLowerCase().includes(searchTerm.toLowerCase()));
+      }),
+    );
   }
 
   toggleOpened(): void {
@@ -160,7 +193,6 @@ export class DropdownComponent implements OnDestroy, OnInit {
 
     if (isOpened) {
       this.closeOpenedOverlay();
-      this.openedOverlay$.next(none());
     } else {
       const rect = this.getElementRect();
 
@@ -206,6 +238,28 @@ export class DropdownComponent implements OnDestroy, OnInit {
     return selectedItem ? selectedItem.label : this.label;
   }
 
+  @HostListener('window:keyup', ['$event'])
+  onKeyUp(event: KeyboardEvent) {
+    const overlayOpen = this.openedOverlay$.value.map((overlay) => overlay.isCurrentlyOpened()).orElse(false);
+    if (!overlayOpen) {
+      return;
+    }
+    if (!this.searchEnabled$.value) {
+      return;
+    }
+
+    let searchTerm = this.searchTerm$.value;
+
+    let key = event.key;
+    if (key === 'Backspace') {
+      this.searchTerm$.next(searchTerm.substring(0, searchTerm.length - 1));
+    } else if (key === 'Escape') {
+      this.toggleOpened();
+    } else if (key.length === 1) {
+      this.searchTerm$.next(searchTerm + key);
+    }
+  }
+
   private getElementRect(): Rect {
     const element = this.elementRef.nativeElement as HTMLElement;
     const rect = element.getBoundingClientRect();
@@ -221,5 +275,7 @@ export class DropdownComponent implements OnDestroy, OnInit {
 
   private closeOpenedOverlay(): void {
     this.openedOverlay$.value.ifSome((overlay) => overlay.close());
+    this.openedOverlay$.next(none());
+    this.searchTerm$.next('');
   }
 }

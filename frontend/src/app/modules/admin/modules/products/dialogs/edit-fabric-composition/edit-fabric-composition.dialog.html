@@ -20,6 +20,7 @@
               <app-dropdown #dropdown
                             [selected]="[item.fabricType.internal]"
                             [items]="fabricTypesDropdownItems"
+                            [searchEnabled]="true"
                             (selectionChanged)="updateFabricTypeForItem(dropdown, index, $event)">
                 <ng-template let-item>
                   <span>{{ item.label }}</span>
