@@ -449,7 +449,7 @@ public class ProductsModule {
         return getProductCounter()
                 .flatMap(counter -> counterService.increment(counter.getId(), counter.getVersion(), Agent.system())
                         .flatMap(version -> counterService.get(counter.getId(), version)))
-                .map(counter -> ProductNumber.of(String.format("%010d", counter.getValue())));
+                .map(counter -> ProductNumber.of(String.format("%05d", counter.getValue())));
     }
 
     private Mono<Counter> getProductCounter() {

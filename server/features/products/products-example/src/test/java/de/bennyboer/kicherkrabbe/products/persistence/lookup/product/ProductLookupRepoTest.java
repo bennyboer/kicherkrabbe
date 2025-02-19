@@ -29,7 +29,7 @@ public abstract class ProductLookupRepoTest {
         var product = LookupProduct.of(
                 ProductId.create(),
                 Version.zero(),
-                ProductNumber.of("0000000042"),
+                ProductNumber.of("00042"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -62,7 +62,7 @@ public abstract class ProductLookupRepoTest {
         var product1 = LookupProduct.of(
                 ProductId.create(),
                 Version.zero(),
-                ProductNumber.of("0000000042"),
+                ProductNumber.of("00042"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -83,7 +83,7 @@ public abstract class ProductLookupRepoTest {
         var product2 = LookupProduct.of(
                 ProductId.create(),
                 Version.zero(),
-                ProductNumber.of("0000000387"),
+                ProductNumber.of("00387"),
                 List.of(ImageId.of("IMAGE_ID_3")),
                 Links.of(Set.of(
                         Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern"))
@@ -117,7 +117,7 @@ public abstract class ProductLookupRepoTest {
         var product1 = LookupProduct.of(
                 ProductId.create(),
                 Version.zero(),
-                ProductNumber.of("0000000983"),
+                ProductNumber.of("00983"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -138,7 +138,7 @@ public abstract class ProductLookupRepoTest {
         var product2 = LookupProduct.of(
                 ProductId.create(),
                 Version.zero(),
-                ProductNumber.of("0000000387"),
+                ProductNumber.of("00387"),
                 List.of(ImageId.of("IMAGE_ID_3")),
                 Links.of(Set.of(
                         Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern"))
@@ -251,7 +251,7 @@ public abstract class ProductLookupRepoTest {
         // when: querying products by search term
         page = findByIds(
                 Set.of(product1.getId(), product2.getId()),
-                "0000000983",
+                "00983",
                 null,
                 null,
                 0,
@@ -273,7 +273,7 @@ public abstract class ProductLookupRepoTest {
         var product1 = LookupProduct.of(
                 ProductId.create(),
                 Version.zero(),
-                ProductNumber.of("0000000983"),
+                ProductNumber.of("00983"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -294,7 +294,7 @@ public abstract class ProductLookupRepoTest {
         var product2 = LookupProduct.of(
                 ProductId.create(),
                 Version.zero(),
-                ProductNumber.of("0000000387"),
+                ProductNumber.of("00387"),
                 List.of(ImageId.of("IMAGE_ID_3")),
                 Links.of(Set.of(
                         Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern"))

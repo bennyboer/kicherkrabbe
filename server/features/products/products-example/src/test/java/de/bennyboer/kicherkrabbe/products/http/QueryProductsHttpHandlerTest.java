@@ -53,7 +53,7 @@ public class QueryProductsHttpHandlerTest extends HttpHandlerTest {
         var product1 = new ProductDTO();
         product1.id = "PRODUCT_ID_1";
         product1.version = 3L;
-        product1.number = "0000000001";
+        product1.number = "00001";
         product1.images = List.of("IMAGE_ID_1", "IMAGE_ID_2");
         product1.links = List.of(link1, link2);
         product1.fabricComposition = fabricComposition;
@@ -68,7 +68,7 @@ public class QueryProductsHttpHandlerTest extends HttpHandlerTest {
         var product2 = new ProductDTO();
         product2.id = "PRODUCT_ID_2";
         product2.version = 2L;
-        product2.number = "0000000002";
+        product2.number = "00002";
         product2.images = List.of("IMAGE_ID_3");
         product2.links = List.of();
         product2.fabricComposition = fabricComposition;
@@ -146,7 +146,7 @@ public class QueryProductsHttpHandlerTest extends HttpHandlerTest {
         var product1 = new ProductDTO();
         product1.id = "PRODUCT_ID_1";
         product1.version = 3L;
-        product1.number = "0000000001";
+        product1.number = "00001";
         product1.images = List.of("IMAGE_ID_1", "IMAGE_ID_2");
         product1.links = List.of(link1, link2);
         product1.fabricComposition = fabricComposition;
@@ -161,7 +161,7 @@ public class QueryProductsHttpHandlerTest extends HttpHandlerTest {
         var product2 = new ProductDTO();
         product2.id = "PRODUCT_ID_2";
         product2.version = 2L;
-        product2.number = "0000000002";
+        product2.number = "00002";
         product2.images = List.of("IMAGE_ID_3");
         product2.links = List.of();
         product2.fabricComposition = fabricComposition;

@@ -28,7 +28,7 @@ public class ProductEventPayloadSerializerTest {
     void shouldSerializeAndDeserializeCreatedEvent() {
         // when: a created event is serialized
         var event = CreatedEvent.of(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -52,7 +52,7 @@ public class ProductEventPayloadSerializerTest {
                 .usingRecursiveComparison()
                 .ignoringCollectionOrderInFields("links", "images", "fabricComposition")
                 .isEqualTo(Map.of(
-                        "number", "0000000001",
+                        "number", "00001",
                         "images", List.of("IMAGE_ID_1", "IMAGE_ID_2"),
                         "links", List.of(
                                 Map.of(
@@ -95,7 +95,7 @@ public class ProductEventPayloadSerializerTest {
     void shouldSerializeAndDeserializeSnapshottedEvent() {
         // when: a snapshotted event is serialized
         var event = SnapshottedEvent.of(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -121,7 +121,7 @@ public class ProductEventPayloadSerializerTest {
                 .usingRecursiveComparison()
                 .ignoringCollectionOrderInFields("links", "images", "fabricComposition")
                 .isEqualTo(Map.of(
-                        "number", "0000000001",
+                        "number", "00001",
                         "images", List.of("IMAGE_ID_1", "IMAGE_ID_2"),
                         "links", List.of(
                                 Map.of(
@@ -156,7 +156,7 @@ public class ProductEventPayloadSerializerTest {
 
         // when: a snapshotted event with deleted at date is serialized
         var event2 = SnapshottedEvent.of(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -182,7 +182,7 @@ public class ProductEventPayloadSerializerTest {
                 .usingRecursiveComparison()
                 .ignoringCollectionOrderInFields("links", "images", "fabricComposition")
                 .isEqualTo(Map.of(
-                        "number", "0000000001",
+                        "number", "00001",
                         "images", List.of("IMAGE_ID_1", "IMAGE_ID_2"),
                         "links", List.of(
                                 Map.of(

@@ -32,7 +32,7 @@ public class ProductServiceTest {
     void shouldCreateProduct() {
         // when: creating a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -54,7 +54,7 @@ public class ProductServiceTest {
         var product = get(id);
         assertThat(product.getId()).isEqualTo(id);
         assertThat(product.getVersion()).isEqualTo(Version.zero());
-        assertThat(product.getNumber()).isEqualTo(ProductNumber.of("0000000001"));
+        assertThat(product.getNumber()).isEqualTo(ProductNumber.of("00001"));
         assertThat(product.getImages()).containsExactlyInAnyOrder(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2"));
         assertThat(product.getLinks()).isEqualTo(Links.of(Set.of(
                 Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -91,7 +91,7 @@ public class ProductServiceTest {
     void shouldAddLink() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -130,7 +130,7 @@ public class ProductServiceTest {
     void shouldNotAddLinkGivenAnOutdatedVersion() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -165,7 +165,7 @@ public class ProductServiceTest {
     void shouldUpdateLink() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -203,7 +203,7 @@ public class ProductServiceTest {
     void shouldNotUpdateLinkGivenAnOutdatedVersion() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -238,7 +238,7 @@ public class ProductServiceTest {
     void shouldRemoveLink() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -271,7 +271,7 @@ public class ProductServiceTest {
     void shouldNotRemoveLinkGivenAnOutdatedVersion() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -299,7 +299,7 @@ public class ProductServiceTest {
     void shouldUpdateProducedAtDate() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -330,7 +330,7 @@ public class ProductServiceTest {
     void shouldNotUpdateProducedAtDateGivenAnOutdatedVersion() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -358,7 +358,7 @@ public class ProductServiceTest {
     void shouldUpdateNotes() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -397,7 +397,7 @@ public class ProductServiceTest {
     void shouldNotUpdateNotesGivenAnOutdatedVersion() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -432,7 +432,7 @@ public class ProductServiceTest {
     void shouldUpdateImages() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -469,7 +469,7 @@ public class ProductServiceTest {
     void shouldNotUpdateImagesGivenAnOutdatedVersion() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -502,7 +502,7 @@ public class ProductServiceTest {
     void shouldUpdateFabricComposition() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -539,7 +539,7 @@ public class ProductServiceTest {
     void shouldNotUpdateFabricCompositionGivenAnOutdatedVersion() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -572,7 +572,7 @@ public class ProductServiceTest {
     void shouldDeleteProduct() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -607,7 +607,7 @@ public class ProductServiceTest {
     void shouldNotDeleteProductGivenAnOutdatedVersion() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -639,7 +639,7 @@ public class ProductServiceTest {
     void shouldSnapshotEvery100Events() {
         // given: a product
         var id = create(
-                ProductNumber.of("0000000001"),
+                ProductNumber.of("00001"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),

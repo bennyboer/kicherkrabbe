@@ -16,7 +16,7 @@ public class ProductNumber {
     public static ProductNumber of(String value) {
         notNull(value, "Product number must be given");
         check(!value.isBlank(), "Product number must not be blank");
-        check(value.length() == 10, "Product number must have 10 characters");
+        check(value.length() == 5, "Product number must have 5 characters");
         check(value.chars().allMatch(Character::isDigit), "Product number must contain only digits");
 
         return new ProductNumber(value);
