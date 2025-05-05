@@ -92,9 +92,17 @@ interface RenamePatternRequest {
   name: string;
 }
 
+interface RenamePatternResponse {
+  version: number;
+}
+
 interface UpdatePatternNumberRequest {
   version: number;
   number: string;
+}
+
+interface UpdatePatternNumberResponse {
+  version: number;
 }
 
 interface UpdateImagesRequest {
@@ -102,9 +110,17 @@ interface UpdateImagesRequest {
   images: string[];
 }
 
+interface UpdateImagesResponse {
+  version: number;
+}
+
 interface UpdateAttributionRequest {
   version: number;
   attribution: PatternAttributionDTO;
+}
+
+interface UpdateAttributionResponse {
+  version: number;
 }
 
 interface UpdateCategoriesRequest {
@@ -112,9 +128,17 @@ interface UpdateCategoriesRequest {
   categories: string[];
 }
 
+interface UpdateCategoriesResponse {
+  version: number;
+}
+
 interface UpdateVariantsRequest {
   version: number;
   variants: PatternVariantDTO[];
+}
+
+interface UpdateVariantsResponse {
+  version: number;
 }
 
 interface UpdateExtrasRequest {
@@ -122,8 +146,24 @@ interface UpdateExtrasRequest {
   extras: PatternExtraDTO[];
 }
 
+interface UpdateExtrasResponse {
+  version: number;
+}
+
 interface UpdateDescriptionRequest {
   description?: string;
+  version: number;
+}
+
+interface UpdateDescriptionResponse {
+  version: number;
+}
+
+interface PublishPatternResponse {
+  version: number;
+}
+
+interface UnpublishPatternResponse {
   version: number;
 }
 
@@ -228,58 +268,72 @@ export class PatternsService implements OnDestroy {
       .pipe(map((response) => response.id));
   }
 
-  renamePattern(id: PatternId, version: number, name: string): Observable<void> {
+  renamePattern(id: PatternId, version: number, name: string): Observable<number> {
     const request: RenamePatternRequest = { version, name };
 
-    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/rename`, request);
+    return this.http
+      .post<RenamePatternResponse>(`${environment.apiUrl}/patterns/${id}/rename`, request)
+      .pipe(map((response) => response.version));
   }
 
-  updatePatternNumber(id: PatternId, version: number, number: string): Observable<void> {
+  updatePatternNumber(id: PatternId, version: number, number: string): Observable<number> {
     const request: UpdatePatternNumberRequest = { version, number };
 
-    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/number`, request);
+    return this.http
+      .post<UpdatePatternNumberResponse>(`${environment.apiUrl}/patterns/${id}/update/number`, request)
+      .pipe(map((response) => response.version));
   }
 
-  updateImages(id: PatternId, version: number, images: string[]): Observable<void> {
+  updateImages(id: PatternId, version: number, images: string[]): Observable<number> {
     const request: UpdateImagesRequest = { version, images };
 
-    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/images`, request);
+    return this.http
+      .post<UpdateImagesResponse>(`${environment.apiUrl}/patterns/${id}/update/images`, request)
+      .pipe(map((response) => response.version));
   }
 
-  updateAttribution(id: PatternId, version: number, attribution: PatternAttribution): Observable<void> {
+  updateAttribution(id: PatternId, version: number, attribution: PatternAttribution): Observable<number> {
     const request: UpdateAttributionRequest = {
       version,
       attribution: this.toApiAttribution(attribution),
     };
 
-    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/attribution`, request);
+    return this.http
+      .post<UpdateAttributionResponse>(`${environment.apiUrl}/patterns/${id}/update/attribution`, request)
+      .pipe(map((response) => response.version));
   }
 
-  updateCategories(id: PatternId, version: number, categories: PatternCategoryId[]): Observable<void> {
+  updateCategories(id: PatternId, version: number, categories: PatternCategoryId[]): Observable<number> {
     const request: UpdateCategoriesRequest = { version, categories };
 
-    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/categories`, request);
+    return this.http
+      .post<UpdateCategoriesResponse>(`${environment.apiUrl}/patterns/${id}/update/categories`, request)
+      .pipe(map((response) => response.version));
   }
 
-  updateVariants(id: PatternId, version: number, variants: PatternVariant[]): Observable<void> {
+  updateVariants(id: PatternId, version: number, variants: PatternVariant[]): Observable<number> {
     const request: UpdateVariantsRequest = {
       version,
       variants: variants.map((variant) => this.toApiVariant(variant)),
     };
 
-    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/variants`, request);
+    return this.http
+      .post<UpdateVariantsResponse>(`${environment.apiUrl}/patterns/${id}/update/variants`, request)
+      .pipe(map((response) => response.version));
   }
 
-  updateExtras(id: PatternId, version: number, extras: PatternExtra[]): Observable<void> {
+  updateExtras(id: PatternId, version: number, extras: PatternExtra[]): Observable<number> {
     const request: UpdateExtrasRequest = {
       version,
       extras: extras.map((extra) => this.toApiExtra(extra)),
     };
 
-    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/extras`, request);
+    return this.http
+      .post<UpdateExtrasResponse>(`${environment.apiUrl}/patterns/${id}/update/extras`, request)
+      .pipe(map((response) => response.version));
   }
 
-  updateDescription(id: PatternId, version: number, description?: string | null): Observable<void> {
+  updateDescription(id: PatternId, version: number, description?: string | null): Observable<number> {
     const request: UpdateDescriptionRequest = {
       version,
     };
@@ -288,27 +342,33 @@ export class PatternsService implements OnDestroy {
       request.description = value;
     });
 
-    return this.http.post<void>(`${environment.apiUrl}/patterns/${id}/update/description`, request);
+    return this.http
+      .post<UpdateDescriptionResponse>(`${environment.apiUrl}/patterns/${id}/update/description`, request)
+      .pipe(map((response) => response.version));
   }
 
-  publishPattern(id: PatternId, version: number): Observable<void> {
-    return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/publish`,
-      {},
-      {
-        params: { version: version.toString() },
-      },
-    );
+  publishPattern(id: PatternId, version: number): Observable<number> {
+    return this.http
+      .post<PublishPatternResponse>(
+        `${environment.apiUrl}/patterns/${id}/publish`,
+        {},
+        {
+          params: { version: version.toString() },
+        },
+      )
+      .pipe(map((response) => response.version));
   }
 
-  unpublishPattern(id: PatternId, version: number): Observable<void> {
-    return this.http.post<void>(
-      `${environment.apiUrl}/patterns/${id}/unpublish`,
-      {},
-      {
-        params: { version: version.toString() },
-      },
-    );
+  unpublishPattern(id: PatternId, version: number): Observable<number> {
+    return this.http
+      .post<UnpublishPatternResponse>(
+        `${environment.apiUrl}/patterns/${id}/unpublish`,
+        {},
+        {
+          params: { version: version.toString() },
+        },
+      )
+      .pipe(map((response) => response.version));
   }
 
   deletePattern(id: string, version: number): Observable<void> {

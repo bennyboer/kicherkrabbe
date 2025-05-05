@@ -338,8 +338,9 @@ public class MailingModule {
 
     private Mono<Void> deleteMail(MailId mailId, Version version, Agent agent) {
         return assertAgentIsAllowedOnMail(agent, DELETE, mailId)
-                .then(mailService.delete(mailId, version, Agent.system()))
-                .then();
+                .then(mailService.get(mailId)
+                        .flatMap(mail -> mailService.delete(mail.getId(), version, Agent.system())))
+                .then(mailLookupRepo.remove(mailId));
     }
 
     private Mono<Void> assertAgentIsAllowedOnMail(Agent agent, Action action) {

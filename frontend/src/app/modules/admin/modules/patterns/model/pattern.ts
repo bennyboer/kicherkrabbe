@@ -83,4 +83,86 @@ export class Pattern {
       createdAt: props.createdAt,
     });
   }
+
+  rename(version: number, name: string): Pattern {
+    return new Pattern({
+      ...this,
+      version,
+      name,
+    });
+  }
+
+  updateNumber(version: number, number: string): Pattern {
+    return new Pattern({
+      ...this,
+      version,
+      number,
+    });
+  }
+
+  publish(version: number): Pattern {
+    return new Pattern({
+      ...this,
+      version,
+      published: true,
+    });
+  }
+
+  unpublish(version: number): Pattern {
+    return new Pattern({
+      ...this,
+      version,
+      published: false,
+    });
+  }
+
+  updateAttribution(number: number, attribution: PatternAttribution): Pattern {
+    return new Pattern({
+      ...this,
+      version: number,
+      attribution,
+    });
+  }
+
+  updateDescription(version: number, description: string | null): Pattern {
+    return new Pattern({
+      ...this,
+      version,
+      description: someOrNone(description)
+        .map((d) => d.trim())
+        .filter((d) => d.length > 0),
+    });
+  }
+
+  updateCategories(version: number, categories: Set<PatternCategoryId>): Pattern {
+    return new Pattern({
+      ...this,
+      version,
+      categories,
+    });
+  }
+
+  updateVariants(version: number, variants: PatternVariant[]): Pattern {
+    return new Pattern({
+      ...this,
+      version,
+      variants,
+    });
+  }
+
+  updateExtras(version: number, extras: PatternExtra[]): Pattern {
+    return new Pattern({
+      ...this,
+      version,
+      extras,
+    });
+  }
+
+  updateImages(version: number, images: ImageId[]): Pattern {
+    return new Pattern({
+      ...this,
+      version,
+      images,
+    });
+  }
 }

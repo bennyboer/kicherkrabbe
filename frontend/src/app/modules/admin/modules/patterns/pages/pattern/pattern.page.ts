@@ -11,12 +11,9 @@ import {
   first,
   map,
   Observable,
-  of,
   ReplaySubject,
   Subject,
-  switchMap,
   takeUntil,
-  timeout,
 } from 'rxjs';
 import {
   ImageId,
@@ -36,11 +33,11 @@ import { ContentChange } from 'ngx-quill';
 import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
-    selector: 'app-pattern-page',
-    templateUrl: './pattern.page.html',
-    styleUrls: ['./pattern.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-pattern-page',
+  templateUrl: './pattern.page.html',
+  styleUrls: ['./pattern.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class PatternPage implements OnInit, OnDestroy {
   protected readonly patternId$: BehaviorSubject<Option<PatternId>> = new BehaviorSubject<Option<PatternId>>(none());
@@ -251,33 +248,20 @@ export class PatternPage implements OnInit, OnDestroy {
   }
 
   saveUpdatedName(pattern: Pattern): void {
-    const changes$ = this.patternsService.getPatternChanges();
-
     const name = this.name$.value;
+
     this.patternsService
       .renamePattern(pattern.id, pattern.version, name)
-      .pipe(
-        switchMap(() => {
-          return changes$.pipe(
-            filter((patterns) => patterns.has(pattern.id)),
-            first(),
-            map(() => null),
-            timeout(5000),
-            catchError((e) => {
-              console.warn('Pattern update not confirmed', e);
-              return of(null);
-            }),
-          );
-        }),
-        takeUntil(this.destroy$),
-      )
+      .pipe(first())
       .subscribe({
-        next: () => {
+        next: (version) => {
+          const updatedPattern = pattern.rename(version, name);
+          this.pattern$.next(updatedPattern);
+
           this.notificationService.publish({
             type: 'success',
             message: `Der Name des Schnittmusters wurde zu „${name}“ geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
@@ -294,33 +278,20 @@ export class PatternPage implements OnInit, OnDestroy {
   }
 
   saveUpdatedNumber(pattern: Pattern): void {
-    const changes$ = this.patternsService.getPatternChanges();
-
     const number = this.number$.value;
+
     this.patternsService
       .updatePatternNumber(pattern.id, pattern.version, number)
-      .pipe(
-        switchMap(() => {
-          return changes$.pipe(
-            filter((patterns) => patterns.has(pattern.id)),
-            first(),
-            map(() => null),
-            timeout(5000),
-            catchError((e) => {
-              console.warn('Pattern update not confirmed', e);
-              return of(null);
-            }),
-          );
-        }),
-        takeUntil(this.destroy$),
-      )
+      .pipe(first())
       .subscribe({
-        next: () => {
+        next: (version) => {
+          const updatedPattern = pattern.updateNumber(version, number);
+          this.pattern$.next(updatedPattern);
+
           this.notificationService.publish({
             type: 'success',
             message: `Die Nummber des Schnittmusters wurde zu „${number}“ geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           const reason = e?.error?.reason;
@@ -341,33 +312,20 @@ export class PatternPage implements OnInit, OnDestroy {
   }
 
   saveUpdatedDescription(pattern: Pattern): void {
-    const changes$ = this.patternsService.getPatternChanges();
-
     const description = this.description$.value.ops.length > 0 ? JSON.stringify(this.description$.value) : null;
+
     this.patternsService
       .updateDescription(pattern.id, pattern.version, description)
-      .pipe(
-        switchMap(() => {
-          return changes$.pipe(
-            filter((patterns) => patterns.has(pattern.id)),
-            first(),
-            map(() => null),
-            timeout(5000),
-            catchError((e) => {
-              console.warn('Pattern description update not confirmed', e);
-              return of(null);
-            }),
-          );
-        }),
-        takeUntil(this.destroy$),
-      )
+      .pipe(first())
       .subscribe({
-        next: () => {
+        next: (version) => {
+          const updatedPattern = pattern.updateDescription(version, description);
+          this.pattern$.next(updatedPattern);
+
           this.notificationService.publish({
             type: 'success',
             message: `Die Beschreibung des Schnittmusters wurde geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
@@ -404,32 +362,18 @@ export class PatternPage implements OnInit, OnDestroy {
   }
 
   publishPattern(pattern: Pattern): void {
-    const changes$ = this.patternsService.getPatternChanges();
-
     this.patternsService
       .publishPattern(pattern.id, pattern.version)
-      .pipe(
-        switchMap(() => {
-          return changes$.pipe(
-            filter((patterns) => patterns.has(pattern.id)),
-            first(),
-            map(() => null),
-            timeout(5000),
-            catchError((e) => {
-              console.warn('Pattern publish not confirmed', e);
-              return of(null);
-            }),
-          );
-        }),
-        takeUntil(this.destroy$),
-      )
+      .pipe(first())
       .subscribe({
-        next: () => {
+        next: (version) => {
+          const updatedPattern = pattern.publish(version);
+          this.pattern$.next(updatedPattern);
+
           this.notificationService.publish({
             type: 'success',
             message: 'Das Schnittmuster wurde veröffentlicht',
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
@@ -442,32 +386,18 @@ export class PatternPage implements OnInit, OnDestroy {
   }
 
   unpublishPattern(pattern: Pattern): void {
-    const changes$ = this.patternsService.getPatternChanges();
-
     this.patternsService
       .unpublishPattern(pattern.id, pattern.version)
-      .pipe(
-        switchMap(() => {
-          return changes$.pipe(
-            filter((patterns) => patterns.has(pattern.id)),
-            first(),
-            map(() => null),
-            timeout(5000),
-            catchError((e) => {
-              console.warn('Pattern unpublish not confirmed', e);
-              return of(null);
-            }),
-          );
-        }),
-        takeUntil(this.destroy$),
-      )
+      .pipe(first())
       .subscribe({
-        next: () => {
+        next: (version) => {
+          const updatedPattern = pattern.unpublish(version);
+          this.pattern$.next(updatedPattern);
+
           this.notificationService.publish({
             type: 'success',
             message: 'Die Veröffentlichung des Schnittmusters wurde aufgehoben',
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
@@ -480,8 +410,6 @@ export class PatternPage implements OnInit, OnDestroy {
   }
 
   saveUpdatedAttribution(pattern: Pattern): void {
-    const changes$ = this.patternsService.getPatternChanges();
-
     const originalPatternName = someOrNone(this.originalPatternName$.value)
       .map((n) => n.trim())
       .filter((n) => n.length > 0)
@@ -497,28 +425,16 @@ export class PatternPage implements OnInit, OnDestroy {
 
     this.patternsService
       .updateAttribution(pattern.id, pattern.version, attribution)
-      .pipe(
-        switchMap(() => {
-          return changes$.pipe(
-            filter((patterns) => patterns.has(pattern.id)),
-            first(),
-            map(() => null),
-            timeout(5000),
-            catchError((e) => {
-              console.warn('Pattern attribution update not confirmed', e);
-              return of(null);
-            }),
-          );
-        }),
-        takeUntil(this.destroy$),
-      )
+      .pipe(first())
       .subscribe({
-        next: () => {
+        next: (number) => {
+          const updatedPattern = pattern.updateAttribution(number, attribution);
+          this.pattern$.next(updatedPattern);
+
           this.notificationService.publish({
             type: 'success',
             message: `Der Originalname und der Designer des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
@@ -531,32 +447,18 @@ export class PatternPage implements OnInit, OnDestroy {
   }
 
   saveUpdatedCategories(pattern: Pattern, categories: PatternCategoryId[]): void {
-    const changes$ = this.patternsService.getPatternChanges();
-
     this.patternsService
       .updateCategories(pattern.id, pattern.version, categories)
-      .pipe(
-        switchMap(() => {
-          return changes$.pipe(
-            filter((patterns) => patterns.has(pattern.id)),
-            first(),
-            map(() => null),
-            timeout(5000),
-            catchError((e) => {
-              console.warn('Pattern category update not confirmed', e);
-              return of(null);
-            }),
-          );
-        }),
-        takeUntil(this.destroy$),
-      )
+      .pipe(first())
       .subscribe({
-        next: () => {
+        next: (version) => {
+          const updatedPattern = pattern.updateCategories(version, new Set(categories));
+          this.pattern$.next(updatedPattern);
+
           this.notificationService.publish({
             type: 'success',
             message: `Die Kategorien des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
@@ -569,32 +471,18 @@ export class PatternPage implements OnInit, OnDestroy {
   }
 
   saveUpdatedVariants(pattern: Pattern, variants: PatternVariant[]): void {
-    const changes$ = this.patternsService.getPatternChanges();
-
     this.patternsService
       .updateVariants(pattern.id, pattern.version, variants)
-      .pipe(
-        switchMap(() => {
-          return changes$.pipe(
-            filter((patterns) => patterns.has(pattern.id)),
-            first(),
-            map(() => null),
-            timeout(5000),
-            catchError((e) => {
-              console.warn('Pattern variants update not confirmed', e);
-              return of(null);
-            }),
-          );
-        }),
-        takeUntil(this.destroy$),
-      )
+      .pipe(first())
       .subscribe({
-        next: () => {
+        next: (version) => {
+          const updatedPattern = pattern.updateVariants(version, variants);
+          this.pattern$.next(updatedPattern);
+
           this.notificationService.publish({
             type: 'success',
             message: `Die Varianten des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
@@ -607,32 +495,18 @@ export class PatternPage implements OnInit, OnDestroy {
   }
 
   saveUpdatedExtras(pattern: Pattern, extras: PatternExtra[]): void {
-    const changes$ = this.patternsService.getPatternChanges();
-
     this.patternsService
       .updateExtras(pattern.id, pattern.version, extras)
-      .pipe(
-        switchMap(() => {
-          return changes$.pipe(
-            filter((patterns) => patterns.has(pattern.id)),
-            first(),
-            map(() => null),
-            timeout(5000),
-            catchError((e) => {
-              console.warn('Pattern extras update not confirmed', e);
-              return of(null);
-            }),
-          );
-        }),
-        takeUntil(this.destroy$),
-      )
+      .pipe(first())
       .subscribe({
-        next: () => {
+        next: (version) => {
+          const updatedPattern = pattern.updateExtras(version, extras);
+          this.pattern$.next(updatedPattern);
+
           this.notificationService.publish({
             type: 'success',
             message: `Die Extras des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
@@ -645,32 +519,18 @@ export class PatternPage implements OnInit, OnDestroy {
   }
 
   saveUpdatedImages(pattern: Pattern, images: ImageId[]): void {
-    const changes$ = this.patternsService.getPatternChanges();
-
     this.patternsService
       .updateImages(pattern.id, pattern.version, images)
-      .pipe(
-        switchMap(() => {
-          return changes$.pipe(
-            filter((patterns) => patterns.has(pattern.id)),
-            first(),
-            map(() => null),
-            timeout(5000),
-            catchError((e) => {
-              console.warn('Pattern images update not confirmed', e);
-              return of(null);
-            }),
-          );
-        }),
-        takeUntil(this.destroy$),
-      )
+      .pipe(first())
       .subscribe({
-        next: () => {
+        next: (version) => {
+          const updatedPattern = pattern.updateImages(version, images);
+          this.pattern$.next(updatedPattern);
+
           this.notificationService.publish({
             type: 'success',
             message: `Die Bilder des Schnittmusters wurden geändert`,
           });
-          this.reloadPattern({ id: pattern.id, indicateLoading: false });
         },
         error: (e) => {
           console.error(e);
@@ -683,25 +543,9 @@ export class PatternPage implements OnInit, OnDestroy {
   }
 
   delete(pattern: Pattern): void {
-    const changes$ = this.patternsService.getPatternChanges();
-
     this.patternsService
       .deletePattern(pattern.id, pattern.version)
-      .pipe(
-        switchMap(() => {
-          return changes$.pipe(
-            filter((patterns) => patterns.has(pattern.id)),
-            first(),
-            map(() => null),
-            timeout(5000),
-            catchError((e) => {
-              console.warn('Pattern deletion not confirmed', e);
-              return of(null);
-            }),
-          );
-        }),
-        takeUntil(this.destroy$),
-      )
+      .pipe(first())
       .subscribe({
         next: () => {
           this.notificationService.publish({

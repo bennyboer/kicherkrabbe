@@ -323,8 +323,9 @@ public class NotificationsModule {
 
     private Mono<Void> deleteNotification(NotificationId notificationId, Version version, Agent agent) {
         return assertAgentIsAllowedOnNotification(agent, DELETE, notificationId)
-                .then(notificationService.delete(notificationId, version, Agent.system()))
-                .then();
+                .then(notificationService.get(notificationId)
+                        .flatMap(notification -> notificationService.delete(notification.getId(), version, Agent.system())))
+                .then(notificationLookupRepo.remove(notificationId));
     }
 
     private Mono<Void> assertNotificationsEnabled(Target target) {
