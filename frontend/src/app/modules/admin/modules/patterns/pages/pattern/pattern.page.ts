@@ -117,7 +117,7 @@ export class PatternPage implements OnInit, OnDestroy {
     delayOnTouchOnly: true,
     touchStartThreshold: 10,
     onUpdate: () => {
-      this.imageIds$.next(this.imageIds$.value);
+      this.imageIds$.next([...this.imageIds$.value]);
     },
   };
 
@@ -524,7 +524,7 @@ export class PatternPage implements OnInit, OnDestroy {
       .pipe(first())
       .subscribe({
         next: (version) => {
-          const updatedPattern = pattern.updateImages(version, images);
+          const updatedPattern = pattern.updateImages(version, [...images]);
           this.pattern$.next(updatedPattern);
 
           this.notificationService.publish({
