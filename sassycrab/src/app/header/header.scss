@@ -1,0 +1,28 @@
+:host {
+	display: block;
+	background-color: var(--p-surface-0);
+	height: 64px;
+}
+
+.centered {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 48px;
+}
+
+.prefix, .suffix {
+	font-weight: 400;
+	font-size: 14px;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+}
+
+.title {
+	font-family: "Grandstander", sans-serif;
+	font-weight: 400;
+	font-size: 32px;
+	color: var(--p-id-500);
+}

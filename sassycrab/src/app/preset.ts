@@ -1,0 +1,87 @@
+import { definePreset } from "@primeuix/themes";
+import Aura from "@primeuix/themes/aura";
+
+export const sassycrabPreset = definePreset(Aura, {
+	semantic: {
+		primary: {
+			50: "{zinc.50}",
+			100: "{zinc.100}",
+			200: "{zinc.200}",
+			300: "{zinc.300}",
+			400: "{zinc.400}",
+			500: "{zinc.500}",
+			600: "{zinc.600}",
+			700: "{zinc.700}",
+			800: "{zinc.800}",
+			900: "{zinc.900}",
+			950: "{zinc.950}",
+		},
+		id: {
+			50: "#fef6f5",
+			100: "#fde8e6",
+			200: "#fbcfcc",
+			300: "#f8a9a3",
+			400: "#f37972",
+			500: "#F05048",
+			600: "#dd3129",
+			700: "#ba2520",
+			800: "#9a221e",
+			900: "#4E1D18",
+			950: "#2a0d0b",
+		},
+		colorScheme: {
+			light: {
+				primary: {
+					color: "{zinc.950}",
+					inverseColor: "#ffffff",
+					hoverColor: "{zinc.900}",
+					activeColor: "{zinc.800}",
+					contrastColor: "{zinc.100}",
+				},
+				surface: {
+					0: "#ffffff",
+					50: "{zinc.50}",
+					100: "{zinc.100}",
+					200: "{zinc.200}",
+					300: "{zinc.300}",
+					400: "{zinc.400}",
+					500: "{zinc.500}",
+					600: "{zinc.600}",
+					700: "{zinc.700}",
+					800: "{zinc.800}",
+					900: "{zinc.900}",
+					950: "{zinc.950}",
+				},
+			},
+			dark: {
+				primary: {
+					color: "{zinc.50}",
+					inverseColor: "{zinc.950}",
+					hoverColor: "{zinc.100}",
+					activeColor: "{zinc.200}",
+					contrastColor: "{zinc.900}",
+				},
+				surface: {
+					0: "#000000",
+					50: "{zinc.950}",
+					100: "{zinc.900}",
+					200: "{zinc.800}",
+					300: "{zinc.700}",
+					400: "{zinc.600}",
+					500: "{zinc.500}",
+					600: "{zinc.400}",
+					700: "{zinc.300}",
+					800: "{zinc.200}",
+					900: "{zinc.100}",
+					950: "{zinc.50}",
+				},
+			},
+		},
+		focusRing: {
+			width: "2px",
+			style: "solid",
+			color: "{primary.color}",
+			offset: "2px",
+		},
+	},
+});

@@ -1,0 +1,19 @@
+@font-face {
+	font-family: Lexend;
+	src: url(/fonts/lexend/Lexend-VariableFont_wght.ttf);
+}
+
+@font-face {
+	font-family: "Grandstander";
+	src: url(/fonts/grandstander/Grandstander-VariableFont_wght.ttf);
+}
+
+html {
+	box-sizing: border-box;
+	font-family: Lexend, sans-serif;
+}
+
+body {
+	margin: 0;
+	background-color: var(--p-surface-50);
+}
