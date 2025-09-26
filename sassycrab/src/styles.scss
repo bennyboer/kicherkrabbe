@@ -17,3 +17,42 @@ body {
 	margin: 0;
 	background-color: var(--p-surface-50);
 }
+
+html {
+	--sun1-color: #ff4081;
+	--sun2-color: #00bcd4;
+	--sun3-color: #7c4dff;
+	--sun-opacity: 0.3;
+}
+
+html.kicherkrabbe-dark-mode {
+	--sun1-color: #cc6699;
+	--sun2-color: #4499bb;
+	--sun3-color: #9966cc;
+	--sun-opacity: 0.25;
+}
+
+h1 {
+	font-size: 6em;
+	font-family: Lexend, sans-serif;
+	font-weight: 200;
+	text-transform: uppercase;
+}
+
+@media (max-width: 1024px) {
+	h1 {
+		font-size: 4em;
+	}
+}
+
+@media (max-width: 600px) {
+	h1 {
+		font-size: 2.5em;
+	}
+}
+
+@media (max-width: 400px) {
+	h1 {
+		font-size: 1.5em;
+	}
+}

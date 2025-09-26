@@ -1,0 +1,63 @@
+@mixin moving-sphere($color-var, $top, $left, $delay, $duration, $width: 2800px, $height: 1600px, $vw: 200vw, $vh: 120vh) {
+	background-color: var($color-var);
+	opacity: var(--sun-opacity);
+	position: absolute;
+	top: $top;
+	left: $left;
+	width: max($width, $vw);
+	height: max($height, $vh);
+	border-radius: 50%;
+	animation-name: sunrise;
+	animation-duration: $duration;
+	animation-timing-function: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+	animation-delay: $delay;
+	animation-iteration-count: infinite;
+	will-change: transform;
+	transform: translateZ(0);
+	backface-visibility: hidden;
+}
+
+.background-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	z-index: -1;
+	pointer-events: none;
+}
+
+.sun {
+	@include moving-sphere(--sun1-color, -1300px, -100px, 1s, 10s, 3200px, 1800px, 240vw, 140vh);
+}
+
+.sun2 {
+	@include moving-sphere(--sun2-color, -1300px, -800px, 2s, 14s, 2400px, 1400px, 160vw, 100vh);
+}
+
+.sun3 {
+	@include moving-sphere(--sun3-color, -1300px, -400px, 0s, 12s, 2800px, 1600px, 200vw, 120vh);
+}
+
+
+@keyframes sunrise {
+	0% {
+		transform: translate3d(0px, 0px, 0);
+	}
+	20% {
+		transform: translate3d(120px, 40px, 0);
+	}
+	40% {
+		transform: translate3d(240px, 20px, 0);
+	}
+	60% {
+		transform: translate3d(300px, 10px, 0);
+	}
+	80% {
+		transform: translate3d(180px, 40px, 0);
+	}
+	100% {
+		transform: translate3d(0px, 0px, 0);
+	}
+}

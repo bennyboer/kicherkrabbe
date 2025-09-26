@@ -1,7 +1,13 @@
 :host {
 	display: block;
-	background-color: var(--p-surface-0);
+	background-color: rgba(white, 0.7);
 	height: 64px;
+}
+
+.kicherkrabbe-dark-mode {
+	:host {
+		background-color: rgba(black, 0.8);
+	}
 }
 
 .centered {
@@ -26,3 +32,42 @@
 	font-size: 32px;
 	color: var(--p-id-500);
 }
+
+@media (max-width: 768px) {
+	.centered {
+		gap: 24px;
+		padding: 0 16px;
+	}
+
+	.title {
+		font-size: 18px;
+	}
+
+	.prefix, .suffix {
+		font-size: 10px;
+		letter-spacing: 1px;
+	}
+}
+
+@media (max-width: 500px) {
+	.centered {
+		gap: 12px;
+	}
+
+	.prefix, .suffix {
+		font-size: 8px;
+		letter-spacing: 1px;
+	}
+}
+
+@media (max-width: 400px) {
+	.title {
+		font-size: 24px;
+	}
+
+	.prefix, .suffix {
+		display: none;
+	}
+}
+
+
