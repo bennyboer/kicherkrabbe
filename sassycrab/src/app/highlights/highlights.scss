@@ -39,6 +39,10 @@ img {
 }
 
 @media (max-width: 1280px) {
+	:host {
+		height: 70vh;
+	}
+
 	.highlights-container {
 		flex-direction: column;
 

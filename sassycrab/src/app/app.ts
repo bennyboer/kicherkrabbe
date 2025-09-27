@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { ButtonModule } from "primeng/button";
 import { BackgroundComponent } from "./background/background";
+import { Badges } from "./badges/badges";
 import { CrabHelper } from "./crab-helper/crab-helper";
 import { Header } from "./header/header";
 import { HighlightsComponent } from "./highlights/highlights";
@@ -13,6 +14,7 @@ import { HighlightsComponent } from "./highlights/highlights";
 		HighlightsComponent,
 		BackgroundComponent,
 		CrabHelper,
+		Badges,
 	],
 	templateUrl: "./app.html",
 	styleUrl: "./app.scss",

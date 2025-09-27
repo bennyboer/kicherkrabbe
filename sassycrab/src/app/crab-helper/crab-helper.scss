@@ -1,3 +1,62 @@
 :host {
 	display: block;
 }
+
+.layout {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 32px;
+}
+
+.speech-bubble {
+	background-color: white;
+	border-radius: 20px 20px 0 20px;
+	width: 380px;
+	padding: 24px;
+	font-family: Chewy, sans-serif;
+	font-size: 32px;
+	color: black;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+
+	.greeting {
+		color: var(--p-id-500);
+	}
+}
+
+.crab {
+	width: 250px;
+	margin-top: 60px;
+}
+
+@media (max-width: 768px) {
+	.layout {
+		gap: 16px;
+	}
+
+	.speech-bubble {
+		width: 250px;
+		font-size: 24px;
+		padding: 16px;
+		text-align: center;
+	}
+
+	.crab {
+		width: 150px;
+	}
+}
+
+@media (max-width: 450px) {
+	.speech-bubble {
+		width: 150px;
+		font-size: 16px;
+		padding: 8px;
+	}
+
+	.crab {
+		width: 80px;
+		margin-top: 40px;
+	}
+}
+

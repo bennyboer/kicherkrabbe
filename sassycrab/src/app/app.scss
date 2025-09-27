@@ -5,3 +5,24 @@ section {
 		margin-top: 0;
 	}
 }
+
+.offset-into-highlights {
+	margin-top: -160px;
+	display: flex;
+	justify-content: flex-end;
+	margin-right: 10%;
+}
+
+@media (max-width: 1280px) {
+	.offset-into-highlights {
+		margin-top: -100px;
+		margin-right: 5%;
+	}
+}
+
+@media (max-width: 768px) {
+	.offset-into-highlights {
+		margin-top: 0;
+		justify-content: center;
+	}
+}

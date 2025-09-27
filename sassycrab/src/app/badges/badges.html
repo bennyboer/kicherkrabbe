@@ -1,0 +1,8 @@
+<div class="badges-container">
+	@for (badge of badges; track badge.title) {
+		<div class="badge">
+			<div class="badge-icon">{{ badge.icon }}</div>
+			<div class="badge-title">{{ badge.title }}</div>
+		</div>
+	}
+</div>
