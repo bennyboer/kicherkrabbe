@@ -14,11 +14,11 @@
 	background-color: white;
 	border-radius: 20px 20px 0 20px;
 	width: 380px;
-	padding: 24px;
-	font-family: Chewy, sans-serif;
-	font-size: 32px;
+	padding: 32px;
+	font-family: Grandstander, sans-serif;
+	font-size: 24px;
 	color: black;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+	box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.3);
 
 	.greeting {
 		color: var(--p-id-500);
@@ -28,6 +28,8 @@
 .crab {
 	width: 250px;
 	margin-top: 60px;
+	filter: drop-shadow(6px 6px 0px rgba(0, 0, 0, 0.3));
+	-webkit-filter: drop-shadow(6px 6px 0px rgba(0, 0, 0, 0.3));
 }
 
 @media (max-width: 768px) {

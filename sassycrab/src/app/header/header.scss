@@ -54,6 +54,10 @@
 		gap: 12px;
 	}
 
+	.title {
+		font-size: 24px;
+	}
+
 	.prefix, .suffix {
 		font-size: 8px;
 		letter-spacing: 1px;
@@ -61,10 +65,6 @@
 }
 
 @media (max-width: 400px) {
-	.title {
-		font-size: 24px;
-	}
-
 	.prefix, .suffix {
 		display: none;
 	}
