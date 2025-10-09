@@ -13,10 +13,28 @@ section {
 	margin-right: 10%;
 }
 
+.offers-container {
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+	flex-wrap: wrap;
+	align-items: stretch;
+
+	& > * {
+		flex: 1 1 calc(25% - 3rem);
+	}
+}
+
 @media (max-width: 1280px) {
 	.offset-into-highlights {
 		margin-top: -100px;
 		margin-right: 5%;
+	}
+
+	.offers-container {
+		& > * {
+			flex: 1 1 calc(33.33% - 2rem);
+		}
 	}
 }
 
@@ -24,5 +42,11 @@ section {
 	.offset-into-highlights {
 		margin-top: 0;
 		justify-content: center;
+	}
+
+	.offers-container {
+		& > * {
+			flex: 1 1 calc(50% - 1rem);
+		}
 	}
 }
