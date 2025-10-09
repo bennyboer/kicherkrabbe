@@ -34,6 +34,31 @@ jobs:
           name: frontend
           path: frontend/dist
 
+  build-sassycrab:
+    name: Build Sassycrab
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Install
+        uses: borales/actions-yarn@v5
+        with:
+          cmd: install
+          dir: sassycrab
+      - name: Build
+        uses: borales/actions-yarn@v5
+        with:
+          cmd: build
+          dir: sassycrab
+      - name: Upload built Sassycrab
+        uses: actions/upload-artifact@v4
+        with:
+          name: sassycrab
+          path: sassycrab/dist
+
   build-backend:
     name: Build backend
     needs: build-frontend
@@ -86,3 +111,26 @@ jobs:
           TARGET: ${{ secrets.SSH_REMOTE_TARGET }}
           SCRIPT_AFTER: |
             service kicherkrabbe-server restart
+
+  deploy-sassycrab:
+    name: Deploy Sassycrab
+    needs: build-sassycrab
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download built Sassycrab files
+        uses: actions/download-artifact@v4
+        with:
+          name: sassycrab
+          path: sassycrab/dist
+      - name: Deploy Sassycrab via SSH
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SOURCE: "sassycrab/dist"
+          ARGS: "-rlgoDzvc -i --delete"
+          REMOTE_HOST: ${{ secrets.SSH_REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_REMOTE_USER }}
+          REMOTE_PORT: ${{ secrets.SSH_REMOTE_PORT }}
+          TARGET: ${{ secrets.SSH_REMOTE_TARGET }}
+          SCRIPT_AFTER: |
+            pm2 reload Sassycrab
