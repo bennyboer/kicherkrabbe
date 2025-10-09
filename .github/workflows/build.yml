@@ -133,4 +133,4 @@ jobs:
           REMOTE_PORT: ${{ secrets.SSH_REMOTE_PORT }}
           TARGET: ${{ secrets.SSH_REMOTE_TARGET }}
           SCRIPT_AFTER: |
-            pm2 reload Sassycrab
+            npx pm2 reload Sassycrab
