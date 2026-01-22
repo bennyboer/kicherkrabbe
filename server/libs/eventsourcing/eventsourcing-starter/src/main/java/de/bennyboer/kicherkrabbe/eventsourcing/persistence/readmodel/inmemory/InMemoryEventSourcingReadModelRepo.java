@@ -93,7 +93,7 @@ public abstract class InMemoryEventSourcingReadModelRepo<ID, T> implements Event
     public Flux<T> getAll() {
         return Flux.defer(() -> {
             synchronized (lookup) {
-                return Flux.fromIterable(lookup.values());
+                return Flux.fromIterable(new ArrayList<>(lookup.values()));
             }
         });
     }
