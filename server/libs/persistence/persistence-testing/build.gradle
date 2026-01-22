@@ -1,6 +1,7 @@
 dependencies {
     implementation project(':libs:persistence:persistence-starter')
-    
+
     implementation "org.springframework.boot:spring-boot-starter-test"
-    implementation "org.testcontainers:mongodb"
+    implementation "org.springframework.boot:spring-boot-data-mongodb-test"
+    implementation "org.testcontainers:testcontainers-mongodb"
 }

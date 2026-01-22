@@ -1,6 +1,6 @@
 package de.bennyboer.kicherkrabbe.persistence;
 
-import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.mongodb.autoconfigure.MongoProperties;
 
 public interface MongoPropertiesCustomizer {
 

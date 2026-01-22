@@ -44,8 +44,8 @@ public class ChangesHttpHandlerTest extends HttpHandlerTest {
                 .returnResult()
                 .getResponseBody();
         assertThat(events).containsExactly(
-                "{\"type\":\"PERMISSIONS_ADDED\",\"affected\":[\"PATTERN_ID\"],\"payload\":{}}",
-                "{\"type\":\"PERMISSIONS_REMOVED\",\"affected\":[\"PATTERN_ID\"],\"payload\":{}}"
+                "{\"affected\":[\"PATTERN_ID\"],\"payload\":{},\"type\":\"PERMISSIONS_ADDED\"}",
+                "{\"affected\":[\"PATTERN_ID\"],\"payload\":{},\"type\":\"PERMISSIONS_REMOVED\"}"
         );
     }
 

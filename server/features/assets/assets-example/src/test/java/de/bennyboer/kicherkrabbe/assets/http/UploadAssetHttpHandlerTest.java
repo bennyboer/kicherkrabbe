@@ -132,7 +132,7 @@ public class UploadAssetHttpHandlerTest extends HttpHandlerTest {
                 .exchange();
 
         // then: the response is 413 Payload Too Large
-        exchange.expectStatus().isEqualTo(413);
+        exchange.expectStatus().isEqualTo(org.springframework.http.HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
 }

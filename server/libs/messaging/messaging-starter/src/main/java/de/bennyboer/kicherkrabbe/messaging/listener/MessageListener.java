@@ -1,20 +1,20 @@
 package de.bennyboer.kicherkrabbe.messaging.listener;
 
-import com.rabbitmq.client.Delivery;
 import de.bennyboer.kicherkrabbe.messaging.inbox.IncomingMessageId;
 import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInbox;
 import de.bennyboer.kicherkrabbe.messaging.inbox.persistence.IncomingMessageAlreadySeenException;
+import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory.AcknowledgableMessage;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-import reactor.rabbitmq.AcknowledgableDelivery;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
@@ -31,11 +31,11 @@ public class MessageListener {
 
     private final MessagingInbox inbox;
 
-    private final Supplier<Flux<AcknowledgableDelivery>> deliveries;
+    private final Supplier<Flux<AcknowledgableMessage>> deliveries;
 
     private final String name;
 
-    private final Function<Delivery, Mono<Void>> handler;
+    private final Function<Message, Mono<Void>> handler;
 
     @Nullable
     private Disposable disposable;
@@ -43,9 +43,9 @@ public class MessageListener {
     public MessageListener(
             ReactiveTransactionManager transactionManager,
             MessagingInbox inbox,
-            Supplier<Flux<AcknowledgableDelivery>> deliveries,
+            Supplier<Flux<AcknowledgableMessage>> deliveries,
             String name,
-            Function<Delivery, Mono<Void>> handler
+            Function<Message, Mono<Void>> handler
     ) {
         this.transactionManager = transactionManager;
         this.inbox = inbox;
@@ -73,14 +73,15 @@ public class MessageListener {
         Optional.ofNullable(disposable).ifPresent(Disposable::dispose);
     }
 
-    private Mono<Void> handleDelivery(AcknowledgableDelivery delivery) {
+    private Mono<Void> handleDelivery(AcknowledgableMessage delivery) {
         TransactionalOperator transactionalOperator = TransactionalOperator.create(transactionManager);
-        IncomingMessageId incomingMessageId = IncomingMessageId.of(name + delivery.getProperties().getMessageId());
+        Message message = delivery.getMessage();
+        IncomingMessageId incomingMessageId = IncomingMessageId.of(name + message.getMessageProperties().getMessageId());
 
-        String body = new String(delivery.getBody(), UTF_8);
+        String body = new String(message.getBody(), UTF_8);
 
         return inbox.addMessage(incomingMessageId)
-                .then(handler.apply(delivery))
+                .then(handler.apply(message))
                 .as(transactionalOperator::transactional)
                 .onErrorResume(IncomingMessageAlreadySeenException.class, e -> {
                     log.warn(

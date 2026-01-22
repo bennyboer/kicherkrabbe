@@ -2,7 +2,7 @@ package de.bennyboer.kicherkrabbe.persistence;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.mongodb.autoconfigure.MongoProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;

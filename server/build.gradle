@@ -1,8 +1,8 @@
 plugins {
     id 'java-library'
-    id 'org.springframework.boot' version '3.4.1' apply false
+    id 'org.springframework.boot' version '4.0.1' apply false
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'com.github.ben-manes.versions' version '0.51.0'
+    id 'com.github.ben-manes.versions' version '0.53.0'
 }
 
 subprojects {
@@ -28,16 +28,16 @@ subprojects {
         ////////////
         // Lombok //
         ////////////
-        compileOnly 'org.projectlombok:lombok:1.18.36'
-        annotationProcessor 'org.projectlombok:lombok:1.18.36'
-        testCompileOnly 'org.projectlombok:lombok:1.18.36'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
+        compileOnly 'org.projectlombok:lombok:1.18.42'
+        annotationProcessor 'org.projectlombok:lombok:1.18.42'
+        testCompileOnly 'org.projectlombok:lombok:1.18.42'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
 
         /////////////
         // Reactor //
         /////////////
-        implementation 'io.projectreactor:reactor-core:3.7.1'
-        testImplementation 'io.projectreactor:reactor-test:3.7.1'
+        implementation 'io.projectreactor:reactor-core'
+        testImplementation 'io.projectreactor:reactor-test'
 
         ////////////
         // Spring //
@@ -51,8 +51,8 @@ subprojects {
         ///////////
         // Other //
         ///////////
-        implementation 'commons-validator:commons-validator:1.9.0'
-        testImplementation("org.assertj:assertj-core:3.27.1")
+        implementation 'commons-validator:commons-validator:1.10.1'
+        testImplementation 'org.assertj:assertj-core:3.27.6'
     }
 
     tasks.named('test') {
@@ -61,8 +61,16 @@ subprojects {
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
+            languageVersion = JavaLanguageVersion.of(25)
         }
+    }
+
+    tasks.named('bootJar') {
+        enabled = false
+    }
+
+    tasks.named('jar') {
+        enabled = true
     }
 
 }

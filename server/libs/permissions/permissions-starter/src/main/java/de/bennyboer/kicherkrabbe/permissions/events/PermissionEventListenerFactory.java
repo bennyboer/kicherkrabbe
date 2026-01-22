@@ -1,6 +1,5 @@
 package de.bennyboer.kicherkrabbe.permissions.events;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bennyboer.kicherkrabbe.messaging.RoutingKey;
 import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
 import de.bennyboer.kicherkrabbe.messaging.target.ExchangeTarget;
@@ -8,8 +7,9 @@ import de.bennyboer.kicherkrabbe.permissions.*;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class PermissionEventListenerFactory {
 
     private final MessageListenerFactory messageListenerFactory;
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     public Flux<PermissionEvent> listen(ResourceType resourceType, String description) {
         String normalizedResourceType = resourceType.getName().toLowerCase(Locale.ROOT);
@@ -83,9 +83,9 @@ public class PermissionEventListenerFactory {
 
     private Mono<Map<String, Object>> deserializeEventMap(byte[] body) {
         try {
-            Map<String, Object> message = objectMapper.readValue(body, Map.class);
+            Map<String, Object> message = jsonMapper.readValue(body, Map.class);
             return Mono.just(message);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             return Mono.error(e);
         }
     }

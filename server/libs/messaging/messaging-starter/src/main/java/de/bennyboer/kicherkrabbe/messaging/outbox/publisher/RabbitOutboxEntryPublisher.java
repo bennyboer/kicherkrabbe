@@ -1,22 +1,24 @@
 package de.bennyboer.kicherkrabbe.messaging.outbox.publisher;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.AMQP;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutboxEntry;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.ExchangeBuilder;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.rabbitmq.OutboundMessage;
-import reactor.rabbitmq.Sender;
+import reactor.core.scheduler.Schedulers;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static reactor.rabbitmq.ExchangeSpecification.exchange;
 
 @Slf4j
 @AllArgsConstructor
@@ -24,57 +26,72 @@ public class RabbitOutboxEntryPublisher implements MessagingOutboxEntryPublisher
 
     private final Set<String> declaredExchanges = ConcurrentHashMap.newKeySet();
 
-    private final Sender sender;
+    private final RabbitTemplate rabbitTemplate;
 
-    private final ObjectMapper objectMapper;
+    private final RabbitAdmin rabbitAdmin;
+
+    private final JsonMapper jsonMapper;
 
     @Override
     public Mono<Void> publishAll(Collection<MessagingOutboxEntry> entries) {
         return Flux.fromIterable(entries)
-                .flatMap(this::toOutboundMessage)
+                .flatMap(this::toMessage)
                 .delayUntil(this::declareExchangeIfNotExists)
-                .collectList()
-                .filter(messages -> !messages.isEmpty())
-                .flatMap(messages -> sender.sendWithPublishConfirms(Flux.fromIterable(messages)).then());
+                .publishOn(Schedulers.boundedElastic())
+                .doOnNext(this::sendMessage)
+                .then();
     }
 
-    private Mono<Void> declareExchangeIfNotExists(OutboundMessage outboundMessage) {
-        return Mono.just(outboundMessage.getExchange())
+    private void sendMessage(MessageWithExchange messageWithExchange) {
+        rabbitTemplate.send(
+                messageWithExchange.exchange(),
+                messageWithExchange.routingKey(),
+                messageWithExchange.message()
+        );
+    }
+
+    private Mono<Void> declareExchangeIfNotExists(MessageWithExchange messageWithExchange) {
+        return Mono.just(messageWithExchange.exchange())
                 .filter(exchange -> !declaredExchanges.contains(exchange))
-                .delayUntil(exchangeToDeclare -> sender.declareExchange(exchange(exchangeToDeclare)
-                        .type("topic")
-                        .durable(true)))
+                .publishOn(Schedulers.boundedElastic())
+                .doOnNext(exchangeToDeclare -> {
+                    TopicExchange exchange = ExchangeBuilder.topicExchange(exchangeToDeclare)
+                            .durable(true)
+                            .build();
+                    rabbitAdmin.declareExchange(exchange);
+                })
                 .doOnNext(declaredExchanges::add)
                 .doOnNext(exchange -> log.info("Declared exchange '{}'", exchange))
                 .then();
     }
 
-    private Mono<OutboundMessage> toOutboundMessage(MessagingOutboxEntry entry) {
+    private Mono<MessageWithExchange> toMessage(MessagingOutboxEntry entry) {
         String exchange = entry.getTarget().getExchange().orElseThrow(() -> new IllegalArgumentException(
                 "We currently only support publishing to an exchange target"
         )).getName();
         String routingKey = entry.getRoutingKey().asString();
-        var properties = new AMQP.BasicProperties.Builder()
-                .contentType("application/json")
-                .contentEncoding("UTF-8")
-                .messageId(entry.getId().getValue())
-                .build();
+
+        MessageProperties properties = new MessageProperties();
+        properties.setContentType("application/json");
+        properties.setContentEncoding("UTF-8");
+        properties.setMessageId(entry.getId().getValue());
 
         return serializePayload(entry)
-                .map(payload -> new OutboundMessage(
-                        exchange,
-                        routingKey,
-                        properties,
-                        payload.getBytes(StandardCharsets.UTF_8)
-                ));
+                .map(payload -> {
+                    Message message = new Message(payload.getBytes(StandardCharsets.UTF_8), properties);
+                    return new MessageWithExchange(exchange, routingKey, message);
+                });
     }
 
     private Mono<String> serializePayload(MessagingOutboxEntry entry) {
         try {
-            return Mono.just(objectMapper.writeValueAsString(entry.getPayload()));
-        } catch (JsonProcessingException e) {
+            return Mono.just(jsonMapper.writeValueAsString(entry.getPayload()));
+        } catch (JacksonException e) {
             return Mono.error(e);
         }
+    }
+
+    private record MessageWithExchange(String exchange, String routingKey, Message message) {
     }
 
 }

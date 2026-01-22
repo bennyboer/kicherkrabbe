@@ -7,7 +7,7 @@ import de.bennyboer.kicherkrabbe.auth.tokens.TokenGenerator;
 import de.bennyboer.kicherkrabbe.auth.tokens.TokenPayload;
 import de.bennyboer.kicherkrabbe.products.ProductsModule;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;

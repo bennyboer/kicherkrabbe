@@ -1,6 +1,6 @@
 services:
   mongo:
-    image: mongo:8
+    image: mongo:8.2
     volumes:
       - ./.mongo/data:/data/db
       - ./.mongo/config:/data/configdb
@@ -17,7 +17,7 @@ services:
       start_interval: 1s
       retries: 30
   rabbitmq:
-    image: rabbitmq:4-management
+    image: rabbitmq:4.2-management
     volumes:
       - ./.rabbitmq/:/var/lib/rabbitmq/
     ports:

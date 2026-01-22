@@ -1,6 +1,5 @@
 package de.bennyboer.kicherkrabbe.eventsourcing.event.listener;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
@@ -17,8 +16,9 @@ import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class EventListenerFactory {
 
     private final MessageListenerFactory messageListenerFactory;
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     public EventListener createEventListenerForAllEvents(
             String name,
@@ -154,9 +154,9 @@ public class EventListenerFactory {
 
     private Mono<Map<String, Object>> deserializeMessage(byte[] message) {
         try {
-            Map<String, Object> result = objectMapper.readValue(message, Map.class);
+            Map<String, Object> result = jsonMapper.readValue(message, Map.class);
             return Mono.just(result);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             return Mono.error(e);
         }
     }

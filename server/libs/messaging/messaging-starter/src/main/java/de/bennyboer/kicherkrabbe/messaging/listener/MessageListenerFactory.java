@@ -1,16 +1,19 @@
 package de.bennyboer.kicherkrabbe.messaging.listener;
 
-import com.rabbitmq.client.Delivery;
+import com.rabbitmq.client.Channel;
 import de.bennyboer.kicherkrabbe.messaging.RoutingKey;
 import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInbox;
 import de.bennyboer.kicherkrabbe.messaging.target.ExchangeTarget;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.rabbitmq.Receiver;
-import reactor.rabbitmq.Sender;
+import reactor.core.publisher.Sinks;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -19,16 +22,13 @@ import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static java.util.UUID.randomUUID;
 import static lombok.AccessLevel.PRIVATE;
-import static reactor.rabbitmq.BindingSpecification.queueBinding;
-import static reactor.rabbitmq.ExchangeSpecification.exchange;
-import static reactor.rabbitmq.QueueSpecification.queue;
 
 @AllArgsConstructor
 public class MessageListenerFactory {
 
-    private final Sender sender;
+    private final ConnectionFactory connectionFactory;
 
-    private final Receiver receiver;
+    private final RabbitAdmin rabbitAdmin;
 
     private final ReactiveTransactionManager transactionManager;
 
@@ -38,25 +38,20 @@ public class MessageListenerFactory {
             ExchangeTarget exchange,
             RoutingKey routingKey,
             String listenerName,
-            Function<Delivery, Mono<Void>> handler
+            Function<Message, reactor.core.publisher.Mono<Void>> handler
     ) {
-        /*
-         * Setting up the queues and bindings is done in a blocking manner because the queues must
-         * be ready after all beans are initialized.
-         * Otherwise we have no way of knowing when to start publishing messages.
-         */
-        MessageListenerQueues queues = setupQueuesAndBindings(exchange, routingKey, listenerName).block();
+        MessageListenerQueues queues = setupQueuesAndBindings(exchange, routingKey, listenerName);
 
         return new MessageListener(
                 transactionManager,
                 inbox,
-                () -> receiver.consumeManualAck(queues.getNormal()),
+                () -> createMessageFlux(queues.getNormal()),
                 listenerName,
                 handler
         );
     }
 
-    public Flux<Delivery> createTransientListener(
+    public Flux<Message> createTransientListener(
             ExchangeTarget exchange,
             RoutingKey routingKey,
             String listenerName
@@ -64,7 +59,7 @@ public class MessageListenerFactory {
         return listenTransient(exchange, routingKey, listenerName);
     }
 
-    private Flux<Delivery> listenTransient(
+    private Flux<Message> listenTransient(
             ExchangeTarget exchange,
             RoutingKey routingKey,
             String listenerName
@@ -76,29 +71,32 @@ public class MessageListenerFactory {
                 randomUUID()
         );
 
-        return declareExchangeIfNotExists(exchange)
-                .then(sender.declareQueue(queue(queueName)
-                        .durable(false)
-                        .autoDelete(true)
-                        .arguments(Map.of("x-expires", 1_800_000))))
-                .then(sender.bind(queueBinding(
-                        exchange.getName(),
-                        routingKey.asString(),
-                        queueName
-                )))
-                .flatMapMany(declaredQueue -> receiver.consumeAutoAck(queueName));
+        declareExchangeIfNotExists(exchange);
+
+        Queue queue = QueueBuilder.nonDurable(queueName)
+                .autoDelete()
+                .withArgument("x-expires", 1_800_000)
+                .build();
+        rabbitAdmin.declareQueue(queue);
+
+        Binding binding = BindingBuilder.bind(queue)
+                .to(new TopicExchange(exchange.getName()))
+                .with(routingKey.asString());
+        rabbitAdmin.declareBinding(binding);
+
+        return createAutoAckMessageFlux(queueName);
     }
 
-    public Mono<MessageListenerQueues> setupQueuesAndBindings(
+    public MessageListenerQueues setupQueuesAndBindings(
             ExchangeTarget exchange,
             RoutingKey routingKey,
             String listenerName
     ) {
-        return declareExchangeIfNotExists(exchange)
-                .then(declareAndBindListenerQueuesToExchangeForRoutingKey(exchange, routingKey, listenerName));
+        declareExchangeIfNotExists(exchange);
+        return declareAndBindListenerQueuesToExchangeForRoutingKey(exchange, routingKey, listenerName);
     }
 
-    private Mono<MessageListenerQueues> declareAndBindListenerQueuesToExchangeForRoutingKey(
+    private MessageListenerQueues declareAndBindListenerQueuesToExchangeForRoutingKey(
             ExchangeTarget exchange,
             RoutingKey routingKey,
             String listenerName
@@ -107,30 +105,61 @@ public class MessageListenerFactory {
         String normalQueueName = baseName + "-normal";
         String deadQueueName = baseName + "-dead";
 
-        var declareNormalQueue$ = sender.declareQueue(queue(normalQueueName)
-                .durable(true)
-                .arguments(Map.of(
+        Queue deadQueue = QueueBuilder.durable(deadQueueName).build();
+        rabbitAdmin.declareQueue(deadQueue);
+
+        Queue normalQueue = QueueBuilder.durable(normalQueueName)
+                .withArguments(Map.of(
                         "x-dead-letter-exchange", "",
                         "x-dead-letter-routing-key", deadQueueName
-                )));
+                ))
+                .build();
+        rabbitAdmin.declareQueue(normalQueue);
 
-        var declareDeadQueue$ = sender.declareQueue(queue(deadQueueName)
-                .durable(true));
+        Binding binding = BindingBuilder.bind(normalQueue)
+                .to(new TopicExchange(exchange.getName()))
+                .with(routingKey.asString());
+        rabbitAdmin.declareBinding(binding);
 
-        return Mono.zip(declareNormalQueue$, declareDeadQueue$)
-                .delayUntil(tuple -> sender.bind(queueBinding(
-                        exchange.getName(),
-                        routingKey.asString(),
-                        normalQueueName
-                )))
-                .thenReturn(MessageListenerQueues.of(normalQueueName, deadQueueName));
+        return MessageListenerQueues.of(normalQueueName, deadQueueName);
     }
 
-    private Mono<Void> declareExchangeIfNotExists(ExchangeTarget exchange) {
-        return sender.declareExchange(exchange(exchange.getName())
-                        .type("topic")
-                        .durable(true))
-                .then();
+    private void declareExchangeIfNotExists(ExchangeTarget exchange) {
+        TopicExchange topicExchange = ExchangeBuilder.topicExchange(exchange.getName())
+                .durable(true)
+                .build();
+        rabbitAdmin.declareExchange(topicExchange);
+    }
+
+    private Flux<AcknowledgableMessage> createMessageFlux(String queueName) {
+        Sinks.Many<AcknowledgableMessage> sink = Sinks.many().unicast().onBackpressureBuffer();
+
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
+        container.setQueueNames(queueName);
+        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        container.setMessageListener((ChannelAwareMessageListener) (message, channel) -> {
+            AcknowledgableMessage ackMessage = new AcknowledgableMessage(message, channel);
+            sink.tryEmitNext(ackMessage);
+        });
+        container.start();
+
+        return sink.asFlux()
+                .doOnCancel(container::stop)
+                .doOnTerminate(container::stop);
+    }
+
+    private Flux<Message> createAutoAckMessageFlux(String queueName) {
+        Sinks.Many<Message> sink = Sinks.many().unicast().onBackpressureBuffer();
+
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
+        container.setQueueNames(queueName);
+        container.setAcknowledgeMode(AcknowledgeMode.AUTO);
+        container.setMessageListener((org.springframework.amqp.core.MessageListener) sink::tryEmitNext);
+        container.start();
+
+        return sink.asFlux()
+                .doOnCancel(container::stop)
+                .doOnTerminate(container::stop);
     }
 
     @Value
@@ -150,6 +179,28 @@ public class MessageListenerFactory {
             return new MessageListenerQueues(normal, dead);
         }
 
+    }
+
+    @Value
+    public static class AcknowledgableMessage {
+        Message message;
+        Channel channel;
+
+        public void ack() {
+            try {
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to acknowledge message", e);
+            }
+        }
+
+        public void nack(boolean requeue) {
+            try {
+                channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, requeue);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to nack message", e);
+            }
+        }
     }
 
 }

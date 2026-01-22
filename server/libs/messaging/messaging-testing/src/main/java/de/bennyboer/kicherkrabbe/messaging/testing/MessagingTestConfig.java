@@ -1,12 +1,12 @@
 package de.bennyboer.kicherkrabbe.messaging.testing;
 
-import com.rabbitmq.client.ConnectionFactory;
 import de.bennyboer.kicherkrabbe.messaging.MessagingConfig;
 import de.bennyboer.kicherkrabbe.messaging.inbox.persistence.MessagingInboxRepo;
 import de.bennyboer.kicherkrabbe.messaging.inbox.persistence.inmemory.InMemoryMessagingInboxRepo;
 import de.bennyboer.kicherkrabbe.messaging.outbox.persistence.MessagingOutboxRepo;
 import de.bennyboer.kicherkrabbe.messaging.outbox.persistence.inmemory.InMemoryMessagingOutboxRepo;
 import de.bennyboer.kicherkrabbe.persistence.MockReactiveTransactionManager;
+import org.springframework.boot.amqp.autoconfigure.RabbitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -35,21 +35,15 @@ public class MessagingTestConfig {
     }
 
     @Bean
-    public ConnectionFactory reactorRabbitConnectionFactory(RabbitMQContainer container) {
-        int mappedPort = container.getMappedPort(5672);
-        String host = container.getHost();
-        String username = container.getAdminUsername();
-        String password = container.getAdminPassword();
+    public RabbitProperties rabbitProperties(RabbitMQContainer container) {
+        RabbitProperties properties = new RabbitProperties();
 
-        ConnectionFactory connectionFactory = new ConnectionFactory();
+        properties.setHost(container.getHost());
+        properties.setPort(container.getMappedPort(5672));
+        properties.setUsername(container.getAdminUsername());
+        properties.setPassword(container.getAdminPassword());
 
-        connectionFactory.useNio();
-        connectionFactory.setHost(host);
-        connectionFactory.setPort(mappedPort);
-        connectionFactory.setUsername(username);
-        connectionFactory.setPassword(password);
-
-        return connectionFactory;
+        return properties;
     }
 
     @Bean(destroyMethod = "stop")

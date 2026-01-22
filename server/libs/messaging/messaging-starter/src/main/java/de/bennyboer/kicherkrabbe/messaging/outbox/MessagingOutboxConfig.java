@@ -1,10 +1,11 @@
 package de.bennyboer.kicherkrabbe.messaging.outbox;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.bennyboer.kicherkrabbe.messaging.outbox.persistence.MessagingOutboxRepo;
 import de.bennyboer.kicherkrabbe.messaging.outbox.persistence.mongo.MongoMessagingOutboxRepo;
 import de.bennyboer.kicherkrabbe.messaging.outbox.publisher.MessagingOutboxEntryPublisher;
 import de.bennyboer.kicherkrabbe.messaging.outbox.publisher.RabbitOutboxEntryPublisher;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import reactor.rabbitmq.Sender;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Clock;
 import java.util.Optional;
@@ -31,10 +32,11 @@ public class MessagingOutboxConfig {
     @Bean
     @ConditionalOnMissingBean(MessagingOutboxEntryPublisher.class)
     public MessagingOutboxEntryPublisher messagingOutboxEntryPublisher(
-            Sender sender,
-            @Qualifier("messagingObjectMapper") ObjectMapper objectMapper
+            RabbitTemplate rabbitTemplate,
+            RabbitAdmin rabbitAdmin,
+            @Qualifier("messagingJsonMapper") JsonMapper jsonMapper
     ) {
-        return new RabbitOutboxEntryPublisher(sender, objectMapper);
+        return new RabbitOutboxEntryPublisher(rabbitTemplate, rabbitAdmin, jsonMapper);
     }
 
     @Bean

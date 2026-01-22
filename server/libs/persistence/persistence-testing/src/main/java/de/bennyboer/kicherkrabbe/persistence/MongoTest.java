@@ -1,6 +1,6 @@
 package de.bennyboer.kicherkrabbe.persistence;
 
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.data.mongodb.test.autoconfigure.DataMongoTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.lang.annotation.Retention;
