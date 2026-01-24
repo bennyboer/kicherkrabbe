@@ -5,10 +5,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.With;
-import reactor.util.annotation.Nullable;
 
 import java.util.Optional;
 

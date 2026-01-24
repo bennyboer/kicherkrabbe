@@ -76,7 +76,7 @@ public class MongoMailLookupRepo
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         Index sentAt = new Index().on("sentAt", DESC);
 
-        return indexOps.ensureIndex(sentAt)
+        return indexOps.createIndex(sentAt)
                 .then();
     }
 

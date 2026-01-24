@@ -24,6 +24,7 @@ import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ public class MessageListenerTests {
         assertThat(received).isTrue();
         assertThat(receivedMessages).hasSize(1);
 
-        var body = new String(receivedMessages.getFirst().getBody());
+        var body = new String(receivedMessages.getFirst().getBody(), StandardCharsets.UTF_8);
         assertThat(body).contains("\"key\"");
         assertThat(body).contains("\"value\"");
     }
@@ -173,7 +174,7 @@ public class MessageListenerTests {
         }
 
         assertThat(deadMessage).isNotNull();
-        var body = new String(deadMessage.getBody());
+        var body = new String(deadMessage.getBody(), StandardCharsets.UTF_8);
         assertThat(body).contains("\"will\"");
         assertThat(body).contains("\"fail\"");
         assertThat(attemptCount.get()).isGreaterThanOrEqualTo(1);
@@ -210,7 +211,7 @@ public class MessageListenerTests {
         assertThat(received).isTrue();
         assertThat(receivedMessages).hasSize(1);
 
-        var body = new String(receivedMessages.getFirst().getBody());
+        var body = new String(receivedMessages.getFirst().getBody(), StandardCharsets.UTF_8);
         assertThat(body).contains("\"transient\"");
         assertThat(body).contains("\"message\"");
     }
@@ -299,7 +300,7 @@ public class MessageListenerTests {
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
         var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
-            var body = new String(message.getBody());
+            var body = new String(message.getBody(), StandardCharsets.UTF_8);
             if (body.contains("\"fail\":true")) {
                 return Mono.error(new RuntimeException("Simulated failure"));
             }

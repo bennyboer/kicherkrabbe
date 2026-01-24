@@ -51,7 +51,7 @@ public class MongoUserLookupRepo extends MongoEventSourcingReadModelRepo<UserId,
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         IndexDefinition mailIndex = new Index().on("mail", ASC);
 
-        return indexOps.ensureIndex(mailIndex).then();
+        return indexOps.createIndex(mailIndex).then();
     }
 
 }

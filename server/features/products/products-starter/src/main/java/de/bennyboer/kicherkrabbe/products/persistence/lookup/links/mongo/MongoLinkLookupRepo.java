@@ -92,7 +92,7 @@ public class MongoLinkLookupRepo
                 .on("linkId", ASC)
                 .unique();
 
-        return indexOps.ensureIndex(typeAndIdIndex)
+        return indexOps.createIndex(typeAndIdIndex)
                 .then();
     }
 

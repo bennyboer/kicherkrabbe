@@ -87,7 +87,7 @@ public class MongoMailLookupRepo
                 .on("status", ASC)
                 .on("receivedAt", DESC);
 
-        return indexOps.ensureIndex(statusReceivedAtIndex)
+        return indexOps.createIndex(statusReceivedAtIndex)
                 .then();
     }
 

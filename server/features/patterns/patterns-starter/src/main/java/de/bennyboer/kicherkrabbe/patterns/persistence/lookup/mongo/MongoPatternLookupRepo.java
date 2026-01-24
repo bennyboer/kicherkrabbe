@@ -218,9 +218,9 @@ public class MongoPatternLookupRepo
         IndexDefinition aliasIndex = new Index().on("alias", ASC);
         IndexDefinition numberIndex = new Index().on("number", ASC).unique();
 
-        return indexOps.ensureIndex(categoriesIndex)
-                .then(indexOps.ensureIndex(aliasIndex))
-                .then(indexOps.ensureIndex(numberIndex))
+        return indexOps.createIndex(categoriesIndex)
+                .then(indexOps.createIndex(aliasIndex))
+                .then(indexOps.createIndex(numberIndex))
                 .then();
     }
 

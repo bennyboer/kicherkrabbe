@@ -93,9 +93,9 @@ public class MongoRequestRepo
                 .on("createdAt", ASC)
                 .expire(Duration.ofDays(30));
 
-        return indexOps.ensureIndex(mailCreatedAtIndex)
-                .then(indexOps.ensureIndex(ipAddressCreatedAtIndex))
-                .then(indexOps.ensureIndex(createdAtIndex))
+        return indexOps.createIndex(mailCreatedAtIndex)
+                .then(indexOps.createIndex(ipAddressCreatedAtIndex))
+                .then(indexOps.createIndex(createdAtIndex))
                 .then();
     }
 

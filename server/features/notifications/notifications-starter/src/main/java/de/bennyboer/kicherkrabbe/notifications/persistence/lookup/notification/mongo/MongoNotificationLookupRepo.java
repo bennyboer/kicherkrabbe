@@ -79,7 +79,7 @@ public class MongoNotificationLookupRepo
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         Index sentAtIndex = new Index().on("sentAt", DESC);
 
-        return indexOps.ensureIndex(sentAtIndex)
+        return indexOps.createIndex(sentAtIndex)
                 .then();
     }
 

@@ -281,10 +281,10 @@ public class MongoPermissionsRepo implements PermissionsRepo {
         IndexDefinition actionIndex = new Index().on("action", ASC);
 
         return Mono.zip(
-                indexOps.ensureIndex(permissionsIndex),
-                indexOps.ensureIndex(holderIndex),
-                indexOps.ensureIndex(resourceIndex),
-                indexOps.ensureIndex(actionIndex)
+                indexOps.createIndex(permissionsIndex),
+                indexOps.createIndex(holderIndex),
+                indexOps.createIndex(resourceIndex),
+                indexOps.createIndex(actionIndex)
         ).then();
     }
 

@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
-import static java.util.UUID.randomUUID;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
@@ -38,7 +37,7 @@ public class LookupLink {
     }
 
     public static LookupLink create(Link link) {
-        String id = randomUUID().toString();
+        String id = "%s-%s".formatted(link.getType(), link.getId().getValue());
 
         return LookupLink.of(
                 id,

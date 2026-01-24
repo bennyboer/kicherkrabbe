@@ -50,7 +50,7 @@ public class MongoInquiryLookupRepo
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         Index requestIdIndex = new Index().on("requestId", ASC);
 
-        return indexOps.ensureIndex(requestIdIndex)
+        return indexOps.createIndex(requestIdIndex)
                 .then();
     }
 
