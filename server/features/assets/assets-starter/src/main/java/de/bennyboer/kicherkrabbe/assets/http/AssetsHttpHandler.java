@@ -59,7 +59,7 @@ public class AssetsHttpHandler {
                 .flatMap(assetId -> ServerResponse.ok().bodyValue(assetId))
                 .onErrorResume(
                         AssetTooLargeError.class,
-                        error -> ServerResponse.status(HttpStatus.PAYLOAD_TOO_LARGE).build()
+                        _ -> ServerResponse.status(HttpStatus.CONTENT_TOO_LARGE).build()
                 )
                 .as(transactionOperator::transactional);
     }

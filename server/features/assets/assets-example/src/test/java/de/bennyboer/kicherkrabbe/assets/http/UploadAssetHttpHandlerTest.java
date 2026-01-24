@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.CONTENT_TOO_LARGE;
 
 public class UploadAssetHttpHandlerTest extends HttpHandlerTest {
 
@@ -131,8 +132,8 @@ public class UploadAssetHttpHandlerTest extends HttpHandlerTest {
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
-        // then: the response is 413 Payload Too Large
-        exchange.expectStatus().isEqualTo(org.springframework.http.HttpStatus.PAYLOAD_TOO_LARGE);
+        // then: the response is 413 Content Too Large
+        exchange.expectStatus().isEqualTo(CONTENT_TOO_LARGE);
     }
 
 }
