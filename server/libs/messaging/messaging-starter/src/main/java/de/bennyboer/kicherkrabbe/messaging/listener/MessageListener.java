@@ -59,10 +59,14 @@ public class MessageListener {
         log.info("Starting message listener '{}'", name);
         disposable = deliveries.get()
                 .delayUntil(this::handleDelivery)
-                .onErrorResume(e -> {
-                    log.error("An unrecoverable error occurred in message listener '{}'", name, e);
-                    return Mono.empty();
-                })
+                .retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
+                        .maxBackoff(Duration.ofMinutes(5))
+                        .doBeforeRetry(signal -> log.warn(
+                                "Retrying message listener '{}' after error (attempt {})",
+                                name,
+                                signal.totalRetries() + 1,
+                                signal.failure()
+                        )))
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();
     }
@@ -74,14 +78,14 @@ public class MessageListener {
     }
 
     private Mono<Void> handleDelivery(AcknowledgableMessage delivery) {
-        TransactionalOperator transactionalOperator = TransactionalOperator.create(transactionManager);
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
         Message message = delivery.getMessage();
-        IncomingMessageId incomingMessageId = IncomingMessageId.of(name + message.getMessageProperties().getMessageId());
+        var incomingMessageId = IncomingMessageId.of(name + message.getMessageProperties().getMessageId());
 
-        String body = new String(message.getBody(), UTF_8);
+        var body = new String(message.getBody(), UTF_8);
 
         return inbox.addMessage(incomingMessageId)
-                .then(handler.apply(message))
+                .then(Mono.defer(() -> handler.apply(message)))
                 .as(transactionalOperator::transactional)
                 .onErrorResume(IncomingMessageAlreadySeenException.class, e -> {
                     log.warn(
@@ -92,12 +96,11 @@ public class MessageListener {
                     return Mono.empty();
                 })
                 .retryWhen(Retry.backoff(3, Duration.ofMillis(200)))
+                .then(Mono.defer(delivery::ack))
                 .onErrorResume(e -> {
-                    delivery.nack(false);
                     log.error("Could not process message '{}' in message listener '{}'", body, name, e);
-                    return Mono.empty();
-                })
-                .doOnSuccess(ignored -> delivery.ack());
+                    return delivery.nack(false);
+                });
     }
 
 }

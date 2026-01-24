@@ -8,6 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import reactor.util.retry.Retry;
+
+import java.time.Duration;
 
 @Slf4j
 public class MessagingOutboxChangeStream {
@@ -39,11 +42,13 @@ public class MessagingOutboxChangeStream {
 
         disposable = repo.watchInserts()
                 .concatMap(ignored -> outbox.publishNextUnpublishedEntries())
-                .onErrorResume(e -> {
-                    log.error("Error while listening to change stream", e);
-                    return Mono.error(e);
-                })
-                .retry()
+                .retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
+                        .maxBackoff(Duration.ofMinutes(5))
+                        .doBeforeRetry(signal -> log.warn(
+                                "Retrying change stream after error (attempt {})",
+                                signal.totalRetries() + 1,
+                                signal.failure()
+                        )))
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();
     }

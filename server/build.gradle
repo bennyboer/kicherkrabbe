@@ -57,6 +57,7 @@ subprojects {
 
     tasks.named('test') {
         useJUnitPlatform()
+        maxHeapSize = '2g'
     }
 
     java {

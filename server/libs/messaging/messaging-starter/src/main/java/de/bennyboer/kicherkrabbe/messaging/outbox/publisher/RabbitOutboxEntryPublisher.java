@@ -16,13 +16,17 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @AllArgsConstructor
 public class RabbitOutboxEntryPublisher implements MessagingOutboxEntryPublisher {
+
+    private static final Duration CONFIRM_TIMEOUT = Duration.ofSeconds(10);
 
     private final Set<String> declaredExchanges = ConcurrentHashMap.newKeySet();
 
@@ -37,17 +41,31 @@ public class RabbitOutboxEntryPublisher implements MessagingOutboxEntryPublisher
         return Flux.fromIterable(entries)
                 .flatMap(this::toMessage)
                 .delayUntil(this::declareExchangeIfNotExists)
-                .publishOn(Schedulers.boundedElastic())
-                .doOnNext(this::sendMessage)
-                .then();
+                .collectList()
+                .filter(messages -> !messages.isEmpty())
+                .flatMap(this::sendMessagesWithConfirm);
     }
 
-    private void sendMessage(MessageWithExchange messageWithExchange) {
-        rabbitTemplate.send(
-                messageWithExchange.exchange(),
-                messageWithExchange.routingKey(),
-                messageWithExchange.message()
-        );
+    private Mono<Void> sendMessagesWithConfirm(List<MessageWithExchange> messages) {
+        return Mono.fromCallable(() -> {
+                    rabbitTemplate.invoke(operations -> {
+                        for (var messageWithExchange : messages) {
+                            operations.send(
+                                    messageWithExchange.exchange(),
+                                    messageWithExchange.routingKey(),
+                                    messageWithExchange.message()
+                            );
+                        }
+                        boolean confirmed = operations.waitForConfirms(CONFIRM_TIMEOUT.toMillis());
+                        if (!confirmed) {
+                            throw new RuntimeException("Publisher confirms not received within timeout");
+                        }
+                        return null;
+                    });
+                    return null;
+                })
+                .subscribeOn(Schedulers.boundedElastic())
+                .then();
     }
 
     private Mono<Void> declareExchangeIfNotExists(MessageWithExchange messageWithExchange) {

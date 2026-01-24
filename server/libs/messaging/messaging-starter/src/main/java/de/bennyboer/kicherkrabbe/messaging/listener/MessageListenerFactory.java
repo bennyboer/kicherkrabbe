@@ -6,6 +6,7 @@ import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInbox;
 import de.bennyboer.kicherkrabbe.messaging.target.ExchangeTarget;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -13,7 +14,9 @@ import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -23,8 +26,11 @@ import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static java.util.UUID.randomUUID;
 import static lombok.AccessLevel.PRIVATE;
 
+@Slf4j
 @AllArgsConstructor
 public class MessageListenerFactory {
+
+    private static final int DEFAULT_PREFETCH_COUNT = 10;
 
     private final ConnectionFactory connectionFactory;
 
@@ -136,10 +142,15 @@ public class MessageListenerFactory {
 
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
         container.setQueueNames(queueName);
+        container.setPrefetchCount(DEFAULT_PREFETCH_COUNT);
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         container.setMessageListener((ChannelAwareMessageListener) (message, channel) -> {
-            AcknowledgableMessage ackMessage = new AcknowledgableMessage(message, channel);
-            sink.tryEmitNext(ackMessage);
+            var ackMessage = new AcknowledgableMessage(message, channel);
+            var result = sink.tryEmitNext(ackMessage);
+            if (result.isFailure()) {
+                log.warn("Failed to emit message to sink (result: {}), nacking for requeue", result);
+                ackMessage.nackSync(true);
+            }
         });
         container.start();
 
@@ -153,8 +164,14 @@ public class MessageListenerFactory {
 
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
         container.setQueueNames(queueName);
+        container.setPrefetchCount(DEFAULT_PREFETCH_COUNT);
         container.setAcknowledgeMode(AcknowledgeMode.AUTO);
-        container.setMessageListener((org.springframework.amqp.core.MessageListener) sink::tryEmitNext);
+        container.setMessageListener(message -> {
+            var result = sink.tryEmitNext(message);
+            if (result.isFailure()) {
+                log.warn("Failed to emit message to sink (result: {}), message lost due to auto-ack", result);
+            }
+        });
         container.start();
 
         return sink.asFlux()
@@ -186,15 +203,31 @@ public class MessageListenerFactory {
         Message message;
         Channel channel;
 
-        public void ack() {
-            try {
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to acknowledge message", e);
-            }
+        public Mono<Void> ack() {
+            return Mono.fromRunnable(() -> {
+                        try {
+                            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                        } catch (Exception e) {
+                            throw new RuntimeException("Failed to acknowledge message", e);
+                        }
+                    })
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .then();
         }
 
-        public void nack(boolean requeue) {
+        public Mono<Void> nack(boolean requeue) {
+            return Mono.fromRunnable(() -> {
+                        try {
+                            channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, requeue);
+                        } catch (Exception e) {
+                            throw new RuntimeException("Failed to nack message", e);
+                        }
+                    })
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .then();
+        }
+
+        public void nackSync(boolean requeue) {
             try {
                 channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, requeue);
             } catch (Exception e) {
