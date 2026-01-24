@@ -91,13 +91,6 @@ public class ProductsModuleTest {
         for (var productId : productIds) {
             updateProductInLookup(productId);
         }
-
-        // Test seems to be flaky, but shouldn't
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public void removeLinkFromLookup(RemoveLinkFromLookupRequest req, Agent agent) {
