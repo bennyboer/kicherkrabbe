@@ -1,7 +1,11 @@
+plugins {
+    id 'kicherkrabbe.java-conventions'
+}
+
 dependencies {
     implementation project(':libs:persistence:persistence-starter')
 
-    implementation "org.springframework.boot:spring-boot-starter-test"
-    implementation "org.springframework.boot:spring-boot-data-mongodb-test"
-    implementation "org.testcontainers:testcontainers-mongodb"
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-data-mongodb-test'
+    implementation 'org.testcontainers:testcontainers-mongodb'
 }

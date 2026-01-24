@@ -1,3 +1,7 @@
+plugins {
+    id 'kicherkrabbe.feature-conventions'
+}
+
 dependencies {
     implementation project(':features:telegram:telegram-starter')
 }

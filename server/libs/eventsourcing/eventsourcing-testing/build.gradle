@@ -1,3 +1,7 @@
+plugins {
+    id 'kicherkrabbe.library-conventions'
+}
+
 dependencies {
     implementation project(':libs:eventsourcing:eventsourcing-starter')
     implementation project(':libs:messaging:messaging-starter')

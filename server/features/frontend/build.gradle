@@ -1,3 +1,7 @@
+plugins {
+    id 'kicherkrabbe.java-conventions'
+}
+
 processResources {
     from('../../../frontend/dist/frontend/browser') {
         into 'public'
