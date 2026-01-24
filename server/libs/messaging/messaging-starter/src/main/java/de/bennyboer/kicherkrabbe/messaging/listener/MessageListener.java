@@ -57,7 +57,7 @@ public class MessageListener {
     @PostConstruct
     public void start() {
         log.info("Starting message listener '{}'", name);
-        disposable = deliveries.get()
+        disposable = Flux.defer(deliveries::get)
                 .delayUntil(this::handleDelivery)
                 .retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
                         .maxBackoff(Duration.ofMinutes(5))
