@@ -87,11 +87,8 @@ rm mongo-keyfile
 
 **JWT Keypair** (for authentication tokens):
 ```bash
-# Generate new keypair
+# Generate new keypair (never reuse development keys in production!)
 openssl ecparam -genkey -name secp521r1 -noout -out key_pair.pem
-
-# Or copy existing one from development
-scp app/src/main/resources/keys/key_pair.pem user@your-server:/opt/kicherkrabbe/
 
 # Create Docker secret
 docker secret create jwt-keypair key_pair.pem
@@ -198,18 +195,27 @@ docker exec $(docker ps -q -f name=kicherkrabbe_traefik) cat /letsencrypt/acme.j
 
 ### Backup
 
-```bash
-# Stop services (optional, for consistent backup)
-docker stack rm kicherkrabbe
+Backups can be performed without stopping services using MongoDB's `mongodump` with oplog for point-in-time consistency.
 
-# Backup volumes
-docker run --rm -v kicherkrabbe_mongo-data:/data -v $(pwd):/backup alpine tar czf /backup/mongo-data.tar.gz -C /data .
-docker run --rm -v kicherkrabbe_rabbitmq-data:/data -v $(pwd):/backup alpine tar czf /backup/rabbitmq-data.tar.gz -C /data .
+```bash
+cd /opt/kicherkrabbe
+mkdir -p backups/$(date +%Y%m%d)
+cd backups/$(date +%Y%m%d)
+
+# Hot backup MongoDB with oplog (point-in-time consistent, no downtime)
+docker exec $(docker ps -q -f name=kicherkrabbe_mongo) mongodump \
+  --uri="mongodb://admin:${MONGO_ROOT_PASSWORD}@localhost:27017/?authSource=admin&replicaSet=rs0" \
+  --oplog \
+  --archive \
+  --gzip > mongo-backup.gz
+
+# Backup RabbitMQ definitions (queues, exchanges, bindings)
+docker exec $(docker ps -q -f name=kicherkrabbe_rabbitmq) rabbitmqctl export_definitions - > rabbitmq-definitions.json
+
+# Backup Traefik certificates
 docker run --rm -v kicherkrabbe_traefik-certificates:/data -v $(pwd):/backup alpine tar czf /backup/traefik-certs.tar.gz -C /data .
 
-# Restart services
-set -a && source .env && set +a
-docker stack deploy -c docker-swarm.yml kicherkrabbe
+echo "Backup completed: $(pwd)"
 ```
 
 ### Restore
@@ -218,17 +224,36 @@ docker stack deploy -c docker-swarm.yml kicherkrabbe
 # Stop services
 docker stack rm kicherkrabbe
 
-# Restore volumes
-docker volume create kicherkrabbe_mongo-data
-docker volume create kicherkrabbe_rabbitmq-data
-docker volume create kicherkrabbe_traefik-certificates
+# Wait for services to stop
+sleep 10
 
-docker run --rm -v kicherkrabbe_mongo-data:/data -v $(pwd):/backup alpine tar xzf /backup/mongo-data.tar.gz -C /data
-docker run --rm -v kicherkrabbe_rabbitmq-data:/data -v $(pwd):/backup alpine tar xzf /backup/rabbitmq-data.tar.gz -C /data
+# Recreate volumes
+docker volume rm kicherkrabbe_mongo-data kicherkrabbe_mongo-config 2>/dev/null || true
+docker volume create kicherkrabbe_mongo-data
+docker volume create kicherkrabbe_mongo-config
+
+# Start only MongoDB first
+set -a && source .env && set +a
+docker stack deploy -c docker-swarm.yml kicherkrabbe
+
+# Wait for MongoDB to be ready
+sleep 30
+
+# Restore MongoDB from backup
+cat mongo-backup.gz | docker exec -i $(docker ps -q -f name=kicherkrabbe_mongo) mongorestore \
+  --uri="mongodb://admin:${MONGO_ROOT_PASSWORD}@localhost:27017/?authSource=admin" \
+  --oplogReplay \
+  --archive \
+  --gzip \
+  --drop
+
+# Restore RabbitMQ definitions
+docker exec -i $(docker ps -q -f name=kicherkrabbe_rabbitmq) rabbitmqctl import_definitions < rabbitmq-definitions.json
+
+# Restore Traefik certificates
 docker run --rm -v kicherkrabbe_traefik-certificates:/data -v $(pwd):/backup alpine tar xzf /backup/traefik-certs.tar.gz -C /data
 
-# Restart services
-set -a && source .env && set +a
+# Redeploy to ensure all services are running
 docker stack deploy -c docker-swarm.yml kicherkrabbe
 ```
 
@@ -282,9 +307,14 @@ The application has CORS configured for `https://www.kicherkrabbe.com` in produc
 
 1. **Firewall**: Only expose ports 80 and 443. All internal services communicate over Docker overlay networks.
 
-2. **Secrets**: Never commit `.env` files. Consider using Docker secrets for sensitive values.
+2. **Secrets**: Never commit `.env` files. Consider using Docker secrets for sensitive values. Set proper file permissions:
+   ```bash
+   chmod 600 .env
+   ```
 
-3. **Updates**: Regularly update base images:
+3. **Admin Interfaces**: The Traefik dashboard and RabbitMQ management UI are exposed to the internet. For higher security, consider hiding these behind a VPN or removing their DNS records entirely. We accept this risk with two-factor authentication enabled on admin accounts.
+
+4. **Updates**: Regularly update base images:
    ```bash
    docker pull traefik:v3.6
    docker pull mongo:8.2
@@ -292,7 +322,69 @@ The application has CORS configured for `https://www.kicherkrabbe.com` in produc
    docker pull eclipse-temurin:25-jre-alpine
    ```
 
-4. **Backup**: Implement automated backups of the volumes.
+5. **Backup**: Implement automated backups (see Backup section below).
+
+## Pre-Production Security Checklist
+
+Before going live, verify the following:
+
+- [ ] Generated unique JWT keypair for production (not copied from development)
+- [ ] All passwords in `.env` are strong (32+ characters, generated with `openssl rand -base64 32`)
+- [ ] `.env` file permissions set to `600`
+- [ ] Two-factor authentication enabled on Traefik dashboard and RabbitMQ management accounts
+- [ ] DNS records configured correctly
+- [ ] Firewall allows only ports 80 and 443
+- [ ] SSL certificates are being issued correctly by Let's Encrypt
+- [ ] Automated backup schedule configured
+- [ ] Monitoring and alerting configured for service health
+- [ ] Log aggregation configured for security audit trail
+
+## Secret Rotation Procedures
+
+Periodically rotate credentials to limit exposure from potential breaches.
+
+### Rotate JWT Keypair
+
+```bash
+cd /opt/kicherkrabbe
+
+openssl ecparam -genkey -name secp521r1 -noout -out key_pair_new.pem
+
+docker secret rm jwt-keypair
+docker secret create jwt-keypair key_pair_new.pem
+rm key_pair_new.pem
+
+set -a && source .env && set +a
+docker stack deploy -c docker-swarm.yml kicherkrabbe
+```
+
+Note: Rotating the JWT keypair will invalidate all existing user sessions.
+
+### Rotate MongoDB Passwords
+
+```bash
+docker exec -it $(docker ps -q -f name=kicherkrabbe_mongo) mongosh -u admin -p
+
+use admin
+db.changeUserPassword("admin", "<new-root-password>")
+db.changeUserPassword("kicherkrabbe", "<new-app-password>")
+
+nano .env
+
+set -a && source .env && set +a
+docker stack deploy -c docker-swarm.yml kicherkrabbe
+```
+
+### Rotate RabbitMQ Password
+
+```bash
+docker exec -it $(docker ps -q -f name=kicherkrabbe_rabbitmq) rabbitmqctl change_password kicherkrabbe <new-password>
+
+nano .env
+
+set -a && source .env && set +a
+docker stack deploy -c docker-swarm.yml kicherkrabbe
+```
 
 ## Removing the Stack
 
