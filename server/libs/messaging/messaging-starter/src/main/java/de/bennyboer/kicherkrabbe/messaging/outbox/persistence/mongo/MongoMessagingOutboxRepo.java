@@ -154,10 +154,10 @@ public class MongoMessagingOutboxRepo implements MessagingOutboxRepo {
         var acknowledgedIndex = new Index().on("acknowledgedAt", Sort.Direction.ASC);
 
         Mono.zip(
-                indexOps.ensureIndex(publishableIndex),
-                indexOps.ensureIndex(lockedAtIndex),
-                indexOps.ensureIndex(lockIndex),
-                indexOps.ensureIndex(acknowledgedIndex)
+                indexOps.createIndex(publishableIndex),
+                indexOps.createIndex(lockedAtIndex),
+                indexOps.createIndex(lockIndex),
+                indexOps.createIndex(acknowledgedIndex)
         ).block();
     }
 

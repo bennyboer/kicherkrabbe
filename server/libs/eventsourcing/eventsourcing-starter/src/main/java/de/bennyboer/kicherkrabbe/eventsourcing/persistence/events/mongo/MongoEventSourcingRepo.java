@@ -228,8 +228,8 @@ public class MongoEventSourcingRepo implements EventSourcingRepo {
                 .append("snapshot", 1));
 
         Mono.zip(
-                indexOps.ensureIndex(versionIndex),
-                indexOps.ensureIndex(snapshotIndex)
+                indexOps.createIndex(versionIndex),
+                indexOps.createIndex(snapshotIndex)
         ).block();
     }
 

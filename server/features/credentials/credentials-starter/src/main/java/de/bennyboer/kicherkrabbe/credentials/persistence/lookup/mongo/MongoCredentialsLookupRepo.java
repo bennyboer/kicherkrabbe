@@ -54,7 +54,7 @@ public class MongoCredentialsLookupRepo
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         IndexDefinition nameIndex = new Index().on("name", ASC);
 
-        return indexOps.ensureIndex(nameIndex).then();
+        return indexOps.createIndex(nameIndex).then();
     }
 
 }

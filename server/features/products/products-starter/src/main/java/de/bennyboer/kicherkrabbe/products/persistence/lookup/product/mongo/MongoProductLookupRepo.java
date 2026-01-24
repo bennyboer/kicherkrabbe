@@ -121,8 +121,8 @@ public class MongoProductLookupRepo
                 .on("createdAt", DESC);
         var linkIdIndex = new Index().on("links.id", ASC);
 
-        return indexOps.ensureIndex(idCreatedAtIndex)
-                .then(indexOps.ensureIndex(linkIdIndex))
+        return indexOps.createIndex(idCreatedAtIndex)
+                .then(indexOps.createIndex(linkIdIndex))
                 .then();
     }
 
