@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'kicherkrabbe.application-conventions'
 }
 
 dependencies {
@@ -27,13 +27,4 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-}
-
-bootJar {
-    enabled = true
-    archiveFileName = 'app.jar'
-}
-
-jar {
-    enabled = false
 }
