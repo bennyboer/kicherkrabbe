@@ -7,7 +7,7 @@ import de.bennyboer.kicherkrabbe.users.create.MailAlreadyInUseError;
 import de.bennyboer.kicherkrabbe.users.persistence.lookup.LookupUser;
 import de.bennyboer.kicherkrabbe.users.persistence.lookup.UserLookupRepo;
 import jakarta.annotation.Nullable;
-import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +15,7 @@ import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.Duration;
 import java.util.Optional;
 
 import static de.bennyboer.kicherkrabbe.users.Actions.*;
@@ -44,14 +45,15 @@ public class UsersModule {
         this.transactionManager = transactionManager;
     }
 
-    @EventListener(ContextRefreshedEvent.class)
-    public void onApplicationEvent(ContextRefreshedEvent ignoredEvent) {
+    @EventListener(ApplicationReadyEvent.class)
+    public void onApplicationEvent(ApplicationReadyEvent ignoredEvent) {
         if (isInitialized) {
             return;
         }
         isInitialized = true;
 
-        initialize()
+        Mono.delay(Duration.ofSeconds(5))
+                .then(initialize())
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();
     }
