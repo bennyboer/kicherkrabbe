@@ -4,13 +4,11 @@ import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
-import de.bennyboer.kicherkrabbe.products.api.FabricCompositionDTO;
-import de.bennyboer.kicherkrabbe.products.api.FabricCompositionItemDTO;
 import de.bennyboer.kicherkrabbe.products.api.FabricTypeDTO;
 import de.bennyboer.kicherkrabbe.products.api.requests.UpdateFabricCompositionRequest;
+import de.bennyboer.kicherkrabbe.products.samples.SampleFabricComposition;
+import de.bennyboer.kicherkrabbe.products.samples.SampleFabricCompositionItem;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,16 +24,17 @@ public class UpdateFabricCompositionTest extends ProductsModuleTest {
         var result = createSampleProduct(Agent.user(AgentId.of("USER_ID")));
 
         // when: the products fabric composition are updated
-        var fabricComposition = new FabricCompositionDTO();
-        fabricComposition.items = new ArrayList<>();
-        var fabricCompositionItem1 = new FabricCompositionItemDTO();
-        fabricCompositionItem1.fabricType = FabricTypeDTO.COTTON;
-        fabricCompositionItem1.percentage = 8000;
-        fabricComposition.items.add(fabricCompositionItem1);
-        var fabricCompositionItem2 = new FabricCompositionItemDTO();
-        fabricCompositionItem2.fabricType = FabricTypeDTO.POLYESTER;
-        fabricCompositionItem2.percentage = 2000;
-        fabricComposition.items.add(fabricCompositionItem2);
+        var fabricComposition = SampleFabricComposition.builder()
+                .item(SampleFabricCompositionItem.builder()
+                        .fabricType(FabricTypeDTO.COTTON)
+                        .percentage(8000)
+                        .build())
+                .item(SampleFabricCompositionItem.builder()
+                        .fabricType(FabricTypeDTO.POLYESTER)
+                        .percentage(2000)
+                        .build())
+                .build()
+                .toDTO();
 
         var updateFabricCompositionRequest = new UpdateFabricCompositionRequest();
         updateFabricCompositionRequest.version = 0L;
@@ -56,20 +55,9 @@ public class UpdateFabricCompositionTest extends ProductsModuleTest {
         var result = createSampleProduct(Agent.user(AgentId.of("USER_ID")));
 
         // when: the product is updated by another user; then: an exception is thrown
-        var fabricComposition = new FabricCompositionDTO();
-        fabricComposition.items = new ArrayList<>();
-        var fabricCompositionItem1 = new FabricCompositionItemDTO();
-        fabricCompositionItem1.fabricType = FabricTypeDTO.COTTON;
-        fabricCompositionItem1.percentage = 8000;
-        fabricComposition.items.add(fabricCompositionItem1);
-        var fabricCompositionItem2 = new FabricCompositionItemDTO();
-        fabricCompositionItem2.fabricType = FabricTypeDTO.POLYESTER;
-        fabricCompositionItem2.percentage = 2000;
-        fabricComposition.items.add(fabricCompositionItem2);
-
         var updateFabricCompositionRequest = new UpdateFabricCompositionRequest();
         updateFabricCompositionRequest.version = 0L;
-        updateFabricCompositionRequest.fabricComposition = fabricComposition;
+        updateFabricCompositionRequest.fabricComposition = SampleFabricComposition.builder().build().toDTO();
         assertThatThrownBy(() -> updateFabricComposition(
                 result.id,
                 updateFabricCompositionRequest,
@@ -86,20 +74,9 @@ public class UpdateFabricCompositionTest extends ProductsModuleTest {
         var result = createSampleProduct(Agent.user(AgentId.of("USER_ID")));
 
         // and: the product is updated
-        var fabricComposition = new FabricCompositionDTO();
-        fabricComposition.items = new ArrayList<>();
-        var fabricCompositionItem1 = new FabricCompositionItemDTO();
-        fabricCompositionItem1.fabricType = FabricTypeDTO.COTTON;
-        fabricCompositionItem1.percentage = 8000;
-        fabricComposition.items.add(fabricCompositionItem1);
-        var fabricCompositionItem2 = new FabricCompositionItemDTO();
-        fabricCompositionItem2.fabricType = FabricTypeDTO.POLYESTER;
-        fabricCompositionItem2.percentage = 2000;
-        fabricComposition.items.add(fabricCompositionItem2);
-
         var updateFabricCompositionRequest = new UpdateFabricCompositionRequest();
         updateFabricCompositionRequest.version = 0L;
-        updateFabricCompositionRequest.fabricComposition = fabricComposition;
+        updateFabricCompositionRequest.fabricComposition = SampleFabricComposition.builder().build().toDTO();
         updateFabricComposition(result.id, updateFabricCompositionRequest, Agent.user(AgentId.of("USER_ID")));
 
         // when: the product is updated with an outdated version; then: an exception is thrown
@@ -119,20 +96,9 @@ public class UpdateFabricCompositionTest extends ProductsModuleTest {
         var result = createSampleProduct(Agent.user(AgentId.of("USER_ID")));
 
         // and: the product is updated
-        var fabricComposition = new FabricCompositionDTO();
-        fabricComposition.items = new ArrayList<>();
-        var fabricCompositionItem1 = new FabricCompositionItemDTO();
-        fabricCompositionItem1.fabricType = FabricTypeDTO.COTTON;
-        fabricCompositionItem1.percentage = 8000;
-        fabricComposition.items.add(fabricCompositionItem1);
-        var fabricCompositionItem2 = new FabricCompositionItemDTO();
-        fabricCompositionItem2.fabricType = FabricTypeDTO.POLYESTER;
-        fabricCompositionItem2.percentage = 2000;
-        fabricComposition.items.add(fabricCompositionItem2);
-
         var updateFabricCompositionRequest = new UpdateFabricCompositionRequest();
         updateFabricCompositionRequest.version = 0L;
-        updateFabricCompositionRequest.fabricComposition = fabricComposition;
+        updateFabricCompositionRequest.fabricComposition = SampleFabricComposition.builder().build().toDTO();
         updateFabricComposition(result.id, updateFabricCompositionRequest, Agent.user(AgentId.of("USER_ID")));
 
         // when: the product is updated with a reset produced at date; then: an exception is thrown
@@ -148,20 +114,9 @@ public class UpdateFabricCompositionTest extends ProductsModuleTest {
     @Test
     void shouldRaiseMissingPermissionErrorIfProductDoesNotExist() {
         // when: a product that does not exist is updated; then: an exception is thrown
-        var fabricComposition = new FabricCompositionDTO();
-        fabricComposition.items = new ArrayList<>();
-        var fabricCompositionItem1 = new FabricCompositionItemDTO();
-        fabricCompositionItem1.fabricType = FabricTypeDTO.COTTON;
-        fabricCompositionItem1.percentage = 8000;
-        fabricComposition.items.add(fabricCompositionItem1);
-        var fabricCompositionItem2 = new FabricCompositionItemDTO();
-        fabricCompositionItem2.fabricType = FabricTypeDTO.POLYESTER;
-        fabricCompositionItem2.percentage = 2000;
-        fabricComposition.items.add(fabricCompositionItem2);
-
         var updateFabricCompositionRequest = new UpdateFabricCompositionRequest();
         updateFabricCompositionRequest.version = 0L;
-        updateFabricCompositionRequest.fabricComposition = fabricComposition;
+        updateFabricCompositionRequest.fabricComposition = SampleFabricComposition.builder().build().toDTO();
         assertThatThrownBy(() -> updateFabricComposition("PRODUCT_ID", updateFabricCompositionRequest, Agent.user(AgentId.of("USER_ID"))))
                 .matches(e -> e.getCause() instanceof MissingPermissionError);
     }

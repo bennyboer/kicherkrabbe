@@ -4,14 +4,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.patterns.http.api.MoneyDTO;
-import de.bennyboer.kicherkrabbe.patterns.http.api.PatternAttributionDTO;
-import de.bennyboer.kicherkrabbe.patterns.http.api.PatternVariantDTO;
-import de.bennyboer.kicherkrabbe.patterns.http.api.PricedSizeRangeDTO;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePattern;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,33 +23,12 @@ public class UpdatePatternCategoriesTest extends PatternsModuleTest {
 
         // and: some categories are available
         markCategoryAsAvailable("DRESS_ID", "Dress");
-        markCategoryAsAvailable("SKIRT_ID", "Skirt");
         markCategoryAsAvailable("NEW_CATEGORY_ID_1", "New category 1");
         markCategoryAsAvailable("NEW_CATEGORY_ID_2", "New category 2");
         markCategoryAsAvailable("NEW_CATEGORY_ID_3", "New category 3");
 
-        // and: the user creates a pattern
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
-
-        String patternId = createPattern(
-                "Summerdress",
-                "S-D-SUM-1",
-                null,
-                new PatternAttributionDTO(),
-                Set.of("DRESS_ID"),
-                List.of("IMAGE_ID"),
-                List.of(variant),
-                List.of(),
-                agent
-        );
+        // and: the user creates a pattern with a category
+        String patternId = createPattern(SamplePattern.builder().category("DRESS_ID").build(), agent);
 
         // when: the user updates the categories of the pattern
         updatePatternCategories(
@@ -84,32 +59,11 @@ public class UpdatePatternCategoriesTest extends PatternsModuleTest {
 
         // and: some categories are available
         markCategoryAsAvailable("DRESS_ID", "Dress");
-        markCategoryAsAvailable("SKIRT_ID", "Skirt");
         markCategoryAsAvailable("NEW_CATEGORY_ID_1", "New category 1");
         markCategoryAsAvailable("NEW_CATEGORY_ID_2", "New category 2");
 
-        // and: the user creates a pattern
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
-
-        String patternId = createPattern(
-                "Summerdress",
-                "S-D-SUM-1",
-                null,
-                new PatternAttributionDTO(),
-                Set.of("DRESS_ID"),
-                List.of("IMAGE_ID"),
-                List.of(variant),
-                List.of(),
-                agent
-        );
+        // and: the user creates a pattern with a category
+        String patternId = createPattern(SamplePattern.builder().category("DRESS_ID").build(), agent);
 
         // when: the user updates the categories of the pattern with a missing category; then: an error is raised
         assertThatThrownBy(() -> updatePatternCategories(
@@ -179,33 +133,12 @@ public class UpdatePatternCategoriesTest extends PatternsModuleTest {
 
         // and: some categories are available
         markCategoryAsAvailable("DRESS_ID", "Dress");
-        markCategoryAsAvailable("SKIRT_ID", "Skirt");
         markCategoryAsAvailable("NEW_CATEGORY_ID_1", "New category 1");
         markCategoryAsAvailable("NEW_CATEGORY_ID_2", "New category 2");
         markCategoryAsAvailable("NEW_CATEGORY_ID_3", "New category 3");
 
-        // and: the user creates a pattern
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
-
-        String patternId = createPattern(
-                "Summerdress",
-                "S-D-SUM-1",
-                null,
-                new PatternAttributionDTO(),
-                Set.of("DRESS_ID"),
-                List.of("IMAGE_ID"),
-                List.of(variant),
-                List.of(),
-                agent
-        );
+        // and: the user creates a pattern with a category
+        String patternId = createPattern(SamplePattern.builder().category("DRESS_ID").build(), agent);
 
         // and: the pattern is published
         publishPattern(patternId, 0L, agent);
@@ -227,32 +160,11 @@ public class UpdatePatternCategoriesTest extends PatternsModuleTest {
 
         // and: some categories are available
         markCategoryAsAvailable("DRESS_ID", "Dress");
-        markCategoryAsAvailable("SKIRT_ID", "Skirt");
         markCategoryAsAvailable("NEW_CATEGORY_ID_1", "New category 1");
         markCategoryAsAvailable("NEW_CATEGORY_ID_2", "New category 2");
 
-        // and: the user creates a pattern
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
-
-        String patternId = createPattern(
-                "Summerdress",
-                "S-D-SUM-1",
-                null,
-                new PatternAttributionDTO(),
-                Set.of("DRESS_ID"),
-                List.of("IMAGE_ID"),
-                List.of(variant),
-                List.of(),
-                agent
-        );
+        // and: the user creates a pattern with a category
+        String patternId = createPattern(SamplePattern.builder().category("DRESS_ID").build(), agent);
 
         // when: the user tries to update the pattern categories with an empty category
         assertThatThrownBy(() -> updatePatternCategories(

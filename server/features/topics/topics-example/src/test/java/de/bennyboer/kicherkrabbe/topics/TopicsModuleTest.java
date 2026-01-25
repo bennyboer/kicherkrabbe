@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.topics;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.topics.samples.SampleTopic;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
@@ -51,6 +52,14 @@ public class TopicsModuleTest {
         }
 
         return topicId;
+    }
+
+    public String createTopic(SampleTopic sample, Agent agent) {
+        return createTopic(sample.getName(), agent);
+    }
+
+    public String createSampleTopic(Agent agent) {
+        return createTopic(SampleTopic.builder().build(), agent);
     }
 
     public long updateTopic(String topicId, long version, String name, Agent agent) {

@@ -2,10 +2,8 @@ package de.bennyboer.kicherkrabbe.patterns;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.patterns.http.api.MoneyDTO;
-import de.bennyboer.kicherkrabbe.patterns.http.api.PatternAttributionDTO;
-import de.bennyboer.kicherkrabbe.patterns.http.api.PatternVariantDTO;
-import de.bennyboer.kicherkrabbe.patterns.http.api.PricedSizeRangeDTO;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePatternAttribution;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePatternVariant;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -28,21 +26,13 @@ public class CleanupCategoriesTest extends PatternsModuleTest {
         markCategoryAsAvailable("BELT_ID", "BELT");
 
         // and: the user created some patterns referencing some categories
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+        var variant = SamplePatternVariant.builder().build().toDTO();
 
         String patternId1 = createPattern(
                 "Summerdress",
                 "S-D-SUM-1",
                 "A nice dress for the summer",
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("DRESS_ID", "SKIRT_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -53,7 +43,7 @@ public class CleanupCategoriesTest extends PatternsModuleTest {
                 "Jacket",
                 "S-J-DEF-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("JACKET_ID", "DRESS_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -64,7 +54,7 @@ public class CleanupCategoriesTest extends PatternsModuleTest {
                 "Leatherbelt",
                 "S-B-LEA-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("BELT_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),

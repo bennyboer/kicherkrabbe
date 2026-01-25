@@ -2,12 +2,14 @@ package de.bennyboer.kicherkrabbe.products;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.products.api.*;
+import de.bennyboer.kicherkrabbe.products.api.LinkTypeDTO;
 import de.bennyboer.kicherkrabbe.products.api.requests.CreateProductRequest;
+import de.bennyboer.kicherkrabbe.products.samples.SampleFabricComposition;
+import de.bennyboer.kicherkrabbe.products.samples.SampleLink;
+import de.bennyboer.kicherkrabbe.products.samples.SampleNotes;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,35 +22,27 @@ public class QueryProductsTest extends ProductsModuleTest {
         allowUserToCreateProductsAndReadLinks("USER_ID");
 
         // and: there are some products created at different times
-        var link1 = new LinkDTO();
-        link1.type = LinkTypeDTO.PATTERN;
-        link1.id = "PATTERN_ID_1";
-        link1.name = "Pattern 1";
+        var link1 = SampleLink.builder()
+                .type(LinkTypeDTO.PATTERN)
+                .id("PATTERN_ID_1")
+                .name("Pattern 1")
+                .build()
+                .toDTO();
 
-        var link2 = new LinkDTO();
-        link2.type = LinkTypeDTO.FABRIC;
-        link2.id = "FABRIC_ID_1";
-        link2.name = "Fabric 1";
+        var link2 = SampleLink.builder()
+                .type(LinkTypeDTO.FABRIC)
+                .id("FABRIC_ID_1")
+                .name("Fabric 1")
+                .build()
+                .toDTO();
 
-        var fabricComposition = new FabricCompositionDTO();
-        fabricComposition.items = new ArrayList<>();
-        var fabricCompositionItem1 = new FabricCompositionItemDTO();
-        fabricCompositionItem1.fabricType = FabricTypeDTO.COTTON;
-        fabricCompositionItem1.percentage = 8000;
-        fabricComposition.items.add(fabricCompositionItem1);
-        var fabricCompositionItem2 = new FabricCompositionItemDTO();
-        fabricCompositionItem2.fabricType = FabricTypeDTO.POLYESTER;
-        fabricCompositionItem2.percentage = 2000;
-        fabricComposition.items.add(fabricCompositionItem2);
+        var fabricComposition = SampleFabricComposition.builder().build().toDTO();
 
         var request = new CreateProductRequest();
         request.images = List.of("IMAGE_ID_1", "IMAGE_ID_2");
         request.links = List.of(link1, link2);
         request.fabricComposition = fabricComposition;
-        request.notes = new NotesDTO();
-        request.notes.contains = "Contains";
-        request.notes.care = "Care";
-        request.notes.safety = "Safety";
+        request.notes = SampleNotes.builder().build().toDTO();
         request.producedAt = Instant.parse("2024-11-09T17:15:00.000Z");
         setTime(Instant.parse("2024-11-09T17:15:00.000Z"));
         createProduct(request, Agent.user(AgentId.of("USER_ID")));

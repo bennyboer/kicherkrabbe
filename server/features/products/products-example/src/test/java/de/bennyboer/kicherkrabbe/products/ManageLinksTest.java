@@ -2,14 +2,16 @@ package de.bennyboer.kicherkrabbe.products;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.products.api.*;
+import de.bennyboer.kicherkrabbe.products.api.LinkTypeDTO;
 import de.bennyboer.kicherkrabbe.products.api.requests.CreateProductRequest;
 import de.bennyboer.kicherkrabbe.products.api.requests.RemoveLinkFromLookupRequest;
 import de.bennyboer.kicherkrabbe.products.api.requests.UpdateLinkInLookupRequest;
+import de.bennyboer.kicherkrabbe.products.samples.SampleFabricComposition;
+import de.bennyboer.kicherkrabbe.products.samples.SampleLink;
+import de.bennyboer.kicherkrabbe.products.samples.SampleNotes;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,10 +28,12 @@ public class ManageLinksTest extends ProductsModuleTest {
 
         // and: a link is added
         var updateLinkInLookupRequest = new UpdateLinkInLookupRequest();
-        updateLinkInLookupRequest.link = new LinkDTO();
-        updateLinkInLookupRequest.link.type = LinkTypeDTO.PATTERN;
-        updateLinkInLookupRequest.link.id = "PATTERN_ID";
-        updateLinkInLookupRequest.link.name = "Pattern";
+        updateLinkInLookupRequest.link = SampleLink.builder()
+                .type(LinkTypeDTO.PATTERN)
+                .id("PATTERN_ID")
+                .name("Pattern")
+                .build()
+                .toDTO();
         updateLinkInLookup(updateLinkInLookupRequest, Agent.system());
 
         // then: the link is added
@@ -51,15 +55,20 @@ public class ManageLinksTest extends ProductsModuleTest {
 
         // and: some links
         var updateLinkInLookupRequest = new UpdateLinkInLookupRequest();
-        updateLinkInLookupRequest.link = new LinkDTO();
-        updateLinkInLookupRequest.link.type = LinkTypeDTO.PATTERN;
-        updateLinkInLookupRequest.link.id = "PATTERN_ID";
-        updateLinkInLookupRequest.link.name = "Pattern";
+        updateLinkInLookupRequest.link = SampleLink.builder()
+                .type(LinkTypeDTO.PATTERN)
+                .id("PATTERN_ID")
+                .name("Pattern")
+                .build()
+                .toDTO();
         updateLinkInLookup(updateLinkInLookupRequest, Agent.system());
 
-        updateLinkInLookupRequest.link.type = LinkTypeDTO.FABRIC;
-        updateLinkInLookupRequest.link.id = "FABRIC_ID";
-        updateLinkInLookupRequest.link.name = "Fabric";
+        updateLinkInLookupRequest.link = SampleLink.builder()
+                .type(LinkTypeDTO.FABRIC)
+                .id("FABRIC_ID")
+                .name("Fabric")
+                .build()
+                .toDTO();
         updateLinkInLookup(updateLinkInLookupRequest, Agent.system());
 
         // when: removing a link
@@ -87,37 +96,27 @@ public class ManageLinksTest extends ProductsModuleTest {
 
         // and: a link
         var updateLinkInLookupRequest = new UpdateLinkInLookupRequest();
-        updateLinkInLookupRequest.link = new LinkDTO();
-        updateLinkInLookupRequest.link.type = LinkTypeDTO.PATTERN;
-        updateLinkInLookupRequest.link.id = "PATTERN_ID";
-        updateLinkInLookupRequest.link.name = "Pattern";
+        updateLinkInLookupRequest.link = SampleLink.builder()
+                .type(LinkTypeDTO.PATTERN)
+                .id("PATTERN_ID")
+                .name("Pattern")
+                .build()
+                .toDTO();
         updateLinkInLookup(updateLinkInLookupRequest, Agent.system());
 
         // and: the links are added to a product
-        var link = new LinkDTO();
-        link.type = LinkTypeDTO.PATTERN;
-        link.id = "PATTERN_ID";
-        link.name = "Pattern";
-
-        var fabricComposition = new FabricCompositionDTO();
-        fabricComposition.items = new ArrayList<>();
-        var fabricCompositionItem1 = new FabricCompositionItemDTO();
-        fabricCompositionItem1.fabricType = FabricTypeDTO.COTTON;
-        fabricCompositionItem1.percentage = 8000;
-        fabricComposition.items.add(fabricCompositionItem1);
-        var fabricCompositionItem2 = new FabricCompositionItemDTO();
-        fabricCompositionItem2.fabricType = FabricTypeDTO.POLYESTER;
-        fabricCompositionItem2.percentage = 2000;
-        fabricComposition.items.add(fabricCompositionItem2);
+        var link = SampleLink.builder()
+                .type(LinkTypeDTO.PATTERN)
+                .id("PATTERN_ID")
+                .name("Pattern")
+                .build()
+                .toDTO();
 
         var request = new CreateProductRequest();
         request.images = List.of();
         request.links = List.of(link);
-        request.fabricComposition = fabricComposition;
-        request.notes = new NotesDTO();
-        request.notes.contains = "Contains";
-        request.notes.care = "Care";
-        request.notes.safety = "Safety";
+        request.fabricComposition = SampleFabricComposition.builder().build().toDTO();
+        request.notes = SampleNotes.builder().build().toDTO();
         request.producedAt = Instant.parse("2024-11-08T12:30:00.000Z");
         var id = createProduct(request, Agent.user(AgentId.of("USER_ID"))).id;
 
@@ -142,37 +141,27 @@ public class ManageLinksTest extends ProductsModuleTest {
 
         // and: a link
         var updateLinkInLookupRequest = new UpdateLinkInLookupRequest();
-        updateLinkInLookupRequest.link = new LinkDTO();
-        updateLinkInLookupRequest.link.type = LinkTypeDTO.PATTERN;
-        updateLinkInLookupRequest.link.id = "PATTERN_ID";
-        updateLinkInLookupRequest.link.name = "Pattern";
+        updateLinkInLookupRequest.link = SampleLink.builder()
+                .type(LinkTypeDTO.PATTERN)
+                .id("PATTERN_ID")
+                .name("Pattern")
+                .build()
+                .toDTO();
         updateLinkInLookup(updateLinkInLookupRequest, Agent.system());
 
         // and: the links are added to a product
-        var link = new LinkDTO();
-        link.type = LinkTypeDTO.PATTERN;
-        link.id = "PATTERN_ID";
-        link.name = "Pattern";
-
-        var fabricComposition = new FabricCompositionDTO();
-        fabricComposition.items = new ArrayList<>();
-        var fabricCompositionItem1 = new FabricCompositionItemDTO();
-        fabricCompositionItem1.fabricType = FabricTypeDTO.COTTON;
-        fabricCompositionItem1.percentage = 8000;
-        fabricComposition.items.add(fabricCompositionItem1);
-        var fabricCompositionItem2 = new FabricCompositionItemDTO();
-        fabricCompositionItem2.fabricType = FabricTypeDTO.POLYESTER;
-        fabricCompositionItem2.percentage = 2000;
-        fabricComposition.items.add(fabricCompositionItem2);
+        var link = SampleLink.builder()
+                .type(LinkTypeDTO.PATTERN)
+                .id("PATTERN_ID")
+                .name("Pattern")
+                .build()
+                .toDTO();
 
         var request = new CreateProductRequest();
         request.images = List.of();
         request.links = List.of(link);
-        request.fabricComposition = fabricComposition;
-        request.notes = new NotesDTO();
-        request.notes.contains = "Contains";
-        request.notes.care = "Care";
-        request.notes.safety = "Safety";
+        request.fabricComposition = SampleFabricComposition.builder().build().toDTO();
+        request.notes = SampleNotes.builder().build().toDTO();
         request.producedAt = Instant.parse("2024-11-08T12:30:00.000Z");
         var id = createProduct(request, Agent.user(AgentId.of("USER_ID"))).id;
 
@@ -196,15 +185,20 @@ public class ManageLinksTest extends ProductsModuleTest {
 
         // and: some links
         var updateLinkInLookupRequest = new UpdateLinkInLookupRequest();
-        updateLinkInLookupRequest.link = new LinkDTO();
-        updateLinkInLookupRequest.link.type = LinkTypeDTO.PATTERN;
-        updateLinkInLookupRequest.link.id = "PATTERN_ID";
-        updateLinkInLookupRequest.link.name = "Pattern";
+        updateLinkInLookupRequest.link = SampleLink.builder()
+                .type(LinkTypeDTO.PATTERN)
+                .id("PATTERN_ID")
+                .name("Pattern")
+                .build()
+                .toDTO();
         updateLinkInLookup(updateLinkInLookupRequest, Agent.system());
 
-        updateLinkInLookupRequest.link.type = LinkTypeDTO.FABRIC;
-        updateLinkInLookupRequest.link.id = "FABRIC_ID";
-        updateLinkInLookupRequest.link.name = "Fabric";
+        updateLinkInLookupRequest.link = SampleLink.builder()
+                .type(LinkTypeDTO.FABRIC)
+                .id("FABRIC_ID")
+                .name("Fabric")
+                .build()
+                .toDTO();
         updateLinkInLookup(updateLinkInLookupRequest, Agent.system());
 
         // when: querying all links

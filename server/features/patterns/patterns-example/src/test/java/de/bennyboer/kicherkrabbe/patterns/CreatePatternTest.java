@@ -5,6 +5,12 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.money.Money;
 import de.bennyboer.kicherkrabbe.patterns.http.api.*;
+import de.bennyboer.kicherkrabbe.patterns.samples.SampleMoney;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePattern;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePatternAttribution;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePatternExtra;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePatternVariant;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePricedSizeRange;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
 
@@ -28,46 +34,46 @@ public class CreatePatternTest extends PatternsModuleTest {
         markCategoryAsAvailable("SKIRT_ID", "Skirt");
 
         // when: the user creates a pattern
-        var attribution = new PatternAttributionDTO();
-        attribution.originalPatternName = "Summerdress EXTREME";
-        attribution.designer = "EXTREME PATTERNS";
+        var attribution = SamplePatternAttribution.builder()
+                .originalPatternName("Summerdress EXTREME")
+                .designer("EXTREME PATTERNS")
+                .build()
+                .toDTO();
 
-        var pricedSizeRange1 = new PricedSizeRangeDTO();
-        pricedSizeRange1.from = 80;
-        pricedSizeRange1.to = 86L;
-        pricedSizeRange1.price = new MoneyDTO();
-        pricedSizeRange1.price.amount = 2900;
-        pricedSizeRange1.price.currency = "EUR";
-        var pricedSizeRange2 = new PricedSizeRangeDTO();
-        pricedSizeRange2.from = 92;
-        pricedSizeRange2.to = 98L;
-        pricedSizeRange2.price = new MoneyDTO();
-        pricedSizeRange2.price.amount = 3200;
-        pricedSizeRange2.price.currency = "EUR";
+        var pricedSizeRange1 = SamplePricedSizeRange.builder()
+                .from(80)
+                .to(86L)
+                .price(SampleMoney.builder().amount(2900).build())
+                .build();
+        var pricedSizeRange2 = SamplePricedSizeRange.builder()
+                .from(92)
+                .to(98L)
+                .price(SampleMoney.builder().amount(3200).build())
+                .build();
 
-        var shortVariant = new PatternVariantDTO();
-        shortVariant.name = "Short";
-        shortVariant.pricedSizeRanges = Set.of(
-                pricedSizeRange1,
-                pricedSizeRange2
-        );
-        var longVariant = new PatternVariantDTO();
-        longVariant.name = "Long";
-        longVariant.pricedSizeRanges = Set.of(
-                pricedSizeRange1,
-                pricedSizeRange2
-        );
+        var shortVariant = SamplePatternVariant.builder()
+                .name("Short")
+                .pricedSizeRange(pricedSizeRange1)
+                .pricedSizeRange(pricedSizeRange2)
+                .build()
+                .toDTO();
+        var longVariant = SamplePatternVariant.builder()
+                .name("Long")
+                .pricedSizeRange(pricedSizeRange1)
+                .pricedSizeRange(pricedSizeRange2)
+                .build()
+                .toDTO();
 
-        var extra1 = new PatternExtraDTO();
-        extra1.name = "Extra 1";
-        extra1.price = new MoneyDTO();
-        extra1.price.amount = 1000;
-        extra1.price.currency = "EUR";
-        var extra2 = new PatternExtraDTO();
-        extra2.name = "Extra 2";
-        extra2.price = new MoneyDTO();
-        extra2.price.amount = 2000;
-        extra2.price.currency = "EUR";
+        var extra1 = SamplePatternExtra.builder()
+                .name("Extra 1")
+                .price(SampleMoney.builder().amount(1000).build())
+                .build()
+                .toDTO();
+        var extra2 = SamplePatternExtra.builder()
+                .name("Extra 2")
+                .price(SampleMoney.builder().amount(2000).build())
+                .build()
+                .toDTO();
 
         String patternId = createPattern(
                 "Summerdress",
@@ -106,43 +112,17 @@ public class CreatePatternTest extends PatternsModuleTest {
         assertThat(pattern.getVariants()).hasSize(2);
         assertThat(pattern.getVariants().get(0).getName()).isEqualTo(PatternVariantName.of("Short"));
         assertThat(pattern.getVariants().get(0).getPricedSizeRanges()).containsExactlyInAnyOrder(
-                PricedSizeRange.of(
-                        80,
-                        86L,
-                        null,
-                        Money.euro(2900)
-                ),
-                PricedSizeRange.of(
-                        92,
-                        98L,
-                        null,
-                        Money.euro(3200)
-                )
+                PricedSizeRange.of(80, 86L, null, Money.euro(2900)),
+                PricedSizeRange.of(92, 98L, null, Money.euro(3200))
         );
         assertThat(pattern.getVariants().get(1).getName()).isEqualTo(PatternVariantName.of("Long"));
         assertThat(pattern.getVariants().get(1).getPricedSizeRanges()).containsExactlyInAnyOrder(
-                PricedSizeRange.of(
-                        80,
-                        86L,
-                        null,
-                        Money.euro(2900)
-                ),
-                PricedSizeRange.of(
-                        92,
-                        98L,
-                        null,
-                        Money.euro(3200)
-                )
+                PricedSizeRange.of(80, 86L, null, Money.euro(2900)),
+                PricedSizeRange.of(92, 98L, null, Money.euro(3200))
         );
         assertThat(pattern.getExtras()).containsExactlyInAnyOrder(
-                PatternExtra.of(
-                        PatternExtraName.of("Extra 1"),
-                        Money.euro(1000)
-                ),
-                PatternExtra.of(
-                        PatternExtraName.of("Extra 2"),
-                        Money.euro(2000)
-                )
+                PatternExtra.of(PatternExtraName.of("Extra 1"), Money.euro(1000)),
+                PatternExtra.of(PatternExtraName.of("Extra 2"), Money.euro(2000))
         );
     }
 
@@ -156,9 +136,7 @@ public class CreatePatternTest extends PatternsModuleTest {
         String invalidNumber1 = "";
         String invalidNumber2 = "P-22";
 
-        var validAttribution1 = new PatternAttributionDTO();
-        validAttribution1.originalPatternName = "Summerdress EXTREME";
-        validAttribution1.designer = "EXTREME PATTERNS";
+        var validAttribution = SamplePatternAttribution.builder().build().toDTO();
         PatternAttributionDTO invalidAttribution = null;
 
         Set<String> validCategories = Set.of("DRESS_ID", "SKIRT_ID");
@@ -170,16 +148,8 @@ public class CreatePatternTest extends PatternsModuleTest {
         List<String> invalidImages2 = List.of();
         List<String> invalidImages3 = null;
 
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 2900;
-        pricedSizeRange.price.currency = "EUR";
-
-        var validVariant = new PatternVariantDTO();
-        validVariant.name = "Short";
-        validVariant.pricedSizeRanges = Set.of(pricedSizeRange);
+        var validVariant = SamplePatternVariant.builder().build().toDTO();
+        var pricedSizeRange = SamplePricedSizeRange.builder().build().toDTO();
         var invalidVariant1 = new PatternVariantDTO();
         invalidVariant1.name = "";
         invalidVariant1.pricedSizeRanges = Set.of(pricedSizeRange);
@@ -190,16 +160,10 @@ public class CreatePatternTest extends PatternsModuleTest {
         invalidVariant3.name = "Short";
         invalidVariant3.pricedSizeRanges = Set.of();
 
-        var validExtra = new PatternExtraDTO();
-        validExtra.name = "Extra 1";
-        validExtra.price = new MoneyDTO();
-        validExtra.price.amount = 1000;
-        validExtra.price.currency = "EUR";
+        var validExtra = SamplePatternExtra.builder().build().toDTO();
         var invalidExtra1 = new PatternExtraDTO();
         invalidExtra1.name = "";
-        invalidExtra1.price = new MoneyDTO();
-        invalidExtra1.price.amount = 1000;
-        invalidExtra1.price.currency = "EUR";
+        invalidExtra1.price = SampleMoney.builder().build().toDTO();
         var invalidExtra2 = new PatternExtraDTO();
         invalidExtra2.name = "Extra 1";
         invalidExtra2.price = null;
@@ -213,7 +177,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 invalidName1,
                 validNumber,
                 null,
-                validAttribution1,
+                validAttribution,
                 validCategories,
                 validImages,
                 List.of(validVariant),
@@ -226,7 +190,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 invalidName2,
                 validNumber,
                 null,
-                validAttribution1,
+                validAttribution,
                 validCategories,
                 validImages,
                 List.of(validVariant),
@@ -239,7 +203,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 validName,
                 invalidNumber1,
                 null,
-                validAttribution1,
+                validAttribution,
                 validCategories,
                 validImages,
                 List.of(validVariant),
@@ -252,7 +216,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 validName,
                 invalidNumber2,
                 null,
-                validAttribution1,
+                validAttribution,
                 validCategories,
                 validImages,
                 List.of(validVariant),
@@ -278,7 +242,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 validName,
                 validNumber,
                 "",
-                validAttribution1,
+                validAttribution,
                 invalidCategories1,
                 validImages,
                 List.of(validVariant),
@@ -289,7 +253,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 validName,
                 validNumber,
                 "",
-                validAttribution1,
+                validAttribution,
                 invalidCategories2,
                 validImages,
                 List.of(validVariant),
@@ -302,7 +266,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 validName,
                 validNumber,
                 "",
-                validAttribution1,
+                validAttribution,
                 validCategories,
                 invalidImages1,
                 List.of(validVariant),
@@ -313,7 +277,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 validName,
                 validNumber,
                 null,
-                validAttribution1,
+                validAttribution,
                 validCategories,
                 invalidImages2,
                 List.of(validVariant),
@@ -324,7 +288,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 validName,
                 validNumber,
                 "",
-                validAttribution1,
+                validAttribution,
                 validCategories,
                 invalidImages3,
                 List.of(validVariant),
@@ -337,7 +301,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 validName,
                 validNumber,
                 null,
-                validAttribution1,
+                validAttribution,
                 validCategories,
                 validImages,
                 List.of(),
@@ -348,7 +312,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 validName,
                 validNumber,
                 null,
-                validAttribution1,
+                validAttribution,
                 validCategories,
                 validImages,
                 List.of(invalidVariant1),
@@ -359,7 +323,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 validName,
                 validNumber,
                 "",
-                validAttribution1,
+                validAttribution,
                 validCategories,
                 validImages,
                 List.of(invalidVariant2),
@@ -370,7 +334,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 validName,
                 validNumber,
                 "",
-                validAttribution1,
+                validAttribution,
                 validCategories,
                 validImages,
                 List.of(invalidVariant3),
@@ -383,7 +347,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 validName,
                 validNumber,
                 null,
-                validAttribution1,
+                validAttribution,
                 validCategories,
                 validImages,
                 List.of(validVariant),
@@ -394,7 +358,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 validName,
                 validNumber,
                 null,
-                validAttribution1,
+                validAttribution,
                 validCategories,
                 validImages,
                 List.of(validVariant),
@@ -414,20 +378,13 @@ public class CreatePatternTest extends PatternsModuleTest {
         markCategoryAsAvailable("DRESS_ID", "Dress");
 
         // when: the user creates a pattern with a missing category; then: an error is raised
-        var variant = new PatternVariantDTO();
-        variant.name = "Test";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 2900;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+        var variant = SamplePatternVariant.builder().build().toDTO();
 
         assertThatThrownBy(() -> createPattern(
                 "Partydress",
                 "S-D-PAR-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("SKIRT_ID", "MISSING_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -445,7 +402,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 "Partydress",
                 "S-D-PAR-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("SKIRT_ID", "DRESS_ID", "MISSING_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -465,7 +422,7 @@ public class CreatePatternTest extends PatternsModuleTest {
                 "Partydress",
                 "S-D-PAR-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("SKIRT_ID", "DRESS_ID", "MISSING_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -478,24 +435,15 @@ public class CreatePatternTest extends PatternsModuleTest {
 
     @Test
     void shouldNotCreatePatternWhenUserIsNotAllowed() {
-        var variant = new PatternVariantDTO();
-        variant.name = "Test";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 2900;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
-
         // when: a user that is not allowed to create a pattern tries to create a pattern; then: an error is raised
         assertThatThrownBy(() -> createPattern(
                 "Test",
                 "S-D-TEST-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of(),
                 List.of("IMAGE_ID"),
-                List.of(variant),
+                List.of(SamplePatternVariant.builder().build().toDTO()),
                 List.of(),
                 Agent.user(AgentId.of("USER_ID"))
         )).matches(e -> e.getCause() instanceof MissingPermissionError);
@@ -507,53 +455,10 @@ public class CreatePatternTest extends PatternsModuleTest {
         allowUserToCreatePatterns("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
-        // and: some categories are available
-        markCategoryAsAvailable("DRESS_ID", "Dress");
-        markCategoryAsAvailable("SKIRT_ID", "Skirt");
-
-        // when: the user creates multiple patterns
-        var variant = new PatternVariantDTO();
-        variant.name = "Test";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 2900;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
-
-        createPattern(
-                "Partydress",
-                "S-D-PAR-1",
-                null,
-                new PatternAttributionDTO(),
-                Set.of("DRESS_ID"),
-                List.of("IMAGE_ID"),
-                List.of(variant),
-                List.of(),
-                agent
-        );
-        createPattern(
-                "Summerdress",
-                "S-D-SUM-1",
-                null,
-                new PatternAttributionDTO(),
-                Set.of("SKIRT_ID"),
-                List.of("IMAGE_ID"),
-                List.of(variant),
-                List.of(),
-                agent
-        );
-        createPattern(
-                "Winterdress",
-                "S-D-WIN-1",
-                null,
-                new PatternAttributionDTO(),
-                Set.of("DRESS_ID"),
-                List.of("IMAGE_ID"),
-                List.of(variant),
-                List.of(),
-                agent
-        );
+        // when: the user creates multiple patterns with different numbers
+        createPattern(SamplePattern.builder().number("S-D-PAR-1").build(), agent);
+        createPattern(SamplePattern.builder().number("S-D-SUM-1").build(), agent);
+        createPattern(SamplePattern.builder().number("S-D-WIN-1").build(), agent);
 
         // then: the patterns are created
         var patterns = getPatterns(agent);
@@ -575,26 +480,8 @@ public class CreatePatternTest extends PatternsModuleTest {
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         // when: the user creates a pattern without description
-        var attribution = new PatternAttributionDTO();
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 2900;
-        pricedSizeRange.price.currency = "EUR";
-        var variant = new PatternVariantDTO();
-        variant.name = "Short";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
-
         String patternId = createPattern(
-                "Summerdress",
-                "S-D-SUM-1",
-                null,
-                attribution,
-                Set.of(),
-                List.of("IMAGE_ID"),
-                List.of(variant),
-                List.of(),
+                SamplePattern.builder().number("S-D-SUM-1").description(null).build(),
                 agent
         );
 
@@ -608,14 +495,7 @@ public class CreatePatternTest extends PatternsModuleTest {
 
         // when: the user creates a pattern with an empty description
         patternId = createPattern(
-                "Next",
-                "S-D-NXT-1",
-                "",
-                attribution,
-                Set.of(),
-                List.of("IMAGE_ID"),
-                List.of(variant),
-                List.of(),
+                SamplePattern.builder().number("S-D-NXT-1").description("").build(),
                 agent
         );
 
@@ -633,43 +513,12 @@ public class CreatePatternTest extends PatternsModuleTest {
         allowUserToCreatePatterns("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
-        // and: some categories are available
-        markCategoryAsAvailable("DRESS_ID", "Dress");
-        markCategoryAsAvailable("SKIRT_ID", "Skirt");
-
         // and: the user creates a pattern
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
-
-        String patternId = createPattern(
-                "Summerdress",
-                "S-D-SUM-1",
-                null,
-                new PatternAttributionDTO(),
-                Set.of("DRESS_ID"),
-                List.of("IMAGE_ID"),
-                List.of(variant),
-                List.of(),
-                agent
-        );
+        String patternId = createPattern(SamplePattern.builder().number("S-D-SUM-1").build(), agent);
 
         // when: the user tries to create a pattern with the same number; then: an error is raised
         assertThatThrownBy(() -> createPattern(
-                "Summerdress",
-                "S-D-SUM-1",
-                null,
-                new PatternAttributionDTO(),
-                Set.of("DRESS_ID"),
-                List.of("IMAGE_ID"),
-                List.of(variant),
-                List.of(),
+                SamplePattern.builder().number("S-D-SUM-1").build(),
                 agent
         )).matches(e -> {
             if (e.getCause() instanceof NumberAlreadyInUseError numberAlreadyInUseError) {

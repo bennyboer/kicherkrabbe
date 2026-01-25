@@ -9,6 +9,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMem
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
+import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabric;
+import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabricTypeAvailability;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.Color;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.ColorRepo;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.inmemory.InMemoryColorRepo;
@@ -32,19 +34,17 @@ import java.util.Set;
 
 public class FabricsModuleTest {
 
-    protected FabricTypeAvailabilityDTO jerseyAvailability = new FabricTypeAvailabilityDTO();
+    protected FabricTypeAvailabilityDTO jerseyAvailability = SampleFabricTypeAvailability.builder()
+            .typeId("JERSEY_ID")
+            .inStock(true)
+            .build()
+            .toDTO();
 
-    {
-        jerseyAvailability.typeId = "JERSEY_ID";
-        jerseyAvailability.inStock = true;
-    }
-
-    protected FabricTypeAvailabilityDTO cottonAvailability = new FabricTypeAvailabilityDTO();
-
-    {
-        cottonAvailability.typeId = "COTTON_ID";
-        cottonAvailability.inStock = false;
-    }
+    protected FabricTypeAvailabilityDTO cottonAvailability = SampleFabricTypeAvailability.builder()
+            .typeId("COTTON_ID")
+            .inStock(false)
+            .build()
+            .toDTO();
 
     private final FabricsModuleConfig config = new FabricsModuleConfig();
 
@@ -107,6 +107,22 @@ public class FabricsModuleTest {
         }
 
         return fabricId;
+    }
+
+    public String createFabric(SampleFabric sample, Agent agent) {
+        return createFabric(
+                sample.getName(),
+                sample.getImageId(),
+                sample.getColorIds(),
+                sample.getTopicIds(),
+                sample.getAvailabilityDTOs(),
+                agent
+        );
+    }
+
+    public String createSampleFabric(Agent agent) {
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        return createFabric(SampleFabric.builder().build(), agent);
     }
 
     public void deleteFabric(String fabricId, long version, Agent agent) {

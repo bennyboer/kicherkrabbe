@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.colors;
 
 import de.bennyboer.kicherkrabbe.colors.persistence.lookup.ColorLookupRepo;
+import de.bennyboer.kicherkrabbe.colors.samples.SampleColor;
 import de.bennyboer.kicherkrabbe.colors.persistence.lookup.inmemory.InMemoryColorLookupRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
@@ -51,6 +52,14 @@ public class ColorsModuleTest {
         }
 
         return colorId;
+    }
+
+    public String createColor(SampleColor sample, Agent agent) {
+        return createColor(sample.getName(), sample.getRed(), sample.getGreen(), sample.getBlue(), agent);
+    }
+
+    public String createSampleColor(Agent agent) {
+        return createColor(SampleColor.builder().build(), agent);
     }
 
     public long updateColor(String colorId, long version, String name, int red, int green, int blue, Agent agent) {

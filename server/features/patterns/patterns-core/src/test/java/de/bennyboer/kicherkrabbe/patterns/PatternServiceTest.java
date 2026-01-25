@@ -8,6 +8,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublish
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.money.Money;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePattern;
 import de.bennyboer.kicherkrabbe.patterns.publish.AlreadyPublishedError;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.AlreadyUnpublishedError;
 import jakarta.annotation.Nullable;
@@ -1245,6 +1246,23 @@ public class PatternServiceTest {
                 extras,
                 Agent.system()
         ).block().getId();
+    }
+
+    private PatternId create(SamplePattern sample) {
+        return create(
+                sample.getName(),
+                sample.getNumber(),
+                sample.getDescription(),
+                sample.getAttribution(),
+                sample.getCategoryIds(),
+                sample.getImageIds(),
+                sample.getVariants(),
+                sample.getExtras()
+        );
+    }
+
+    private PatternId createSamplePattern() {
+        return create(SamplePattern.builder().build());
     }
 
     private Version publish(PatternId id, Version version) {

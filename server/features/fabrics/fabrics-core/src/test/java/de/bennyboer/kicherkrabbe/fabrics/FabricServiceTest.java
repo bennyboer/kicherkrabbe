@@ -8,6 +8,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublish
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.fabrics.publish.AlreadyPublishedError;
+import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabric;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.AlreadyUnpublishedError;
 import org.junit.jupiter.api.Test;
 
@@ -579,6 +580,20 @@ public class FabricServiceTest {
                 availability,
                 Agent.system()
         ).block().getId();
+    }
+
+    private FabricId create(SampleFabric sample) {
+        return create(
+                sample.getName(),
+                sample.getImageId(),
+                sample.getColorIds(),
+                sample.getTopicIds(),
+                sample.getAvailabilities()
+        );
+    }
+
+    private FabricId createSampleFabric() {
+        return create(SampleFabric.builder().build());
     }
 
     private Version delete(FabricId id, Version version) {

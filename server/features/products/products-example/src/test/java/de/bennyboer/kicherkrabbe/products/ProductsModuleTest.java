@@ -9,6 +9,7 @@ import de.bennyboer.kicherkrabbe.persistence.MockReactiveTransactionManager;
 import de.bennyboer.kicherkrabbe.products.api.*;
 import de.bennyboer.kicherkrabbe.products.api.requests.*;
 import de.bennyboer.kicherkrabbe.products.api.responses.*;
+import de.bennyboer.kicherkrabbe.products.samples.SampleProduct;
 import de.bennyboer.kicherkrabbe.products.counter.CounterService;
 import de.bennyboer.kicherkrabbe.products.persistence.lookup.links.LinkLookupRepo;
 import de.bennyboer.kicherkrabbe.products.persistence.lookup.links.inmemory.InMemoryLinkLookupRepo;
@@ -21,7 +22,6 @@ import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProductsModuleTest {
@@ -101,39 +101,12 @@ public class ProductsModuleTest {
         }
     }
 
+    public CreateProductResponse createProduct(SampleProduct sample, Agent agent) {
+        return createProduct(sample.toRequest(), agent);
+    }
+
     public CreateProductResponse createSampleProduct(Agent agent) {
-        var link1 = new LinkDTO();
-        link1.type = LinkTypeDTO.PATTERN;
-        link1.id = "PATTERN_ID_1";
-        link1.name = "Pattern 1";
-
-        var link2 = new LinkDTO();
-        link2.type = LinkTypeDTO.FABRIC;
-        link2.id = "FABRIC_ID_1";
-        link2.name = "Fabric 1";
-
-        var fabricComposition = new FabricCompositionDTO();
-        fabricComposition.items = new ArrayList<>();
-        var fabricCompositionItem1 = new FabricCompositionItemDTO();
-        fabricCompositionItem1.fabricType = FabricTypeDTO.COTTON;
-        fabricCompositionItem1.percentage = 8000;
-        fabricComposition.items.add(fabricCompositionItem1);
-        var fabricCompositionItem2 = new FabricCompositionItemDTO();
-        fabricCompositionItem2.fabricType = FabricTypeDTO.POLYESTER;
-        fabricCompositionItem2.percentage = 2000;
-        fabricComposition.items.add(fabricCompositionItem2);
-
-        var request = new CreateProductRequest();
-        request.images = List.of("IMAGE_ID_1", "IMAGE_ID_2");
-        request.links = List.of(link1, link2);
-        request.fabricComposition = fabricComposition;
-        request.notes = new NotesDTO();
-        request.notes.contains = "Contains";
-        request.notes.care = "Care";
-        request.notes.safety = "Safety";
-        request.producedAt = Instant.parse("2024-11-08T12:30:00.000Z");
-
-        return createProduct(request, agent);
+        return createProduct(SampleProduct.builder().build(), agent);
     }
 
     public CreateProductResponse createProduct(CreateProductRequest req, Agent agent) {

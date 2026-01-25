@@ -2,10 +2,8 @@ package de.bennyboer.kicherkrabbe.patterns;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.patterns.http.api.MoneyDTO;
-import de.bennyboer.kicherkrabbe.patterns.http.api.PatternAttributionDTO;
-import de.bennyboer.kicherkrabbe.patterns.http.api.PatternVariantDTO;
-import de.bennyboer.kicherkrabbe.patterns.http.api.PricedSizeRangeDTO;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePatternAttribution;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePatternVariant;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -28,21 +26,13 @@ public class QueryCategoriesUsedInPatternsTest extends PatternsModuleTest {
         markCategoryAsAvailable("SHOES_ID", "Shoes");
 
         // and: the user creates some patterns
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+        var variant = SamplePatternVariant.builder().build().toDTO();
 
         createPattern(
                 "Summerdress",
                 "S-D-SUM-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("DRESS_ID", "SKIRT_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -53,7 +43,7 @@ public class QueryCategoriesUsedInPatternsTest extends PatternsModuleTest {
                 "Long tight skirt with pockets",
                 "S-S-LON-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("TROUSERS_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),

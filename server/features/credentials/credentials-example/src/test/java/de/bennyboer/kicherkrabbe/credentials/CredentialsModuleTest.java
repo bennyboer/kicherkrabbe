@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.auth.password.PasswordEncoder;
 import de.bennyboer.kicherkrabbe.auth.tokens.Token;
 import de.bennyboer.kicherkrabbe.auth.tokens.TokenGenerator;
 import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.CredentialsLookupRepo;
+import de.bennyboer.kicherkrabbe.credentials.samples.SampleCredentials;
 import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.inmemory.InMemoryCredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
@@ -72,6 +73,14 @@ public class CredentialsModuleTest {
         module.addPermissions(credentialsId, userId).block();
 
         return credentialsId;
+    }
+
+    public String createCredentials(SampleCredentials sample, Agent agent) {
+        return createCredentials(sample.getName(), sample.getPassword(), sample.getUserId(), agent);
+    }
+
+    public String createSampleCredentials(Agent agent) {
+        return createCredentials(SampleCredentials.builder().build(), agent);
     }
 
     public CredentialsModule.UseCredentialsResult useCredentials(String name, String password, Agent agent) {

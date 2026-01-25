@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.colors.samples.SampleColor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -131,6 +132,14 @@ public class ColorServiceTest {
 
     private ColorId create(ColorName name, int red, int green, int blue) {
         return colorService.create(name, red, green, blue, Agent.system()).block().getId();
+    }
+
+    private ColorId create(SampleColor sample) {
+        return create(sample.getName(), sample.getRed(), sample.getGreen(), sample.getBlue());
+    }
+
+    private ColorId createSampleColor() {
+        return create(SampleColor.builder().build());
     }
 
     private Version update(ColorId id, Version version, ColorName name, int red, int green, int blue) {

@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.notifications.api.requests.ActivateSystemChannelRequest;
+import de.bennyboer.kicherkrabbe.notifications.samples.SampleNotification;
 import de.bennyboer.kicherkrabbe.notifications.api.requests.DeactivateSystemChannelRequest;
 import de.bennyboer.kicherkrabbe.notifications.api.requests.SendNotificationRequest;
 import de.bennyboer.kicherkrabbe.notifications.api.requests.UpdateSystemChannelRequest;
@@ -70,6 +71,14 @@ public class NotificationsModuleTest {
         allowSystemUserToDeleteNotification(result.id);
 
         return result;
+    }
+
+    public SendNotificationResponse sendNotification(SampleNotification sample, Agent agent) {
+        return sendNotification(sample.toRequest(), agent);
+    }
+
+    public SendNotificationResponse sendSampleNotification(Agent agent) {
+        return sendNotification(SampleNotification.builder().build(), agent);
     }
 
     public QueryNotificationsResponse getNotifications(

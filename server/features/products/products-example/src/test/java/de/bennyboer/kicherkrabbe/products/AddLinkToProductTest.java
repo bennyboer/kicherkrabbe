@@ -4,10 +4,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
-import de.bennyboer.kicherkrabbe.products.api.LinkDTO;
 import de.bennyboer.kicherkrabbe.products.api.LinkTypeDTO;
 import de.bennyboer.kicherkrabbe.products.api.requests.AddLinkToProductRequest;
 import de.bennyboer.kicherkrabbe.products.api.requests.UpdateLinkInLookupRequest;
+import de.bennyboer.kicherkrabbe.products.samples.SampleLink;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,10 +25,12 @@ public class AddLinkToProductTest extends ProductsModuleTest {
 
         // and: the link to add is available
         var updateLinkInLookupRequest = new UpdateLinkInLookupRequest();
-        updateLinkInLookupRequest.link = new LinkDTO();
-        updateLinkInLookupRequest.link.id = "SOME_PATTERN_ID";
-        updateLinkInLookupRequest.link.type = LinkTypeDTO.PATTERN;
-        updateLinkInLookupRequest.link.name = "Some Pattern";
+        updateLinkInLookupRequest.link = SampleLink.builder()
+                .type(LinkTypeDTO.PATTERN)
+                .id("SOME_PATTERN_ID")
+                .name("Some Pattern")
+                .build()
+                .toDTO();
         updateLinkInLookup(updateLinkInLookupRequest, Agent.system());
 
         // and: a product
@@ -81,10 +83,12 @@ public class AddLinkToProductTest extends ProductsModuleTest {
 
         // and: the link to add is available
         var updateLinkInLookupRequest = new UpdateLinkInLookupRequest();
-        updateLinkInLookupRequest.link = new LinkDTO();
-        updateLinkInLookupRequest.link.id = "SOME_PATTERN_ID";
-        updateLinkInLookupRequest.link.type = LinkTypeDTO.PATTERN;
-        updateLinkInLookupRequest.link.name = "Some Pattern";
+        updateLinkInLookupRequest.link = SampleLink.builder()
+                .type(LinkTypeDTO.PATTERN)
+                .id("SOME_PATTERN_ID")
+                .name("Some Pattern")
+                .build()
+                .toDTO();
         updateLinkInLookup(updateLinkInLookupRequest, Agent.system());
 
         // and: a product

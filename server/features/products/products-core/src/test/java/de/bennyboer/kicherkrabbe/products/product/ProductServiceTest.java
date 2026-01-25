@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.products.product.samples.SampleProduct;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -697,6 +698,21 @@ public class ProductServiceTest {
                 producedAt,
                 Agent.system()
         ).block().getId();
+    }
+
+    private ProductId create(SampleProduct sample) {
+        return create(
+                sample.getNumber(),
+                sample.getImageIds(),
+                sample.getLinks(),
+                sample.getFabricComposition(),
+                sample.getNotes(),
+                sample.getProducedAt()
+        );
+    }
+
+    private ProductId createSampleProduct() {
+        return create(SampleProduct.builder().build());
     }
 
     private Product get(ProductId id) {

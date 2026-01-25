@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.topics.samples.SampleTopic;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -126,6 +127,14 @@ public class TopicServiceTest {
 
     private TopicId create(TopicName name) {
         return topicService.create(name, Agent.system()).block().getId();
+    }
+
+    private TopicId create(SampleTopic sample) {
+        return create(sample.getName());
+    }
+
+    private TopicId createSampleTopic() {
+        return create(SampleTopic.builder().build());
     }
 
     private Version update(TopicId id, Version version, TopicName name) {

@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.fabrictypes.samples.SampleFabricType;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -124,6 +125,14 @@ public class FabricTypeServiceTest {
 
     private FabricTypeId create(FabricTypeName name) {
         return fabricTypeService.create(name, Agent.system()).block().getId();
+    }
+
+    private FabricTypeId create(SampleFabricType sample) {
+        return create(sample.getName());
+    }
+
+    private FabricTypeId createSampleFabricType() {
+        return create(SampleFabricType.builder().build());
     }
 
     private Version update(FabricTypeId id, Version version, FabricTypeName name) {
