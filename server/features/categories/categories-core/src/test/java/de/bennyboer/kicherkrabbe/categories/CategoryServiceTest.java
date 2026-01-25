@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.categories.samples.SampleCategory;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -192,6 +193,14 @@ public class CategoryServiceTest {
 
     private CategoryId create(CategoryName name, CategoryGroup group) {
         return categoryService.create(name, group, Agent.system()).block().getId();
+    }
+
+    private CategoryId create(SampleCategory sample) {
+        return create(sample.getName(), sample.getGroup());
+    }
+
+    private CategoryId createSampleCategory() {
+        return create(SampleCategory.builder().build());
     }
 
     private Version rename(CategoryId id, Version version, CategoryName name) {

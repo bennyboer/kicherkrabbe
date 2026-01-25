@@ -4,15 +4,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.patterns.http.api.MoneyDTO;
-import de.bennyboer.kicherkrabbe.patterns.http.api.PatternAttributionDTO;
-import de.bennyboer.kicherkrabbe.patterns.http.api.PatternVariantDTO;
-import de.bennyboer.kicherkrabbe.patterns.http.api.PricedSizeRangeDTO;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,31 +20,8 @@ public class UpdatePatternImagesTest extends PatternsModuleTest {
         allowUserToCreatePatterns("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
-        // and: some categories are available
-        markCategoryAsAvailable("DRESS_ID", "Dress");
-
         // and: the user creates a pattern
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
-
-        String patternId = createPattern(
-                "Summerdress",
-                "S-D-SUM-1",
-                null,
-                new PatternAttributionDTO(),
-                Set.of("DRESS_ID"),
-                List.of("IMAGE_ID"),
-                List.of(variant),
-                List.of(),
-                agent
-        );
+        String patternId = createSamplePattern(agent);
 
         // when: the user updates the images of the pattern
         updatePatternImages(patternId, 0L, List.of("NEW_IMAGE_ID", "IMAGE_ID"), agent);
@@ -81,31 +53,8 @@ public class UpdatePatternImagesTest extends PatternsModuleTest {
         allowUserToCreatePatterns("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
-        // and: some categories are available
-        markCategoryAsAvailable("DRESS_ID", "Dress");
-
         // and: the user creates a pattern
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
-
-        String patternId = createPattern(
-                "Summerdress",
-                "S-D-SUM-1",
-                null,
-                new PatternAttributionDTO(),
-                Set.of("DRESS_ID"),
-                List.of("IMAGE_ID"),
-                List.of(variant),
-                List.of(),
-                agent
-        );
+        String patternId = createSamplePattern(agent);
 
         // and: the pattern is published
         publishPattern(patternId, 0L, agent);

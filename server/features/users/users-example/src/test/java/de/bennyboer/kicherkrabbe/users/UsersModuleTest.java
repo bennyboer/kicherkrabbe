@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.users;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
+import de.bennyboer.kicherkrabbe.users.samples.SampleUser;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventWithMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
@@ -61,6 +62,14 @@ public class UsersModuleTest {
         addPermissionsForNewUser(userId);
 
         return userId;
+    }
+
+    public String createUser(SampleUser sample, Agent agent) {
+        return createUser(sample.getFirstName(), sample.getLastName(), sample.getMail(), agent);
+    }
+
+    public String createSampleUser(Agent agent) {
+        return createUser(SampleUser.builder().build(), agent);
     }
 
     public void deleteUser(String userId, long version, Agent agent) {

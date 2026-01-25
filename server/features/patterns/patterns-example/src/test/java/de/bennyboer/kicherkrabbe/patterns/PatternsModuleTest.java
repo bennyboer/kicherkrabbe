@@ -10,6 +10,7 @@ import de.bennyboer.kicherkrabbe.patterns.http.api.PatternAttributionDTO;
 import de.bennyboer.kicherkrabbe.patterns.http.api.PatternExtraDTO;
 import de.bennyboer.kicherkrabbe.patterns.http.api.PatternVariantDTO;
 import de.bennyboer.kicherkrabbe.patterns.http.api.PatternsSortDTO;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePattern;
 import de.bennyboer.kicherkrabbe.patterns.persistence.categories.PatternCategoryRepo;
 import de.bennyboer.kicherkrabbe.patterns.persistence.categories.inmemory.InMemoryPatternCategoryRepo;
 import de.bennyboer.kicherkrabbe.patterns.persistence.lookup.PatternLookupRepo;
@@ -231,6 +232,24 @@ public class PatternsModuleTest {
         for (String patternId : updatedPatternIds) {
             module.updatePatternInLookup(patternId).block();
         }
+    }
+
+    public String createPattern(SamplePattern sample, Agent agent) {
+        return createPattern(
+                sample.getName(),
+                sample.getNumber(),
+                sample.getDescription(),
+                sample.getAttributionDTO(),
+                sample.getCategories(),
+                sample.getImages(),
+                sample.getVariantDTOs(),
+                sample.getExtraDTOs(),
+                agent
+        );
+    }
+
+    public String createSamplePattern(Agent agent) {
+        return createPattern(SamplePattern.builder().build(), agent);
     }
 
 }

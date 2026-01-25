@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.assets;
 
+import de.bennyboer.kicherkrabbe.assets.samples.SampleAsset;
 import de.bennyboer.kicherkrabbe.assets.storage.StorageService;
 import de.bennyboer.kicherkrabbe.assets.storage.file.FileStorageService;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
@@ -66,6 +67,14 @@ public class AssetsModuleTest {
         allowAnonymousUsersToReadAsset(assetId);
 
         return assetId;
+    }
+
+    public String uploadAsset(SampleAsset sample, Agent agent) {
+        return uploadAsset(sample.getContentType(), sample.getContent(), agent);
+    }
+
+    public String uploadSampleAsset(Agent agent) {
+        return uploadAsset(SampleAsset.builder().build(), agent);
     }
 
     public void deleteAsset(String assetId, long version, Agent agent) {

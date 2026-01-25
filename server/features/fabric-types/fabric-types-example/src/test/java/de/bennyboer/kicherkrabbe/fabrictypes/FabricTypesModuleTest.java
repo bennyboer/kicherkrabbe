@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.fabrictypes;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.fabrictypes.samples.SampleFabricType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
@@ -51,6 +52,14 @@ public class FabricTypesModuleTest {
         }
 
         return fabricTypeId;
+    }
+
+    public String createFabricType(SampleFabricType sample, Agent agent) {
+        return createFabricType(sample.getName(), agent);
+    }
+
+    public String createSampleFabricType(Agent agent) {
+        return createFabricType(SampleFabricType.builder().build(), agent);
     }
 
     public long updateFabricType(String fabricTypeId, long version, String name, Agent agent) {

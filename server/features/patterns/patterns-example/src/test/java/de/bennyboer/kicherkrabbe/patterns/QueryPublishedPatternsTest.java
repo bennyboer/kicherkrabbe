@@ -3,6 +3,10 @@ package de.bennyboer.kicherkrabbe.patterns;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.patterns.http.api.*;
+import de.bennyboer.kicherkrabbe.patterns.samples.SampleMoney;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePatternAttribution;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePatternVariant;
+import de.bennyboer.kicherkrabbe.patterns.samples.SamplePricedSizeRange;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -26,21 +30,13 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         markCategoryAsAvailable("SKIRT_ID", "Skirt");
 
         // and: the user creates some patterns
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+        var variant = SamplePatternVariant.builder().build().toDTO();
 
         String patternId1 = createPattern(
                 "Summerdress",
                 "S-D-SUM-1",
                 "A dress for high temperatures!",
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -51,7 +47,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
                 "Dressskirt",
                 "S-S-DRE-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("SKIRT_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -176,21 +172,13 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         allowUserToCreatePatterns("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+        var variant = SamplePatternVariant.builder().build().toDTO();
 
         String patternId1 = createPattern(
                 "Summerdress",
                 "S-D-SUM-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -201,7 +189,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
                 "Dressskirt",
                 "S-S-DRE-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("SKIRT_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -281,21 +269,13 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         allowUserToCreatePatterns("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+        var variant = SamplePatternVariant.builder().build().toDTO();
 
         String patternId1 = createPattern(
                 "Summerdress",
                 "S-D-SUM-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -306,7 +286,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
                 "Dressskirt",
                 "S-S-DRE-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("SKIRT_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -347,21 +327,13 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         allowUserToCreatePatterns("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+        var variant = SamplePatternVariant.builder().build().toDTO();
 
         String patternId1 = createPattern(
                 "Summerdress",
                 "S-D-SUM-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -372,7 +344,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
                 "Dressskirt",
                 "S-S-DRE-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("SKIRT_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -434,37 +406,39 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         allowUserToCreatePatterns("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
-        var pricedSizeRange1 = new PricedSizeRangeDTO();
-        pricedSizeRange1.from = 80;
-        pricedSizeRange1.to = 86L;
-        pricedSizeRange1.price = new MoneyDTO();
-        pricedSizeRange1.price.amount = 1000;
-        pricedSizeRange1.price.currency = "EUR";
+        var pricedSizeRange1 = SamplePricedSizeRange.builder()
+                .from(80)
+                .to(86L)
+                .price(SampleMoney.builder().amount(1000).build())
+                .build();
 
-        var pricedSizeRange2 = new PricedSizeRangeDTO();
-        pricedSizeRange2.from = 92;
-        pricedSizeRange2.to = 98L;
-        pricedSizeRange2.price = new MoneyDTO();
-        pricedSizeRange2.price.amount = 1200;
-        pricedSizeRange2.price.currency = "EUR";
+        var pricedSizeRange2 = SamplePricedSizeRange.builder()
+                .from(92)
+                .to(98L)
+                .price(SampleMoney.builder().amount(1200).build())
+                .build();
 
-        var variantWithBothSizeRanges = new PatternVariantDTO();
-        variantWithBothSizeRanges.name = "Normal";
-        variantWithBothSizeRanges.pricedSizeRanges = Set.of(pricedSizeRange1, pricedSizeRange2);
+        var variantWithBothSizeRanges = SamplePatternVariant.builder()
+                .pricedSizeRange(pricedSizeRange1)
+                .pricedSizeRange(pricedSizeRange2)
+                .build()
+                .toDTO();
 
-        var variantWithSizeRange1 = new PatternVariantDTO();
-        variantWithSizeRange1.name = "Normal";
-        variantWithSizeRange1.pricedSizeRanges = Set.of(pricedSizeRange1);
+        var variantWithSizeRange1 = SamplePatternVariant.builder()
+                .pricedSizeRange(pricedSizeRange1)
+                .build()
+                .toDTO();
 
-        var variantWithSizeRange2 = new PatternVariantDTO();
-        variantWithSizeRange2.name = "Normal";
-        variantWithSizeRange2.pricedSizeRanges = Set.of(pricedSizeRange2);
+        var variantWithSizeRange2 = SamplePatternVariant.builder()
+                .pricedSizeRange(pricedSizeRange2)
+                .build()
+                .toDTO();
 
         String patternId1 = createPattern(
                 "Summerdress 1",
                 "S-D-SUM-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of(),
                 List.of("IMAGE_ID"),
                 List.of(variantWithBothSizeRanges),
@@ -476,7 +450,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
                 "Summerdress 2",
                 "S-D-SUM-2",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of(),
                 List.of("IMAGE_ID"),
                 List.of(variantWithSizeRange1),
@@ -488,7 +462,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
                 "Summerdress 3",
                 "S-D-SUM-3",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of(),
                 List.of("IMAGE_ID"),
                 List.of(variantWithSizeRange2),
@@ -500,7 +474,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
                 "Summerdress 4",
                 "S-D-SUM-4",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of(),
                 List.of("IMAGE_ID"),
                 List.of(variantWithSizeRange1, variantWithSizeRange2),
@@ -593,21 +567,13 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         allowUserToCreatePatterns("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
-        var variant = new PatternVariantDTO();
-        variant.name = "Normal";
-        var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
-        pricedSizeRange.to = 86L;
-        pricedSizeRange.price = new MoneyDTO();
-        pricedSizeRange.price.amount = 1000;
-        pricedSizeRange.price.currency = "EUR";
-        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+        var variant = SamplePatternVariant.builder().build().toDTO();
 
         String patternId1 = createPattern(
                 "Summerdress",
                 "S-D-SUM-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("DRESS_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),
@@ -618,7 +584,7 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
                 "Dressskirt",
                 "S-S-DRE-1",
                 null,
-                new PatternAttributionDTO(),
+                SamplePatternAttribution.builder().build().toDTO(),
                 Set.of("SKIRT_ID"),
                 List.of("IMAGE_ID"),
                 List.of(variant),

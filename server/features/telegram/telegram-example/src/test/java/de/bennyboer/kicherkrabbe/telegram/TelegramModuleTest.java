@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
 import de.bennyboer.kicherkrabbe.persistence.MockReactiveTransactionManager;
 import de.bennyboer.kicherkrabbe.telegram.api.requests.ClearBotApiTokenRequest;
+import de.bennyboer.kicherkrabbe.telegram.samples.SampleTelegramMessage;
 import de.bennyboer.kicherkrabbe.telegram.api.requests.SendMessageViaBotRequest;
 import de.bennyboer.kicherkrabbe.telegram.api.requests.UpdateBotApiTokenRequest;
 import de.bennyboer.kicherkrabbe.telegram.api.responses.ClearBotApiTokenResponse;
@@ -47,6 +48,14 @@ public class TelegramModuleTest {
 
     public void sendMessageViaBot(SendMessageViaBotRequest request, Agent agent) {
         module.sendMessageViaBot(request, agent).block();
+    }
+
+    public void sendMessageViaBot(SampleTelegramMessage sample, Agent agent) {
+        sendMessageViaBot(sample.toRequest(), agent);
+    }
+
+    public void sendSampleMessageViaBot(Agent agent) {
+        sendMessageViaBot(SampleTelegramMessage.builder().build(), agent);
     }
 
     public QuerySettingsResponse getSettings(Agent agent) {

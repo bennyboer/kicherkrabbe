@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.mailing.api.requests.ClearMailgunApiTokenRequest;
+import de.bennyboer.kicherkrabbe.mailing.samples.SampleMail;
 import de.bennyboer.kicherkrabbe.mailing.api.requests.SendMailRequest;
 import de.bennyboer.kicherkrabbe.mailing.api.requests.UpdateMailgunApiTokenRequest;
 import de.bennyboer.kicherkrabbe.mailing.api.requests.UpdateRateLimitRequest;
@@ -83,6 +84,14 @@ public class MailingModuleTest {
         allowUsersThatAreAllowedToReadMailsToReadMail(result.id);
 
         return result;
+    }
+
+    public SendMailResponse sendMail(SampleMail sample, Agent agent) {
+        return sendMail(sample.toRequest(), agent);
+    }
+
+    public SendMailResponse sendSampleMail(Agent agent) {
+        return sendMail(SampleMail.builder().build(), agent);
     }
 
     public void sendMailViaMailingService(String mailId, Agent agent) {

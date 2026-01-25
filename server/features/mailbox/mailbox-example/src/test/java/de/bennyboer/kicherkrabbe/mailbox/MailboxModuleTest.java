@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.mailbox.api.StatusDTO;
+import de.bennyboer.kicherkrabbe.mailbox.samples.SampleMail;
 import de.bennyboer.kicherkrabbe.mailbox.api.requests.MarkMailAsReadRequest;
 import de.bennyboer.kicherkrabbe.mailbox.api.requests.MarkMailAsUnreadRequest;
 import de.bennyboer.kicherkrabbe.mailbox.api.requests.ReceiveMailRequest;
@@ -60,6 +61,14 @@ public class MailboxModuleTest {
         allowUsersThatAreAllowedToManageMailsToManageMail(result.mailId);
 
         return result;
+    }
+
+    public ReceiveMailResponse receiveMail(SampleMail sample, Agent agent) {
+        return receiveMail(sample.toRequest(), agent);
+    }
+
+    public ReceiveMailResponse receiveSampleMail(Agent agent) {
+        return receiveMail(SampleMail.builder().build(), agent);
     }
 
     public QueryMailResponse getMail(String mailId, Agent agent) {

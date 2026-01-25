@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.inquiries.api.InquiryDTO;
+import de.bennyboer.kicherkrabbe.inquiries.samples.SampleInquiry;
 import de.bennyboer.kicherkrabbe.inquiries.api.SenderDTO;
 import de.bennyboer.kicherkrabbe.inquiries.api.requests.UpdateRateLimitsRequest;
 import de.bennyboer.kicherkrabbe.inquiries.api.responses.QueryRequestStatisticsResponse;
@@ -110,6 +111,20 @@ public class InquiriesModuleTest {
         allowSystemToReadAndDeleteInquiry(id);
 
         return id;
+    }
+
+    public String sendInquiry(SampleInquiry sample, Agent agent) {
+        return sendInquiry(
+                sample.getRequestId(),
+                sample.getSenderDTO(),
+                sample.getSubject(),
+                sample.getMessage(),
+                agent
+        );
+    }
+
+    public String sendSampleInquiry(Agent agent) {
+        return sendInquiry(SampleInquiry.builder().build(), agent);
     }
 
     public void deleteInquiry(String inquiryId, Agent agent) {

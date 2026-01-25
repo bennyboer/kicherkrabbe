@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.categories;
 
 import de.bennyboer.kicherkrabbe.categories.persistence.lookup.CategoryLookupRepo;
+import de.bennyboer.kicherkrabbe.categories.samples.SampleCategory;
 import de.bennyboer.kicherkrabbe.categories.persistence.lookup.inmemory.InMemoryCategoryLookupRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
@@ -51,6 +52,14 @@ public class CategoriesModuleTest {
         }
 
         return categoryId;
+    }
+
+    public String createCategory(SampleCategory sample, Agent agent) {
+        return createCategory(sample.getName(), sample.getGroup(), agent);
+    }
+
+    public String createSampleCategory(Agent agent) {
+        return createCategory(SampleCategory.builder().build(), agent);
     }
 
     public long renameCategory(String categoryId, long version, String name, Agent agent) {
