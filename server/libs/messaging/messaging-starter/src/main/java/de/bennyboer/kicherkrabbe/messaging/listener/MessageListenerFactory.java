@@ -40,6 +40,8 @@ public class MessageListenerFactory {
 
     private final MessagingInbox inbox;
 
+    private final MessageListenerContainerManager containerManager;
+
     public MessageListener createListener(
             ExchangeTarget exchange,
             RoutingKey routingKey,
@@ -152,6 +154,7 @@ public class MessageListenerFactory {
                 ackMessage.nackSync(true);
             }
         });
+        containerManager.register(container);
         container.start();
 
         return sink.asFlux()
@@ -172,6 +175,7 @@ public class MessageListenerFactory {
                 log.warn("Failed to emit message to sink (result: {}), message lost due to auto-ack", result);
             }
         });
+        containerManager.register(container);
         container.start();
 
         return sink.asFlux()

@@ -227,7 +227,12 @@ public class EventSourcingService<A extends Aggregate> {
 
     private Mono<EventWithMetadata> insertEventInRepoAndPublish(EventWithMetadata event) {
         return repo.insert(event)
-                .flatMap(e -> eventPublisher.publish(e).thenReturn(e));
+                .flatMap(e -> {
+                    if (e.getMetadata().isSnapshot()) {
+                        return Mono.just(e);
+                    }
+                    return eventPublisher.publish(e).thenReturn(e);
+                });
     }
 
 }
