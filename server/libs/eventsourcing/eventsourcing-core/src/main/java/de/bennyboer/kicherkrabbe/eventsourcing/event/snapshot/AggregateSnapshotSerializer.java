@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -32,7 +33,7 @@ public class AggregateSnapshotSerializer {
         return SnapshotEvent.of(state);
     }
 
-    private Object serializeValue(Object value) {
+    private @Nullable Object serializeValue(Object value) {
         if (value == null) {
             return null;
         }
@@ -97,7 +98,7 @@ public class AggregateSnapshotSerializer {
         return serialized;
     }
 
-    private Method findGetValueMethod(Class<?> clazz) {
+    private @Nullable Method findGetValueMethod(Class<?> clazz) {
         try {
             return clazz.getMethod("getValue");
         } catch (NoSuchMethodException e) {

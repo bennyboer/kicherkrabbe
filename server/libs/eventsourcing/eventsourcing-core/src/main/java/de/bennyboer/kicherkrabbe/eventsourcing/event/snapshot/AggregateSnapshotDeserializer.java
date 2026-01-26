@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.*;
 import java.time.Duration;
@@ -95,7 +96,7 @@ public class AggregateSnapshotDeserializer {
         return (A) constructor.newInstance(args);
     }
 
-    private Object deserializeValue(Object value, Type targetType) {
+    private @Nullable Object deserializeValue(Object value, Type targetType) {
         if (value == null) {
             return null;
         }
@@ -189,7 +190,6 @@ public class AggregateSnapshotDeserializer {
         return Enum.valueOf((Class<Enum>) enumClass, value);
     }
 
-    @SuppressWarnings("unchecked")
     private Object deserializeCollection(Object value, Type targetType, boolean asSet) {
         if (!(value instanceof Collection<?> collection)) {
             throw new RuntimeException("Expected collection but got: " + value.getClass());
@@ -211,7 +211,6 @@ public class AggregateSnapshotDeserializer {
         return asSet ? new HashSet<>(list) : list;
     }
 
-    @SuppressWarnings("unchecked")
     private Object deserializeMap(Object value, Type targetType) {
         if (!(value instanceof Map<?, ?> map)) {
             throw new RuntimeException("Expected map but got: " + value.getClass());
@@ -258,7 +257,7 @@ public class AggregateSnapshotDeserializer {
                 ". No suitable factory method, constructor, or map-based instantiation available.");
     }
 
-    private Object tryFactoryMethod(Class<?> clazz, Object value) {
+    private @Nullable Object tryFactoryMethod(Class<?> clazz, Object value) {
         for (String methodName : FACTORY_METHOD_NAMES) {
             Method method = findStaticMethod(clazz, methodName, 1);
             if (method != null) {
@@ -274,7 +273,7 @@ public class AggregateSnapshotDeserializer {
         return null;
     }
 
-    private Object tryConstructor(Class<?> clazz, Object value) {
+    private @Nullable Object tryConstructor(Class<?> clazz, Object value) {
         for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
             if (constructor.getParameterCount() == 1) {
                 try {
@@ -289,7 +288,6 @@ public class AggregateSnapshotDeserializer {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     private Object deserializeFromMap(Map<?, ?> map, Class<?> targetClass) {
         Object result = tryFactoryMethodForMap(targetClass, map);
         if (result != null) {
@@ -310,7 +308,7 @@ public class AggregateSnapshotDeserializer {
                 ". No suitable factory method, constructor, or field-based instantiation available.");
     }
 
-    private Object tryFactoryMethodForMap(Class<?> clazz, Map<?, ?> map) {
+    private @Nullable Object tryFactoryMethodForMap(Class<?> clazz, Map<?, ?> map) {
         for (String methodName : FACTORY_METHOD_NAMES) {
             for (Method method : clazz.getMethods()) {
                 if (Modifier.isStatic(method.getModifiers())
@@ -331,7 +329,7 @@ public class AggregateSnapshotDeserializer {
         return null;
     }
 
-    private Object tryConstructorForMap(Class<?> clazz, Map<?, ?> map) {
+    private @Nullable Object tryConstructorForMap(Class<?> clazz, Map<?, ?> map) {
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
         Arrays.sort(constructors, (c1, c2) -> Integer.compare(c2.getParameterCount(), c1.getParameterCount()));
 
@@ -352,7 +350,7 @@ public class AggregateSnapshotDeserializer {
         return null;
     }
 
-    private Object[] buildArgsFromMap(Parameter[] params, Map<?, ?> map) {
+    private @Nullable Object[] buildArgsFromMap(Parameter[] params, Map<?, ?> map) {
         Object[] args = new Object[params.length];
         for (int i = 0; i < params.length; i++) {
             String paramName = params[i].getName();
@@ -365,7 +363,7 @@ public class AggregateSnapshotDeserializer {
         return args;
     }
 
-    private Object tryFieldBasedInstantiation(Class<?> clazz, Map<?, ?> map) {
+    private @Nullable Object tryFieldBasedInstantiation(Class<?> clazz, Map<?, ?> map) {
         try {
             Object instance = createObjectInstance(clazz);
             for (Field field : getAllFields(clazz)) {
@@ -398,7 +396,7 @@ public class AggregateSnapshotDeserializer {
         throw new RuntimeException("No constructor found for " + clazz.getName());
     }
 
-    private Method findStaticMethod(Class<?> clazz, String name, int paramCount) {
+    private @Nullable Method findStaticMethod(Class<?> clazz, String name, int paramCount) {
         for (Method method : clazz.getMethods()) {
             if (Modifier.isStatic(method.getModifiers())
                     && name.equals(method.getName())
@@ -419,7 +417,7 @@ public class AggregateSnapshotDeserializer {
         return Object.class;
     }
 
-    private Object getDefaultValue(Class<?> clazz) {
+    private @Nullable Object getDefaultValue(Class<?> clazz) {
         if (clazz == boolean.class) return false;
         if (clazz == int.class) return 0;
         if (clazz == long.class) return 0L;

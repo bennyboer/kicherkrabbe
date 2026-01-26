@@ -21,7 +21,6 @@ public class SnapshotAwareEventSerializer implements EventSerializer {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Map<String, Object> serialize(Event event) {
         if (event instanceof SnapshotEvent snapshotEvent) {
             return snapshotEvent.getState();
@@ -30,7 +29,6 @@ public class SnapshotAwareEventSerializer implements EventSerializer {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Event deserialize(EventName name, Version eventVersion, Map<String, Object> payload) {
         if (SnapshotEvent.NAME.equals(name)) {
             return SnapshotEvent.of(payload);

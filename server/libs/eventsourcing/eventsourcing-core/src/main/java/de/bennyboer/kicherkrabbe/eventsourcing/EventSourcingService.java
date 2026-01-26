@@ -158,7 +158,7 @@ public class EventSourcingService<A extends Aggregate> {
                 .flatMapMany(fromVersion -> repo.findEventsByAggregateIdAndType(id, aggregateType, fromVersion))
                 .reduce(
                         AggregateContainer.init(initialState),
-                        (container, event) -> applyEvent(container, event)
+                        this::applyEvent
                 );
     }
 
@@ -174,11 +174,10 @@ public class EventSourcingService<A extends Aggregate> {
                 ))
                 .reduce(
                         AggregateContainer.init(initialState),
-                        (container, event) -> applyEvent(container, event)
+                        this::applyEvent
                 );
     }
 
-    @SuppressWarnings("unchecked")
     private AggregateContainer applyEvent(AggregateContainer container, EventWithMetadata event) {
         Event patchedEvent = patcher.patch(event.getEvent(), event.getMetadata());
         EventMetadata metadata = event.getMetadata();
