@@ -5,15 +5,14 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.products.counter.increment.IncrementCmd;
 import de.bennyboer.kicherkrabbe.products.counter.increment.IncrementedEvent;
 import de.bennyboer.kicherkrabbe.products.counter.init.InitCmd;
 import de.bennyboer.kicherkrabbe.products.counter.init.InitEvent;
-import de.bennyboer.kicherkrabbe.products.counter.snapshot.SnapshottedEvent;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.With;
@@ -30,8 +29,10 @@ public class Counter implements Aggregate {
 
     public static AggregateType TYPE = AggregateType.of("PRODUCT_COUNTER");
 
+    @SnapshotExclude
     CounterId id;
 
+    @SnapshotExclude
     Version version;
 
     long value;
@@ -52,7 +53,6 @@ public class Counter implements Aggregate {
         check(isInitialized() || cmd instanceof InitCmd, "Cannot apply command to not yet initialized counter");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(getValue()));
             case InitCmd ignored -> ApplyCommandResult.of(InitEvent.of());
             case IncrementCmd ignored -> ApplyCommandResult.of(IncrementedEvent.of());
             default -> throw new IllegalArgumentException("Unknown command " + cmd.getClass().getSimpleName());
@@ -65,9 +65,6 @@ public class Counter implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withValue(e.getValue())
-                    .withInitAt(metadata.getDate());
             case InitEvent ignored -> withId(id)
                     .withInitAt(metadata.getDate());
             case IncrementedEvent ignored -> withId(id).withValue(value + 1);

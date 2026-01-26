@@ -4,16 +4,15 @@ import de.bennyboer.kicherkrabbe.assets.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.assets.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.assets.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.assets.delete.DeletedEvent;
-import de.bennyboer.kicherkrabbe.assets.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -32,8 +31,10 @@ public class Asset implements Aggregate {
 
     public static final AggregateType TYPE = AggregateType.of("ASSET");
 
+    @SnapshotExclude
     AssetId id;
 
+    @SnapshotExclude
     Version version;
 
     ContentType contentType;
@@ -52,15 +53,9 @@ public class Asset implements Aggregate {
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
         check(isCreated() || cmd instanceof CreateCmd, "Cannot apply command to not yet created aggregate");
-        check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
+        check(isNotDeleted(), "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
-                    getContentType(),
-                    getLocation(),
-                    getCreatedAt(),
-                    getDeletedAt().orElse(null)
-            ));
             case CreateCmd c -> ApplyCommandResult.of(CreatedEvent.of(c.getContentType(), c.getLocation()));
             case DeleteCmd ignored -> ApplyCommandResult.of(DeletedEvent.of());
             default -> throw new IllegalArgumentException("Unknown command " + cmd.getClass().getSimpleName());
@@ -73,11 +68,6 @@ public class Asset implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withContentType(e.getContentType())
-                    .withLocation(e.getLocation())
-                    .withCreatedAt(e.getCreatedAt())
-                    .withDeletedAt(e.getDeletedAt().orElse(null));
             case CreatedEvent e -> withId(id)
                     .withContentType(e.getContentType())
                     .withLocation(e.getLocation())

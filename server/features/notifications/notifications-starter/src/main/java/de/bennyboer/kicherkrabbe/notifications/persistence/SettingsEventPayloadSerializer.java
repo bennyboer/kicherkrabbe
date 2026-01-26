@@ -12,7 +12,6 @@ import de.bennyboer.kicherkrabbe.notifications.channel.telegram.TelegramChatId;
 import de.bennyboer.kicherkrabbe.notifications.settings.ActivatableChannel;
 import de.bennyboer.kicherkrabbe.notifications.settings.SystemSettings;
 import de.bennyboer.kicherkrabbe.notifications.settings.init.InitEvent;
-import de.bennyboer.kicherkrabbe.notifications.settings.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.notifications.settings.system.channels.activate.SystemChannelActivatedEvent;
 import de.bennyboer.kicherkrabbe.notifications.settings.system.channels.deactivate.SystemChannelDeactivatedEvent;
 import de.bennyboer.kicherkrabbe.notifications.settings.system.channels.update.SystemChannelUpdatedEvent;
@@ -30,9 +29,6 @@ public class SettingsEventPayloadSerializer implements EventSerializer {
     public Map<String, Object> serialize(Event event) {
         return switch (event) {
             case InitEvent e -> Map.of(
-                    "systemSettings", serializeSystemSettings(e.getSystemSettings())
-            );
-            case SnapshottedEvent e -> Map.of(
                     "systemSettings", serializeSystemSettings(e.getSystemSettings())
             );
             case SystemNotificationsEnabledEvent ignored -> Map.of();
@@ -54,9 +50,6 @@ public class SettingsEventPayloadSerializer implements EventSerializer {
     public Event deserialize(EventName name, Version eventVersion, Map<String, Object> payload) {
         return switch (name.getValue()) {
             case "INITIALIZED" -> InitEvent.of(deserializeSystemSettings(
-                    (Map<String, Object>) payload.get("systemSettings")
-            ));
-            case "SNAPSHOTTED" -> SnapshottedEvent.of(deserializeSystemSettings(
                     (Map<String, Object>) payload.get("systemSettings")
             ));
             case "SYSTEM_NOTIFICATIONS_ENABLED" -> SystemNotificationsEnabledEvent.of();

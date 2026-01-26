@@ -7,10 +7,11 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
-import de.bennyboer.kicherkrabbe.users.snapshot.SnapshottedEvent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotEvent;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -171,10 +172,13 @@ public class UsersServiceTest {
         assertThat(event.getMetadata().isSnapshot()).isTrue();
 
         // and: the event does not contain the name or mail
-        SnapshottedEvent e = (SnapshottedEvent) event.getEvent();
-        assertThat(e.getName().getFirstName().getValue()).isEqualTo("ANONYMIZED");
-        assertThat(e.getName().getLastName().getValue()).isEqualTo("ANONYMIZED");
-        assertThat(e.getMail().getValue()).isEqualTo("anonymized@kicherkrabbe.com");
+        SnapshotEvent e = (SnapshotEvent) event.getEvent();
+        var state = e.getState();
+        @SuppressWarnings("unchecked")
+        var name = (Map<String, Object>) state.get("name");
+        assertThat(name.get("firstName")).isEqualTo("ANONYMIZED");
+        assertThat(name.get("lastName")).isEqualTo("ANONYMIZED");
+        assertThat(state.get("mail")).isEqualTo("anonymized@kicherkrabbe.com");
     }
 
     @Test

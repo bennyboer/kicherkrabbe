@@ -5,13 +5,12 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.notifications.settings.init.InitCmd;
 import de.bennyboer.kicherkrabbe.notifications.settings.init.InitEvent;
-import de.bennyboer.kicherkrabbe.notifications.settings.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.notifications.settings.system.channels.activate.ActivateSystemChannelCmd;
 import de.bennyboer.kicherkrabbe.notifications.settings.system.channels.activate.SystemChannelActivatedEvent;
 import de.bennyboer.kicherkrabbe.notifications.settings.system.channels.deactivate.DeactivateSystemChannelCmd;
@@ -38,8 +37,10 @@ public class Settings implements Aggregate {
 
     public static AggregateType TYPE = AggregateType.of("NOTIFICATIONS_SETTINGS");
 
+    @SnapshotExclude
     SettingsId id;
 
+    @SnapshotExclude
     Version version;
 
     SystemSettings systemSettings;
@@ -60,7 +61,6 @@ public class Settings implements Aggregate {
         check(isInit() || cmd instanceof InitCmd, "Cannot apply command to not yet initialized aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(getSystemSettings()));
             case InitCmd c -> ApplyCommandResult.of(InitEvent.of(c.getSystemSettings()));
             case EnableSystemNotificationsCmd ignored -> ApplyCommandResult.of(SystemNotificationsEnabledEvent.of());
             case DisableSystemNotificationsCmd ignored -> ApplyCommandResult.of(SystemNotificationsDisabledEvent.of());
@@ -79,9 +79,6 @@ public class Settings implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withSystemSettings(e.getSystemSettings())
-                    .withInitAt(metadata.getDate());
             case InitEvent e -> withId(id)
                     .withSystemSettings(e.getSystemSettings())
                     .withInitAt(metadata.getDate());

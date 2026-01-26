@@ -5,15 +5,14 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.inquiries.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.inquiries.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.inquiries.send.SendCmd;
 import de.bennyboer.kicherkrabbe.inquiries.send.SentEvent;
-import de.bennyboer.kicherkrabbe.inquiries.snapshot.SnapshottedEvent;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -32,8 +31,10 @@ public class Inquiry implements Aggregate {
 
     public static AggregateType TYPE = AggregateType.of("INQUIRY");
 
+    @SnapshotExclude
     InquiryId id;
 
+    @SnapshotExclude
     Version version;
 
     RequestId requestId;
@@ -68,18 +69,9 @@ public class Inquiry implements Aggregate {
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
         check(isSent() || cmd instanceof SendCmd, "Cannot apply command to not yet sent aggregate");
-        check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
+        check(isNotDeleted(), "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
-                    getRequestId(),
-                    getSender(),
-                    getSubject(),
-                    getMessage(),
-                    getFingerprint(),
-                    getCreatedAt(),
-                    getDeletedAt().orElse(null)
-            ));
             case SendCmd c -> ApplyCommandResult.of(SentEvent.of(
                     c.getRequestId(),
                     c.getSender(),
@@ -98,14 +90,6 @@ public class Inquiry implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withRequestId(e.getRequestId())
-                    .withSender(e.getSender())
-                    .withSubject(e.getSubject())
-                    .withMessage(e.getMessage())
-                    .withFingerprint(e.getFingerprint())
-                    .withCreatedAt(e.getCreatedAt())
-                    .withDeletedAt(e.getDeletedAt().orElse(null));
             case SentEvent e -> withId(id)
                     .withRequestId(e.getRequestId())
                     .withSender(e.getSender())

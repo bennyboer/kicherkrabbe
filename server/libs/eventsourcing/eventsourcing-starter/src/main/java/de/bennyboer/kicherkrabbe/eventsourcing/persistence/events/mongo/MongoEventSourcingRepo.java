@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.mongo;
 import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.EventSerializer;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotAwareEventSerializer;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
@@ -46,7 +47,7 @@ public class MongoEventSourcingRepo implements EventSourcingRepo {
     ) {
         this.collection = collection;
         this.template = template;
-        this.serializer = serializer;
+        this.serializer = SnapshotAwareEventSerializer.wrap(serializer);
 
         initializeIndices();
     }

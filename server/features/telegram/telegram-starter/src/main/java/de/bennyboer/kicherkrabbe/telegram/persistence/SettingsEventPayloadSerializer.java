@@ -9,7 +9,6 @@ import de.bennyboer.kicherkrabbe.telegram.settings.BotSettings;
 import de.bennyboer.kicherkrabbe.telegram.settings.bot.apitoken.clear.BotApiTokenClearedEvent;
 import de.bennyboer.kicherkrabbe.telegram.settings.bot.apitoken.update.BotApiTokenUpdatedEvent;
 import de.bennyboer.kicherkrabbe.telegram.settings.init.InitEvent;
-import de.bennyboer.kicherkrabbe.telegram.settings.snapshot.SnapshottedEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,9 +20,6 @@ public class SettingsEventPayloadSerializer implements EventSerializer {
     public Map<String, Object> serialize(Event event) {
         return switch (event) {
             case InitEvent e -> Map.of(
-                    "botSettings", serializeBotSettings(e.getBotSettings())
-            );
-            case SnapshottedEvent e -> Map.of(
                     "botSettings", serializeBotSettings(e.getBotSettings())
             );
             case BotApiTokenUpdatedEvent e -> Map.of(
@@ -38,9 +34,6 @@ public class SettingsEventPayloadSerializer implements EventSerializer {
     public Event deserialize(EventName name, Version eventVersion, Map<String, Object> payload) {
         return switch (name.getValue()) {
             case "INITIALIZED" -> InitEvent.of(deserializeBotSettings(
-                    (Map<String, Object>) payload.get("botSettings")
-            ));
-            case "SNAPSHOTTED" -> SnapshottedEvent.of(deserializeBotSettings(
                     (Map<String, Object>) payload.get("botSettings")
             ));
             case "BOT_API_TOKEN_UPDATED" -> BotApiTokenUpdatedEvent.of(ApiToken.of((String) payload.get("apiToken")));

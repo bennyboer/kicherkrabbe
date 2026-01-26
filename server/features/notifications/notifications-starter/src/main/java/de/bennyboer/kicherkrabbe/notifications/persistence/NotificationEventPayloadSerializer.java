@@ -12,10 +12,7 @@ import de.bennyboer.kicherkrabbe.notifications.channel.telegram.TelegramChatId;
 import de.bennyboer.kicherkrabbe.notifications.notification.*;
 import de.bennyboer.kicherkrabbe.notifications.notification.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.notifications.notification.send.SentEvent;
-import de.bennyboer.kicherkrabbe.notifications.notification.snapshot.SnapshottedEvent;
 
-import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,20 +30,6 @@ public class NotificationEventPayloadSerializer implements EventSerializer {
                     "title", e.getTitle().getValue(),
                     "message", e.getMessage().getValue()
             );
-            case SnapshottedEvent e -> {
-                Map<String, Object> result = new HashMap<>(Map.of(
-                        "origin", serializeOrigin(e.getOrigin()),
-                        "target", serializeTarget(e.getTarget()),
-                        "channels", serializeChannels(e.getChannels()),
-                        "title", e.getTitle().getValue(),
-                        "message", e.getMessage().getValue(),
-                        "sentAt", e.getSentAt().toString()
-                ));
-
-                e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
-
-                yield result;
-            }
             case DeletedEvent ignored -> Map.of();
             default -> throw new IllegalStateException("Unexpected event: " + event);
         };
@@ -61,15 +44,6 @@ public class NotificationEventPayloadSerializer implements EventSerializer {
                     deserializeChannels((List<Map<String, Object>>) payload.get("channels")),
                     Title.of((String) payload.get("title")),
                     Message.of((String) payload.get("message"))
-            );
-            case "SNAPSHOTTED" -> SnapshottedEvent.of(
-                    deserializeOrigin((Map<String, Object>) payload.get("origin")),
-                    deserializeTarget((Map<String, Object>) payload.get("target")),
-                    deserializeChannels((List<Map<String, Object>>) payload.get("channels")),
-                    Title.of((String) payload.get("title")),
-                    Message.of((String) payload.get("message")),
-                    Instant.parse((String) payload.get("sentAt")),
-                    payload.containsKey("deletedAt") ? Instant.parse((String) payload.get("deletedAt")) : null
             );
             case "DELETED" -> DeletedEvent.of();
             default -> throw new IllegalStateException("Unexpected event name: " + name);

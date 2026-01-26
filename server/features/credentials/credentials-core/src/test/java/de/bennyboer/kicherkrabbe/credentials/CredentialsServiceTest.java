@@ -1,7 +1,7 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
 import de.bennyboer.kicherkrabbe.auth.password.PasswordEncoder;
-import de.bennyboer.kicherkrabbe.credentials.snapshot.SnapshottedEvent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotEvent;
 import de.bennyboer.kicherkrabbe.credentials.use.InvalidCredentialsUsedOrUserLockedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
@@ -365,9 +365,10 @@ public class CredentialsServiceTest {
         assertThat(event.getMetadata().isSnapshot()).isTrue();
 
         // and: the event does not contain the password or name
-        SnapshottedEvent e = (SnapshottedEvent) event.getEvent();
-        assertThat(e.getName()).isEqualTo(Name.of("ANONYMIZED"));
-        assertThat(e.getEncodedPassword()).isEqualTo(EncodedPassword.of("ANONYMIZED"));
+        SnapshotEvent e = (SnapshotEvent) event.getEvent();
+        var state = e.getState();
+        assertThat(state.get("name")).isEqualTo("ANONYMIZED");
+        assertThat(state.get("encodedPassword")).isEqualTo("ANONYMIZED");
     }
 
     @Test

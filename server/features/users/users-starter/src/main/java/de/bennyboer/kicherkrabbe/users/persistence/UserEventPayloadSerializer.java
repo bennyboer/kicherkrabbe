@@ -11,10 +11,7 @@ import de.bennyboer.kicherkrabbe.users.Mail;
 import de.bennyboer.kicherkrabbe.users.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.users.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.users.rename.RenamedEvent;
-import de.bennyboer.kicherkrabbe.users.snapshot.SnapshottedEvent;
 
-import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
 
 public class UserEventPayloadSerializer implements EventSerializer {
@@ -27,18 +24,6 @@ public class UserEventPayloadSerializer implements EventSerializer {
                     "lastName", e.getName().getLastName().getValue(),
                     "mail", e.getMail().getValue()
             );
-            case SnapshottedEvent e -> {
-                Map<String, Object> result = new HashMap<>(Map.of(
-                        "firstName", e.getName().getFirstName().getValue(),
-                        "lastName", e.getName().getLastName().getValue(),
-                        "mail", e.getMail().getValue(),
-                        "createdAt", e.getCreatedAt().toString()
-                ));
-
-                e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
-
-                yield result;
-            }
             case RenamedEvent e -> Map.of(
                     "firstName", e.getName().getFirstName().getValue(),
                     "lastName", e.getName().getLastName().getValue()
@@ -57,15 +42,6 @@ public class UserEventPayloadSerializer implements EventSerializer {
                             LastName.of((String) payload.get("lastName"))
                     ),
                     Mail.of((String) payload.get("mail"))
-            );
-            case "SNAPSHOTTED" -> SnapshottedEvent.of(
-                    FullName.of(
-                            FirstName.of((String) payload.get("firstName")),
-                            LastName.of((String) payload.get("lastName"))
-                    ),
-                    Mail.of((String) payload.get("mail")),
-                    Instant.parse((String) payload.get("createdAt")),
-                    payload.containsKey("deletedAt") ? Instant.parse((String) payload.get("deletedAt")) : null
             );
             case "RENAMED" -> RenamedEvent.of(
                     FullName.of(

@@ -2,12 +2,14 @@ package de.bennyboer.kicherkrabbe.eventsourcing;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.*;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventWithMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.EventPublisher;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.AggregateSnapshotDeserializer;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.AggregateSnapshotSerializer;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotEvent;
 import de.bennyboer.kicherkrabbe.eventsourcing.patch.EventPatcher;
 import de.bennyboer.kicherkrabbe.eventsourcing.patch.Patch;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
@@ -35,6 +37,10 @@ public class EventSourcingService<A extends Aggregate> {
 
     private final Clock clock;
 
+    private final AggregateSnapshotSerializer snapshotSerializer;
+
+    private final AggregateSnapshotDeserializer snapshotDeserializer;
+
     public EventSourcingService(
             AggregateType aggregateType,
             A initialState,
@@ -49,6 +55,8 @@ public class EventSourcingService<A extends Aggregate> {
         this.eventPublisher = eventPublisher;
         this.patcher = EventPatcher.fromPatches(patches);
         this.clock = clock;
+        this.snapshotSerializer = new AggregateSnapshotSerializer();
+        this.snapshotDeserializer = new AggregateSnapshotDeserializer();
     }
 
     @SuppressWarnings("unchecked")
@@ -121,7 +129,13 @@ public class EventSourcingService<A extends Aggregate> {
             container = container.apply(event.getEvent(), event.getMetadata());
         }
 
-        if (container.getVersionCountFromLastSnapshot() >= container.getCountOfEventsToSnapshotAfter()) {
+        int snapshotThreshold = container.getCountOfEventsToSnapshotAfter();
+        boolean autoSnapshotDisabled = snapshotThreshold <= 0;
+        if (autoSnapshotDisabled) {
+            return Mono.just(container.getVersion());
+        }
+
+        if (container.getVersionCountFromLastSnapshot() >= snapshotThreshold) {
             return snapshot(aggregateId, agent, container);
         }
 
@@ -129,8 +143,8 @@ public class EventSourcingService<A extends Aggregate> {
     }
 
     private Mono<Version> snapshot(AggregateId aggregateId, Agent agent, AggregateContainer container) {
-        var snapshotCmd = SnapshotCmd.of();
-        var result = container.apply(snapshotCmd, agent);
+        var snapshotEvent = snapshotSerializer.serialize(container.getAggregate());
+        var result = ApplyCommandResult.of(snapshotEvent);
 
         return saveAndPublishEvents(aggregateId, container, agent, result)
                 .last()
@@ -143,10 +157,8 @@ public class EventSourcingService<A extends Aggregate> {
                 .defaultIfEmpty(Version.zero())
                 .flatMapMany(fromVersion -> repo.findEventsByAggregateIdAndType(id, aggregateType, fromVersion))
                 .reduce(
-                        AggregateContainer.init(initialState), (container, event) -> container.apply(
-                                patcher.patch(event.getEvent(), event.getMetadata()),
-                                event.getMetadata()
-                        )
+                        AggregateContainer.init(initialState),
+                        (container, event) -> applyEvent(container, event)
                 );
     }
 
@@ -161,11 +173,23 @@ public class EventSourcingService<A extends Aggregate> {
                         version
                 ))
                 .reduce(
-                        AggregateContainer.init(initialState), (container, event) -> container.apply(
-                                patcher.patch(event.getEvent(), event.getMetadata()),
-                                event.getMetadata()
-                        )
+                        AggregateContainer.init(initialState),
+                        (container, event) -> applyEvent(container, event)
                 );
+    }
+
+    @SuppressWarnings("unchecked")
+    private AggregateContainer applyEvent(AggregateContainer container, EventWithMetadata event) {
+        Event patchedEvent = patcher.patch(event.getEvent(), event.getMetadata());
+        EventMetadata metadata = event.getMetadata();
+
+        if (patchedEvent instanceof SnapshotEvent snapshotEvent) {
+            A restoredAggregate = snapshotDeserializer.deserialize(snapshotEvent, initialState, metadata);
+            return AggregateContainer.init(restoredAggregate)
+                    .apply(snapshotEvent, metadata);
+        }
+
+        return container.apply(patchedEvent, metadata);
     }
 
     private Flux<EventWithMetadata> saveAndPublishEvents(

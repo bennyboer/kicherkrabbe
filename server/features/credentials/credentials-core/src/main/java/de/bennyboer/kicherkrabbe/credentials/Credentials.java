@@ -5,7 +5,6 @@ import de.bennyboer.kicherkrabbe.credentials.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.credentials.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.credentials.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.credentials.delete.DeletedEvent;
-import de.bennyboer.kicherkrabbe.credentials.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.credentials.use.UsageFailedEvent;
 import de.bennyboer.kicherkrabbe.credentials.use.UsageSucceededEvent;
 import de.bennyboer.kicherkrabbe.credentials.use.UseCmd;
@@ -14,10 +13,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,8 +39,10 @@ public class Credentials implements Aggregate {
 
     public static AggregateType TYPE = AggregateType.of("CREDENTIALS");
 
+    @SnapshotExclude
     CredentialsId id;
 
+    @SnapshotExclude
     Version version;
 
     Name name;
@@ -81,18 +82,9 @@ public class Credentials implements Aggregate {
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
         check(isCreated() || cmd instanceof CreateCmd, "Cannot apply command to not yet created aggregate");
-        check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
+        check(isNotDeleted(), "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
-                    getName(),
-                    getEncodedPassword(),
-                    getUserId(),
-                    getFailedUsageAttempts(),
-                    getLastUsedAt().orElse(null),
-                    getDeletedAt().orElse(null),
-                    getCreatedAt().orElse(null)
-            ));
             case CreateCmd c -> ApplyCommandResult.of(CreatedEvent.of(
                     c.getName(),
                     encodePassword(c.getPassword()),
@@ -110,14 +102,6 @@ public class Credentials implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withName(e.getName())
-                    .withEncodedPassword(e.getEncodedPassword())
-                    .withUserId(e.getUserId())
-                    .withFailedUsageAttempts(e.getFailedUsageAttempts())
-                    .withLastUsedAt(e.getLastUsedAt().orElse(null))
-                    .withDeletedAt(e.getDeletedAt().orElse(null))
-                    .withCreatedAt(e.getCreatedAt().orElse(metadata.getDate()));
             case CreatedEvent e -> withId(id)
                     .withName(e.getName())
                     .withEncodedPassword(e.getEncodedPassword())

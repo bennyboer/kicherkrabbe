@@ -7,9 +7,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.inquiries.*;
 import de.bennyboer.kicherkrabbe.inquiries.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.inquiries.send.SentEvent;
-import de.bennyboer.kicherkrabbe.inquiries.snapshot.SnapshottedEvent;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,20 +23,6 @@ public class InquiryEventPayloadSerializer implements EventSerializer {
                     "message", e.getMessage().getValue(),
                     "fingerprint", serializeFingerprint(e.getFingerprint())
             );
-            case SnapshottedEvent e -> {
-                Map<String, Object> result = new HashMap<>(Map.of(
-                        "requestId", e.getRequestId().getValue(),
-                        "sender", serializeSender(e.getSender()),
-                        "subject", e.getSubject().getValue(),
-                        "message", e.getMessage().getValue(),
-                        "fingerprint", serializeFingerprint(e.getFingerprint()),
-                        "createdAt", e.getCreatedAt().toString()
-                ));
-
-                e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
-
-                yield result;
-            }
             case DeletedEvent ignored -> Map.of();
             default -> throw new IllegalStateException("Unexpected event: " + event);
         };
@@ -53,15 +37,6 @@ public class InquiryEventPayloadSerializer implements EventSerializer {
                     Subject.of((String) payload.get("subject")),
                     Message.of((String) payload.get("message")),
                     deserializeFingerprint((Map<String, Object>) payload.get("fingerprint"))
-            );
-            case "SNAPSHOTTED" -> SnapshottedEvent.of(
-                    RequestId.of((String) payload.get("requestId")),
-                    deserializeSender((Map<String, Object>) payload.get("sender")),
-                    Subject.of((String) payload.get("subject")),
-                    Message.of((String) payload.get("message")),
-                    deserializeFingerprint((Map<String, Object>) payload.get("fingerprint")),
-                    Instant.parse((String) payload.get("createdAt")),
-                    payload.containsKey("deletedAt") ? Instant.parse((String) payload.get("deletedAt")) : null
             );
             case "DELETED" -> DeletedEvent.of();
             default -> throw new IllegalStateException("Unexpected event name: " + name);

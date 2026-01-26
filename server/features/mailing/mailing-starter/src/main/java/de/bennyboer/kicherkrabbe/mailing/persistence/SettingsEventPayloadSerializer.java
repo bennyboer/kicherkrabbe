@@ -11,7 +11,6 @@ import de.bennyboer.kicherkrabbe.mailing.settings.init.InitEvent;
 import de.bennyboer.kicherkrabbe.mailing.settings.mailgun.apitoken.clear.MailgunApiTokenClearedEvent;
 import de.bennyboer.kicherkrabbe.mailing.settings.mailgun.apitoken.update.MailgunApiTokenUpdatedEvent;
 import de.bennyboer.kicherkrabbe.mailing.settings.ratelimit.update.RateLimitUpdatedEvent;
-import de.bennyboer.kicherkrabbe.mailing.settings.snapshot.SnapshottedEvent;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -24,10 +23,6 @@ public class SettingsEventPayloadSerializer implements EventSerializer {
     public Map<String, Object> serialize(Event event) {
         return switch (event) {
             case InitEvent e -> Map.of(
-                    "rateLimit", serializeRateLimitSettings(e.getRateLimit()),
-                    "mailgun", serializeMailgunSettings(e.getMailgun())
-            );
-            case SnapshottedEvent e -> Map.of(
                     "rateLimit", serializeRateLimitSettings(e.getRateLimit()),
                     "mailgun", serializeMailgunSettings(e.getMailgun())
             );
@@ -47,10 +42,6 @@ public class SettingsEventPayloadSerializer implements EventSerializer {
     public Event deserialize(EventName name, Version eventVersion, Map<String, Object> payload) {
         return switch (name.getValue()) {
             case "INITIALIZED" -> InitEvent.of(
-                    deserializeRateLimitSettings((Map<String, Object>) payload.get("rateLimit")),
-                    deserializeMailgunSettings((Map<String, Object>) payload.get("mailgun"))
-            );
-            case "SNAPSHOTTED" -> SnapshottedEvent.of(
                     deserializeRateLimitSettings((Map<String, Object>) payload.get("rateLimit")),
                     deserializeMailgunSettings((Map<String, Object>) payload.get("mailgun"))
             );

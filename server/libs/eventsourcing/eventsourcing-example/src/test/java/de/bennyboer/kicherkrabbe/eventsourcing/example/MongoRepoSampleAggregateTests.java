@@ -61,17 +61,6 @@ public class MongoRepoSampleAggregateTests extends SampleAggregateTests {
                     case TitleUpdatedEvent e -> Map.of(
                             "title", e.getTitle()
                     );
-                    case SnapshottedEvent e -> {
-                        Map<String, Object> result = new HashMap<>(Map.of(
-                                "title", e.getTitle(),
-                                "description", e.getDescription(),
-                                "createdAt", e.getCreatedAt().toString()
-                        ));
-
-                        e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
-
-                        yield result;
-                    }
                     default -> Map.of();
                 };
             }
@@ -96,15 +85,6 @@ public class MongoRepoSampleAggregateTests extends SampleAggregateTests {
                 } else if (name.equals(TitleUpdatedEvent.NAME)) {
                     String title = (String) payload.get("title");
                     return TitleUpdatedEvent.of(title);
-                } else if (name.equals(SnapshottedEvent.NAME)) {
-                    String title = (String) payload.get("title");
-                    String description = (String) payload.get("description");
-                    Instant createdAt = Instant.parse((String) payload.get("createdAt"));
-                    Instant deletedAt = payload.containsKey("deletedAt")
-                            ? Instant.parse((String) payload.get("deletedAt"))
-                            : null;
-
-                    return SnapshottedEvent.of(title, description, createdAt, deletedAt);
                 } else if (name.equals(DeletedEvent.NAME)) {
                     return DeletedEvent.of();
                 }

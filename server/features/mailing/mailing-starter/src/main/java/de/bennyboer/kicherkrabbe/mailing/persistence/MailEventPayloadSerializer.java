@@ -11,11 +11,8 @@ import de.bennyboer.kicherkrabbe.mailing.mail.Subject;
 import de.bennyboer.kicherkrabbe.mailing.mail.Text;
 import de.bennyboer.kicherkrabbe.mailing.mail.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.mailing.mail.send.SentEvent;
-import de.bennyboer.kicherkrabbe.mailing.mail.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.mailing.settings.EMail;
 
-import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,19 +30,6 @@ public class MailEventPayloadSerializer implements EventSerializer {
                     "text", e.getText().getValue(),
                     "mailingService", serializeMailingService(e.getMailingService())
             );
-            case SnapshottedEvent e -> {
-                var result = new HashMap<String, Object>();
-
-                result.put("sender", serializeSender(e.getSender()));
-                result.put("receivers", serializeReceivers(e.getReceivers()));
-                result.put("subject", e.getSubject().getValue());
-                result.put("text", e.getText().getValue());
-                result.put("mailingService", serializeMailingService(e.getMailingService()));
-                result.put("sentAt", e.getSentAt().toString());
-                e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
-
-                yield result;
-            }
             case DeletedEvent ignored -> Map.of();
             default -> throw new IllegalStateException("Unexpected event: " + event);
         };
@@ -60,15 +44,6 @@ public class MailEventPayloadSerializer implements EventSerializer {
                     Subject.of((String) payload.get("subject")),
                     Text.of((String) payload.get("text")),
                     deserializeMailingService((String) payload.get("mailingService"))
-            );
-            case "SNAPSHOTTED" -> SnapshottedEvent.of(
-                    deserializeSender((Map<String, Object>) payload.get("sender")),
-                    deserializeReceivers((List<Map<String, Object>>) payload.get("receivers")),
-                    Subject.of((String) payload.get("subject")),
-                    Text.of((String) payload.get("text")),
-                    deserializeMailingService((String) payload.get("mailingService")),
-                    Instant.parse((String) payload.get("sentAt")),
-                    payload.containsKey("deletedAt") ? Instant.parse((String) payload.get("deletedAt")) : null
             );
             case "DELETED" -> DeletedEvent.of();
             default -> throw new IllegalStateException("Unexpected event name: " + name);

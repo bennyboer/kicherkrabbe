@@ -1,4 +1,4 @@
-package de.bennyboer.kicherkrabbe.eventsourcing.example;
+package de.bennyboer.kicherkrabbe.eventsourcing.example.snapshot;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
@@ -13,7 +13,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.example.commands.CreateCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.example.commands.DeleteCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.example.commands.UpdateDescriptionCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.example.commands.UpdateTitleCmd;
-import de.bennyboer.kicherkrabbe.eventsourcing.example.events.*;
+import de.bennyboer.kicherkrabbe.eventsourcing.example.events.CreatedEvent2;
+import de.bennyboer.kicherkrabbe.eventsourcing.example.events.DeletedEvent;
+import de.bennyboer.kicherkrabbe.eventsourcing.example.events.DescriptionUpdatedEvent;
+import de.bennyboer.kicherkrabbe.eventsourcing.example.events.TitleUpdatedEvent;
 import jakarta.annotation.Nullable;
 import lombok.Value;
 import lombok.With;
@@ -25,9 +28,9 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @With(PRIVATE)
-public class SampleAggregate implements Aggregate {
+public class NoAutoSnapshotAggregate implements Aggregate {
 
-    public static AggregateType TYPE = AggregateType.of("SAMPLE");
+    public static AggregateType TYPE = AggregateType.of("NO_AUTO_SNAPSHOT");
 
     @SnapshotExclude
     String id;
@@ -44,8 +47,13 @@ public class SampleAggregate implements Aggregate {
     @Nullable
     Instant deletedAt;
 
-    public static SampleAggregate init() {
-        return new SampleAggregate(null, Version.zero(), null, null, null, null);
+    public static NoAutoSnapshotAggregate init() {
+        return new NoAutoSnapshotAggregate(null, Version.zero(), null, null, null, null);
+    }
+
+    @Override
+    public int getCountOfEventsToSnapshotAfter() {
+        return 0;
     }
 
     @Override

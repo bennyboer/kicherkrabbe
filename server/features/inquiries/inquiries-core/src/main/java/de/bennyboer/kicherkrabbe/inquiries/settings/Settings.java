@@ -5,17 +5,16 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.inquiries.settings.disable.DisableCmd;
 import de.bennyboer.kicherkrabbe.inquiries.settings.disable.DisabledEvent;
 import de.bennyboer.kicherkrabbe.inquiries.settings.enable.EnableCmd;
 import de.bennyboer.kicherkrabbe.inquiries.settings.enable.EnabledEvent;
 import de.bennyboer.kicherkrabbe.inquiries.settings.init.InitCmd;
 import de.bennyboer.kicherkrabbe.inquiries.settings.init.InitEvent;
-import de.bennyboer.kicherkrabbe.inquiries.settings.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.inquiries.settings.update.ratelimits.RateLimitsUpdatedEvent;
 import de.bennyboer.kicherkrabbe.inquiries.settings.update.ratelimits.UpdateRateLimitsCmd;
 import lombok.AllArgsConstructor;
@@ -34,8 +33,10 @@ public class Settings implements Aggregate {
 
     public static AggregateType TYPE = AggregateType.of("INQUIRIES_SETTINGS");
 
+    @SnapshotExclude
     SettingsId id;
 
+    @SnapshotExclude
     Version version;
 
     boolean enabled;
@@ -53,7 +54,6 @@ public class Settings implements Aggregate {
         check(isInit() || cmd instanceof InitCmd, "Cannot apply command to not yet initialized aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(isEnabled(), getRateLimits()));
             case InitCmd ignored -> ApplyCommandResult.of(InitEvent.of(isEnabled(), getRateLimits()));
             case EnableCmd ignored -> ApplyCommandResult.of(EnabledEvent.of());
             case DisableCmd ignored -> ApplyCommandResult.of(DisabledEvent.of());
@@ -68,10 +68,6 @@ public class Settings implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withEnabled(e.isEnabled())
-                    .withRateLimits(e.getRateLimits())
-                    .withInitAt(metadata.getDate());
             case InitEvent e -> withId(id)
                     .withEnabled(e.isEnabled())
                     .withRateLimits(e.getRateLimits())
