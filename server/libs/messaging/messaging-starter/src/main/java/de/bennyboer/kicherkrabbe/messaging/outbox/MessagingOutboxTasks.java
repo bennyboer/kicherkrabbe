@@ -29,7 +29,11 @@ public class MessagingOutboxTasks {
     public void findStaleFailedOutboxEntries() {
         outbox.findStaleFailedEntries()
                 .collectList()
-                .doOnNext(entries -> log.warn("Found {} stale failed entries", entries.size()))
+                .doOnNext(entries -> {
+                    if (!entries.isEmpty()) {
+                        log.warn("Found {} stale failed entries", entries.size());
+                    }
+                })
                 .onErrorResume(e -> {
                     log.error("Failed to find stale failed outbox entries", e);
                     return Mono.empty();
