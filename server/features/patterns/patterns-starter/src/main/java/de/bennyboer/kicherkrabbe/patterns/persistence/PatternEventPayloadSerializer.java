@@ -12,7 +12,6 @@ import de.bennyboer.kicherkrabbe.patterns.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.patterns.delete.category.CategoryRemovedEvent;
 import de.bennyboer.kicherkrabbe.patterns.publish.PublishedEvent;
 import de.bennyboer.kicherkrabbe.patterns.rename.RenamedEvent;
-import de.bennyboer.kicherkrabbe.patterns.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.UnpublishedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.attribution.AttributionUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.categories.CategoriesUpdatedEvent;
@@ -22,7 +21,6 @@ import de.bennyboer.kicherkrabbe.patterns.update.images.ImagesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.number.NumberUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.variants.VariantsUpdatedEvent;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,24 +43,6 @@ public class PatternEventPayloadSerializer implements EventSerializer {
                         "extras", serializeExtras(e.getExtras())
                 ));
 
-                e.getDescription().ifPresent(description -> result.put("description", description.getValue()));
-
-                yield result;
-            }
-            case SnapshottedEvent e -> {
-                Map<String, Object> result = new HashMap<>(Map.of(
-                        "published", e.isPublished(),
-                        "name", e.getName().getValue(),
-                        "number", e.getNumber().getValue(),
-                        "attribution", serializeAttribution(e.getAttribution()),
-                        "categories", serializeCategories(e.getCategories()),
-                        "images", serializeImages(e.getImages()),
-                        "variants", serializeVariants(e.getVariants()),
-                        "extras", serializeExtras(e.getExtras()),
-                        "createdAt", e.getCreatedAt().toString()
-                ));
-
-                e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
                 e.getDescription().ifPresent(description -> result.put("description", description.getValue()));
 
                 yield result;
@@ -106,6 +86,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Event deserialize(EventName name, Version eventVersion, Map<String, Object> payload) {
         return switch (name.getValue()) {
             case "CREATED" -> CreatedEvent.of(
@@ -119,23 +100,6 @@ public class PatternEventPayloadSerializer implements EventSerializer {
                     deserializeImages((List<String>) payload.get("images")),
                     deserializeVariants((List<Map<String, Object>>) payload.get("variants")),
                     deserializeExtras((List<Map<String, Object>>) payload.get("extras"))
-            );
-            case "SNAPSHOTTED" -> SnapshottedEvent.of(
-                    (boolean) payload.get("published"),
-                    PatternName.of((String) payload.get("name")),
-                    PatternNumber.of((String) payload.get("number")),
-                    payload.containsKey("description") ?
-                            PatternDescription.of((String) payload.get("description")) :
-                            null,
-                    deserializeAttribution((Map<String, Object>) payload.get("attribution")),
-                    deserializeCategories((List<String>) payload.get("categories")),
-                    deserializeImages((List<String>) payload.get("images")),
-                    deserializeVariants((List<Map<String, Object>>) payload.get("variants")),
-                    deserializeExtras((List<Map<String, Object>>) payload.get("extras")),
-                    Instant.parse((String) payload.get("createdAt")),
-                    payload.containsKey("deletedAt") ?
-                            Instant.parse((String) payload.get("deletedAt")) :
-                            null
             );
             case "PUBLISHED" -> PublishedEvent.of();
             case "UNPUBLISHED" -> UnpublishedEvent.of();
@@ -215,6 +179,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
         return variants.stream().map(this::deserializeVariant).toList();
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, Object> serializeVariant(PatternVariant variant) {
         return Map.of(
                 "name", variant.getName().getValue(),
@@ -222,6 +187,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
         );
     }
 
+    @SuppressWarnings("unchecked")
     private PatternVariant deserializeVariant(Map<String, Object> variant) {
         PatternVariantName name = PatternVariantName.of((String) variant.get("name"));
         Set<PricedSizeRange> pricedSizeRanges = deserializePricedSizeRanges(
@@ -246,6 +212,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
         );
     }
 
+    @SuppressWarnings("unchecked")
     private PatternExtra deserializeExtra(Map<String, Object> extra) {
         PatternExtraName name = PatternExtraName.of((String) extra.get("name"));
         Money price = deserializeMoney((Map<String, Object>) extra.get("price"));
@@ -273,9 +240,10 @@ public class PatternEventPayloadSerializer implements EventSerializer {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     private PricedSizeRange deserializePricedSizeRange(Map<String, Object> pricedSizeRange) {
-        long from = (long) pricedSizeRange.get("from");
-        Long to = pricedSizeRange.containsKey("to") ? (long) pricedSizeRange.get("to") : null;
+        long from = ((Number) pricedSizeRange.get("from")).longValue();
+        Long to = pricedSizeRange.containsKey("to") ? ((Number) pricedSizeRange.get("to")).longValue() : null;
         String unit = pricedSizeRange.containsKey("unit") ? (String) pricedSizeRange.get("unit") : null;
         Money price = deserializeMoney((Map<String, Object>) pricedSizeRange.get("price"));
 
@@ -290,7 +258,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
     }
 
     private Money deserializeMoney(Map<String, Object> money) {
-        long amount = (long) money.get("amount");
+        long amount = ((Number) money.get("amount")).longValue();
         Currency currency = Currency.fromShortForm((String) money.get("currency"));
 
         return Money.of(amount, currency);

@@ -5,17 +5,16 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.mailbox.mail.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.mailbox.mail.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.mailbox.mail.read.MarkAsReadCmd;
 import de.bennyboer.kicherkrabbe.mailbox.mail.read.MarkedAsReadEvent;
 import de.bennyboer.kicherkrabbe.mailbox.mail.receive.ReceiveCmd;
 import de.bennyboer.kicherkrabbe.mailbox.mail.receive.ReceivedEvent;
-import de.bennyboer.kicherkrabbe.mailbox.mail.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.mailbox.mail.unread.MarkAsUnreadCmd;
 import de.bennyboer.kicherkrabbe.mailbox.mail.unread.MarkedAsUnreadEvent;
 import jakarta.annotation.Nullable;
@@ -38,8 +37,10 @@ public class Mail implements Aggregate {
 
     public static AggregateType TYPE = AggregateType.of("MAIL");
 
+    @SnapshotExclude
     MailId id;
 
+    @SnapshotExclude
     Version version;
 
     Origin origin;
@@ -75,18 +76,9 @@ public class Mail implements Aggregate {
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
         check(isReceived() || cmd instanceof ReceiveCmd, "Cannot apply command to not yet received aggregate");
-        check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
+        check(isNotDeleted(), "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
-                    getOrigin(),
-                    getSender(),
-                    getSubject(),
-                    getContent(),
-                    getReceivedAt(),
-                    getReadAt().orElse(null),
-                    getDeletedAt().orElse(null)
-            ));
             case ReceiveCmd c -> ApplyCommandResult.of(ReceivedEvent.of(
                     c.getOrigin(),
                     c.getSender(),
@@ -106,14 +98,6 @@ public class Mail implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withOrigin(e.getOrigin())
-                    .withSender(e.getSender())
-                    .withSubject(e.getSubject())
-                    .withContent(e.getContent())
-                    .withReceivedAt(e.getReceivedAt())
-                    .withReadAt(e.getReadAt().orElse(null))
-                    .withDeletedAt(e.getDeletedAt().orElse(null));
             case ReceivedEvent e -> withId(id)
                     .withOrigin(e.getOrigin())
                     .withSender(e.getSender())

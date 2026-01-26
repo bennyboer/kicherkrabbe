@@ -12,6 +12,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotAwareEventSerializer;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -46,7 +47,7 @@ public class MongoEventSourcingRepo implements EventSourcingRepo {
     ) {
         this.collection = collection;
         this.template = template;
-        this.serializer = serializer;
+        this.serializer = SnapshotAwareEventSerializer.wrap(serializer);
 
         initializeIndices();
     }

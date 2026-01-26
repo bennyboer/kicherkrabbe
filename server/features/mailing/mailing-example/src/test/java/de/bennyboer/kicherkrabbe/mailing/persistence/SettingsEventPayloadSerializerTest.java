@@ -7,7 +7,6 @@ import de.bennyboer.kicherkrabbe.mailing.settings.init.InitEvent;
 import de.bennyboer.kicherkrabbe.mailing.settings.mailgun.apitoken.clear.MailgunApiTokenClearedEvent;
 import de.bennyboer.kicherkrabbe.mailing.settings.mailgun.apitoken.update.MailgunApiTokenUpdatedEvent;
 import de.bennyboer.kicherkrabbe.mailing.settings.ratelimit.update.RateLimitUpdatedEvent;
-import de.bennyboer.kicherkrabbe.mailing.settings.snapshot.SnapshottedEvent;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -41,33 +40,6 @@ public class SettingsEventPayloadSerializerTest {
 
         // when: the serialized form is deserialized
         var deserialized = serializer.deserialize(InitEvent.NAME, InitEvent.VERSION, serialized);
-
-        // then: the deserialized form is correct
-        assertThat(deserialized).isEqualTo(event);
-    }
-
-    @Test
-    void shouldSerializeAndDeserializeSnapshottedEvent() {
-        // when: a snapshotted event is serialized
-        var event = SnapshottedEvent.of(
-                RateLimitSettings.of(Duration.ofSeconds(10), 100),
-                MailgunSettings.of(ApiToken.of("SOME_API_TOKEN"))
-        );
-        var serialized = serializer.serialize(event);
-
-        // then: the serialized form is correct
-        assertThat(serialized).isEqualTo(Map.of(
-                "rateLimit", Map.of(
-                        "duration", "PT10S",
-                        "limit", 100L
-                ),
-                "mailgun", Map.of(
-                        "apiToken", "SOME_API_TOKEN"
-                )
-        ));
-
-        // when: the serialized form is deserialized
-        var deserialized = serializer.deserialize(SnapshottedEvent.NAME, SnapshottedEvent.VERSION, serialized);
 
         // then: the deserialized form is correct
         assertThat(deserialized).isEqualTo(event);

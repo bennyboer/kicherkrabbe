@@ -6,7 +6,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
-import de.bennyboer.kicherkrabbe.notifications.notification.snapshot.SnapshottedEvent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotEvent;
 import de.bennyboer.kicherkrabbe.notifications.channel.Channel;
 import de.bennyboer.kicherkrabbe.notifications.channel.mail.EMail;
 import org.junit.jupiter.api.Test;
@@ -87,9 +87,10 @@ public class NotificationServiceTest {
         assertThat(event.getMetadata().isSnapshot()).isTrue();
 
         // and: the snapshot event is anonymized
-        var snapshot = (SnapshottedEvent) event.getEvent();
-        assertThat(snapshot.getTitle().getValue()).isEqualTo("ANONYMIZED");
-        assertThat(snapshot.getMessage().getValue()).isEqualTo("ANONYMIZED");
+        var snapshot = (SnapshotEvent) event.getEvent();
+        var state = snapshot.getState();
+        assertThat(state.get("title")).isEqualTo("ANONYMIZED");
+        assertThat(state.get("message")).isEqualTo("ANONYMIZED");
 
         // and: there can be no more events for the notification
         assertThatThrownBy(() -> delete(id, event.getMetadata().getAggregateVersion()))

@@ -5,10 +5,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.fabrics.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.fabrics.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.delete.DeleteCmd;
@@ -24,7 +24,6 @@ import de.bennyboer.kicherkrabbe.fabrics.publish.PublishCmd;
 import de.bennyboer.kicherkrabbe.fabrics.publish.PublishedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.rename.RenameCmd;
 import de.bennyboer.kicherkrabbe.fabrics.rename.RenamedEvent;
-import de.bennyboer.kicherkrabbe.fabrics.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.AlreadyUnpublishedError;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.UnpublishCmd;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.UnpublishedEvent;
@@ -56,8 +55,10 @@ public class Fabric implements Aggregate {
 
     public static final AggregateType TYPE = AggregateType.of("FABRIC");
 
+    @SnapshotExclude
     FabricId id;
 
+    @SnapshotExclude
     Version version;
 
     FabricName name;
@@ -95,19 +96,9 @@ public class Fabric implements Aggregate {
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
         check(isCreated() || cmd instanceof CreateCmd, "Cannot apply command to not yet created aggregate");
-        check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
+        check(isNotDeleted(), "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
-                    getName(),
-                    getImage(),
-                    getColors(),
-                    getTopics(),
-                    getAvailability(),
-                    isPublished(),
-                    getCreatedAt(),
-                    getDeletedAt().orElse(null)
-            ));
             case CreateCmd c -> ApplyCommandResult.of(CreatedEvent.of(
                     c.getName(),
                     c.getImage(),
@@ -160,15 +151,6 @@ public class Fabric implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withName(e.getName())
-                    .withImage(e.getImage())
-                    .withColors(e.getColors())
-                    .withTopics(e.getTopics())
-                    .withAvailability(e.getAvailability())
-                    .withPublished(e.isPublished())
-                    .withCreatedAt(e.getCreatedAt())
-                    .withDeletedAt(e.getDeletedAt().orElse(null));
             case CreatedEvent e -> withId(id)
                     .withName(e.getName())
                     .withImage(e.getImage())

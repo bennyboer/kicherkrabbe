@@ -9,7 +9,6 @@ import de.bennyboer.kicherkrabbe.inquiries.settings.RateLimits;
 import de.bennyboer.kicherkrabbe.inquiries.settings.disable.DisabledEvent;
 import de.bennyboer.kicherkrabbe.inquiries.settings.enable.EnabledEvent;
 import de.bennyboer.kicherkrabbe.inquiries.settings.init.InitEvent;
-import de.bennyboer.kicherkrabbe.inquiries.settings.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.inquiries.settings.update.ratelimits.RateLimitsUpdatedEvent;
 
 import java.time.Duration;
@@ -22,10 +21,6 @@ public class SettingsEventPayloadSerializer implements EventSerializer {
     public Map<String, Object> serialize(Event event) {
         return switch (event) {
             case InitEvent e -> Map.of(
-                    "enabled", e.isEnabled(),
-                    "rateLimits", serializeRateLimits(e.getRateLimits())
-            );
-            case SnapshottedEvent e -> Map.of(
                     "enabled", e.isEnabled(),
                     "rateLimits", serializeRateLimits(e.getRateLimits())
             );
@@ -42,10 +37,6 @@ public class SettingsEventPayloadSerializer implements EventSerializer {
     public Event deserialize(EventName name, Version eventVersion, Map<String, Object> payload) {
         return switch (name.getValue()) {
             case "INITIALIZED" -> InitEvent.of(
-                    (boolean) payload.get("enabled"),
-                    deserializeRateLimits((Map<String, Object>) payload.get("rateLimits"))
-            );
-            case "SNAPSHOTTED" -> SnapshottedEvent.of(
                     (boolean) payload.get("enabled"),
                     deserializeRateLimits((Map<String, Object>) payload.get("rateLimits"))
             );

@@ -1,29 +1,30 @@
-package de.bennyboer.kicherkrabbe.telegram.settings.snapshot;
+package de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
-import de.bennyboer.kicherkrabbe.telegram.settings.BotSettings;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+
+import java.util.Map;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class SnapshottedEvent implements Event {
+public class SnapshotEvent implements Event {
 
-    public static final EventName NAME = EventName.of("SNAPSHOTTED");
+    public static final EventName NAME = EventName.of("SNAPSHOT");
 
     public static final Version VERSION = Version.zero();
 
-    BotSettings botSettings;
+    Map<String, Object> state;
 
-    public static SnapshottedEvent of(BotSettings botSettings) {
-        notNull(botSettings, "Bot settings must be given");
+    public static SnapshotEvent of(Map<String, Object> state) {
+        notNull(state, "State must be given");
 
-        return new SnapshottedEvent(botSettings);
+        return new SnapshotEvent(state);
     }
 
     @Override

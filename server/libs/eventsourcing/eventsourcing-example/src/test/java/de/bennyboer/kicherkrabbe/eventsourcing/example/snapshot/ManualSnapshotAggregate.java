@@ -1,4 +1,4 @@
-package de.bennyboer.kicherkrabbe.eventsourcing.example;
+package de.bennyboer.kicherkrabbe.eventsourcing.example.snapshot;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
@@ -8,26 +8,32 @@ import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotEvent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.eventsourcing.example.commands.CreateCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.example.commands.DeleteCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.example.commands.UpdateDescriptionCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.example.commands.UpdateTitleCmd;
-import de.bennyboer.kicherkrabbe.eventsourcing.example.events.*;
+import de.bennyboer.kicherkrabbe.eventsourcing.example.events.CreatedEvent2;
+import de.bennyboer.kicherkrabbe.eventsourcing.example.events.DeletedEvent;
+import de.bennyboer.kicherkrabbe.eventsourcing.example.events.DescriptionUpdatedEvent;
+import de.bennyboer.kicherkrabbe.eventsourcing.example.events.TitleUpdatedEvent;
 import jakarta.annotation.Nullable;
 import lombok.Value;
 import lombok.With;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @With(PRIVATE)
-public class SampleAggregate implements Aggregate {
+public class ManualSnapshotAggregate implements Aggregate {
 
-    public static AggregateType TYPE = AggregateType.of("SAMPLE");
+    public static AggregateType TYPE = AggregateType.of("MANUAL_SNAPSHOT");
 
     @SnapshotExclude
     String id;
@@ -44,8 +50,13 @@ public class SampleAggregate implements Aggregate {
     @Nullable
     Instant deletedAt;
 
-    public static SampleAggregate init() {
-        return new SampleAggregate(null, Version.zero(), null, null, null, null);
+    public static ManualSnapshotAggregate init() {
+        return new ManualSnapshotAggregate(null, Version.zero(), null, null, null, null);
+    }
+
+    @Override
+    public int getCountOfEventsToSnapshotAfter() {
+        return 0;
     }
 
     @Override
@@ -64,6 +75,7 @@ public class SampleAggregate implements Aggregate {
             case DeleteCmd ignored -> ApplyCommandResult.of(DeletedEvent.of());
             case UpdateTitleCmd c -> ApplyCommandResult.of(TitleUpdatedEvent.of(c.getTitle()));
             case UpdateDescriptionCmd c -> ApplyCommandResult.of(DescriptionUpdatedEvent.of(c.getDescription()));
+            case SnapshotCmd ignored -> ApplyCommandResult.of(createManualSnapshotEvent());
             default -> throw new IllegalArgumentException("Unknown command " + cmd.getClass().getSimpleName());
         };
     }
@@ -79,6 +91,7 @@ public class SampleAggregate implements Aggregate {
             case DeletedEvent ignored -> withDeletedAt(metadata.getDate());
             case TitleUpdatedEvent e -> withTitle(e.getTitle());
             case DescriptionUpdatedEvent e -> withDescription(e.getDescription());
+            case SnapshotEvent e -> restoreFromSnapshot(e, metadata);
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());
         }).withVersion(metadata.getAggregateVersion());
     }
@@ -89,6 +102,26 @@ public class SampleAggregate implements Aggregate {
 
     public boolean isCreated() {
         return createdAt != null;
+    }
+
+    private SnapshotEvent createManualSnapshotEvent() {
+        Map<String, Object> state = new HashMap<>();
+        state.put("title", title);
+        state.put("description", description);
+        state.put("createdAt", createdAt.toString());
+        if (deletedAt != null) {
+            state.put("deletedAt", deletedAt.toString());
+        }
+        return SnapshotEvent.of(state);
+    }
+
+    private ManualSnapshotAggregate restoreFromSnapshot(SnapshotEvent event, EventMetadata metadata) {
+        Map<String, Object> state = event.getState();
+        return withId(metadata.getAggregateId().getValue())
+                .withTitle((String) state.get("title"))
+                .withDescription((String) state.get("description"))
+                .withCreatedAt(Instant.parse((String) state.get("createdAt")))
+                .withDeletedAt(state.containsKey("deletedAt") ? Instant.parse((String) state.get("deletedAt")) : null);
     }
 
 }

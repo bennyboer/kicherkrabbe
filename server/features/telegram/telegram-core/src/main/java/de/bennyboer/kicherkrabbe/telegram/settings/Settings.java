@@ -5,17 +5,16 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.telegram.settings.bot.apitoken.clear.BotApiTokenClearedEvent;
 import de.bennyboer.kicherkrabbe.telegram.settings.bot.apitoken.clear.ClearBotApiTokenCmd;
 import de.bennyboer.kicherkrabbe.telegram.settings.bot.apitoken.update.BotApiTokenUpdatedEvent;
 import de.bennyboer.kicherkrabbe.telegram.settings.bot.apitoken.update.UpdateBotApiTokenCmd;
 import de.bennyboer.kicherkrabbe.telegram.settings.init.InitCmd;
 import de.bennyboer.kicherkrabbe.telegram.settings.init.InitEvent;
-import de.bennyboer.kicherkrabbe.telegram.settings.snapshot.SnapshottedEvent;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.With;
@@ -32,8 +31,10 @@ public class Settings implements Aggregate {
 
     public static AggregateType TYPE = AggregateType.of("TELEGRAM_SETTINGS");
 
+    @SnapshotExclude
     SettingsId id;
 
+    @SnapshotExclude
     Version version;
 
     BotSettings botSettings;
@@ -54,7 +55,6 @@ public class Settings implements Aggregate {
         check(isInit() || cmd instanceof InitCmd, "Cannot apply command to not yet initialized aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(getBotSettings()));
             case InitCmd c -> ApplyCommandResult.of(InitEvent.of(c.getBotSettings()));
             case UpdateBotApiTokenCmd c -> ApplyCommandResult.of(BotApiTokenUpdatedEvent.of(c.getApiToken()));
             case ClearBotApiTokenCmd ignored -> ApplyCommandResult.of(BotApiTokenClearedEvent.of());
@@ -68,9 +68,6 @@ public class Settings implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withBotSettings(e.getBotSettings())
-                    .withInitAt(metadata.getDate());
             case InitEvent e -> withId(id)
                     .withBotSettings(e.getBotSettings())
                     .withInitAt(metadata.getDate());

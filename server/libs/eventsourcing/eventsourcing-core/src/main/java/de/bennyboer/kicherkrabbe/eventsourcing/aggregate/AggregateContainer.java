@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotEvent;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -37,11 +38,18 @@ public class AggregateContainer implements Aggregate {
 
     @Override
     public AggregateContainer apply(Event event, EventMetadata metadata) {
-        var updatedContainer = withAggregate(aggregate.apply(event, metadata))
-                .withLastEventMetadata(metadata);
+        AggregateContainer updatedContainer;
 
-        if (metadata.isSnapshot()) {
-            updatedContainer = updatedContainer.withLastSnapshotVersion(metadata.getAggregateVersion());
+        if (event instanceof SnapshotEvent) {
+            updatedContainer = withLastEventMetadata(metadata)
+                    .withLastSnapshotVersion(metadata.getAggregateVersion());
+        } else {
+            updatedContainer = withAggregate(aggregate.apply(event, metadata))
+                    .withLastEventMetadata(metadata);
+
+            if (metadata.isSnapshot()) {
+                updatedContainer = updatedContainer.withLastSnapshotVersion(metadata.getAggregateVersion());
+            }
         }
 
         return updatedContainer;

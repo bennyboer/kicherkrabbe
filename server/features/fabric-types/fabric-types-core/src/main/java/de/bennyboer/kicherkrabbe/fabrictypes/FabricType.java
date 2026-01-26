@@ -5,15 +5,14 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.fabrictypes.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.fabrictypes.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.fabrictypes.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.fabrictypes.delete.DeletedEvent;
-import de.bennyboer.kicherkrabbe.fabrictypes.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.fabrictypes.update.UpdateCmd;
 import de.bennyboer.kicherkrabbe.fabrictypes.update.UpdatedEvent;
 import jakarta.annotation.Nullable;
@@ -34,8 +33,10 @@ public class FabricType implements Aggregate {
 
     public static final AggregateType TYPE = AggregateType.of("FABRIC_TYPE");
 
+    @SnapshotExclude
     FabricTypeId id;
 
+    @SnapshotExclude
     Version version;
 
     FabricTypeName name;
@@ -52,14 +53,9 @@ public class FabricType implements Aggregate {
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
         check(isCreated() || cmd instanceof CreateCmd, "Cannot apply command to not yet created aggregate");
-        check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
+        check(isNotDeleted(), "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
-                    getName(),
-                    getCreatedAt(),
-                    getDeletedAt().orElse(null)
-            ));
             case CreateCmd c -> ApplyCommandResult.of(CreatedEvent.of(c.getName()));
             case UpdateCmd c -> ApplyCommandResult.of(UpdatedEvent.of(c.getName()));
             case DeleteCmd ignored -> ApplyCommandResult.of(DeletedEvent.of());
@@ -73,10 +69,6 @@ public class FabricType implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withName(e.getName())
-                    .withCreatedAt(e.getCreatedAt())
-                    .withDeletedAt(e.getDeletedAt().orElse(null));
             case CreatedEvent e -> withId(id)
                     .withName(e.getName())
                     .withCreatedAt(metadata.getDate());

@@ -5,10 +5,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.patterns.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.patterns.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.delete.DeleteCmd;
@@ -20,7 +20,6 @@ import de.bennyboer.kicherkrabbe.patterns.publish.PublishCmd;
 import de.bennyboer.kicherkrabbe.patterns.publish.PublishedEvent;
 import de.bennyboer.kicherkrabbe.patterns.rename.RenameCmd;
 import de.bennyboer.kicherkrabbe.patterns.rename.RenamedEvent;
-import de.bennyboer.kicherkrabbe.patterns.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.AlreadyUnpublishedError;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.UnpublishCmd;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.UnpublishedEvent;
@@ -59,8 +58,10 @@ public class Pattern implements Aggregate {
 
     public static final AggregateType TYPE = AggregateType.of("PATTERN");
 
+    @SnapshotExclude
     PatternId id;
 
+    @SnapshotExclude
     Version version;
 
     boolean published;
@@ -108,22 +109,9 @@ public class Pattern implements Aggregate {
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
         check(isCreated() || cmd instanceof CreateCmd, "Cannot apply command to not yet created aggregate");
-        check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
+        check(isNotDeleted(), "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
-                    isPublished(),
-                    getName(),
-                    getNumber(),
-                    getDescription().orElse(null),
-                    getAttribution(),
-                    getCategories(),
-                    getImages(),
-                    getVariants(),
-                    getExtras(),
-                    getCreatedAt(),
-                    getDeletedAt().orElse(null)
-            ));
             case CreateCmd c -> ApplyCommandResult.of(CreatedEvent.of(
                     c.getName(),
                     c.getNumber(),
@@ -170,17 +158,6 @@ public class Pattern implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withName(e.getName())
-                    .withNumber(e.getNumber())
-                    .withDescription(e.getDescription().orElse(null))
-                    .withAttribution(e.getAttribution())
-                    .withCategories(e.getCategories())
-                    .withImages(e.getImages())
-                    .withVariants(e.getVariants())
-                    .withExtras(e.getExtras())
-                    .withCreatedAt(e.getCreatedAt())
-                    .withDeletedAt(e.getDeletedAt().orElse(null));
             case CreatedEvent e -> withId(id)
                     .withName(e.getName())
                     .withNumber(e.getNumber())

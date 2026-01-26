@@ -6,10 +6,11 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
-import de.bennyboer.kicherkrabbe.inquiries.snapshot.SnapshottedEvent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotEvent;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -78,13 +79,18 @@ public class InquiryServiceTest {
         assertThat(event.getMetadata().isSnapshot()).isTrue();
 
         // and: the snapshot event is anonymized
-        var snapshot = (SnapshottedEvent) event.getEvent();
-        assertThat(snapshot.getSender().getName()).isEqualTo(SenderName.of("ANONYMIZED"));
-        assertThat(snapshot.getSender().getMail()).isEqualTo(EMail.of("anonymized@kicherkrabbe.com"));
-        assertThat(snapshot.getSender().getPhone()).isEmpty();
-        assertThat(snapshot.getSubject().getValue()).isEqualTo("ANONYMIZED");
-        assertThat(snapshot.getMessage().getValue()).isEqualTo("ANONYMIZED");
-        assertThat(snapshot.getFingerprint().getIpAddress()).isEmpty();
+        var snapshot = (SnapshotEvent) event.getEvent();
+        var state = snapshot.getState();
+        @SuppressWarnings("unchecked")
+        var sender1 = (Map<String, Object>) state.get("sender");
+        assertThat(sender1.get("name")).isEqualTo("ANONYMIZED");
+        assertThat(sender1.get("mail")).isEqualTo("anonymized@kicherkrabbe.com");
+        assertThat(sender1.get("phone")).isNull();
+        assertThat(state.get("subject")).isEqualTo("ANONYMIZED");
+        assertThat(state.get("message")).isEqualTo("ANONYMIZED");
+        @SuppressWarnings("unchecked")
+        var fingerprint1 = (Map<String, Object>) state.get("fingerprint");
+        assertThat(fingerprint1.get("ipAddress")).isNull();
     }
 
     private InquiryId send(

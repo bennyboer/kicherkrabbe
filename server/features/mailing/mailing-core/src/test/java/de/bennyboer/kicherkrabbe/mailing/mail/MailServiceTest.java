@@ -6,12 +6,13 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotEvent;
 import de.bennyboer.kicherkrabbe.mailing.MailingService;
-import de.bennyboer.kicherkrabbe.mailing.mail.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.mailing.settings.EMail;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
+import java.util.Map;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.mailing.MailingService.MAILGUN;
@@ -95,14 +96,16 @@ public class MailServiceTest {
         assertThat(event.getMetadata().getAgent()).isEqualTo(Agent.system());
         assertThat(event.getMetadata().isSnapshot()).isTrue();
 
-        var snapshot = (SnapshottedEvent) event.getEvent();
-        assertThat(snapshot.getSender()).isEqualTo(Sender.of(EMail.of("anonymized@kicherkrabbe.com")));
-        assertThat(snapshot.getReceivers()).containsExactly(Receiver.of(EMail.of("anonymized@kicherkrabbe.com")));
-        assertThat(snapshot.getSubject()).isEqualTo(Subject.of("ANONYMIZED"));
-        assertThat(snapshot.getText()).isEqualTo(Text.of("ANONYMIZED"));
-        assertThat(snapshot.getMailingService()).isEqualTo(MAILGUN);
-        assertThat(snapshot.getSentAt()).isNotNull();
-        assertThat(snapshot.getDeletedAt()).isNotNull();
+        var snapshot = (SnapshotEvent) event.getEvent();
+        var state = snapshot.getState();
+        @SuppressWarnings("unchecked")
+        var senderMap = (Map<String, Object>) state.get("sender");
+        assertThat(senderMap.get("mail")).isEqualTo("anonymized@kicherkrabbe.com");
+        assertThat(state.get("subject")).isEqualTo("ANONYMIZED");
+        assertThat(state.get("text")).isEqualTo("ANONYMIZED");
+        assertThat(state.get("mailingService")).isEqualTo("MAILGUN");
+        assertThat(state.get("sentAt")).isNotNull();
+        assertThat(state.get("deletedAt")).isNotNull();
     }
 
     @Test

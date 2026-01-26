@@ -5,10 +5,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.products.product.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.products.product.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.delete.DeleteCmd;
@@ -27,7 +27,6 @@ import de.bennyboer.kicherkrabbe.products.product.notes.update.NotesUpdatedEvent
 import de.bennyboer.kicherkrabbe.products.product.notes.update.UpdateNotesCmd;
 import de.bennyboer.kicherkrabbe.products.product.produced.update.ProducedAtUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.produced.update.UpdateProducedAtCmd;
-import de.bennyboer.kicherkrabbe.products.product.snapshot.SnapshottedEvent;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -47,8 +46,10 @@ public class Product implements Aggregate {
 
     public static AggregateType TYPE = AggregateType.of("PRODUCT");
 
+    @SnapshotExclude
     ProductId id;
 
+    @SnapshotExclude
     Version version;
 
     ProductNumber number;
@@ -86,19 +87,9 @@ public class Product implements Aggregate {
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
         check(isCreated() || cmd instanceof CreateCmd, "Cannot apply command to not yet created aggregate");
-        check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
+        check(isNotDeleted(), "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
-                    getNumber(),
-                    getImages(),
-                    getLinks(),
-                    getFabricComposition(),
-                    getNotes(),
-                    getProducedAt(),
-                    getCreatedAt(),
-                    getDeletedAt().orElse(null)
-            ));
             case CreateCmd c -> ApplyCommandResult.of(CreatedEvent.of(
                     c.getNumber(),
                     c.getImages(),
@@ -126,15 +117,6 @@ public class Product implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withNumber(e.getNumber())
-                    .withImages(e.getImages())
-                    .withLinks(e.getLinks())
-                    .withFabricComposition(e.getFabricComposition())
-                    .withNotes(e.getNotes())
-                    .withProducedAt(e.getProducedAt())
-                    .withCreatedAt(e.getCreatedAt())
-                    .withDeletedAt(e.getDeletedAt().orElse(null));
             case CreatedEvent e -> withId(id)
                     .withNumber(e.getNumber())
                     .withImages(e.getImages())

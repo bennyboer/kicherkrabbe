@@ -14,10 +14,12 @@ import de.bennyboer.kicherkrabbe.products.product.links.remove.LinkRemovedEvent;
 import de.bennyboer.kicherkrabbe.products.product.links.update.LinkUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.notes.update.NotesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.produced.update.ProducedAtUpdatedEvent;
-import de.bennyboer.kicherkrabbe.products.product.snapshot.SnapshottedEvent;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ProductEventPayloadSerializer implements EventSerializer {
@@ -33,21 +35,6 @@ public class ProductEventPayloadSerializer implements EventSerializer {
                     "notes", serializeNotes(e.getNotes()),
                     "producedAt", e.getProducedAt().toString()
             );
-            case SnapshottedEvent e -> {
-                Map<String, Object> result = new HashMap<>(Map.of(
-                        "number", e.getNumber().getValue(),
-                        "images", serializeImages(e.getImages()),
-                        "links", serializeLinks(e.getLinks()),
-                        "fabricComposition", serializeFabricComposition(e.getFabricComposition()),
-                        "notes", serializeNotes(e.getNotes()),
-                        "producedAt", e.getProducedAt().toString(),
-                        "createdAt", e.getCreatedAt().toString()
-                ));
-
-                e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
-
-                yield result;
-            }
             case FabricCompositionUpdatedEvent e -> Map.of(
                     "fabricComposition", serializeFabricComposition(e.getFabricComposition())
             );
@@ -81,16 +68,6 @@ public class ProductEventPayloadSerializer implements EventSerializer {
                     deserializeFabricComposition((List<Map<String, Object>>) payload.get("fabricComposition")),
                     deserializeNotes((Map<String, Object>) payload.get("notes")),
                     Instant.parse((String) payload.get("producedAt"))
-            );
-            case "SNAPSHOTTED" -> SnapshottedEvent.of(
-                    ProductNumber.of((String) payload.get("number")),
-                    deserializeImages((List<String>) payload.get("images")),
-                    deserializeLinks((List<Map<String, Object>>) payload.get("links")),
-                    deserializeFabricComposition((List<Map<String, Object>>) payload.get("fabricComposition")),
-                    deserializeNotes((Map<String, Object>) payload.get("notes")),
-                    Instant.parse((String) payload.get("producedAt")),
-                    Instant.parse((String) payload.get("createdAt")),
-                    payload.containsKey("deletedAt") ? Instant.parse((String) payload.get("deletedAt")) : null
             );
             case "FABRIC_COMPOSITION_UPDATED" -> FabricCompositionUpdatedEvent.of(
                     deserializeFabricComposition((List<Map<String, Object>>) payload.get("fabricComposition"))

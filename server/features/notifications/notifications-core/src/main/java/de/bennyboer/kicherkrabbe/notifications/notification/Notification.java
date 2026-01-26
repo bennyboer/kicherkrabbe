@@ -5,16 +5,15 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.notifications.channel.Channel;
 import de.bennyboer.kicherkrabbe.notifications.notification.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.notifications.notification.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.notifications.notification.send.SendCmd;
 import de.bennyboer.kicherkrabbe.notifications.notification.send.SentEvent;
-import de.bennyboer.kicherkrabbe.notifications.notification.snapshot.SnapshottedEvent;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -34,8 +33,10 @@ public class Notification implements Aggregate {
 
     public static AggregateType TYPE = AggregateType.of("NOTIFICATION");
 
+    @SnapshotExclude
     NotificationId id;
 
+    @SnapshotExclude
     Version version;
 
     Origin origin;
@@ -70,18 +71,9 @@ public class Notification implements Aggregate {
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
         check(isSent() || cmd instanceof SendCmd, "Cannot apply command to not yet sent aggregate");
-        check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
+        check(isNotDeleted(), "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
-                    getOrigin(),
-                    getTarget(),
-                    getChannels(),
-                    getTitle(),
-                    getMessage(),
-                    getSentAt(),
-                    getDeletedAt().orElse(null)
-            ));
             case SendCmd c -> ApplyCommandResult.of(SentEvent.of(
                     c.getOrigin(),
                     c.getTarget(),
@@ -100,14 +92,6 @@ public class Notification implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withOrigin(e.getOrigin())
-                    .withTarget(e.getTarget())
-                    .withChannels(e.getChannels())
-                    .withTitle(e.getTitle())
-                    .withMessage(e.getMessage())
-                    .withSentAt(e.getSentAt())
-                    .withDeletedAt(e.getDeletedAt().orElse(null));
             case SentEvent e -> withId(id)
                     .withOrigin(e.getOrigin())
                     .withTarget(e.getTarget())

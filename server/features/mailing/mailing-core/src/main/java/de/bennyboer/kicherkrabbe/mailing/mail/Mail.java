@@ -5,16 +5,15 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.mailing.MailingService;
 import de.bennyboer.kicherkrabbe.mailing.mail.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.mailing.mail.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.mailing.mail.send.SendCmd;
 import de.bennyboer.kicherkrabbe.mailing.mail.send.SentEvent;
-import de.bennyboer.kicherkrabbe.mailing.mail.snapshot.SnapshottedEvent;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -35,8 +34,10 @@ public class Mail implements Aggregate {
 
     public static AggregateType TYPE = AggregateType.of("MAILING_MAIL");
 
+    @SnapshotExclude
     MailId id;
 
+    @SnapshotExclude
     Version version;
 
     Sender sender;
@@ -71,18 +72,9 @@ public class Mail implements Aggregate {
     @Override
     public ApplyCommandResult apply(Command cmd, Agent agent) {
         check(isSent() || cmd instanceof SendCmd, "Cannot apply command to not yet sent aggregate");
-        check(isNotDeleted() || cmd instanceof SnapshotCmd, "Cannot apply command to deleted aggregate");
+        check(isNotDeleted(), "Cannot apply command to deleted aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(
-                    getSender(),
-                    getReceivers(),
-                    getSubject(),
-                    getText(),
-                    getMailingService(),
-                    getSentAt(),
-                    getDeletedAt().orElse(null)
-            ));
             case SendCmd c -> ApplyCommandResult.of(SentEvent.of(
                     c.getSender(),
                     c.getReceivers(),
@@ -101,14 +93,6 @@ public class Mail implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withSender(e.getSender())
-                    .withReceivers(e.getReceivers())
-                    .withSubject(e.getSubject())
-                    .withText(e.getText())
-                    .withMailingService(e.getMailingService())
-                    .withSentAt(e.getSentAt())
-                    .withDeletedAt(e.getDeletedAt().orElse(null));
             case SentEvent e -> withId(id)
                     .withSender(e.getSender())
                     .withReceivers(e.getReceivers())

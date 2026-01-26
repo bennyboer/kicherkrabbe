@@ -5,10 +5,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.Aggregate;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.ApplyCommandResult;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
-import de.bennyboer.kicherkrabbe.eventsourcing.command.SnapshotCmd;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.EventMetadata;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.mailing.settings.init.InitCmd;
 import de.bennyboer.kicherkrabbe.mailing.settings.init.InitEvent;
 import de.bennyboer.kicherkrabbe.mailing.settings.mailgun.apitoken.clear.ClearMailgunApiTokenCmd;
@@ -17,7 +17,6 @@ import de.bennyboer.kicherkrabbe.mailing.settings.mailgun.apitoken.update.Mailgu
 import de.bennyboer.kicherkrabbe.mailing.settings.mailgun.apitoken.update.UpdateMailgunApiTokenCmd;
 import de.bennyboer.kicherkrabbe.mailing.settings.ratelimit.update.RateLimitUpdatedEvent;
 import de.bennyboer.kicherkrabbe.mailing.settings.ratelimit.update.UpdateRateLimitCmd;
-import de.bennyboer.kicherkrabbe.mailing.settings.snapshot.SnapshottedEvent;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.With;
@@ -34,8 +33,10 @@ public class Settings implements Aggregate {
 
     public static AggregateType TYPE = AggregateType.of("MAILING_SETTINGS");
 
+    @SnapshotExclude
     SettingsId id;
 
+    @SnapshotExclude
     Version version;
 
     RateLimitSettings rateLimit;
@@ -59,7 +60,6 @@ public class Settings implements Aggregate {
         check(isInit() || cmd instanceof InitCmd, "Cannot apply command to not yet initialized aggregate");
 
         return switch (cmd) {
-            case SnapshotCmd ignored -> ApplyCommandResult.of(SnapshottedEvent.of(getRateLimit(), getMailgun()));
             case InitCmd c -> ApplyCommandResult.of(InitEvent.of(c.getRateLimit(), c.getMailgun()));
             case UpdateRateLimitCmd c -> ApplyCommandResult.of(RateLimitUpdatedEvent.of(c.getDuration(), c.getLimit()));
             case UpdateMailgunApiTokenCmd c -> ApplyCommandResult.of(MailgunApiTokenUpdatedEvent.of(c.getApiToken()));
@@ -74,10 +74,6 @@ public class Settings implements Aggregate {
         Version version = metadata.getAggregateVersion();
 
         return (switch (event) {
-            case SnapshottedEvent e -> withId(id)
-                    .withRateLimit(e.getRateLimit())
-                    .withMailgun(e.getMailgun())
-                    .withInitAt(metadata.getDate());
             case InitEvent e -> withId(id)
                     .withRateLimit(e.getRateLimit())
                     .withMailgun(e.getMailgun())

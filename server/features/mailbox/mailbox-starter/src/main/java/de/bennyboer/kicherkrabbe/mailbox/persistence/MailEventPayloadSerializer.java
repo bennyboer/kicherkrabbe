@@ -8,10 +8,8 @@ import de.bennyboer.kicherkrabbe.mailbox.mail.*;
 import de.bennyboer.kicherkrabbe.mailbox.mail.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.mailbox.mail.read.MarkedAsReadEvent;
 import de.bennyboer.kicherkrabbe.mailbox.mail.receive.ReceivedEvent;
-import de.bennyboer.kicherkrabbe.mailbox.mail.snapshot.SnapshottedEvent;
 import de.bennyboer.kicherkrabbe.mailbox.mail.unread.MarkedAsUnreadEvent;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,20 +24,6 @@ public class MailEventPayloadSerializer implements EventSerializer {
                     "subject", e.getSubject().getValue(),
                     "content", e.getContent().getValue()
             );
-            case SnapshottedEvent e -> {
-                Map<String, Object> result = new HashMap<>(Map.of(
-                        "origin", serializeOrigin(e.getOrigin()),
-                        "sender", serializeSender(e.getSender()),
-                        "subject", e.getSubject().getValue(),
-                        "content", e.getContent().getValue(),
-                        "receivedAt", e.getReceivedAt().toString()
-                ));
-
-                e.getReadAt().ifPresent(readAt -> result.put("readAt", readAt.toString()));
-                e.getDeletedAt().ifPresent(deletedAt -> result.put("deletedAt", deletedAt.toString()));
-
-                yield result;
-            }
             case MarkedAsReadEvent ignored -> Map.of();
             case MarkedAsUnreadEvent ignored -> Map.of();
             case DeletedEvent e -> Map.of("origin", serializeOrigin(e.getOrigin()));
@@ -55,15 +39,6 @@ public class MailEventPayloadSerializer implements EventSerializer {
                     deserializeSender((Map<String, Object>) payload.get("sender")),
                     Subject.of((String) payload.get("subject")),
                     Content.of((String) payload.get("content"))
-            );
-            case "SNAPSHOTTED" -> SnapshottedEvent.of(
-                    deserializeOrigin((Map<String, Object>) payload.get("origin")),
-                    deserializeSender((Map<String, Object>) payload.get("sender")),
-                    Subject.of((String) payload.get("subject")),
-                    Content.of((String) payload.get("content")),
-                    Instant.parse((String) payload.get("receivedAt")),
-                    payload.containsKey("readAt") ? Instant.parse((String) payload.get("readAt")) : null,
-                    payload.containsKey("deletedAt") ? Instant.parse((String) payload.get("deletedAt")) : null
             );
             case "MARKED_AS_READ" -> MarkedAsReadEvent.of();
             case "MARKED_AS_UNREAD" -> MarkedAsUnreadEvent.of();
