@@ -62,6 +62,8 @@ public class MessageListenerTests {
 
     List<MessageListener> listeners = new ArrayList<>();
 
+    MessageListenerContainerManager containerManager = new MessageListenerContainerManager();
+
     @BeforeEach
     void setUp() {
         publisher = new RabbitOutboxEntryPublisher(rabbitTemplate, rabbitAdmin, jsonMapper);
@@ -87,7 +89,7 @@ public class MessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(true);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox);
+        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
             receivedMessages.add(message);
             latch.countDown();
@@ -119,7 +121,7 @@ public class MessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(true);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox);
+        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
             processedCount.incrementAndGet();
             latch.countDown();
@@ -156,7 +158,7 @@ public class MessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(false);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox);
+        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
             attemptCount.incrementAndGet();
             return Mono.error(new RuntimeException("Simulated failure"));
@@ -191,7 +193,7 @@ public class MessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(false);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox);
+        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
 
         var disposable = factory.createTransientListener(exchange, routingKey, listenerName)
                 .doOnNext(message -> {
@@ -228,7 +230,7 @@ public class MessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(true);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox);
+        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
             receivedMessages.add(message);
             latch.countDown();
@@ -269,7 +271,7 @@ public class MessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(true);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox);
+        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
         var listener = factory.createListener(exchange, listenerRoutingKey, listenerName, message -> {
             receivedMessages.add(message);
             latch.countDown();
@@ -298,7 +300,7 @@ public class MessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(false);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox);
+        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
             var body = new String(message.getBody(), StandardCharsets.UTF_8);
             if (body.contains("\"fail\":true")) {
@@ -338,7 +340,7 @@ public class MessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(false);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox);
+        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
             int attempt = attemptCount.incrementAndGet();
             if (attempt <= failuresBeforeSuccess) {
@@ -368,7 +370,7 @@ public class MessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(false);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox);
+        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
             attemptCount.incrementAndGet();
             return Mono.error(new RuntimeException("Persistent failure"));
