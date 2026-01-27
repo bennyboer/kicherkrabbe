@@ -2,13 +2,13 @@ pluginManagement {
     includeBuild('build-logic')
 }
 
-rootProject.name = 'server'
+rootProject.name = 'backend'
 
 //////////
 // APPS //
 //////////
 
-include('app')
+include('apps:api')
 
 
 ///////////////
