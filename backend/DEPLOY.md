@@ -101,7 +101,7 @@ On your development machine:
 
 ```bash
 # Build the application
-./gradlew :app:bootJar
+./gradlew :apps:api:bootJar
 
 # Build Docker image
 docker build -t your-registry/kicherkrabbe-server:latest .
@@ -166,7 +166,7 @@ Create DNS A records pointing to your server:
 
 ```bash
 # Build and push new image
-./gradlew :app:bootJar
+./gradlew :apps:api:bootJar
 docker build -t your-registry/kicherkrabbe-server:v1.2.3 .
 docker push your-registry/kicherkrabbe-server:v1.2.3
 

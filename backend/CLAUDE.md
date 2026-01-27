@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Build the server JAR (requires frontend to be built first)
-./gradlew :app:bootJar
+./gradlew :apps:api:bootJar
 
 # Run all tests
 ./gradlew test
