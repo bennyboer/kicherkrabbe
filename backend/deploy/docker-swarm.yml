@@ -1,24 +1,13 @@
-version: "3.8"
-
 services:
   traefik:
     image: traefik:v3.6
     command:
-      - "--api.dashboard=true"
-      - "--providers.swarm=true"
-      - "--providers.swarm.exposedByDefault=false"
-      - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
       - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
       - "443:443"
     volumes:
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-certificates:/letsencrypt
     networks:

@@ -5,7 +5,7 @@ This guide explains how to deploy the Kicherkrabbe server using Docker Swarm wit
 ## Architecture
 
 The deployment consists of:
-- **Traefik**: Reverse proxy with automatic Let's Encrypt certificate management
+- **Traefik**: Reverse proxy with automatic Let's Encrypt certificate management (configured via `traefik.yml`)
 - **MongoDB**: Database with replica set (required for transactions)
 - **RabbitMQ**: Message broker for event-driven communication
 - **App**: The Kicherkrabbe server application
@@ -38,6 +38,11 @@ Copy the `deploy/` folder contents to your server:
 ```bash
 scp -r deploy/* user@your-server:/opt/kicherkrabbe/
 ```
+
+This includes:
+- `docker-swarm.yml` - Docker Swarm stack definition
+- `traefik.yml` - Traefik reverse proxy configuration
+- `.env.example` - Environment variable template
 
 ### 4. Create Environment File
 
