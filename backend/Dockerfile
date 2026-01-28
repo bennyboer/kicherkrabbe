@@ -2,7 +2,7 @@ FROM eclipse-temurin:25-jre-alpine
 
 WORKDIR /app
 
-COPY app/build/libs/app.jar app.jar
+COPY apps/api/build/libs/api.jar app.jar
 
 EXPOSE 8080
 
