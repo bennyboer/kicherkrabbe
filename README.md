@@ -1,5 +1,7 @@
 # Kicherkrabbe Shop
 
+Resources for the kicherkrabbe.com shop.
+
 ## Project Structure
 
 ```
