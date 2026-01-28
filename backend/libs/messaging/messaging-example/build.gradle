@@ -1,0 +1,13 @@
+plugins {
+    id 'kicherkrabbe.library-conventions'
+}
+
+dependencies {
+    implementation project(':libs:messaging:messaging-starter')
+
+    testImplementation project(':libs:testing')
+    testImplementation project(':libs:persistence:persistence-testing')
+    testImplementation project(':libs:messaging:messaging-testing')
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

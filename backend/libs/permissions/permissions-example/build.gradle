@@ -1,0 +1,10 @@
+plugins {
+    id 'kicherkrabbe.library-conventions'
+}
+
+dependencies {
+    implementation project(':libs:permissions:permissions-starter')
+
+    testImplementation project(':libs:persistence:persistence-testing')
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

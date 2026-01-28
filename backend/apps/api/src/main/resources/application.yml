@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: kicherkrabbe-server
+  mongodb:
+    uri: mongodb://localhost:27017/kicherkrabbe?replicaSet=rs0
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+server:
+  compression:
+    enabled: true
+    min-response-size: 2048
+  http2:
+    enabled: true

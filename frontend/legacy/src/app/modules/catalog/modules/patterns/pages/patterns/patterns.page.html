@@ -1,0 +1,26 @@
+<app-filter-sort-bar
+  [filters]="filters$ | async"
+  [sortingOptions]="sortingOptions"
+  (filtered)="updateFilters($event.filters)"
+  (sorted)="updateSorting($event.option, $event.ascending)">
+</app-filter-sort-bar>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (notLoading$ | async) {
+  @if (items$ | async; as items) {
+    @if (items.length > 0) {
+      <app-card-list [items]="items" [template]="cardItemTemplate"></app-card-list>
+
+      <ng-template #cardItemTemplate let-item>
+        <div class="pattern-item">
+          <img [src]="item.imageUrl" [alt]="item.title" />
+        </div>
+      </ng-template>
+    } @else {
+      <div class="no-results-hint">
+        <p>Es konnten keine Schnitte gefunden werden.</p>
+      </div>
+    }
+  }
+}

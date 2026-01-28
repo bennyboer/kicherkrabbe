@@ -1,0 +1,135 @@
+pluginManagement {
+    includeBuild('build-logic')
+}
+
+rootProject.name = 'backend'
+
+//////////
+// APPS //
+//////////
+
+include('apps:api')
+
+
+///////////////
+// LIBRARIES //
+///////////////
+
+// Core libraries
+include('libs:commons')
+include('libs:testing')
+include('libs:money')
+
+// Event Sourcing
+include('libs:eventsourcing:eventsourcing-core')
+include('libs:eventsourcing:eventsourcing-starter')
+include('libs:eventsourcing:eventsourcing-example')
+include('libs:eventsourcing:eventsourcing-testing')
+
+// Messaging
+include('libs:messaging:messaging-core')
+include('libs:messaging:messaging-starter')
+include('libs:messaging:messaging-example')
+include('libs:messaging:messaging-testing')
+
+// Auth
+include('libs:auth:auth-core')
+include('libs:auth:auth-starter')
+include('libs:auth:auth-example')
+
+// Persistence
+include('libs:persistence:persistence-starter')
+include('libs:persistence:persistence-testing')
+
+// Permissions
+include('libs:permissions:permissions-core')
+include('libs:permissions:permissions-starter')
+include('libs:permissions:permissions-example')
+
+// Changes
+include('libs:changes:changes-core')
+include('libs:changes:changes-starter')
+include('libs:changes:changes-example')
+
+
+//////////////
+// FEATURES //
+//////////////
+
+// Assets
+include('features:assets:assets-core')
+include('features:assets:assets-starter')
+include('features:assets:assets-example')
+
+// Credentials
+include('features:credentials:credentials-core')
+include('features:credentials:credentials-starter')
+include('features:credentials:credentials-example')
+
+// Users
+include('features:users:users-core')
+include('features:users:users-starter')
+include('features:users:users-example')
+
+// Fabrics
+include('features:fabrics:fabrics-core')
+include('features:fabrics:fabrics-starter')
+include('features:fabrics:fabrics-example')
+
+// Frontend
+include('features:frontend')
+
+// Topics
+include('features:topics:topics-core')
+include('features:topics:topics-starter')
+include('features:topics:topics-example')
+
+// Colors
+include('features:colors:colors-core')
+include('features:colors:colors-starter')
+include('features:colors:colors-example')
+
+// Fabric Types
+include('features:fabric-types:fabric-types-core')
+include('features:fabric-types:fabric-types-starter')
+include('features:fabric-types:fabric-types-example')
+
+// Categories
+include('features:categories:categories-core')
+include('features:categories:categories-starter')
+include('features:categories:categories-example')
+
+// Patterns
+include('features:patterns:patterns-core')
+include('features:patterns:patterns-starter')
+include('features:patterns:patterns-example')
+
+// Inquiries
+include('features:inquiries:inquiries-core')
+include('features:inquiries:inquiries-starter')
+include('features:inquiries:inquiries-example')
+
+// Mailbox
+include('features:mailbox:mailbox-core')
+include('features:mailbox:mailbox-starter')
+include('features:mailbox:mailbox-example')
+
+// Notifications
+include('features:notifications:notifications-core')
+include('features:notifications:notifications-starter')
+include('features:notifications:notifications-example')
+
+// Telegram
+include('features:telegram:telegram-core')
+include('features:telegram:telegram-starter')
+include('features:telegram:telegram-example')
+
+// Mailing
+include('features:mailing:mailing-core')
+include('features:mailing:mailing-starter')
+include('features:mailing:mailing-example')
+
+// Products
+include('features:products:products-core')
+include('features:products:products-starter')
+include('features:products:products-example')

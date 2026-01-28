@@ -1,7 +1,0 @@
-dependencies {
-    implementation project(':libs:auth:auth-starter')
-
-    testImplementation project(':libs:testing')
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}

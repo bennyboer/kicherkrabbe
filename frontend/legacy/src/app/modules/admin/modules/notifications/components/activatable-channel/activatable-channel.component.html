@@ -1,0 +1,31 @@
+@if (editing$ | async) {
+  <app-pending-channel
+    label="Kanal bearbeiten"
+    [channel]="channel.channel"
+    (done)="finishEditing($event)"
+    (cancelled)="cancelEditing()">
+  </app-pending-channel>
+} @else {
+  <app-checkbox [checked]="channel.active" (checkedChanges)="toggleActivation($event)"></app-checkbox>
+
+  <span class="label">
+    {{ channel.channel.type.label }}
+  </span>
+
+  <span class="details">
+    @if (channel.channel.mail | ifSome; as mail) {
+      E-Mail: {{ mail }}
+    }
+    @if (channel.channel.telegram | ifSome; as telegram) {
+      Chat ID: {{ telegram.chatId }}
+    }
+  </span>
+
+  <span class="actions">
+    <app-button [size]="ButtonSize.SMALL" (click)="editChannel()">
+      <span class="icon-button">
+        <span class="material-icons">edit</span>
+      </span>
+    </app-button>
+  </span>
+}

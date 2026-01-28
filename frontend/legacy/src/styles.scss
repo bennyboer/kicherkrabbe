@@ -1,0 +1,157 @@
+@use "theme.scss";
+@import "material-icons/iconfont/filled.css";
+
+@font-face {
+  font-family: Lexend;
+  src: url(assets/fonts/lexend/Lexend-VariableFont_wght.ttf);
+}
+
+@font-face {
+  font-family: "Grandstander";
+  src: url(assets/fonts/grandstander/Grandstander-VariableFont_wght.ttf);
+}
+
+html,
+body {
+  color: var(--text);
+}
+
+body {
+  margin: 0;
+  font-family: Lexend, sans-serif;
+  background-color: var(--footer);
+  transition: background-color 0.5s ease-in-out;
+
+  &.prevent-scrolling {
+    overflow: hidden;
+  }
+}
+
+p {
+  line-height: 1.5;
+}
+
+a {
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--link);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+hr {
+  width: 100%;
+  border-color: var(--background-mid-contrast);
+  border-width: 0 0 1px 0;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: 500;
+}
+
+h2 {
+  font-size: 1.7em;
+  font-weight: 200;
+}
+
+h3 {
+  font-size: 1.5em;
+  font-weight: 200;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: Grandstander, sans-serif;
+  word-break: break-word;
+}
+
+select {
+  appearance: none;
+  background: var(--background)
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 -960 960 960' width='24'><path fill='black' d='M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z'/></svg>")
+    no-repeat;
+  background-position-x: 100%;
+  background-position-y: 50%;
+  border: 2px solid transparent;
+  padding: 8px 24px 8px 8px;
+  color: var(--text);
+  transition: border-color 0.3s ease-out;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  line-height: inherit;
+  outline: none;
+
+  &:hover {
+    border-color: rgba(var(--text-rgb), 1);
+  }
+}
+
+.theme.dark {
+  select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 -960 960 960' width='24'><path fill='white' d='M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z'/></svg>");
+  }
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+input[type="time"] {
+  box-sizing: border-box;
+  appearance: none;
+  background-color: var(--contrast);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 12px 16px;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  outline: 2px solid transparent;
+  transition:
+    background-color 0.3s ease-out,
+    outline-color 0.2s ease-out;
+
+  &:hover {
+    background-color: var(--contrast-lower);
+  }
+
+  &:focus {
+    outline-color: var(--primary-2);
+  }
+
+  &:disabled {
+    background-color: var(--contrast-lower);
+    cursor: not-allowed;
+    color: var(--contrast-mid);
+  }
+
+  &.error {
+    outline-color: var(--red);
+  }
+}
+
+.material-icons {
+  font-size: 20px;
+}
+
+.icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ql-editor {
+  font-family: Lexend, sans-serif;
+  font-size: 16px;
+  padding: 0 !important;
+}

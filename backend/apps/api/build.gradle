@@ -1,0 +1,30 @@
+plugins {
+    id 'kicherkrabbe.application-conventions'
+}
+
+dependencies {
+    implementation project(':libs:auth:auth-starter')
+
+    implementation project(':features:assets:assets-starter')
+    implementation project(':features:categories:categories-starter')
+    implementation project(':features:colors:colors-starter')
+    implementation project(':features:credentials:credentials-starter')
+    implementation project(':features:fabric-types:fabric-types-starter')
+    implementation project(':features:fabrics:fabrics-starter')
+    implementation project(':features:frontend')
+    implementation project(':features:inquiries:inquiries-starter')
+    implementation project(':features:mailbox:mailbox-starter')
+    implementation project(':features:mailing:mailing-starter')
+    implementation project(':features:notifications:notifications-starter')
+    implementation project(':features:patterns:patterns-starter')
+    implementation project(':features:products:products-starter')
+    implementation project(':features:telegram:telegram-starter')
+    implementation project(':features:topics:topics-starter')
+    implementation project(':features:users:users-starter')
+
+    testImplementation project(':libs:persistence:persistence-testing')
+    testImplementation project(':libs:messaging:messaging-testing')
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}

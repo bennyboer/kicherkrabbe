@@ -1,0 +1,59 @@
+<div class="action-bar">
+  <div class="left-actions"></div>
+  <div class="right-actions">
+    <app-button routerLink="settings">
+      <span class="icon-button">
+        <span class="material-icons">settings</span>
+        <span> Einstellungen </span>
+      </span>
+    </app-button>
+  </div>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (mailsLoaded$ | async) {
+  @if (mails$ | async; as mails) {
+    @if (mails.length === 0) {
+      <app-note level="info">Keine E-Mails vorhanden.</app-note>
+    } @else {
+      <table class="mails-table">
+        <colgroup>
+          <col span="1" style="width: auto" />
+          <col class="date" span="1" style="width: 140px" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="content">E-Mail</th>
+            <th class="date">Datum</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (mail of mails; track mail.id) {
+            <a class="table-row" [routerLink]="mail.id">
+              <td class="content" [title]="mail.subject">
+                <span class="content-details">
+                  <span class="subject">{{ mail.subject }}</span>
+                  <span class="sender">Absender: {{ mail.sender.mail }}</span>
+                  <span class="receivers">Empfänger: {{ mail.getCommaSeparatedReceiverMails() }}</span>
+                  <span class="date mobile-only"> {{ mail.sentAt | date: "short" }} </span>
+                </span>
+              </td>
+              <td class="date" [title]="mail.sentAt | date: 'full'">{{ mail.sentAt | date: "short" }}</td>
+            </a>
+          }
+        </tbody>
+      </table>
+
+      @if (moreMailsAvailable$ | async) {
+        <div class="footer-actions">
+          <app-button (click)="loadMoreMails()"> Mehr laden... ({{ remainingMailsCount$ | async }}) </app-button>
+        </div>
+      } @else {
+        <div class="footer-actions">
+          <app-note level="info">Keine weiteren E-Mails vorhanden.</app-note>
+        </div>
+      }
+    }
+  }
+}

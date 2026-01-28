@@ -1,0 +1,7 @@
+plugins {
+    id 'kicherkrabbe.feature-conventions'
+}
+
+dependencies {
+    api project(':features:colors:colors-core')
+}

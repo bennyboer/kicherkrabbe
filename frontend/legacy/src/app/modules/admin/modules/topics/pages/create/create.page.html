@@ -1,0 +1,44 @@
+<h3>Neues Thema erstellen</h3>
+
+<form class="create-topic-form">
+  <hr />
+
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input
+      #name
+      type="text"
+      id="name"
+      name="name"
+      autofocus
+      required
+      [disabled]="isCreatingTopic() | async"
+      (input)="updateName(name.value)" />
+  </div>
+
+  <hr />
+
+  <div class="actions">
+    <span>
+      <app-button routerLink="..">Abbrechen</app-button>
+    </span>
+    <span>
+      <app-button [disabled]="cannotCreateTopic() | async" (click)="createTopic()" color="primary">
+        @if (isCreatingTopic() | async) {
+          <span class="loading-button-text">
+            <app-loading-spinner size="16"></app-loading-spinner>
+            <span>Erstellt...</span>
+          </span>
+        } @else {
+          Erstellen
+        }
+      </app-button>
+    </span>
+  </div>
+
+  @if (isFailed() | async) {
+    <app-note level="error"> Das Thema konnte nicht erstellt werden. Bitte versuche es erneut. </app-note>
+  }
+
+  <button type="submit" [disabled]="cannotCreateTopic() | async" class="hidden" (click)="createTopic()"></button>
+</form>

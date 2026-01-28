@@ -1,0 +1,46 @@
+@if (getChips() | async; as chips) {
+  @for (chip of chips; track chip.id) {
+    <app-chip (click)="removeChip(chip)">
+      <ng-container [ngTemplateOutlet]="chipTemplateRef" [ngTemplateOutletContext]="{ $implicit: chip }">
+      </ng-container>
+    </app-chip>
+  }
+}
+
+@if (showAddButton() | async) {
+  <span class="add-button" (click)="startAddingChip()">
+    <span class="material-icons">add</span>
+  </span>
+}
+
+@if (isAdding() | async) {
+  <input
+    #addChipTextField
+    class="add-chips-text-field"
+    type="text"
+    (blur)="onAddChipTextFieldBlurred()"
+    (focus)="onAddChipTextFieldFocused()"
+    (input)="onAddChipTextFieldValueChanged(addChipTextField.value)"
+    (keydown.escape)="cancelAddingChips()"
+    (keydown.enter)="addChipIfAvailable(addChipTextField.value)" />
+  <app-button (click)="cancelAddingChips()" color="warn">Abbrechen</app-button>
+}
+
+<ng-template #searchOverlayTemplate>
+  <div class="search-overlay-container">
+    @if (getSearchResults() | async; as searchResults) {
+      <app-button-column [rounded]="false" [size]="ButtonSize.FIT_CONTENT">
+        @for (chip of searchResults; track chip.id) {
+          <app-button (click)="onAvailableChipSelected(chip)" (mousedown)="onAvailableChipMouseDown($event)">
+            <div class="dropdown-item">
+              <ng-container
+                [ngTemplateOutlet]="chipDropdownItemTemplateRef"
+                [ngTemplateOutletContext]="{ $implicit: chip }">
+              </ng-container>
+            </div>
+          </app-button>
+        }
+      </app-button-column>
+    }
+  </div>
+</ng-template>

@@ -1,3 +1,0 @@
-dependencies {
-    implementation project(':features:mailbox:mailbox-starter')
-}

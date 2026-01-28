@@ -1,0 +1,30 @@
+<app-note>Wähle aus was du verwalten möchtest.</app-note>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+<ul class="cards">
+  <a routerLink="mailbox">
+    <li>
+      <span class="icon">
+        <span class="material-icons">mail</span>
+      </span>
+      <span class="content">
+        <label>
+          Postfach
+          @if (loadingUnreadMailsCount$ | async) {
+            <app-loading-spinner size="16"></app-loading-spinner>
+          }
+        </label>
+        @if (unreadMailsCountLoaded$ | async) {
+          @if (unreadMailsCount$ | async; as count) {
+            <p>
+              Du hast <strong>{{ count }}</strong> ungelesene Nachrichten.
+            </p>
+          } @else {
+            <p>Keine ungelesenen Nachrichten! 🥳</p>
+          }
+        }
+      </span>
+    </li>
+  </a>
+</ul>

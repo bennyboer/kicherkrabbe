@@ -1,0 +1,9 @@
+plugins {
+    id 'kicherkrabbe.library-conventions'
+}
+
+dependencies {
+    api project(':libs:messaging:messaging-core')
+
+    implementation project(':libs:persistence:persistence-starter')
+}

@@ -1,0 +1,83 @@
+@if (pattern$ | async; as pattern) {
+  <h1>{{ pattern.name }}</h1>
+
+  <div class="layout">
+    <div class="images">
+      @if (images$ | async; as images) {
+        <app-image-slider [images]="images" [theme]="theme$ | async"></app-image-slider>
+        <div class="image-subtext">
+          <span>
+            Es handelt sich um beispielhafte Abbildungen. Ihr Endprodukt basiert etwa auf der Wahl des Stoffs, des
+            Motivs, der gewählten Variante und Extras.
+          </span>
+        </div>
+      }
+    </div>
+    <div class="details">
+      <app-price-tag class="price">{{ pattern.getFormattedPriceRange() }}</app-price-tag>
+
+      @if (pattern.description | ifSome; as description) {
+        <div class="description">
+          <quill-view [content]="description" format="json" theme="bubble" style="display: block"> </quill-view>
+        </div>
+      }
+      @if (pattern.variants.length > 1) {
+        <h2>Varianten</h2>
+
+        <app-accordion>
+          @for (variant of pattern.variants; track variant.name) {
+            <app-accordion-item [label]="variant.name">
+              <ng-container *ngTemplateOutlet="priceTable; context: { $implicit: variant }"></ng-container>
+            </app-accordion-item>
+          }
+        </app-accordion>
+      } @else {
+        <ng-container *ngTemplateOutlet="priceTable; context: { $implicit: pattern.variants[0] }"></ng-container>
+      }
+      @if (pattern.extras.length > 0) {
+        <h2>Extras</h2>
+
+        <p>
+          @for (extra of pattern.extras; track extra) {
+            {{ extra.price.isPositive() ? "+" : "" }}{{ extra.price.formatted() }} {{ extra.name }}<br />
+          }
+        </p>
+      }
+
+      <hr />
+
+      <p class="other-details">
+        <strong>Hersteller</strong>: Jenny Michel, Weststr. 23 &#189;, 84416 Taufkirchen (Vils),
+        <a href="mailto:info@kicherkrabbe.com">info&commat;kicherkrabbe.com</a><br />
+        <strong>Schnitt-Nr</strong>: &raquo;{{ pattern.number }}&laquo;
+        @if (pattern.attribution.hasSome()) {
+          <br />
+          Basierend auf dem Schnittmuster
+          <span *ngIf="pattern.attribution.originalPatternName.isSome()">
+            &raquo;{{ pattern.attribution.originalPatternName.orElse("") }}&laquo;
+          </span>
+          von &raquo;{{ pattern.attribution.designer.orElse("") }}&laquo;.
+        }
+      </p>
+    </div>
+  </div>
+}
+
+<ng-template #priceTable let-variant>
+  <table class="price-table">
+    <thead>
+      <tr>
+        <th>Größe</th>
+        <th>Preis</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (sizeRange of variant.sizes; track sizeRange) {
+        <tr>
+          <td>{{ sizeRange.formatted() }}</td>
+          <td>{{ sizeRange.price.formatted() }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</ng-template>

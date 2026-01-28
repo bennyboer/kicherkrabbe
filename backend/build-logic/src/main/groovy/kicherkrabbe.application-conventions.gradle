@@ -1,0 +1,12 @@
+plugins {
+    id 'kicherkrabbe.java-conventions'
+}
+
+tasks.named('bootJar') {
+    enabled = true
+    archiveFileName = 'app.jar'
+}
+
+tasks.named('jar') {
+    enabled = false
+}

@@ -1,0 +1,9 @@
+plugins {
+    id 'kicherkrabbe.feature-conventions'
+}
+
+dependencies {
+    api project(':features:assets:assets-core')
+
+    implementation 'org.springframework:spring-web'
+}

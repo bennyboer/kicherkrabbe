@@ -1,0 +1,51 @@
+<div class="action-bar">
+  <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)" />
+  <app-dropdown
+    #groupDropdown
+    label="Gruppe"
+    [items]="groupDropdownItems$ | async"
+    [showSelectionIndicator]="true"
+    (selectionChanged)="updateSelectedGroup(groupDropdown, $event)">
+    <ng-template let-item>
+      <span>{{ item.label }}</span>
+    </ng-template>
+
+    <div header class="dropdown-header">
+      <app-button-column [rounded]="false">
+        <app-button (click)="clearGroupSelection(groupDropdown)">Zurücksetzen</app-button>
+      </app-button-column>
+    </div>
+  </app-dropdown>
+  <app-button routerLink="create">
+    <span class="icon-button">
+      <span class="material-icons">add</span>
+      <span> Neue Kategorie </span>
+    </span>
+  </app-button>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (notLoading$ | async) {
+  @if (categories$ | async; as categories) {
+    @if (categories.length === 0) {
+      <app-note level="info">Es konnten keine Kategorien gefunden werden.</app-note>
+    } @else {
+      <ul class="categories-list">
+        @for (category of categories; track category.id) {
+          <li [routerLink]="category.id">
+            <span class="details">
+              <span class="name">
+                {{ category.name }} <span class="group-badge">{{ category.group.name }}</span>
+              </span>
+              <span class="created-at">
+                Erstellt am {{ category.createdAt | date: "dd.MM.yyyy" }} um
+                {{ category.createdAt | date: "HH:mm" }} Uhr
+              </span>
+            </span>
+          </li>
+        }
+      </ul>
+    }
+  }
+}

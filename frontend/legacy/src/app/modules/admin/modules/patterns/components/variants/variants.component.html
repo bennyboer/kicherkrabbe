@@ -1,0 +1,116 @@
+@if (variants$ | async; as variants) {
+  @if (variants.length > 0) {
+    <table class="variants-table">
+      <thead>
+        <tr>
+          <th class="col-toggle"></th>
+          <th class="col-drag-indicator"></th>
+          <th class="col-name">Name</th>
+          <th class="col-size">Größen</th>
+          <th class="col-price">Preis</th>
+          <th class="col-actions"></th>
+        </tr>
+      </thead>
+      <tbody [nxtSortablejs]="variants" [config]="sortableConfig">
+        @for (variant of variants; track variant.variant.id) {
+          @if (variant.editing) {
+            <tr class="item">
+              <td class="col-toggle">
+                <span class="toggle-button" [class.expanded]="variant.expanded" (click)="toggle(variant)">
+                  <span class="material-icons">keyboard_arrow_down</span>
+                </span>
+              </td>
+              <td class="col-drag-indicator">
+                <span class="drag-indicator drag-handle">
+                  <span class="material-icons">drag_indicator</span>
+                </span>
+              </td>
+              <td class="col-name">
+                <input
+                  #nameInput
+                  type="text"
+                  [value]="variant.variant.name"
+                  (keydown.enter)="save(variant, nameInput.value)" />
+              </td>
+              <td class="col-size">
+                {{ variant.variant.getFormattedSizeRange() }}
+              </td>
+              <td class="col-price">
+                {{ variant.variant.getFormattedPriceRange() }}
+              </td>
+              <td class="col-actions">
+                <span class="row-actions">
+                  <app-button [size]="ButtonSize.SMALL" color="primary" (click)="save(variant, nameInput.value)">
+                    <span class="material-icons">check</span>
+                  </app-button>
+                  <app-button [size]="ButtonSize.SMALL" color="warn" (click)="cancel(variant)">
+                    <span class="material-icons">close</span>
+                  </app-button>
+                </span>
+              </td>
+            </tr>
+
+            @if (variant.expanded) {
+              <tr class="row-details">
+                <td [colSpan]="getVisibleColumnCount()">
+                  <app-sizes [sizes]="variant.variant.sizes" (changed)="onVariantSizesChanged(variant, $event)">
+                  </app-sizes>
+                </td>
+              </tr>
+            }
+          } @else {
+            <tr class="item">
+              <td class="col-toggle">
+                <span class="toggle-button" [class.expanded]="variant.expanded" (click)="toggle(variant)">
+                  <span class="material-icons">keyboard_arrow_down</span>
+                </span>
+              </td>
+              <td class="col-drag-indicator">
+                <span class="drag-indicator drag-handle">
+                  <span class="material-icons">drag_indicator</span>
+                </span>
+              </td>
+              <td class="col-name">
+                {{ variant.variant.name }}
+              </td>
+              <td class="col-size">
+                {{ variant.variant.getFormattedSizeRange() }}
+              </td>
+              <td class="col-price">
+                {{ variant.variant.getFormattedPriceRange() }}
+              </td>
+              <td class="col-actions">
+                <span class="row-actions">
+                  <app-button [size]="ButtonSize.SMALL" (click)="edit(variant)">
+                    <span class="material-icons">edit</span>
+                  </app-button>
+                  <app-button [size]="ButtonSize.SMALL" color="warn" (click)="delete(variant)">
+                    <span class="material-icons">delete</span>
+                  </app-button>
+                </span>
+              </td>
+            </tr>
+
+            @if (variant.expanded) {
+              <tr class="row-details">
+                <td [colSpan]="getVisibleColumnCount()">
+                  <app-sizes [sizes]="variant.variant.sizes" (changed)="onVariantSizesChanged(variant, $event)">
+                  </app-sizes>
+                </td>
+              </tr>
+            }
+          }
+        }
+      </tbody>
+    </table>
+  }
+}
+
+<div class="variants-actions">
+  <app-button (click)="add()">
+    <span class="icon-button">
+      <span class="material-icons">add</span>
+      <span>Variante hinzufügen</span>
+    </span>
+  </app-button>
+</div>

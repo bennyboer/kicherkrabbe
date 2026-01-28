@@ -1,0 +1,65 @@
+<div class="action-bar">
+  <input #search type="text" placeholder="Suchen..." (input)="updateSearch(search.value)" />
+  <app-dropdown
+    #categoriesDropdown
+    label="Kategorien"
+    [items]="categoriesDropdownItems$ | async"
+    [showSelectionIndicator]="true"
+    [multiple]="true"
+    (selectionChanged)="updateSelectedCategories($event)">
+    <ng-template let-item>
+      <span>{{ item.label }}</span>
+    </ng-template>
+
+    <div header class="dropdown-header">
+      <app-button-column [rounded]="false">
+        <app-button (click)="clearSelectedCategories(categoriesDropdown)">Zurücksetzen</app-button>
+      </app-button-column>
+    </div>
+    <div footer class="dropdown-footer">
+      <app-button-column [rounded]="false">
+        <app-button (click)="categoriesDropdown.toggleOpened()">Fertig</app-button>
+      </app-button-column>
+    </div>
+  </app-dropdown>
+  <app-button routerLink="create">
+    <span class="icon-button">
+      <span class="material-icons">add</span>
+      <span> Neuer Schnitt </span>
+    </span>
+  </app-button>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (notLoading$ | async) {
+  @if (patterns$ | async; as patterns) {
+    @if (patterns.length === 0) {
+      <app-note level="info">Es konnten keine Schnittmuster gefunden werden.</app-note>
+    } @else {
+      <ul class="patterns-list">
+        @for (pattern of patterns; track pattern.id) {
+          <li [routerLink]="pattern.id">
+            <span class="details">
+              <span class="name">
+                {{ pattern.name }}
+                @for (category of pattern.categories; track category) {
+                  <span class="category-badge">{{ getCategoryLabel(category) | async }}</span>
+                }
+              </span>
+              <span class="description">
+                <span class="created-at">
+                  Erstellt am {{ pattern.createdAt | date: "dd.MM.yyyy" }} um
+                  {{ pattern.createdAt | date: "HH:mm" }} Uhr
+                </span>
+                @if (!pattern.published) {
+                  <span class="material-icons" title="Nicht veröffentlicht"> visibility_off </span>
+                }
+              </span>
+            </span>
+          </li>
+        }
+      </ul>
+    }
+  }
+}

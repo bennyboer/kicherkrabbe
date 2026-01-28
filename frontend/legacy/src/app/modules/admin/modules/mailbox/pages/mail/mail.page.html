@@ -1,0 +1,78 @@
+<div class="action-bar">
+  <app-button routerLink="..">
+    <span class="icon-button">
+      <span class="material-icons">chevron_left</span>
+      <span> Zurück </span>
+    </span>
+  </app-button>
+  @if (mailLoaded$ | async) {
+    @if (mail$ | async | ifSome; as mail) {
+      @if (mail.isRead()) {
+        <app-button [disabled]="cannotMarkAsUnread$ | async" (click)="markAsUnread(mail)">
+          <span class="icon-button">
+            <span class="material-icons">mark_email_unread</span>
+            <span> Als ungelesen markieren </span>
+          </span>
+        </app-button>
+      } @else {
+        <app-button [disabled]="cannotMarkAsRead$ | async" (click)="markAsRead(mail)">
+          <span class="icon-button">
+            <span class="material-icons">mark_email_read</span>
+            <span> Als gelesen markieren </span>
+          </span>
+        </app-button>
+      }
+
+      <app-button routerLink="delete" color="warn">
+        <span class="icon-button">
+          <span class="material-icons">delete</span>
+          <span> Löschen </span>
+        </span>
+      </app-button>
+    }
+  }
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (mailLoaded$ | async) {
+  @if (mail$ | async | ifSome; as mail) {
+    <div class="mail-headers">
+      <div class="mail-content-header sender">
+        <label>Absender</label>
+        <span class="sender-container">
+          <span class="name"> {{ mail.sender.name }} </span>
+          <span class="mail"> {{ mail.sender.mail }} </span>
+          <span class="phone"> {{ mail.sender.phone.orElse("-") }} </span>
+        </span>
+      </div>
+
+      <div class="mail-content-header origin">
+        <label>Herkunft</label>
+        <span>{{ mail.origin.type.label }}</span>
+      </div>
+
+      <div class="mail-content-header received-at">
+        <label>Empfangen</label>
+        <span>{{ mail.receivedAt | date: "medium" }}</span>
+      </div>
+
+      <hr />
+
+      <div class="mail-content-header subject">
+        <label>Betreff</label>
+        <span>{{ mail.subject }}</span>
+      </div>
+
+      <div class="mail-content-header content">
+        <label>Nachricht</label>
+        <quill-view [content]="mail.content" format="json" theme="bubble" style="display: block"> </quill-view>
+      </div>
+    </div>
+  } @else {
+    <div class="mail-not-found">
+      <span class="material-icons">mail</span>
+      <span> Diese E-Mail konnte nicht gefunden werden. </span>
+    </div>
+  }
+}

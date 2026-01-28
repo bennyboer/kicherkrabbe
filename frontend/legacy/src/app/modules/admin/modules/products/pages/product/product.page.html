@@ -1,0 +1,195 @@
+<div class="action-bar">
+  <app-button routerLink="..">
+    <span class="icon-button">
+      <span class="material-icons">chevron_left</span>
+      <span>Zurück</span>
+    </span>
+  </app-button>
+
+  <app-button routerLink="delete" color="warn">
+    <span class="icon-button">
+      <span class="material-icons">delete</span>
+      <span>Löschen</span>
+    </span>
+  </app-button>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (productLoaded$ | async) {
+  @if (product$ | async | ifSome; as product) {
+    <div class="product-details">
+      <div class="product-detail">
+        <label>
+          Bilder
+          <app-button [size]="ButtonSize.SMALL" (click)="editImages(product)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="product-images">
+          @if (images$ | async; as images) {
+            @if (images.length > 0) {
+              <app-image-slider [images]="images" [theme]="theme$ | async"> </app-image-slider>
+            } @else {
+              <span class="image-placeholder">
+                <span class="material-icons">image</span>
+              </span>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="product-detail">
+        <label>Produkt-Nr.</label>
+        <span class="product-number">{{ product.number }}</span>
+      </div>
+
+      <div class="product-detail">
+        <label>
+          Links
+          <app-button [size]="ButtonSize.SMALL" (click)="addLink(product)">
+            <span class="icon-button">
+              <span class="material-icons">add</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="product-links">
+          @if (product.links.length > 0) {
+            <ul class="product-links-list">
+              @for (link of product.links; track link.type.internal) {
+                <li>
+                  <a [routerLink]="link.toHref()">
+                    <span>
+                      <strong>{{ link.type.label }}</strong
+                      >: {{ link.name }}
+                    </span>
+                    <span class="actions">
+                      <app-button color="warn" [size]="ButtonSize.SMALL" (click)="removeLink($event, product, link)">
+                        <span class="icon-button">
+                          <span class="material-icons">delete</span>
+                        </span>
+                      </app-button>
+                    </span>
+                  </a>
+                </li>
+              }
+            </ul>
+          } @else {
+            <app-note>Keine Links vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="product-detail">
+        <label>
+          Stoffzusammensetzung
+          <app-button [size]="ButtonSize.SMALL" (click)="editFabricComposition(product)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="fabric-composition">
+          <table class="fabric-composition-table">
+            <thead>
+              <tr>
+                <th class="fabric-type">Stoffart</th>
+                <th class="percentage">Anteil</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of product.fabricComposition.getSortedByPercentage(); track item.fabricType.internal) {
+                <tr>
+                  <td class="fabric-type">{{ item.fabricType.label }}</td>
+                  <td class="percentage">{{ item.percentage / 100 }}%</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="product-detail">
+        <label>
+          Inhaltsangaben
+          <app-button [size]="ButtonSize.SMALL" (click)="editContainsNote(product)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="product-contains">
+          @if (product.notes.contains.length > 0) {
+            <quill-view [content]="product.notes.contains" format="json" theme="bubble" style="display: block">
+            </quill-view>
+          } @else {
+            <app-note>Keine Inhaltsangaben vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="product-detail">
+        <label>
+          Pflegehinweise
+          <app-button [size]="ButtonSize.SMALL" (click)="editCareNote(product)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="product-care">
+          @if (product.notes.care.length > 0) {
+            <quill-view [content]="product.notes.care" format="json" theme="bubble" style="display: block">
+            </quill-view>
+          } @else {
+            <app-note>Keine Pflegehinweise vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="product-detail">
+        <label>
+          Sicherheitshinweise
+          <app-button [size]="ButtonSize.SMALL" (click)="editSafetyNote(product)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="product-safety">
+          @if (product.notes.safety.length > 0) {
+            <quill-view [content]="product.notes.safety" format="json" theme="bubble" style="display: block">
+            </quill-view>
+          } @else {
+            <app-note>Keine Sicherheitshinweise vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="product-detail">
+        <label>
+          Produziert am
+          <app-button [size]="ButtonSize.SMALL" (click)="editProducedAtDate(product)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <span class="product-produced-at"
+          >{{ product.producedAt | date: "dd.MM.yyyy" }} um {{ product.producedAt | date: "HH:mm" }}</span
+        >
+      </div>
+
+      <div class="product-detail">
+        <label>Erstellt am</label>
+        <span class="product-created-at"
+          >{{ product.createdAt | date: "dd.MM.yyyy" }} um {{ product.createdAt | date: "HH:mm" }}</span
+        >
+      </div>
+    </div>
+  } @else {
+    <app-note level="warn"> Dieses Produkt konnte nicht gefunden werden. </app-note>
+  }
+}

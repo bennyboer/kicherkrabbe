@@ -1,0 +1,32 @@
+<div class="content">
+  @if (imageIds$ | async; as imageIds) {
+    @if (imageIds.length > 0) {
+      <ul class="image-list" [nxtSortablejs]="imageIds" [config]="imagesSortableConfig">
+        @for (imageId of imageIds; track imageId) {
+          <li class="drag-handle">
+            <img [src]="getImageUrl(imageId)" width="100%" />
+            <span class="delete-button material-icons" (click)="deleteImage(imageId)">close</span>
+          </li>
+        }
+      </ul>
+    }
+  }
+  @if (imageUploadActive$ | async) {
+    <app-image-upload [multiple]="true" [desiredWidth]="1024" [watermark]="false" (uploaded)="onImagesUploaded($event)">
+    </app-image-upload>
+  } @else {
+    <div class="add-image-button-container">
+      <app-button (click)="activateImageUpload()">
+        <span class="icon-button">
+          <span class="material-icons">add</span>
+          <span>Bilder hinzufügen</span>
+        </span>
+      </app-button>
+    </div>
+  }
+</div>
+
+<div class="footer">
+  <app-button (click)="cancel()">Abbrechen</app-button>
+  <app-button color="primary" [disabled]="cannotSave$ | async" (click)="save()">Speichern</app-button>
+</div>

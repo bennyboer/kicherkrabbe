@@ -1,0 +1,124 @@
+<div class="filter-area">
+  <app-mobile-switch>
+    <div desktop>
+      <app-button-row #filterButtonRow [rounded]="false">
+        <ng-container [ngTemplateOutlet]="filterDropdowns" [ngTemplateOutletInjector]="filterButtonRow.getInjector()">
+        </ng-container>
+      </app-button-row>
+    </div>
+    <div mobile>
+      <app-button-column #filterButtonColumn [rounded]="false">
+        <ng-container
+          [ngTemplateOutlet]="filterDropdowns"
+          [ngTemplateOutletInjector]="filterButtonColumn.getInjector()">
+        </ng-container>
+      </app-button-column>
+    </div>
+  </app-mobile-switch>
+</div>
+
+<div class="sort-area">
+  <app-mobile-switch>
+    <div desktop>
+      <app-button-row #sortButtonRow [rounded]="false">
+        <ng-container [ngTemplateOutlet]="sortDropdowns" [ngTemplateOutletInjector]="sortButtonRow.getInjector()">
+        </ng-container>
+      </app-button-row>
+    </div>
+    <div mobile>
+      <app-button-column #sortButtonColumn [rounded]="false">
+        <ng-container [ngTemplateOutlet]="sortDropdowns" [ngTemplateOutletInjector]="sortButtonColumn.getInjector()">
+        </ng-container>
+      </app-button-column>
+    </div>
+  </app-mobile-switch>
+</div>
+
+<ng-template #filterDropdowns>
+  @if (getFilters() | async; as filters) {
+    @for (filter of filters; track filter.id) {
+      <app-dropdown
+        #dropdown
+        [label]="filter.label"
+        [items]="filterToDropdownItems(filter.items)"
+        [multiple]="filter.canSelectMultiple()"
+        [showSelectionIndicator]="true"
+        [useRadioButtonForSingleSelection]="true"
+        (selectionChanged)="updateFilterDropdownItemsSelection(filter, $event)">
+        <ng-template let-item>
+          @if (filter.itemTemplateRef.isSome()) {
+            <ng-container
+              [ngTemplateOutlet]="filter.itemTemplateRef.unwrap()"
+              [ngTemplateOutletContext]="{ $implicit: item }">
+            </ng-container>
+          } @else {
+            <span>{{ item.label }}</span>
+          }
+        </ng-template>
+
+        <div header class="dropdown-header">
+          <app-button-column [rounded]="false">
+            <app-button (click)="dropdown.clearSelection()">Zurücksetzen</app-button>
+            @if (filter.canSelectMultiple()) {
+              <app-button (click)="dropdown.selectAll()">Alle auswählen</app-button>
+            }
+          </app-button-column>
+        </div>
+
+        <div footer class="dropdown-footer">
+          <app-button-column [rounded]="false">
+            <app-button (click)="dropdown.toggleOpened()">Fertig</app-button>
+          </app-button-column>
+        </div>
+      </app-dropdown>
+    }
+  }
+</ng-template>
+
+<ng-template #sortDropdowns>
+  @if (getSortingOptions() | async; as sortingOptions) {
+    @if (getSelectedSortingOption() | async; as selectedSortingOption) {
+      @if (sortingOptions.length > 1) {
+        <app-dropdown
+          #dropdown
+          label="Sortieren nach..."
+          [items]="sortingOptionsToDropdownItems(sortingOptions)"
+          [selected]="[selectedSortingOption]"
+          [showSelectionIndicator]="true"
+          [useRadioButtonForSingleSelection]="true"
+          (selectionChanged)="updateSortingOptionDropdownItemSelection($event)">
+          <ng-template let-item>
+            <span>{{ item.label }}</span>
+          </ng-template>
+
+          <div footer class="dropdown-footer">
+            <app-button-column [rounded]="false">
+              <app-button (click)="dropdown.toggleOpened()">Fertig</app-button>
+            </app-button-column>
+          </div>
+        </app-dropdown>
+      }
+
+      @if (getSortingOption(selectedSortingOption) | async; as sortingOption) {
+        <app-dropdown
+          #dropdown
+          label="Richtung"
+          [items]="sortDirectionToDropdownItems(sortingOption)"
+          [selected]="['ascending']"
+          [showSelectionIndicator]="true"
+          [useRadioButtonForSingleSelection]="true"
+          (selectionChanged)="updateSortDirectionDropdownItemSelection($event)">
+          <ng-template let-item>
+            <span>{{ item.label }}</span>
+          </ng-template>
+
+          <div footer class="dropdown-footer">
+            <app-button-column [rounded]="false">
+              <app-button (click)="dropdown.toggleOpened()">Fertig</app-button>
+            </app-button-column>
+          </div>
+        </app-dropdown>
+      }
+    }
+  }
+</ng-template>

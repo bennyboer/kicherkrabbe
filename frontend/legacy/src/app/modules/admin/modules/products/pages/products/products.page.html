@@ -1,0 +1,77 @@
+<div class="action-bar">
+  <div class="left-actions">
+    <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)" />
+    <div class="from-selector date-selector">
+      <label for="from">Von</label>
+      <input #from type="date" id="from" (input)="updateFrom(from.valueAsDate)" />
+    </div>
+    <div class="to-selector date-selector">
+      <label for="to">Bis</label>
+      <input #to type="date" id="to" (input)="updateTo(to.valueAsDate)" />
+    </div>
+  </div>
+  <div class="right-actions">
+    <app-button routerLink="create">
+      <span class="icon-button">
+        <span class="material-icons">add</span>
+        <span>Neues Produkt</span>
+      </span>
+    </app-button>
+  </div>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (productsLoaded$ | async) {
+  @if (products$ | async; as products) {
+    @if (products.length === 0) {
+      <app-note level="info">Keine Produkte vorhanden.</app-note>
+    } @else {
+      <table class="products-table">
+        <colgroup>
+          <col class="image" span="1" style="width: 96px" />
+          <col class="number" span="1" style="width: auto" />
+          <col class="produced-at-date" span="1" style="width: 140px" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="image"></th>
+            <th class="number">Produkt-Nr.</th>
+            <th class="produced-at-date">Datum</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of products; track product.id) {
+            <a class="table-row" [routerLink]="product.id">
+              <td class="image">
+                @if (product.images.length > 0) {
+                  <img [src]="getImageUrl(product.images[0])" width="64" height="64" />
+                } @else {
+                  <span class="image-placeholder">
+                    <span class="material-icons">image</span>
+                  </span>
+                }
+              </td>
+              <td class="number">
+                {{ product.number }}
+              </td>
+              <td class="produced-at-date" [title]="product.producedAt | date: 'full'">
+                {{ product.producedAt | date: "short" }}
+              </td>
+            </a>
+          }
+        </tbody>
+      </table>
+
+      @if (moreProductsAvailable$ | async) {
+        <div class="footer-actions">
+          <app-button (click)="loadMoreProducts()"> Mehr laden... ({{ remainingProductsCount$ | async }}) </app-button>
+        </div>
+      } @else {
+        <div class="footer-actions">
+          <app-note level="info">Keine weiteren Produkte vorhanden.</app-note>
+        </div>
+      }
+    }
+  }
+}

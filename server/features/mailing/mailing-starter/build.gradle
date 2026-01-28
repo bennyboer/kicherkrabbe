@@ -1,5 +1,0 @@
-dependencies {
-    api project(':features:mailing:mailing-core')
-
-    implementation 'com.mailgun:mailgun-java:1.1.3'
-}

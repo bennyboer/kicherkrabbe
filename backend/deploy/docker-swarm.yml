@@ -1,0 +1,158 @@
+services:
+  traefik:
+    image: traefik:v3.6
+    command:
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certificates:/letsencrypt
+    networks:
+      - traefik-public
+      - internal
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+        - "traefik.http.routers.dashboard.service=api@internal"
+        - "traefik.http.routers.dashboard.entrypoints=websecure"
+        - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.dashboard.middlewares=dashboard-auth"
+        - "traefik.http.middlewares.dashboard-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
+        - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
+
+  mongo:
+    image: mongo:8.2
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    networks:
+      - internal
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+    command: ["mongod", "--port", "27017", "--bind_ip", "0.0.0.0", "--replSet", "rs0", "--auth", "--keyFile", "/data/configdb/mongo-keyfile"]
+    configs:
+      - source: mongo-keyfile
+        target: /data/configdb/mongo-keyfile
+        mode: 0400
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  mongo-init:
+    image: mongo:8.2
+    networks:
+      - internal
+    environment:
+      - MONGO_ROOT_USERNAME=${MONGO_ROOT_USERNAME:-admin}
+      - MONGO_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_APP_USERNAME=${MONGO_APP_USERNAME:-kicherkrabbe}
+      - MONGO_APP_PASSWORD=${MONGO_APP_PASSWORD}
+    entrypoint: >
+      bash -c '
+        sleep 10
+        echo "Initializing replica set..."
+        mongosh --host mongo:27017 -u $$MONGO_ROOT_USERNAME -p $$MONGO_ROOT_PASSWORD --authenticationDatabase admin --eval "
+          try {
+            rs.status()
+          } catch (err) {
+            rs.initiate({_id: \"rs0\", members: [{_id: 0, host: \"mongo:27017\"}]})
+          }
+        "
+        echo "Creating application user..."
+        mongosh --host mongo:27017 -u $$MONGO_ROOT_USERNAME -p $$MONGO_ROOT_PASSWORD --authenticationDatabase admin --eval "
+          db = db.getSiblingDB(\"kicherkrabbe\")
+          if (db.getUser(\"$$MONGO_APP_USERNAME\") == null) {
+            db.createUser({
+              user: \"$$MONGO_APP_USERNAME\",
+              pwd: \"$$MONGO_APP_PASSWORD\",
+              roles: [{role: \"readWrite\", db: \"kicherkrabbe\"}]
+            })
+          }
+        "
+        echo "MongoDB initialization complete!"
+      '
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+
+  rabbitmq:
+    image: rabbitmq:4.2-management
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - internal
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-kicherkrabbe}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.${DOMAIN}`)"
+        - "traefik.http.routers.rabbitmq.entrypoints=websecure"
+        - "traefik.http.routers.rabbitmq.tls.certresolver=letsencrypt"
+        - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+
+  app:
+    image: ${APP_IMAGE:-kicherkrabbe-server:latest}
+    networks:
+      - internal
+      - traefik-public
+    environment:
+      - SPRING_MONGODB_URI=mongodb://${MONGO_APP_USERNAME:-kicherkrabbe}:${MONGO_APP_PASSWORD}@mongo:27017/kicherkrabbe?replicaSet=rs0&authSource=kicherkrabbe
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_USER:-kicherkrabbe}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+      - KICHERKRABBE_KEY_PAIR=/run/secrets/jwt-keypair
+    secrets:
+      - jwt-keypair
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.app.rule=Host(`${DOMAIN}`)"
+        - "traefik.http.routers.app.entrypoints=websecure"
+        - "traefik.http.routers.app.tls.certresolver=letsencrypt"
+        - "traefik.http.services.app.loadbalancer.server.port=8080"
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+    depends_on:
+      - mongo
+      - rabbitmq
+
+networks:
+  traefik-public:
+    driver: overlay
+    attachable: true
+  internal:
+    driver: overlay
+    internal: true
+
+volumes:
+  traefik-certificates:
+  mongo-data:
+  mongo-config:
+  rabbitmq-data:
+
+configs:
+  mongo-keyfile:
+    external: true
+
+secrets:
+  jwt-keypair:
+    external: true

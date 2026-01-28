@@ -1,0 +1,7 @@
+plugins {
+    id 'kicherkrabbe.library-conventions'
+}
+
+dependencies {
+    api project(':libs:auth:auth-core')
+}

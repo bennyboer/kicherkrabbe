@@ -1,5 +1,0 @@
-dependencies {
-    implementation project(':features:assets:assets-starter')
-
-    testImplementation 'org.springframework:spring-web'
-}

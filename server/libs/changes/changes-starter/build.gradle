@@ -1,6 +1,0 @@
-dependencies {
-    api project(':libs:changes:changes-core')
-
-    implementation project(':libs:eventsourcing:eventsourcing-starter')
-    implementation project(':libs:permissions:permissions-starter')
-}

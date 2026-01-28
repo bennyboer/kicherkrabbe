@@ -1,6 +1,0 @@
-dependencies {
-    api project(':libs:eventsourcing:eventsourcing-core')
-    api project(':libs:messaging:messaging-starter')
-
-    implementation project(':libs:persistence:persistence-starter')
-}
