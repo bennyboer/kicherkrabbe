@@ -135,21 +135,42 @@ jobs:
     name: Deploy customer frontend
     needs: build-customer
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Download built customer frontend files
         uses: actions/download-artifact@v4
         with:
           name: customer
           path: frontend/customer/dist
-      - name: Deploy customer frontend via SSH
-        uses: easingthemes/ssh-deploy@main
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SOURCE: "frontend/customer/dist/sassycrab"
-          ARGS: "-rlgoDzvc -i --delete"
-          REMOTE_HOST: ${{ secrets.SSH_REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.SSH_REMOTE_USER }}
-          REMOTE_PORT: ${{ secrets.SSH_REMOTE_PORT }}
-          TARGET: ${{ secrets.SSH_REMOTE_TARGET }}
-          SCRIPT_AFTER: |
-            /root/.nvm/versions/node/v22.20.0/bin/npx pm2 reload Sassycrab
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: frontend/customer
+          push: true
+          tags: |
+            ghcr.io/bennyboer/kicherkrabbe-customer:latest
+            ghcr.io/bennyboer/kicherkrabbe-customer:${{ github.sha }}
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_REMOTE_HOST }}
+          username: ${{ secrets.SSH_REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_REMOTE_PORT }}
+          script: |
+            cd /opt/kicherkrabbe
+            docker pull ghcr.io/bennyboer/kicherkrabbe-customer:latest
+            set -a && source .env && set +a
+            docker stack deploy -c docker-swarm.yml kicherkrabbe

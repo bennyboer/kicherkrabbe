@@ -9,6 +9,7 @@ The deployment consists of:
 - **MongoDB**: Database with replica set (required for transactions)
 - **RabbitMQ**: Message broker for event-driven communication
 - **App**: The Kicherkrabbe server application
+- **Customer**: The customer-facing Angular SSR frontend
 
 ## Prerequisites
 
@@ -81,21 +82,18 @@ Generate strong passwords:
 openssl rand -base64 32
 ```
 
-### 5. Create Docker Configs
+### 5. Create Docker Secrets
 
 **MongoDB Keyfile** (required for replica set authentication):
 ```bash
 openssl rand -base64 756 > mongo-keyfile
-docker config create mongo-keyfile mongo-keyfile
+docker secret create mongo-keyfile mongo-keyfile
 rm mongo-keyfile
 ```
 
 **JWT Keypair** (for authentication tokens):
 ```bash
-# Generate new keypair (never reuse development keys in production!)
 openssl ecparam -genkey -name secp521r1 -noout -out key_pair.pem
-
-# Create Docker secret
 docker secret create jwt-keypair key_pair.pem
 rm key_pair.pem
 ```
@@ -142,6 +140,7 @@ docker service ls
 
 # Check service logs
 docker service logs kicherkrabbe_app
+docker service logs kicherkrabbe_customer
 docker service logs kicherkrabbe_mongo
 docker service logs kicherkrabbe_rabbitmq
 docker service logs kicherkrabbe_traefik
@@ -157,6 +156,7 @@ After deployment, the following URLs will be available (replace with your domain
 | Service | URL |
 |---------|-----|
 | Application | `https://kicherkrabbe.example.com` |
+| Customer Frontend | `https://customer.kicherkrabbe.example.com` |
 | Traefik Dashboard | `https://traefik.kicherkrabbe.example.com/dashboard/` |
 | RabbitMQ Management | `https://rabbitmq.kicherkrabbe.example.com` |
 
@@ -164,6 +164,8 @@ After deployment, the following URLs will be available (replace with your domain
 
 Create DNS A records pointing to your server:
 - `kicherkrabbe.example.com` → `<your-server-ip>`
+- `www.kicherkrabbe.example.com` → `<your-server-ip>` (redirects to non-www)
+- `customer.kicherkrabbe.example.com` → `<your-server-ip>`
 - `traefik.kicherkrabbe.example.com` → `<your-server-ip>`
 - `rabbitmq.kicherkrabbe.example.com` → `<your-server-ip>`
 
@@ -325,6 +327,7 @@ The application has CORS configured for `https://www.kicherkrabbe.com` in produc
    docker pull mongo:8.2
    docker pull rabbitmq:4.2-management
    docker pull eclipse-temurin:25-jre-alpine
+   docker pull node:22-alpine
    ```
 
 5. **Backup**: Implement automated backups (see Backup section below).
@@ -400,9 +403,8 @@ docker stack rm kicherkrabbe
 # Remove volumes (WARNING: deletes all data!)
 docker volume rm kicherkrabbe_mongo-data kicherkrabbe_mongo-config kicherkrabbe_rabbitmq-data kicherkrabbe_traefik-certificates
 
-# Remove configs and secrets
-docker config rm mongo-keyfile
-docker secret rm jwt-keypair
+# Remove secrets
+docker secret rm mongo-keyfile jwt-keypair
 
 # Leave swarm (if no longer needed)
 docker swarm leave --force

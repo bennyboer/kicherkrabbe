@@ -37,10 +37,9 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME:-admin}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
-    command: ["mongod", "--port", "27017", "--bind_ip", "0.0.0.0", "--replSet", "rs0", "--auth", "--keyFile", "/data/configdb/mongo-keyfile"]
-    configs:
+    command: ["mongod", "--port", "27017", "--bind_ip", "0.0.0.0", "--replSet", "rs0", "--auth", "--keyFile", "/run/secrets/mongo-keyfile"]
+    secrets:
       - source: mongo-keyfile
-        target: /data/configdb/mongo-keyfile
         uid: '999'
         gid: '999'
         mode: 0400
@@ -144,6 +143,27 @@ services:
       - mongo
       - rabbitmq
 
+  customer:
+    image: ${CUSTOMER_IMAGE:-ghcr.io/bennyboer/kicherkrabbe-customer:latest}
+    networks:
+      - traefik-public
+    environment:
+      - PORT=4000
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.customer.rule=Host(`customer.${DOMAIN}`)"
+        - "traefik.http.routers.customer.entrypoints=websecure"
+        - "traefik.http.routers.customer.tls.certresolver=letsencrypt"
+        - "traefik.http.services.customer.loadbalancer.server.port=4000"
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+
 networks:
   traefik-public:
     driver: overlay
@@ -158,10 +178,8 @@ volumes:
   mongo-config:
   rabbitmq-data:
 
-configs:
+secrets:
   mongo-keyfile:
     external: true
-
-secrets:
   jwt-keypair:
     external: true
