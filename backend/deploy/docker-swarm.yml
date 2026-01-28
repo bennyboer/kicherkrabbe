@@ -68,7 +68,7 @@ services:
             rs.initiate({_id: \"rs0\", members: [{_id: 0, host: \"mongo:27017\"}]})
           }
         "
-        echo "Creating application user..."
+        echo "Creating/updating application user..."
         mongosh --host mongo:27017 -u $$MONGO_ROOT_USERNAME -p $$MONGO_ROOT_PASSWORD --authenticationDatabase admin --eval "
           db = db.getSiblingDB(\"kicherkrabbe\")
           if (db.getUser(\"$$MONGO_APP_USERNAME\") == null) {
@@ -77,6 +77,8 @@ services:
               pwd: \"$$MONGO_APP_PASSWORD\",
               roles: [{role: \"readWrite\", db: \"kicherkrabbe\"}]
             })
+          } else {
+            db.changeUserPassword(\"$$MONGO_APP_USERNAME\", \"$$MONGO_APP_PASSWORD\")
           }
         "
         echo "MongoDB initialization complete!"
@@ -109,6 +111,8 @@ services:
     networks:
       - internal
       - traefik-public
+    volumes:
+      - ${ASSETS_PATH:-/home/kicherkrabbe/.kicherkrabbe-assets}:/app/.kicherkrabbe-assets
     environment:
       - SPRING_MONGODB_URI=mongodb://${MONGO_APP_USERNAME:-kicherkrabbe}:${MONGO_APP_PASSWORD}@mongo:27017/kicherkrabbe?replicaSet=rs0&authSource=kicherkrabbe
       - SPRING_RABBITMQ_HOST=rabbitmq
@@ -116,6 +120,7 @@ services:
       - SPRING_RABBITMQ_USERNAME=${RABBITMQ_USER:-kicherkrabbe}
       - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
       - KICHERKRABBE_KEY_PAIR=/run/secrets/jwt-keypair
+      - ASSETS_STORAGE_FILE_ROOT_LOCATION=/app/.kicherkrabbe-assets
     secrets:
       - jwt-keypair
     deploy:
