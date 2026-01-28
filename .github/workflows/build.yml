@@ -87,8 +87,8 @@ jobs:
           name: backend
           path: backend/apps/api/build/libs
 
-  deploy-backend:
-    name: Deploy backend
+  push-backend:
+    name: Push backend image
     needs: build-backend
     runs-on: ubuntu-latest
     permissions:
@@ -118,21 +118,9 @@ jobs:
           tags: |
             ghcr.io/bennyboer/kicherkrabbe-server:latest
             ghcr.io/bennyboer/kicherkrabbe-server:${{ github.sha }}
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SSH_REMOTE_HOST }}
-          username: ${{ secrets.SSH_REMOTE_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_REMOTE_PORT }}
-          script: |
-            cd /opt/kicherkrabbe
-            docker pull ghcr.io/bennyboer/kicherkrabbe-server:latest
-            set -a && source .env && set +a
-            docker stack deploy -c docker-swarm.yml kicherkrabbe
 
-  deploy-customer:
-    name: Deploy customer frontend
+  push-customer:
+    name: Push customer image
     needs: build-customer
     runs-on: ubuntu-latest
     permissions:
@@ -162,6 +150,12 @@ jobs:
           tags: |
             ghcr.io/bennyboer/kicherkrabbe-customer:latest
             ghcr.io/bennyboer/kicherkrabbe-customer:${{ github.sha }}
+
+  deploy:
+    name: Deploy stack
+    needs: [push-backend, push-customer]
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -171,6 +165,7 @@ jobs:
           port: ${{ secrets.SSH_REMOTE_PORT }}
           script: |
             cd /opt/kicherkrabbe
+            docker pull ghcr.io/bennyboer/kicherkrabbe-server:latest
             docker pull ghcr.io/bennyboer/kicherkrabbe-customer:latest
             set -a && source .env && set +a
             docker stack deploy -c docker-swarm.yml kicherkrabbe
