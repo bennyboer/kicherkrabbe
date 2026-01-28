@@ -13,8 +13,7 @@
       autofocus
       required
       [disabled]="isCreatingTopic() | async"
-      (input)="updateName(name.value)"
-    />
+      (input)="updateName(name.value)" />
   </div>
 
   <hr />
@@ -26,17 +25,19 @@
     <span>
       <app-button [disabled]="cannotCreateTopic() | async" (click)="createTopic()" color="primary">
         @if (isCreatingTopic() | async) {
-        <span class="loading-button-text">
-          <app-loading-spinner size="16"></app-loading-spinner>
-          <span>Erstellt...</span>
-        </span>
-        } @else { Erstellen }
+          <span class="loading-button-text">
+            <app-loading-spinner size="16"></app-loading-spinner>
+            <span>Erstellt...</span>
+          </span>
+        } @else {
+          Erstellen
+        }
       </app-button>
     </span>
   </div>
 
   @if (isFailed() | async) {
-  <app-note level="error"> Das Thema konnte nicht erstellt werden. Bitte versuche es erneut. </app-note>
+    <app-note level="error"> Das Thema konnte nicht erstellt werden. Bitte versuche es erneut. </app-note>
   }
 
   <button type="submit" [disabled]="cannotCreateTopic() | async" class="hidden" (click)="createTopic()"></button>

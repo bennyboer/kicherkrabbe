@@ -49,11 +49,11 @@ interface ImageLayout {
 }
 
 @Component({
-    selector: 'app-sliding-image',
-    templateUrl: 'sliding-image.component.html',
-    styleUrls: ['sliding-image.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-sliding-image',
+  templateUrl: 'sliding-image.component.html',
+  styleUrls: ['sliding-image.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('canvas')

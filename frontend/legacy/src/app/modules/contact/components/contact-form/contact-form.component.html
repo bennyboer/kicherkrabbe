@@ -10,8 +10,7 @@
       id="name"
       name="name"
       [disabled]="nameDisabled$ | async"
-      (input)="updateName(name.value)"
-    />
+      (input)="updateName(name.value)" />
 
     @if (nameTouched$ | async) {
       @if (nameMissing$ | async) {
@@ -34,8 +33,7 @@
       name="mail"
       required
       [disabled]="mailDisabled$ | async"
-      (input)="updateMail(mail.value, mail.checkValidity())"
-    />
+      (input)="updateMail(mail.value, mail.checkValidity())" />
 
     @if (mailTouched$ | async) {
       @if (mailMissing$ | async) {
@@ -59,8 +57,7 @@
       id="phone"
       name="phone"
       [disabled]="phoneDisabled$ | async"
-      (input)="updatePhone(phone.value)"
-    />
+      (input)="updatePhone(phone.value)" />
 
     @if (phoneTouched$ | async) {
       @if (phoneTooLong$ | async) {
@@ -80,8 +77,7 @@
       id="subject"
       name="subject"
       [disabled]="subjectDisabled$ | async"
-      (input)="updateSubject(subject.value)"
-    />
+      (input)="updateSubject(subject.value)" />
 
     @if (subjectTouched$ | async) {
       @if (subjectMissing$ | async) {
@@ -100,8 +96,7 @@
         placeholder=""
         style="display: block; height: 400px"
         [modules]="quillModules"
-        (onContentChanged)="updateMessage($event)"
-      >
+        (onContentChanged)="updateMessage($event)">
       </quill-editor>
     </div>
     <app-note>Selektieren Sie Text in Ihrer Nachricht, um ihn zu formatieren.</app-note>

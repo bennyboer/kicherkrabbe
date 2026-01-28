@@ -3,8 +3,7 @@
     label="Kanal bearbeiten"
     [channel]="channel.channel"
     (done)="finishEditing($event)"
-    (cancelled)="cancelEditing()"
-  >
+    (cancelled)="cancelEditing()">
   </app-pending-channel>
 } @else {
   <app-checkbox [checked]="channel.active" (checkedChanges)="toggleActivation($event)"></app-checkbox>

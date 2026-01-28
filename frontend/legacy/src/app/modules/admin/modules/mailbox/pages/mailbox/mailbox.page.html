@@ -1,12 +1,11 @@
 <div class="action-bar">
-  <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)"/>
+  <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)" />
   <app-dropdown
     #statusDropdown
     label="Status"
     [items]="statusDropdownItems$ | async"
     [showSelectionIndicator]="true"
-    (selectionChanged)="updateSelectedStatus(statusDropdown, $event)"
-  >
+    (selectionChanged)="updateSelectedStatus(statusDropdown, $event)">
     <ng-template let-item>
       <span>{{ item.label }}</span>
     </ng-template>
@@ -30,18 +29,18 @@
 
       <table class="mails-table">
         <colgroup>
-          <col span="1" style="width: 32px"/>
-          <col span="1" style="width: auto"/>
-          <col class="sender" span="1" style="width: 200px"/>
-          <col class="date" span="1" style="width: 140px"/>
+          <col span="1" style="width: 32px" />
+          <col span="1" style="width: auto" />
+          <col class="sender" span="1" style="width: 200px" />
+          <col class="date" span="1" style="width: 140px" />
         </colgroup>
         <thead>
-        <tr>
-          <th></th>
-          <th class="subject">Betreff</th>
-          <th class="sender">Absender</th>
-          <th class="date">Datum</th>
-        </tr>
+          <tr>
+            <th></th>
+            <th class="subject">Betreff</th>
+            <th class="sender">Absender</th>
+            <th class="date">Datum</th>
+          </tr>
         </thead>
         <tbody>
           @for (mail of mails; track mail.id) {

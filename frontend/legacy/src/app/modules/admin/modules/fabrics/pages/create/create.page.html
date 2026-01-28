@@ -6,11 +6,11 @@
   <div class="image-edit-centering-container">
     <div class="image-edit-container">
       @if (getImageId() | async; as imageId) {
-      <div class="image-container">
-        <img [src]="getImageUrl(imageId)" width="100%" alt="Stoffbild" />
-      </div>
+        <div class="image-container">
+          <img [src]="getImageUrl(imageId)" width="100%" alt="Stoffbild" />
+        </div>
       } @else {
-      <app-image-upload (uploaded)="onImageUploaded($event)"></app-image-upload>
+        <app-image-upload (uploaded)="onImageUploaded($event)"></app-image-upload>
       }
     </div>
   </div>
@@ -27,88 +27,95 @@
       autofocus
       required
       [disabled]="isCreatingFabric() | async"
-      (input)="updateName(name.value)"
-    />
+      (input)="updateName(name.value)" />
   </div>
 
   <div class="topics-container">
     <h4>Themen</h4>
 
     @if (isLoadingAvailableTopics() | async) {
-    <div class="loading-container">
-      <app-loading-spinner></app-loading-spinner>
-    </div>
-    } @else { @if (getAvailableTopics() | async; as topics) { @if (getSelectedTopics() | async; as selectedTopics) {
-    <app-chips
-      [chips]="topicsToChips(selectedTopics)"
-      [available]="topicsToChips(topics)"
-      [alwaysShowOptions]="true"
-      [chipDropdownItemTemplateRef]="topicDropdownItemTemplateRef"
-      (removed)="onTopicRemoved($event)"
-      (added)="onTopicAdded($event)"
-    >
-      <ng-template let-chip> {{ chip.label }} </ng-template>
-    </app-chips>
+      <div class="loading-container">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
+    } @else {
+      @if (getAvailableTopics() | async; as topics) {
+        @if (getSelectedTopics() | async; as selectedTopics) {
+          <app-chips
+            [chips]="topicsToChips(selectedTopics)"
+            [available]="topicsToChips(topics)"
+            [alwaysShowOptions]="true"
+            [chipDropdownItemTemplateRef]="topicDropdownItemTemplateRef"
+            (removed)="onTopicRemoved($event)"
+            (added)="onTopicAdded($event)">
+            <ng-template let-chip> {{ chip.label }}</ng-template>
+          </app-chips>
 
-    <ng-template #topicDropdownItemTemplateRef let-chip> {{ chip.label }} </ng-template>
-    } } }
+          <ng-template #topicDropdownItemTemplateRef let-chip> {{ chip.label }}</ng-template>
+        }
+      }
+    }
   </div>
 
   <div class="colors-container">
     <h4>Farben</h4>
 
     @if (isLoadingAvailableColors() | async) {
-    <div class="loading-container">
-      <app-loading-spinner></app-loading-spinner>
-    </div>
-    } @else { @if (getAvailableColors() | async; as colors) { @if (getSelectedColors() | async; as selectedColors) {
-    <app-chips
-      [chips]="colorsToChips(selectedColors)"
-      [available]="colorsToChips(colors)"
-      [alwaysShowOptions]="true"
-      [chipDropdownItemTemplateRef]="colorDropdownItemTemplateRef"
-      (removed)="onColorRemoved($event)"
-      (added)="onColorAdded($event)"
-    >
-      <ng-template let-chip>
-        <div class="color-chip">
-          <app-color-badge [color]="chip.content" size="20"></app-color-badge>
-          {{ chip.label }}
-        </div>
-      </ng-template>
-    </app-chips>
-
-    <ng-template #colorDropdownItemTemplateRef let-chip>
-      <div class="color-dropdown-item">
-        <app-color-badge [color]="chip.content"></app-color-badge>
-        {{ chip.label }}
+      <div class="loading-container">
+        <app-loading-spinner></app-loading-spinner>
       </div>
-    </ng-template>
-    } } }
+    } @else {
+      @if (getAvailableColors() | async; as colors) {
+        @if (getSelectedColors() | async; as selectedColors) {
+          <app-chips
+            [chips]="colorsToChips(selectedColors)"
+            [available]="colorsToChips(colors)"
+            [alwaysShowOptions]="true"
+            [chipDropdownItemTemplateRef]="colorDropdownItemTemplateRef"
+            (removed)="onColorRemoved($event)"
+            (added)="onColorAdded($event)">
+            <ng-template let-chip>
+              <div class="color-chip">
+                <app-color-badge [color]="chip.content" size="20"></app-color-badge>
+                {{ chip.label }}
+              </div>
+            </ng-template>
+          </app-chips>
+
+          <ng-template #colorDropdownItemTemplateRef let-chip>
+            <div class="color-dropdown-item">
+              <app-color-badge [color]="chip.content"></app-color-badge>
+              {{ chip.label }}
+            </div>
+          </ng-template>
+        }
+      }
+    }
   </div>
 
   <div class="fabric-type-availability-container">
     <h4>Verfügbarkeit</h4>
 
     @if (isLoadingAvailableFabricTypes() | async) {
-    <div class="loading-container">
-      <app-loading-spinner></app-loading-spinner>
-    </div>
-    } @else { @if (getAvailableFabricTypes() | async; as fabricTypes) { @if (getSelectedFabricTypes() | async; as
-    selectedFabricTypes) {
-    <app-chips
-      [chips]="fabricTypesToChips(selectedFabricTypes)"
-      [available]="fabricTypesToChips(fabricTypes)"
-      [alwaysShowOptions]="true"
-      [chipDropdownItemTemplateRef]="fabricTypeDropdownItemTemplateRef"
-      (removed)="onFabricTypeRemoved($event)"
-      (added)="onFabricTypeAdded($event)"
-    >
-      <ng-template let-chip> {{ chip.label }} </ng-template>
-    </app-chips>
+      <div class="loading-container">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
+    } @else {
+      @if (getAvailableFabricTypes() | async; as fabricTypes) {
+        @if (getSelectedFabricTypes() | async; as selectedFabricTypes) {
+          <app-chips
+            [chips]="fabricTypesToChips(selectedFabricTypes)"
+            [available]="fabricTypesToChips(fabricTypes)"
+            [alwaysShowOptions]="true"
+            [chipDropdownItemTemplateRef]="fabricTypeDropdownItemTemplateRef"
+            (removed)="onFabricTypeRemoved($event)"
+            (added)="onFabricTypeAdded($event)">
+            <ng-template let-chip> {{ chip.label }}</ng-template>
+          </app-chips>
 
-    <ng-template #fabricTypeDropdownItemTemplateRef let-chip> {{ chip.label }} </ng-template>
-    } } }
+          <ng-template #fabricTypeDropdownItemTemplateRef let-chip> {{ chip.label }}</ng-template>
+        }
+      }
+    }
   </div>
 
   <hr />
@@ -120,17 +127,19 @@
     <span>
       <app-button [disabled]="cannotCreateFabric() | async" (click)="createFabric()" color="primary">
         @if (isCreatingFabric() | async) {
-        <span class="loading-button-text">
-          <app-loading-spinner size="16"></app-loading-spinner>
-          <span>Erstellt...</span>
-        </span>
-        } @else { Erstellen }
+          <span class="loading-button-text">
+            <app-loading-spinner size="16"></app-loading-spinner>
+            <span>Erstellt...</span>
+          </span>
+        } @else {
+          Erstellen
+        }
       </app-button>
     </span>
   </div>
 
   @if (isFailed() | async) {
-  <app-note level="error"> Der Stoff konnte nicht erstellt werden. Bitte versuche es erneut. </app-note>
+    <app-note level="error"> Der Stoff konnte nicht erstellt werden. Bitte versuche es erneut.</app-note>
   }
 
   <button type="submit" [disabled]="cannotCreateFabric() | async" class="hidden" (click)="createFabric()"></button>

@@ -1,5 +1,5 @@
 <div class="filters">
-  <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)"/>
+  <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)" />
 </div>
 
 <app-loading-bar [visible]="loading$ | async"></app-loading-bar>
@@ -11,14 +11,14 @@
     } @else {
       <table class="links-table">
         <colgroup>
-          <col span="1" style="width: auto"/>
-          <col span="1" style="width: 200px"/>
+          <col span="1" style="width: auto" />
+          <col span="1" style="width: 200px" />
         </colgroup>
         <thead>
-        <tr>
-          <th class="name">Name</th>
-          <th class="type">Art</th>
-        </tr>
+          <tr>
+            <th class="name">Name</th>
+            <th class="type">Art</th>
+          </tr>
         </thead>
         <tbody>
           @for (link of links; track link.id) {

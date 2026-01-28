@@ -4,11 +4,11 @@ import { ColorsService } from '../../services';
 import { Color } from '../../model';
 
 @Component({
-    selector: 'app-colors-page',
-    templateUrl: './colors.page.html',
-    styleUrls: ['./colors.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-colors-page',
+  templateUrl: './colors.page.html',
+  styleUrls: ['./colors.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ColorsPage implements OnDestroy {
   private readonly search$: BehaviorSubject<string> = new BehaviorSubject<string>('');

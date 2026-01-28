@@ -24,17 +24,16 @@
             [value]="pendingRateLimitAsString$ | async"
             [class.error]="rateLimitInvalidAndTouched$ | async"
             (keydown.enter)="updateRateLimit(settings, pendingRateLimit$.value)"
-            (input)="updatePendingRateLimit(rateLimit.value)">
-          <app-button [disabled]="rateLimitUnchanged$ | async"
-                      (click)="updateRateLimit(settings, pendingRateLimit$.value)">
+            (input)="updatePendingRateLimit(rateLimit.value)" />
+          <app-button
+            [disabled]="rateLimitUnchanged$ | async"
+            (click)="updateRateLimit(settings, pendingRateLimit$.value)">
             Speichern
           </app-button>
         </div>
 
         @if (rateLimitInvalidAndTouched$ | async) {
-          <app-note level="error">
-            Das Limit muss eine positive Zahl sein.
-          </app-note>
+          <app-note level="error"> Das Limit muss eine positive Zahl sein. </app-note>
         }
       </div>
 
@@ -48,21 +47,22 @@
             [value]="pendingMailgunApiToken$ | async"
             [class.error]="mailgunApiTokenInvalidAndTouched$ | async"
             (keydown.enter)="updateMailgunApiToken(settings, pendingMailgunApiToken$.value)"
-            (input)="updatePendingMailgunApiToken(apiToken.value)">
-          <app-button [disabled]="mailgunApiTokenUnchanged$ | async"
-                      (click)="updateMailgunApiToken(settings, pendingMailgunApiToken$.value)">
+            (input)="updatePendingMailgunApiToken(apiToken.value)" />
+          <app-button
+            [disabled]="mailgunApiTokenUnchanged$ | async"
+            (click)="updateMailgunApiToken(settings, pendingMailgunApiToken$.value)">
             Speichern
           </app-button>
-          <app-button color="warn" [disabled]="cannotClearMailgunApiToken$ | async"
-                      (click)="clearMailgunApiToken(settings)">
+          <app-button
+            color="warn"
+            [disabled]="cannotClearMailgunApiToken$ | async"
+            (click)="clearMailgunApiToken(settings)">
             Token löschen
           </app-button>
         </div>
 
         @if (mailgunApiTokenInvalidAndTouched$ | async) {
-          <app-note level="error">
-            Der Token ist ungültig.
-          </app-note>
+          <app-note level="error"> Der Token ist ungültig. </app-note>
         }
       </div>
     </div>

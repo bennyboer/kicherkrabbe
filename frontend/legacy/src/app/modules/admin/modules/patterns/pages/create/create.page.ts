@@ -10,11 +10,11 @@ import { Delta } from 'quill/core';
 import { someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
-    selector: 'app-create-pattern-page',
-    templateUrl: './create.page.html',
-    styleUrls: ['./create.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-create-pattern-page',
+  templateUrl: './create.page.html',
+  styleUrls: ['./create.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class CreatePage implements OnInit, OnDestroy {
   private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>('');

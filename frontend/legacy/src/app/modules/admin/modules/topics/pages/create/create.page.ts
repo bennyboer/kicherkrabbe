@@ -5,11 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from '../../../../../shared';
 
 @Component({
-    selector: 'app-create-topic',
-    templateUrl: './create.page.html',
-    styleUrls: ['./create.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-create-topic',
+  templateUrl: './create.page.html',
+  styleUrls: ['./create.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class CreateTopicPage implements AfterViewInit, OnDestroy {
   @ViewChild('name')

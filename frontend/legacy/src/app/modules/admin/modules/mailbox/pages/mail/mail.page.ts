@@ -20,11 +20,11 @@ import { NotificationService } from '../../../../../shared';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-    selector: 'app-mail-page',
-    templateUrl: './mail.page.html',
-    styleUrls: ['./mail.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-mail-page',
+  templateUrl: './mail.page.html',
+  styleUrls: ['./mail.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class MailPage implements OnInit, OnDestroy {
   private readonly mailId$: ReplaySubject<string> = new ReplaySubject<string>(1);

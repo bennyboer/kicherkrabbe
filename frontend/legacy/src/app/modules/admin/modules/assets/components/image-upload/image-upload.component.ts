@@ -37,11 +37,11 @@ interface SelectedImageIndexContainer {
 }
 
 @Component({
-    selector: 'app-image-upload',
-    templateUrl: './image-upload.component.html',
-    styleUrls: ['./image-upload.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-image-upload',
+  templateUrl: './image-upload.component.html',
+  styleUrls: ['./image-upload.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren('canvas')

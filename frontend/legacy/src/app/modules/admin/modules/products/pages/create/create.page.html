@@ -15,9 +15,7 @@
     <div class="product-images">
       @if (imageSliderImages$ | async; as images) {
         @if (images.length > 0) {
-          <app-image-slider [images]="images"
-                            [theme]="theme$ | async">
-          </app-image-slider>
+          <app-image-slider [images]="images" [theme]="theme$ | async"> </app-image-slider>
         } @else {
           <span class="image-placeholder">
             <span class="material-icons">image</span>
@@ -44,7 +42,8 @@
               <li>
                 <a [routerLink]="link.toHref()">
                   <span>
-                    <strong>{{ link.type.label }}</strong>: {{ link.name }}
+                    <strong>{{ link.type.label }}</strong
+                    >: {{ link.name }}
                   </span>
                   <span class="actions">
                     <app-button color="warn" [size]="ButtonSize.SMALL" (click)="removeLink($event, links, link)">
@@ -68,8 +67,10 @@
     <div class="product-detail">
       <label>
         Stoffzusammensetzung
-        <app-button [size]="ButtonSize.SMALL" [disabled]="creating$ | async"
-                    (click)="editFabricComposition(fabricCompositionOption)">
+        <app-button
+          [size]="ButtonSize.SMALL"
+          [disabled]="creating$ | async"
+          (click)="editFabricComposition(fabricCompositionOption)">
           <span class="icon-button">
             <span class="material-icons">edit</span>
           </span>
@@ -79,10 +80,10 @@
         <div class="fabric-composition">
           <table class="fabric-composition-table">
             <thead>
-            <tr>
-              <th class="fabric-type">Stoffart</th>
-              <th class="percentage">Anteil</th>
-            </tr>
+              <tr>
+                <th class="fabric-type">Stoffart</th>
+                <th class="percentage">Anteil</th>
+              </tr>
             </thead>
             <tbody>
               @for (item of composition.getSortedByPercentage(); track item.fabricType.internal) {
@@ -112,11 +113,7 @@
       </label>
       <div class="product-contains">
         @if (notes.contains.length > 0) {
-          <quill-view [content]="notes.contains"
-                      format="json"
-                      theme="bubble"
-                      style="display: block">
-          </quill-view>
+          <quill-view [content]="notes.contains" format="json" theme="bubble" style="display: block"> </quill-view>
         } @else {
           <app-note>Keine Inhaltsangaben vorhanden</app-note>
         }
@@ -134,11 +131,7 @@
       </label>
       <div class="product-care">
         @if (notes.care.length > 0) {
-          <quill-view [content]="notes.care"
-                      format="json"
-                      theme="bubble"
-                      style="display: block">
-          </quill-view>
+          <quill-view [content]="notes.care" format="json" theme="bubble" style="display: block"> </quill-view>
         } @else {
           <app-note>Keine Pflegehinweise vorhanden</app-note>
         }
@@ -156,11 +149,7 @@
       </label>
       <div class="product-safety">
         @if (notes.safety.length > 0) {
-          <quill-view [content]="notes.safety"
-                      format="json"
-                      theme="bubble"
-                      style="display: block">
-          </quill-view>
+          <quill-view [content]="notes.safety" format="json" theme="bubble" style="display: block"> </quill-view>
         } @else {
           <app-note>Keine Sicherheitshinweise vorhanden</app-note>
         }
@@ -179,8 +168,8 @@
         </app-button>
       </label>
       <span class="product-produced-at">
-        {{ producedAt | date: 'dd.MM.yyyy' }}
-        um {{ producedAt | date: 'HH:mm' }}
+        {{ producedAt | date: "dd.MM.yyyy" }}
+        um {{ producedAt | date: "HH:mm" }}
       </span>
     </div>
   }
@@ -189,9 +178,7 @@
 @if (invalid$ | async) {
   <div class="error-container">
     @if (fabricCompositionIsMissing$ | async) {
-      <app-note level="error">
-        Ohne Stoffzusammensetzung kann das Produkt nicht erstellt werden.
-      </app-note>
+      <app-note level="error"> Ohne Stoffzusammensetzung kann das Produkt nicht erstellt werden. </app-note>
     }
   </div>
 }
@@ -202,9 +189,9 @@
   <app-button color="primary" [disabled]="cannotCreate$ | async" (click)="create()">
     @if (creating$ | async) {
       <span class="loading-button-text">
-          <app-loading-spinner size="16"></app-loading-spinner>
-          <span>Erstellt...</span>
-        </span>
+        <app-loading-spinner size="16"></app-loading-spinner>
+        <span>Erstellt...</span>
+      </span>
     } @else {
       Erstellen
     }

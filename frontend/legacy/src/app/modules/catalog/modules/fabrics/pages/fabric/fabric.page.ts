@@ -5,11 +5,11 @@ import { RemoteFabricsService } from '../../services';
 import { Fabric, Type } from '../../model';
 
 @Component({
-    selector: 'app-fabric-page',
-    templateUrl: './fabric.page.html',
-    styleUrls: ['./fabric.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-fabric-page',
+  templateUrl: './fabric.page.html',
+  styleUrls: ['./fabric.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class FabricPage implements OnInit, OnDestroy {
   private readonly fabricTypes$: BehaviorSubject<Type[]> = new BehaviorSubject<Type[]>([]);

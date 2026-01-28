@@ -10,15 +10,20 @@
       </span>
       <span class="content">
         <label>
-          Postfach @if (loadingUnreadMailsCount$ | async) {
-          <app-loading-spinner size="16"></app-loading-spinner>
+          Postfach
+          @if (loadingUnreadMailsCount$ | async) {
+            <app-loading-spinner size="16"></app-loading-spinner>
           }
         </label>
-        @if (unreadMailsCountLoaded$ | async) { @if (unreadMailsCount$ | async; as count) {
-        <p>Du hast <strong>{{ count }}</strong> ungelesene Nachrichten.</p>
-        } @else {
-        <p>Keine ungelesenen Nachrichten! 🥳</p>
-        } }
+        @if (unreadMailsCountLoaded$ | async) {
+          @if (unreadMailsCount$ | async; as count) {
+            <p>
+              Du hast <strong>{{ count }}</strong> ungelesene Nachrichten.
+            </p>
+          } @else {
+            <p>Keine ungelesenen Nachrichten! 🥳</p>
+          }
+        }
       </span>
     </li>
   </a>

@@ -4,11 +4,11 @@ import { Topic } from '../../model';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 
 @Component({
-    selector: 'app-topics-page',
-    templateUrl: './topics.page.html',
-    styleUrls: ['./topics.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-topics-page',
+  templateUrl: './topics.page.html',
+  styleUrls: ['./topics.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class TopicsPage implements OnDestroy {
   private readonly search$: BehaviorSubject<string> = new BehaviorSubject<string>('');

@@ -26,11 +26,11 @@ const DEFAULT_COLOR: ColorBadgeColor = {
 };
 
 @Component({
-    selector: 'app-color-badge',
-    templateUrl: './color-badge.component.html',
-    styleUrls: ['./color-badge.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-color-badge',
+  templateUrl: './color-badge.component.html',
+  styleUrls: ['./color-badge.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ColorBadgeComponent implements OnInit, OnDestroy {
   private readonly color$: BehaviorSubject<ColorBadgeColor> = new BehaviorSubject<ColorBadgeColor>(DEFAULT_COLOR);

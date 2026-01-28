@@ -13,8 +13,7 @@
       autofocus
       required
       [disabled]="isCreatingFabricType() | async"
-      (input)="updateName(name.value)"
-    />
+      (input)="updateName(name.value)" />
   </div>
 
   <hr />
@@ -26,23 +25,24 @@
     <span>
       <app-button [disabled]="cannotCreateFabricType() | async" (click)="createFabricType()" color="primary">
         @if (isCreatingFabricType() | async) {
-        <span class="loading-button-text">
-          <app-loading-spinner size="16"></app-loading-spinner>
-          <span>Erstellt...</span>
-        </span>
-        } @else { Erstellen }
+          <span class="loading-button-text">
+            <app-loading-spinner size="16"></app-loading-spinner>
+            <span>Erstellt...</span>
+          </span>
+        } @else {
+          Erstellen
+        }
       </app-button>
     </span>
   </div>
 
   @if (isFailed() | async) {
-  <app-note level="error"> Die Stoffart konnte nicht erstellt werden. Bitte versuche es erneut. </app-note>
+    <app-note level="error"> Die Stoffart konnte nicht erstellt werden. Bitte versuche es erneut. </app-note>
   }
 
   <button
     type="submit"
     [disabled]="cannotCreateFabricType() | async"
     class="hidden"
-    (click)="createFabricType()"
-  ></button>
+    (click)="createFabricType()"></button>
 </form>

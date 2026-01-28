@@ -16,11 +16,11 @@ import { environment } from '../../../../../../../environments';
 import { none, Option, some } from '../../../../../shared/modules/option';
 
 @Component({
-    selector: 'app-create-fabric-page',
-    templateUrl: './create.page.html',
-    styleUrls: ['./create.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-create-fabric-page',
+  templateUrl: './create.page.html',
+  styleUrls: ['./create.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('name')

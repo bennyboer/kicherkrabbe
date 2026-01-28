@@ -14,8 +14,7 @@
         label="Kontaktformular aktivieren"
         [checked]="contactFormEnabled$ | async"
         [disabled]="updatingContactFormEnabled$ | async"
-        (checkedChanges)="toggleContactFormEnabled()"
-      >
+        (checkedChanges)="toggleContactFormEnabled()">
       </app-checkbox>
     </div>
 
@@ -29,12 +28,10 @@
           [disabled]="updatingRateLimitForMail$ | async"
           [value]="rateLimitForMail$ | async"
           (input)="updatePendingRateLimitForMail(rateLimitForMail.value)"
-          (keydown.enter)="updateRateLimitForMail(rateLimitForMail.value)"
-        />
+          (keydown.enter)="updateRateLimitForMail(rateLimitForMail.value)" />
         <app-button
           [disabled]="cannotUpdateRateLimitForMail$ | async"
-          (click)="updateRateLimitForMail(rateLimitForMail.value)"
-        >
+          (click)="updateRateLimitForMail(rateLimitForMail.value)">
           Speichern
         </app-button>
       </div>
@@ -50,10 +47,10 @@
           [disabled]="updatingRateLimitForIp$ | async"
           [value]="rateLimitForIp$ | async"
           (input)="updatePendingRateLimitForIp(rateLimitForIp.value)"
-          (keydown.enter)="updateRateLimitForIp(rateLimitForIp.value)"
-        />
-        <app-button [disabled]="cannotUpdateRateLimitForIp$ | async"
-                    (click)="updateRateLimitForIp(rateLimitForIp.value)">
+          (keydown.enter)="updateRateLimitForIp(rateLimitForIp.value)" />
+        <app-button
+          [disabled]="cannotUpdateRateLimitForIp$ | async"
+          (click)="updateRateLimitForIp(rateLimitForIp.value)">
           Speichern
         </app-button>
       </div>
@@ -69,12 +66,10 @@
           [disabled]="updatingRateLimitPerDay$ | async"
           [value]="rateLimitPerDay$ | async"
           (input)="updatePendingRateLimitPerDay(rateLimitPerDay.value)"
-          (keydown.enter)="updateRateLimitPerDay(rateLimitPerDay.value)"
-        />
+          (keydown.enter)="updateRateLimitPerDay(rateLimitPerDay.value)" />
         <app-button
           [disabled]="cannotUpdateRateLimitPerDay$ | async"
-          (click)="updateRateLimitPerDay(rateLimitPerDay.value)"
-        >
+          (click)="updateRateLimitPerDay(rateLimitPerDay.value)">
           Speichern
         </app-button>
       </div>
@@ -83,7 +78,7 @@
 }
 @if (statsLoaded$ | async) {
   <div class="statistics">
-    <hr/>
+    <hr />
     <h3>Anfragen in den letzten 30 Tagen</h3>
 
     @if (stats$ | async; as stats) {

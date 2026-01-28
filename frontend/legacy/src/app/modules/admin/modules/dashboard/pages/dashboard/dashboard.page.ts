@@ -3,11 +3,11 @@ import { MailboxService } from '../../services';
 import { BehaviorSubject, finalize, first, map } from 'rxjs';
 
 @Component({
-    selector: 'app-dashboard-page',
-    templateUrl: './dashboard.page.html',
-    styleUrls: ['./dashboard.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-dashboard-page',
+  templateUrl: './dashboard.page.html',
+  styleUrls: ['./dashboard.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class DashboardPage implements OnInit, OnDestroy {
   protected readonly unreadMailsCount$ = new BehaviorSubject<number>(0);

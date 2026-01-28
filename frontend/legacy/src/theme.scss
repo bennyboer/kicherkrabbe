@@ -1,31 +1,31 @@
 .theme {
-  --primary-1: #FF4E43;
+  --primary-1: #ff4e43;
   --primary-1-rgb: 255, 78, 67;
 
-  --primary-2: #8CF2F6;
+  --primary-2: #8cf2f6;
   --primary-2-rgb: 140, 242, 246;
 
-  --primary-3: #66CC99;
+  --primary-3: #66cc99;
   --primary-3-rgb: 102, 204, 153;
 
-  --yellow: #FFD166;
+  --yellow: #ffd166;
   --yellow-rgb: 255, 209, 102;
 
   --mobile-breakpoint: 1000px;
 
   &.dark {
-    --text: #FFFFFF;
+    --text: #ffffff;
     --text-rgb: 255, 255, 255;
 
-    --red: #FF4E43;
-    --green: #66CC99;
+    --red: #ff4e43;
+    --green: #66cc99;
 
-    --link: #8CF2F6;
+    --link: #8cf2f6;
 
-    --primary-1-sub: #AC3F37;
+    --primary-1-sub: #ac3f37;
     --primary-1-sub-rgb: 172, 63, 55;
 
-    --primary-2-sub: #05777B;
+    --primary-2-sub: #05777b;
     --primary-2-sub-rgb: 5, 119, 123;
 
     --contrast: #000000;
@@ -34,7 +34,7 @@
     --contrast-lower: #181818;
     --contrast-lower-rgb: 24, 24, 24;
 
-    --contrast-mid: #2C2C2C;
+    --contrast-mid: #2c2c2c;
     --contrast-mid-rgb: 44, 44, 44;
 
     --background: #222222;
@@ -57,37 +57,37 @@
     --text: #000000;
     --text-rgb: 0, 0, 0;
 
-    --red: #FF4E43;
-    --green: #66CC99;
+    --red: #ff4e43;
+    --green: #66cc99;
 
     --link: #269599;
 
-    --primary-1-sub: #FFA59F;
+    --primary-1-sub: #ffa59f;
     --primary-1-sub-rgb: 255, 165, 159;
 
-    --primary-2-sub: #12D2D9;
+    --primary-2-sub: #12d2d9;
     --primary-2-sub-rgb: 5, 119, 123;
 
-    --contrast: #FFFFFF;
+    --contrast: #ffffff;
     --contrast-rgb: 255, 255, 255;
 
-    --contrast-lower: #F0F0F0;
+    --contrast-lower: #f0f0f0;
     --contrast-lower-rgb: 240, 240, 240;
 
-    --contrast-mid: #E0E0E0;
+    --contrast-mid: #e0e0e0;
     --contrast-mid-rgb: 224, 224, 224;
 
-    --background: #EAEAEA;
+    --background: #eaeaea;
     --background-rgb: 234, 234, 234;
 
-    --header: #FFFFFF;
+    --header: #ffffff;
 
-    --footer: #FFFFFF;
+    --footer: #ffffff;
 
-    --background-low-contrast: #CCCCCC;
+    --background-low-contrast: #cccccc;
     --background-low-contrast-rgb: 204, 204, 204;
 
-    --background-mid-contrast: #BBBBBB;
+    --background-mid-contrast: #bbbbbb;
     --background-mid-contrast-rgb: 187, 187, 187;
 
     --shadow-rgba: 0, 0, 0, 0.2;

@@ -4,11 +4,11 @@ import { BehaviorSubject, map, Observable, Subject, Subscription, takeUntil, tim
 import { none, Option, some } from '../../modules/option';
 
 @Component({
-    selector: 'app-notification-outlet',
-    templateUrl: './notification-outlet.component.html',
-    styleUrls: ['./notification-outlet.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-notification-outlet',
+  templateUrl: './notification-outlet.component.html',
+  styleUrls: ['./notification-outlet.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class NotificationOutletComponent implements OnInit, OnDestroy {
   private readonly notificationToShow$: BehaviorSubject<Option<Notification>> = new BehaviorSubject<

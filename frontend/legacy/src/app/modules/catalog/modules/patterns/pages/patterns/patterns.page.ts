@@ -43,11 +43,11 @@ class Sorting implements Eq<Sorting> {
 }
 
 @Component({
-    selector: 'app-patterns-page',
-    templateUrl: './patterns.page.html',
-    styleUrls: ['./patterns.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-patterns-page',
+  templateUrl: './patterns.page.html',
+  styleUrls: ['./patterns.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class PatternsPage implements OnInit, OnDestroy {
   protected readonly patterns$: BehaviorSubject<Pattern[]> = new BehaviorSubject<Pattern[]>([]);

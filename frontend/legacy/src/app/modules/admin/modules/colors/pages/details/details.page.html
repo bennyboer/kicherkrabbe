@@ -1,49 +1,61 @@
 <div class="container">
   <app-loading-bar [visible]="isLoading() | async"></app-loading-bar>
 
-  @if (getColor() | async; as colorOption) { @if (colorOption.unwrap(); as color) {
-  <span class="created-at">
-    Erstellt am: {{ color.createdAt | date: 'dd.MM.yyyy' }} um {{ color.createdAt | date: 'HH:mm' }} Uhr
-  </span>
-
-  <hr />
-
-  <div class="color-group">
-    <app-color-picker [size]="128" [color]="color.toValue()" (colorChanged)="updateColor(color, $event)">
-    </app-color-picker>
-  </div>
-
-  <form class="name-form" (submit)="false">
-    <div class="form-group">
-      <span class="input-label-group">
-        <label for="name">Name</label>
-        <input #name id="name" name="name" type="text" [value]="color.name" (input)="updateTransientName(name.value)" />
+  @if (getColor() | async; as colorOption) {
+    @if (colorOption.unwrap(); as color) {
+      <span class="created-at">
+        Erstellt am: {{ color.createdAt | date: "dd.MM.yyyy" }} um {{ color.createdAt | date: "HH:mm" }} Uhr
       </span>
-      <app-button (click)="updateName(color)" [disabled]="cannotUpdateName() | async">Speichern</app-button>
-    </div>
 
-    @if (isFailedUpdatingName() | async) {
-    <app-note level="error"> Der Name konnte nicht aktualisiert werden. Bitte versuche es erneut. </app-note>
+      <hr />
+
+      <div class="color-group">
+        <app-color-picker [size]="128" [color]="color.toValue()" (colorChanged)="updateColor(color, $event)">
+        </app-color-picker>
+      </div>
+
+      <form class="name-form" (submit)="(false)">
+        <div class="form-group">
+          <span class="input-label-group">
+            <label for="name">Name</label>
+            <input
+              #name
+              id="name"
+              name="name"
+              type="text"
+              [value]="color.name"
+              (input)="updateTransientName(name.value)" />
+          </span>
+          <app-button (click)="updateName(color)" [disabled]="cannotUpdateName() | async">Speichern</app-button>
+        </div>
+
+        @if (isFailedUpdatingName() | async) {
+          <app-note level="error"> Der Name konnte nicht aktualisiert werden. Bitte versuche es erneut. </app-note>
+        }
+
+        <button
+          type="submit"
+          class="hidden"
+          (click)="updateName(color)"
+          [disabled]="cannotUpdateName() | async"></button>
+      </form>
+
+      <hr />
+
+      <div class="actions">
+        <span>
+          <app-button routerLink="..">Zurück zur Übersicht</app-button>
+        </span>
+        <span>
+          @if (isDeleteConfirmation() | async) {
+            <app-button color="warn" (click)="deleteColor(color)">Wirklich löschen?</app-button>
+          } @else {
+            <app-button (click)="waitForDeleteConfirmation()">Farbe löschen</app-button>
+          }
+        </span>
+      </div>
+    } @else {
+      <p>Die Farbe konnte nicht gefunden werden.</p>
     }
-
-    <button type="submit" class="hidden" (click)="updateName(color)" [disabled]="cannotUpdateName() | async"></button>
-  </form>
-
-  <hr />
-
-  <div class="actions">
-    <span>
-      <app-button routerLink="..">Zurück zur Übersicht</app-button>
-    </span>
-    <span>
-      @if (isDeleteConfirmation() | async) {
-      <app-button color="warn" (click)="deleteColor(color)">Wirklich löschen?</app-button>
-      } @else {
-      <app-button (click)="waitForDeleteConfirmation()">Farbe löschen</app-button>
-      }
-    </span>
-  </div>
-  } @else {
-  <p>Die Farbe konnte nicht gefunden werden.</p>
-  } }
+  }
 </div>

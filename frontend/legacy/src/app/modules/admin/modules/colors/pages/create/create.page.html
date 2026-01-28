@@ -18,8 +18,7 @@
       autofocus
       required
       [disabled]="isCreatingColor() | async"
-      (input)="updateName(name.value)"
-    />
+      (input)="updateName(name.value)" />
   </div>
 
   <hr />
@@ -31,17 +30,19 @@
     <span>
       <app-button [disabled]="cannotCreateColor() | async" (click)="createColor()" color="primary">
         @if (isCreatingColor() | async) {
-        <span class="loading-button-text">
-          <app-loading-spinner size="16"></app-loading-spinner>
-          <span>Erstellt...</span>
-        </span>
-        } @else { Erstellen }
+          <span class="loading-button-text">
+            <app-loading-spinner size="16"></app-loading-spinner>
+            <span>Erstellt...</span>
+          </span>
+        } @else {
+          Erstellen
+        }
       </app-button>
     </span>
   </div>
 
   @if (isFailed() | async) {
-  <app-note level="error"> Die Farbe konnte nicht erstellt werden. Bitte versuche es erneut. </app-note>
+    <app-note level="error"> Die Farbe konnte nicht erstellt werden. Bitte versuche es erneut. </app-note>
   }
 
   <button type="submit" [disabled]="cannotCreateColor() | async" class="hidden" (click)="createColor()"></button>

@@ -4,10 +4,10 @@ import { RoutingMetadataService } from '../../services';
 import { filter, map, mergeMap, Subject, takeUntil } from 'rxjs';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.scss',
-    standalone: false
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss',
+  standalone: false,
 })
 export class AppComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<void> = new Subject<void>();

@@ -6,8 +6,7 @@
     [items]="categoriesDropdownItems$ | async"
     [showSelectionIndicator]="true"
     [multiple]="true"
-    (selectionChanged)="updateSelectedCategories($event)"
-  >
+    (selectionChanged)="updateSelectedCategories($event)">
     <ng-template let-item>
       <span>{{ item.label }}</span>
     </ng-template>
@@ -33,28 +32,34 @@
 
 <app-loading-bar [visible]="loading$ | async"></app-loading-bar>
 
-@if (notLoading$ | async) { @if (patterns$ | async; as patterns) { @if (patterns.length === 0) {
-<app-note level="info">Es konnten keine Schnittmuster gefunden werden.</app-note>
-} @else {
-<ul class="patterns-list">
-  @for (pattern of patterns; track pattern.id) {
-  <li [routerLink]="pattern.id">
-    <span class="details">
-      <span class="name">
-        {{ pattern.name }} @for (category of pattern.categories; track category) {
-        <span class="category-badge">{{ getCategoryLabel(category) | async }}</span>
+@if (notLoading$ | async) {
+  @if (patterns$ | async; as patterns) {
+    @if (patterns.length === 0) {
+      <app-note level="info">Es konnten keine Schnittmuster gefunden werden.</app-note>
+    } @else {
+      <ul class="patterns-list">
+        @for (pattern of patterns; track pattern.id) {
+          <li [routerLink]="pattern.id">
+            <span class="details">
+              <span class="name">
+                {{ pattern.name }}
+                @for (category of pattern.categories; track category) {
+                  <span class="category-badge">{{ getCategoryLabel(category) | async }}</span>
+                }
+              </span>
+              <span class="description">
+                <span class="created-at">
+                  Erstellt am {{ pattern.createdAt | date: "dd.MM.yyyy" }} um
+                  {{ pattern.createdAt | date: "HH:mm" }} Uhr
+                </span>
+                @if (!pattern.published) {
+                  <span class="material-icons" title="Nicht veröffentlicht"> visibility_off </span>
+                }
+              </span>
+            </span>
+          </li>
         }
-      </span>
-      <span class="description">
-        <span class="created-at">
-          Erstellt am {{ pattern.createdAt | date: 'dd.MM.yyyy' }} um {{ pattern.createdAt | date: 'HH:mm' }} Uhr
-        </span>
-        @if (!pattern.published) {
-        <span class="material-icons" title="Nicht veröffentlicht"> visibility_off </span>
-        }
-      </span>
-    </span>
-  </li>
+      </ul>
+    }
   }
-</ul>
-} } }
+}

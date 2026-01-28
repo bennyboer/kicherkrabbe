@@ -6,11 +6,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ColorValue } from '../../model';
 
 @Component({
-    selector: 'app-create-color-page',
-    templateUrl: './create.page.html',
-    styleUrls: ['./create.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-create-color-page',
+  templateUrl: './create.page.html',
+  styleUrls: ['./create.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class CreateColorPage implements AfterViewInit, OnDestroy {
   @ViewChild('name')

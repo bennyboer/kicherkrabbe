@@ -1,15 +1,15 @@
 <table class="fabric-composition-table">
   <colgroup>
-    <col span="1" style="width: auto"/>
-    <col span="1" style="width: 120px"/>
-    <col span="1" style="width: 80px"/>
+    <col span="1" style="width: auto" />
+    <col span="1" style="width: 120px" />
+    <col span="1" style="width: 80px" />
   </colgroup>
   <thead>
-  <tr>
-    <th class="fabric-type">Stoffart</th>
-    <th class="percentage">Anteil in %</th>
-    <th class="actions"></th>
-  </tr>
+    <tr>
+      <th class="fabric-type">Stoffart</th>
+      <th class="percentage">Anteil in %</th>
+      <th class="actions"></th>
+    </tr>
   </thead>
   <tbody>
     @if (fabricTypesDropdownItems$ | async; as fabricTypesDropdownItems) {
@@ -17,23 +17,25 @@
         @for (item of compositionItems; let index = $index; track index) {
           <tr>
             <td class="fabric-type">
-              <app-dropdown #dropdown
-                            [selected]="[item.fabricType.internal]"
-                            [items]="fabricTypesDropdownItems"
-                            [searchEnabled]="true"
-                            (selectionChanged)="updateFabricTypeForItem(dropdown, index, $event)">
+              <app-dropdown
+                #dropdown
+                [selected]="[item.fabricType.internal]"
+                [items]="fabricTypesDropdownItems"
+                [searchEnabled]="true"
+                (selectionChanged)="updateFabricTypeForItem(dropdown, index, $event)">
                 <ng-template let-item>
                   <span>{{ item.label }}</span>
                 </ng-template>
               </app-dropdown>
             </td>
             <td class="percentage">
-              <input #percentage
-                     type="number"
-                     [value]="item.percentage / 100"
-                     (input)="updatePercentageForItem(index, percentage.valueAsNumber)"
-                     min="0"
-                     max="100">
+              <input
+                #percentage
+                type="number"
+                [value]="item.percentage / 100"
+                (input)="updatePercentageForItem(index, percentage.valueAsNumber)"
+                min="0"
+                max="100" />
             </td>
             <td>
               <app-button color="warn" (click)="removeCompositionItem(index)">

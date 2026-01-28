@@ -1,6 +1,6 @@
 <div class="form">
-  <input #date type="date" (input)="updateDate(date.valueAsDate)"/>
-  <input #time type="time" (input)="updateTime(time.valueAsDate)"/>
+  <input #date type="date" (input)="updateDate(date.valueAsDate)" />
+  <input #time type="time" (input)="updateTime(time.valueAsDate)" />
 </div>
 
 <app-loading-bar [visible]="loading$ | async"></app-loading-bar>

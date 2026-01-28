@@ -19,40 +19,35 @@
                   #from
                   type="text"
                   [value]="size.size.from"
-                  (keydown.enter)="save(size, from.value, to.value, unit.value, price.value)"
-                />
+                  (keydown.enter)="save(size, from.value, to.value, unit.value, price.value)" />
               </td>
               <td class="col-to">
                 <input
                   #to
                   type="text"
                   [value]="stringifyOptionalNumber(size.size.to, '')"
-                  (keydown.enter)="save(size, from.value, to.value, unit.value, price.value)"
-                />
+                  (keydown.enter)="save(size, from.value, to.value, unit.value, price.value)" />
               </td>
               <td class="col-unit">
                 <input
                   #unit
                   type="text"
                   [value]="size.size.unit.orElse('')"
-                  (keydown.enter)="save(size, from.value, to.value, unit.value, price.value)"
-                />
+                  (keydown.enter)="save(size, from.value, to.value, unit.value, price.value)" />
               </td>
               <td class="col-price">
                 <input
                   #price
                   type="text"
                   [value]="size.size.price.formatted()"
-                  (keydown.enter)="save(size, from.value, to.value, unit.value, price.value)"
-                />
+                  (keydown.enter)="save(size, from.value, to.value, unit.value, price.value)" />
               </td>
               <td class="col-actions">
                 <div class="row-actions">
                   <app-button
                     [size]="ButtonSize.SMALL"
                     color="primary"
-                    (click)="save(size, from.value, to.value, unit.value, price.value)"
-                  >
+                    (click)="save(size, from.value, to.value, unit.value, price.value)">
                     <span class="material-icons">check</span>
                   </app-button>
                   <app-button [size]="ButtonSize.SMALL" color="warn" (click)="cancel(size)">

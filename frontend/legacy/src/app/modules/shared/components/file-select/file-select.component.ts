@@ -13,11 +13,11 @@ import { BehaviorSubject, fromEvent, map, Observable, race, Subject, take, takeU
 import { none, Option, someOrNone } from '../../modules/option';
 
 @Component({
-    selector: 'app-file-select',
-    templateUrl: './file-select.component.html',
-    styleUrls: ['./file-select.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-file-select',
+  templateUrl: './file-select.component.html',
+  styleUrls: ['./file-select.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class FileSelectComponent implements OnInit, OnDestroy {
   private readonly droppable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);

@@ -3,8 +3,7 @@
   [checked]="checked$ | async"
   [disabled]="disabled$ | async"
   (click)="onCheckboxClicked($event)"
-  type="checkbox"
-/>
+  type="checkbox" />
 @if (getLabel() | async; as label) {
   <label [for]="id">{{ label }}</label
   ><br />

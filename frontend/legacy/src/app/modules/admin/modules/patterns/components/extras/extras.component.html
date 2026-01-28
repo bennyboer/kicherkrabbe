@@ -31,8 +31,7 @@
                   type="text"
                   style="width: 200px"
                   [value]="extra.extra.name"
-                  (keydown.enter)="save(extra, nameInput.value, priceInput.value)"
-                />
+                  (keydown.enter)="save(extra, nameInput.value, priceInput.value)" />
               </td>
               <td class="col-price">
                 <input
@@ -40,16 +39,14 @@
                   type="text"
                   style="width: 100px"
                   [value]="extra.extra.price.formatted()"
-                  (keydown.enter)="save(extra, nameInput.value, priceInput.value)"
-                />
+                  (keydown.enter)="save(extra, nameInput.value, priceInput.value)" />
               </td>
               <td class="col-actions">
                 <span class="row-actions">
                   <app-button
                     [size]="ButtonSize.SMALL"
                     color="primary"
-                    (click)="save(extra, nameInput.value, priceInput.value)"
-                  >
+                    (click)="save(extra, nameInput.value, priceInput.value)">
                     <span class="material-icons">check</span>
                   </app-button>
                   <app-button [size]="ButtonSize.SMALL" color="warn" (click)="cancel(extra)">

@@ -14,8 +14,7 @@
       name="mail"
       [value]="channel.mail.orElseThrow()"
       [class.error]="mailInvalidAndTouched$ | async"
-      (input)="updateMail(mail.value, mail.checkValidity())"
-    />
+      (input)="updateMail(mail.value, mail.checkValidity())" />
     <app-button color="primary" [disabled]="mailInvalid$ | async" (click)="finishEmail()">Fertig</app-button>
     <app-button (click)="cancel()">Abbrechen</app-button>
   </div>
@@ -37,8 +36,7 @@
       id="telegramChatId"
       name="telegramChatId"
       [value]="channel.telegram.orElseThrow().chatId"
-      (input)="updateTelegramChatId(telegramChatId.value)"
-    />
+      (input)="updateTelegramChatId(telegramChatId.value)" />
     <app-button color="primary" [disabled]="telegramChatIdInvalid$ | async" (click)="finishTelegram()">
       Fertig
     </app-button>

@@ -8,11 +8,11 @@ import { environment } from '../../../../../../../environments';
 import { ImageId } from '../../model';
 
 @Component({
-    selector: 'app-pattern-page',
-    templateUrl: './pattern.page.html',
-    styleUrls: ['./pattern.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-pattern-page',
+  templateUrl: './pattern.page.html',
+  styleUrls: ['./pattern.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class PatternPage {
   protected readonly pattern$ = this.route.params.pipe(

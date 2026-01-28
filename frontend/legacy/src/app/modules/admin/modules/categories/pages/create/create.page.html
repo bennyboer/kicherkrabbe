@@ -5,7 +5,7 @@
     <label for="name">Name</label>
     <input #name id="name" type="text" autofocus [class.error]="nameError$ | async" (input)="updateName(name.value)" />
     @if (nameError$ | async) {
-    <span class="error">Bitte gib einen Namen für die Kategorie ein</span>
+      <span class="error">Bitte gib einen Namen für die Kategorie ein</span>
     }
   </div>
 
@@ -15,8 +15,7 @@
       #groupDropdown
       [items]="groupDropdownItems$ | async"
       [selected]="initialSelectedDropdownItems$ | async"
-      (selectionChanged)="updateSelectedGroup(groupDropdown, $event)"
-    >
+      (selectionChanged)="updateSelectedGroup(groupDropdown, $event)">
       <ng-template let-item>
         <span>{{ item.label }}</span>
       </ng-template>
@@ -31,11 +30,13 @@
   <span>
     <app-button [disabled]="cannotSubmit$ | async" (click)="create()" color="primary">
       @if (creating$ | async) {
-      <span class="loading-button-text">
-        <app-loading-spinner size="16"></app-loading-spinner>
-        <span>Erstellt...</span>
-      </span>
-      } @else { Erstellen }
+        <span class="loading-button-text">
+          <app-loading-spinner size="16"></app-loading-spinner>
+          <span>Erstellt...</span>
+        </span>
+      } @else {
+        Erstellen
+      }
     </app-button>
   </span>
 </div>

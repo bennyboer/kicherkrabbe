@@ -7,11 +7,11 @@ import { NotificationService } from '../../../../../shared';
 import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
-    selector: 'app-topic-details',
-    templateUrl: './details.page.html',
-    styleUrls: ['./details.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-topic-details',
+  templateUrl: './details.page.html',
+  styleUrls: ['./details.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class TopicDetailsPage implements OnDestroy {
   private readonly transientName$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());

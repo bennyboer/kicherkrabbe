@@ -1,6 +1,5 @@
 <div class="action-bar">
-  <div class="left-actions">
-  </div>
+  <div class="left-actions"></div>
   <div class="right-actions">
     <app-button routerLink="settings">
       <span class="icon-button">
@@ -20,14 +19,14 @@
     } @else {
       <table class="mails-table">
         <colgroup>
-          <col span="1" style="width: auto"/>
-          <col class="date" span="1" style="width: 140px"/>
+          <col span="1" style="width: auto" />
+          <col class="date" span="1" style="width: 140px" />
         </colgroup>
         <thead>
-        <tr>
-          <th class="content">E-Mail</th>
-          <th class="date">Datum</th>
-        </tr>
+          <tr>
+            <th class="content">E-Mail</th>
+            <th class="date">Datum</th>
+          </tr>
         </thead>
         <tbody>
           @for (mail of mails; track mail.id) {
@@ -48,9 +47,7 @@
 
       @if (moreMailsAvailable$ | async) {
         <div class="footer-actions">
-          <app-button (click)="loadMoreMails()">
-            Mehr laden... ({{ remainingMailsCount$ | async }})
-          </app-button>
+          <app-button (click)="loadMoreMails()"> Mehr laden... ({{ remainingMailsCount$ | async }}) </app-button>
         </div>
       } @else {
         <div class="footer-actions">

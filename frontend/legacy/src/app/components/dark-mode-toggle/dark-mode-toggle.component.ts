@@ -34,11 +34,11 @@ import { Theme, ThemeService } from '../../services';
  * -----------------------------------------------------------------------------
  */
 @Component({
-    selector: 'app-dark-mode-toggle',
-    templateUrl: './dark-mode-toggle.component.html',
-    styleUrls: ['./dark-mode-toggle.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-dark-mode-toggle',
+  templateUrl: './dark-mode-toggle.component.html',
+  styleUrls: ['./dark-mode-toggle.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class DarkModeToggleComponent {
   private isDarkMode: boolean = false;

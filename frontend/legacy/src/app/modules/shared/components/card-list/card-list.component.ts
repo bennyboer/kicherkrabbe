@@ -40,11 +40,11 @@ export class CardListItem {
 }
 
 @Component({
-    selector: 'app-card-list',
-    templateUrl: './card-list.component.html',
-    styleUrls: ['./card-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-card-list',
+  templateUrl: './card-list.component.html',
+  styleUrls: ['./card-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class CardListComponent {
   @Input('items')

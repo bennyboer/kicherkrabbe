@@ -7,11 +7,11 @@ import { Color } from '../../model';
 import { none, Option, someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
-    selector: 'app-color-details-page',
-    templateUrl: './details.page.html',
-    styleUrls: ['./details.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-color-details-page',
+  templateUrl: './details.page.html',
+  styleUrls: ['./details.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ColorDetailsPage implements OnInit, OnDestroy {
   private readonly transientName$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());

@@ -16,11 +16,11 @@ import { InquiriesService } from '../../services';
 import { RateLimit, RateLimits, Statistics } from '../../models';
 
 @Component({
-    selector: 'app-inquiries-page',
-    templateUrl: './inquiries.page.html',
-    styleUrls: ['./inquiries.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-inquiries-page',
+  templateUrl: './inquiries.page.html',
+  styleUrls: ['./inquiries.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class InquiriesPage implements OnInit, OnDestroy {
   private readonly loadingStats$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);

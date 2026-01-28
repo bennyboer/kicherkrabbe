@@ -1,31 +1,36 @@
 @if (fabric$ | async; as fabric) {
-<h1>{{ fabric.name }}</h1>
+  <h1>{{ fabric.name }}</h1>
 
-<div class="page-layout">
-  <div class="fabric-image" [style.background-image]="'url(' + fabric.image.url + ')'"></div>
-  <div class="fabric-details">
-    <h2>Lieferzeiten</h2>
+  <div class="page-layout">
+    <div class="fabric-image" [style.background-image]="'url(' + fabric.image.url + ')'"></div>
+    <div class="fabric-details">
+      <h2>Lieferzeiten</h2>
 
-    <p>
-      @if (fabric.isAvailableInAnyType()) { @if (fabricTypeLabels$ | async; as fabricTypesLabels) { Der Stoff ist auf
-      Lager und kann sofort zu deinem Kleidungsstück weiterverarbeitet werden! Folgende Stoffarten sind verfügbar:
-      <strong>{{ fabric.getAvailableTypesLabel(fabricTypesLabels) }}</strong>. Solltest du eine andere Stoffart
-      wünschen, kontaktiere uns bitte. } } @else { Aktuell ist der Stoff nicht auf Lager. Wir können ihn aber für dich
-      bestellen. Die Lieferzeit deines Kleidungsstücks verlängert sich dann um ca. 1-2 Wochen. }
-    </p>
+      <p>
+        @if (fabric.isAvailableInAnyType()) {
+          @if (fabricTypeLabels$ | async; as fabricTypesLabels) {
+            Der Stoff ist auf Lager und kann sofort zu deinem Kleidungsstück weiterverarbeitet werden! Folgende
+            Stoffarten sind verfügbar: <strong>{{ fabric.getAvailableTypesLabel(fabricTypesLabels) }}</strong
+            >. Solltest du eine andere Stoffart wünschen, kontaktiere uns bitte.
+          }
+        } @else {
+          Aktuell ist der Stoff nicht auf Lager. Wir können ihn aber für dich bestellen. Die Lieferzeit deines
+          Kleidungsstücks verlängert sich dann um ca. 1-2 Wochen.
+        }
+      </p>
 
-    <h2>Pflegehinweise</h2>
+      <h2>Pflegehinweise</h2>
 
-    <p>
-      Bei all unseren Stoffen gilt: Bitte wasche sie bei 30 Grad und vermeide den Trockner! So bleibt dein
-      Kleidungsstück lange schön.
-    </p>
+      <p>
+        Bei all unseren Stoffen gilt: Bitte wasche sie bei 30 Grad und vermeide den Trockner! So bleibt dein
+        Kleidungsstück lange schön.
+      </p>
 
-    <hr />
+      <hr />
 
-    <p class="info">
-      <strong>Bitte beachte:</strong> Die Farben auf deinem Bildschirm können von den tatsächlichen Farben abweichen.
-    </p>
+      <p class="info">
+        <strong>Bitte beachte:</strong> Die Farben auf deinem Bildschirm können von den tatsächlichen Farben abweichen.
+      </p>
+    </div>
   </div>
-</div>
 }

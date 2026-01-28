@@ -5,8 +5,7 @@
         label="{{ multiple ? 'Bilder' : 'Bild' }}"
         accept="image/png,image/jpeg"
         [multiple]="multiple"
-        (selected)="onFilesSelected($event)"
-      >
+        (selected)="onFilesSelected($event)">
       </app-file-select>
     }
     @case ("preview") {

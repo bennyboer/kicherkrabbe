@@ -22,8 +22,7 @@
     (focus)="onAddChipTextFieldFocused()"
     (input)="onAddChipTextFieldValueChanged(addChipTextField.value)"
     (keydown.escape)="cancelAddingChips()"
-    (keydown.enter)="addChipIfAvailable(addChipTextField.value)"
-  />
+    (keydown.enter)="addChipIfAvailable(addChipTextField.value)" />
   <app-button (click)="cancelAddingChips()" color="warn">Abbrechen</app-button>
 }
 
@@ -36,8 +35,7 @@
             <div class="dropdown-item">
               <ng-container
                 [ngTemplateOutlet]="chipDropdownItemTemplateRef"
-                [ngTemplateOutletContext]="{ $implicit: chip }"
-              >
+                [ngTemplateOutletContext]="{ $implicit: chip }">
               </ng-container>
             </div>
           </app-button>

@@ -4,11 +4,11 @@ import { Observable } from 'rxjs';
 import { Overlay } from '../../models';
 
 @Component({
-    selector: 'app-overlay-container',
-    templateUrl: './overlay-container.component.html',
-    styleUrls: ['./overlay-container.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-overlay-container',
+  templateUrl: './overlay-container.component.html',
+  styleUrls: ['./overlay-container.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class OverlayContainerComponent {
   @Input({ required: true })

@@ -3,11 +3,11 @@ import { AccordionService } from '../accordion/accordion.service';
 import { ReplaySubject, Subject, takeUntil } from 'rxjs';
 
 @Component({
-    selector: 'app-accordion-item',
-    templateUrl: './accordion-item.component.html',
-    styleUrls: ['./accordion-item.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-accordion-item',
+  templateUrl: './accordion-item.component.html',
+  styleUrls: ['./accordion-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class AccordionItemComponent implements OnInit, OnDestroy {
   private readonly id: string = crypto.randomUUID();

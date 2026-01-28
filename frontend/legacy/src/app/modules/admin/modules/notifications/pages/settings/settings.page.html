@@ -9,54 +9,58 @@
 
 <app-loading-bar [visible]="loading$ | async"></app-loading-bar>
 
-@if (settingsLoaded$ | async) { @if (settings$ | async | ifSome; as settings) {
-<h3>System-Benachrichtigungen</h3>
+@if (settingsLoaded$ | async) {
+  @if (settings$ | async | ifSome; as settings) {
+    <h3>System-Benachrichtigungen</h3>
 
-<div class="form">
-  <div class="form-field">
-    <app-checkbox
-      label="System-Benachrichtigungen aktivieren"
-      [checked]="systemNotificationsEnabled$ | async"
-      [disabled]="togglingSystemNotifications$ | async"
-      (checkedChanges)="toggleSystemNotifications(settings)"
-    >
-    </app-checkbox>
-  </div>
+    <div class="form">
+      <div class="form-field">
+        <app-checkbox
+          label="System-Benachrichtigungen aktivieren"
+          [checked]="systemNotificationsEnabled$ | async"
+          [disabled]="togglingSystemNotifications$ | async"
+          (checkedChanges)="toggleSystemNotifications(settings)">
+        </app-checkbox>
+      </div>
 
-  <div class="form-field">
-    <label>Kanäle</label>
+      <div class="form-field">
+        <label>Kanäle</label>
 
-    @if (pendingChannel$ | async | ifSome; as pendingChannel) {
-    <app-pending-channel
-      label="Kanal hinzufügen"
-      [channel]="pendingChannel"
-      (done)="updateSystemChannel(settings,$event)"
-      (cancelled)="cancelPendingChannel()"
-    >
-    </app-pending-channel>
-    } @else { @if (addChannelDropdownItems$ | async; as items) { @if (items.length > 0) {
-    <div class="channel-actions">
-      <app-dropdown
-        #addChannelDropdown
-        label="Kanal hinzufügen"
-        [items]="items"
-        (selectionChanged)="addChannelDropdownItemSelected(addChannelDropdown, $event)"
-      >
-        <ng-template let-item>
-          <span>{{ item.label }}</span>
-        </ng-template>
-      </app-dropdown>
+        @if (pendingChannel$ | async | ifSome; as pendingChannel) {
+          <app-pending-channel
+            label="Kanal hinzufügen"
+            [channel]="pendingChannel"
+            (done)="updateSystemChannel(settings, $event)"
+            (cancelled)="cancelPendingChannel()">
+          </app-pending-channel>
+        } @else {
+          @if (addChannelDropdownItems$ | async; as items) {
+            @if (items.length > 0) {
+              <div class="channel-actions">
+                <app-dropdown
+                  #addChannelDropdown
+                  label="Kanal hinzufügen"
+                  [items]="items"
+                  (selectionChanged)="addChannelDropdownItemSelected(addChannelDropdown, $event)">
+                  <ng-template let-item>
+                    <span>{{ item.label }}</span>
+                  </ng-template>
+                </app-dropdown>
+              </div>
+            }
+          }
+        }
+        @if (activatableSystemChannels$ | async; as activatableSystemChannels) {
+          @for (activatableChannel of activatableSystemChannels; track activatableChannel.channel.type) {
+            <app-activatable-channel
+              [channel]="activatableChannel"
+              (updated)="updateSystemChannel(settings, $event)"
+              (activated)="activateSystemChannel(settings, $event)"
+              (deactivated)="deactivateSystemChannel(settings, $event)">
+            </app-activatable-channel>
+          }
+        }
+      </div>
     </div>
-    } } } @if (activatableSystemChannels$ | async; as activatableSystemChannels) { @for (activatableChannel of
-    activatableSystemChannels; track activatableChannel.channel.type) {
-    <app-activatable-channel
-      [channel]="activatableChannel"
-      (updated)="updateSystemChannel(settings, $event)"
-      (activated)="activateSystemChannel(settings, $event)"
-      (deactivated)="deactivateSystemChannel(settings, $event)"
-    >
-    </app-activatable-channel>
-    } }
-  </div>
-</div>
-} }
+  }
+}

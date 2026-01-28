@@ -6,8 +6,7 @@
       [height]="(slidingImageContainer.clientWidth / 5) * 4"
       [theme]="theme$ | async"
       [fit]="fit$ | async"
-      (imageIndexChanged)="onImageIndexChanged($event)"
-    >
+      (imageIndexChanged)="onImageIndexChanged($event)">
     </app-sliding-image>
   </div>
 
@@ -16,8 +15,7 @@
       <app-image-slider-thumbnail
         [image]="image"
         [active]="index === (activeImageIndex$ | async)"
-        (click)="onThumbnailClicked(image)"
-      >
+        (click)="onThumbnailClicked(image)">
       </app-image-slider-thumbnail>
     }
   </div>

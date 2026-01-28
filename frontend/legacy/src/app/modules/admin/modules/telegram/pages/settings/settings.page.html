@@ -15,9 +15,10 @@
             [value]="pendingBotApiToken$ | async"
             [class.error]="botApiTokenInvalidAndTouched$ | async"
             (keydown.enter)="updateBotApiToken(settings, pendingBotApiToken$.value)"
-            (input)="updatePendingBotApiToken(apiToken.value)">
-          <app-button [disabled]="botApiTokenUnchanged$ | async"
-                      (click)="updateBotApiToken(settings, pendingBotApiToken$.value)">
+            (input)="updatePendingBotApiToken(apiToken.value)" />
+          <app-button
+            [disabled]="botApiTokenUnchanged$ | async"
+            (click)="updateBotApiToken(settings, pendingBotApiToken$.value)">
             Speichern
           </app-button>
           <app-button color="warn" [disabled]="cannotClearBotApiToken$ | async" (click)="clearBotApiToken(settings)">
@@ -26,9 +27,7 @@
         </div>
 
         @if (botApiTokenInvalidAndTouched$ | async) {
-          <app-note level="error">
-            Der Token ist ungültig.
-          </app-note>
+          <app-note level="error"> Der Token ist ungültig. </app-note>
         }
       </div>
     </div>

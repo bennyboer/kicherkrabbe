@@ -31,13 +31,11 @@
         <div class="product-images">
           @if (images$ | async; as images) {
             @if (images.length > 0) {
-              <app-image-slider [images]="images"
-                                [theme]="theme$ | async">
-              </app-image-slider>
+              <app-image-slider [images]="images" [theme]="theme$ | async"> </app-image-slider>
             } @else {
               <span class="image-placeholder">
-              <span class="material-icons">image</span>
-            </span>
+                <span class="material-icons">image</span>
+              </span>
             }
           }
         </div>
@@ -64,7 +62,8 @@
                 <li>
                   <a [routerLink]="link.toHref()">
                     <span>
-                      <strong>{{ link.type.label }}</strong>: {{ link.name }}
+                      <strong>{{ link.type.label }}</strong
+                      >: {{ link.name }}
                     </span>
                     <span class="actions">
                       <app-button color="warn" [size]="ButtonSize.SMALL" (click)="removeLink($event, product, link)">
@@ -95,10 +94,10 @@
         <div class="fabric-composition">
           <table class="fabric-composition-table">
             <thead>
-            <tr>
-              <th class="fabric-type">Stoffart</th>
-              <th class="percentage">Anteil</th>
-            </tr>
+              <tr>
+                <th class="fabric-type">Stoffart</th>
+                <th class="percentage">Anteil</th>
+              </tr>
             </thead>
             <tbody>
               @for (item of product.fabricComposition.getSortedByPercentage(); track item.fabricType.internal) {
@@ -123,10 +122,7 @@
         </label>
         <div class="product-contains">
           @if (product.notes.contains.length > 0) {
-            <quill-view [content]="product.notes.contains"
-                        format="json"
-                        theme="bubble"
-                        style="display: block">
+            <quill-view [content]="product.notes.contains" format="json" theme="bubble" style="display: block">
             </quill-view>
           } @else {
             <app-note>Keine Inhaltsangaben vorhanden</app-note>
@@ -145,10 +141,7 @@
         </label>
         <div class="product-care">
           @if (product.notes.care.length > 0) {
-            <quill-view [content]="product.notes.care"
-                        format="json"
-                        theme="bubble"
-                        style="display: block">
+            <quill-view [content]="product.notes.care" format="json" theme="bubble" style="display: block">
             </quill-view>
           } @else {
             <app-note>Keine Pflegehinweise vorhanden</app-note>
@@ -167,10 +160,7 @@
         </label>
         <div class="product-safety">
           @if (product.notes.safety.length > 0) {
-            <quill-view [content]="product.notes.safety"
-                        format="json"
-                        theme="bubble"
-                        style="display: block">
+            <quill-view [content]="product.notes.safety" format="json" theme="bubble" style="display: block">
             </quill-view>
           } @else {
             <app-note>Keine Sicherheitshinweise vorhanden</app-note>
@@ -187,19 +177,19 @@
             </span>
           </app-button>
         </label>
-        <span class="product-produced-at">{{ product.producedAt | date: 'dd.MM.yyyy' }}
-          um {{ product.producedAt | date: 'HH:mm' }}</span>
+        <span class="product-produced-at"
+          >{{ product.producedAt | date: "dd.MM.yyyy" }} um {{ product.producedAt | date: "HH:mm" }}</span
+        >
       </div>
 
       <div class="product-detail">
         <label>Erstellt am</label>
-        <span class="product-created-at">{{ product.createdAt | date: 'dd.MM.yyyy' }}
-          um {{ product.createdAt | date: 'HH:mm' }}</span>
+        <span class="product-created-at"
+          >{{ product.createdAt | date: "dd.MM.yyyy" }} um {{ product.createdAt | date: "HH:mm" }}</span
+        >
       </div>
     </div>
   } @else {
-    <app-note level="warn">
-      Dieses Produkt konnte nicht gefunden werden.
-    </app-note>
+    <app-note level="warn"> Dieses Produkt konnte nicht gefunden werden. </app-note>
   }
 }

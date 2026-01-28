@@ -3,11 +3,11 @@ import { BehaviorSubject, distinctUntilChanged, map, Observable, Subject, takeUn
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
-    selector: 'app-mobile-switch',
-    templateUrl: './mobile-switch.component.html',
-    styleUrls: ['./mobile-switch.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-mobile-switch',
+  templateUrl: './mobile-switch.component.html',
+  styleUrls: ['./mobile-switch.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class MobileSwitchComponent implements OnInit, OnDestroy {
   private readonly isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);

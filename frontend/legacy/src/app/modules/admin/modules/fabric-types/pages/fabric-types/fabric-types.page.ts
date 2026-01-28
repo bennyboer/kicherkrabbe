@@ -4,11 +4,11 @@ import { FabricTypesService } from '../../services';
 import { FabricType } from '../../model';
 
 @Component({
-    selector: 'app-fabric-types-page',
-    templateUrl: './fabric-types.page.html',
-    styleUrls: ['./fabric-types.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-fabric-types-page',
+  templateUrl: './fabric-types.page.html',
+  styleUrls: ['./fabric-types.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class FabricTypesPage {
   private readonly search$: BehaviorSubject<string> = new BehaviorSubject<string>('');

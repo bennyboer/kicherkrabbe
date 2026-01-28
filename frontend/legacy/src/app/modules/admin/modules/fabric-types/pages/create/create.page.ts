@@ -5,11 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FabricTypesService } from '../../services';
 
 @Component({
-    selector: 'app-create-fabric-type-page',
-    templateUrl: './create.page.html',
-    styleUrls: ['./create.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-create-fabric-type-page',
+  templateUrl: './create.page.html',
+  styleUrls: ['./create.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class CreateFabricTypePage implements AfterViewInit, OnDestroy {
   @ViewChild('name')

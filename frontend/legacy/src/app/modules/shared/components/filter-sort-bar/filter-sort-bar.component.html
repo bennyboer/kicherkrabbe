@@ -10,8 +10,7 @@
       <app-button-column #filterButtonColumn [rounded]="false">
         <ng-container
           [ngTemplateOutlet]="filterDropdowns"
-          [ngTemplateOutletInjector]="filterButtonColumn.getInjector()"
-        >
+          [ngTemplateOutletInjector]="filterButtonColumn.getInjector()">
         </ng-container>
       </app-button-column>
     </div>
@@ -45,14 +44,12 @@
         [multiple]="filter.canSelectMultiple()"
         [showSelectionIndicator]="true"
         [useRadioButtonForSingleSelection]="true"
-        (selectionChanged)="updateFilterDropdownItemsSelection(filter, $event)"
-      >
+        (selectionChanged)="updateFilterDropdownItemsSelection(filter, $event)">
         <ng-template let-item>
           @if (filter.itemTemplateRef.isSome()) {
             <ng-container
               [ngTemplateOutlet]="filter.itemTemplateRef.unwrap()"
-              [ngTemplateOutletContext]="{ $implicit: item }"
-            >
+              [ngTemplateOutletContext]="{ $implicit: item }">
             </ng-container>
           } @else {
             <span>{{ item.label }}</span>
@@ -89,8 +86,7 @@
           [selected]="[selectedSortingOption]"
           [showSelectionIndicator]="true"
           [useRadioButtonForSingleSelection]="true"
-          (selectionChanged)="updateSortingOptionDropdownItemSelection($event)"
-        >
+          (selectionChanged)="updateSortingOptionDropdownItemSelection($event)">
           <ng-template let-item>
             <span>{{ item.label }}</span>
           </ng-template>
@@ -111,8 +107,7 @@
           [selected]="['ascending']"
           [showSelectionIndicator]="true"
           [useRadioButtonForSingleSelection]="true"
-          (selectionChanged)="updateSortDirectionDropdownItemSelection($event)"
-        >
+          (selectionChanged)="updateSortDirectionDropdownItemSelection($event)">
           <ng-template let-item>
             <span>{{ item.label }}</span>
           </ng-template>

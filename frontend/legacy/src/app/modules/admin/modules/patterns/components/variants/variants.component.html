@@ -30,8 +30,7 @@
                   #nameInput
                   type="text"
                   [value]="variant.variant.name"
-                  (keydown.enter)="save(variant, nameInput.value)"
-                />
+                  (keydown.enter)="save(variant, nameInput.value)" />
               </td>
               <td class="col-size">
                 {{ variant.variant.getFormattedSizeRange() }}

@@ -11,11 +11,11 @@ import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { someOrNone } from '../../modules/option';
 
 @Component({
-    selector: 'app-checkbox',
-    templateUrl: './checkbox.component.html',
-    styleUrls: ['./checkbox.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-checkbox',
+  templateUrl: './checkbox.component.html',
+  styleUrls: ['./checkbox.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class CheckboxComponent implements OnDestroy {
   @Input()

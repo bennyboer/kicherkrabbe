@@ -4,7 +4,7 @@
       <ul class="image-list" [nxtSortablejs]="imageIds" [config]="imagesSortableConfig">
         @for (imageId of imageIds; track imageId) {
           <li class="drag-handle">
-            <img [src]="getImageUrl(imageId)" width="100%"/>
+            <img [src]="getImageUrl(imageId)" width="100%" />
             <span class="delete-button material-icons" (click)="deleteImage(imageId)">close</span>
           </li>
         }
@@ -12,11 +12,7 @@
     }
   }
   @if (imageUploadActive$ | async) {
-    <app-image-upload
-      [multiple]="true"
-      [desiredWidth]="1024"
-      [watermark]="false"
-      (uploaded)="onImagesUploaded($event)">
+    <app-image-upload [multiple]="true" [desiredWidth]="1024" [watermark]="false" (uploaded)="onImagesUploaded($event)">
     </app-image-upload>
   } @else {
     <div class="add-image-button-container">

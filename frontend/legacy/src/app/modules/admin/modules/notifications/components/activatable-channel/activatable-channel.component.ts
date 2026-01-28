@@ -4,11 +4,11 @@ import { ButtonSize } from '../../../../../shared';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
-    selector: 'app-activatable-channel',
-    templateUrl: './activatable-channel.component.html',
-    styleUrls: ['./activatable-channel.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-activatable-channel',
+  templateUrl: './activatable-channel.component.html',
+  styleUrls: ['./activatable-channel.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ActivatableChannelComponent implements OnDestroy {
   @Input()

@@ -5,8 +5,7 @@
     label="Gruppe"
     [items]="groupDropdownItems$ | async"
     [showSelectionIndicator]="true"
-    (selectionChanged)="updateSelectedGroup(groupDropdown, $event)"
-  >
+    (selectionChanged)="updateSelectedGroup(groupDropdown, $event)">
     <ng-template let-item>
       <span>{{ item.label }}</span>
     </ng-template>
@@ -27,19 +26,26 @@
 
 <app-loading-bar [visible]="loading$ | async"></app-loading-bar>
 
-@if (notLoading$ | async) { @if (categories$ | async; as categories) { @if (categories.length === 0) {
-<app-note level="info">Es konnten keine Kategorien gefunden werden.</app-note>
-} @else {
-<ul class="categories-list">
-  @for (category of categories; track category.id) {
-  <li [routerLink]="category.id">
-    <span class="details">
-      <span class="name"> {{ category.name }} <span class="group-badge">{{ category.group.name }}</span> </span>
-      <span class="created-at">
-        Erstellt am {{ category.createdAt | date: 'dd.MM.yyyy' }} um {{ category.createdAt | date: 'HH:mm' }} Uhr
-      </span>
-    </span>
-  </li>
+@if (notLoading$ | async) {
+  @if (categories$ | async; as categories) {
+    @if (categories.length === 0) {
+      <app-note level="info">Es konnten keine Kategorien gefunden werden.</app-note>
+    } @else {
+      <ul class="categories-list">
+        @for (category of categories; track category.id) {
+          <li [routerLink]="category.id">
+            <span class="details">
+              <span class="name">
+                {{ category.name }} <span class="group-badge">{{ category.group.name }}</span>
+              </span>
+              <span class="created-at">
+                Erstellt am {{ category.createdAt | date: "dd.MM.yyyy" }} um
+                {{ category.createdAt | date: "HH:mm" }} Uhr
+              </span>
+            </span>
+          </li>
+        }
+      </ul>
+    }
   }
-</ul>
-} } }
+}

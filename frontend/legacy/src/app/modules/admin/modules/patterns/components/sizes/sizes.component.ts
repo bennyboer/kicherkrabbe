@@ -47,11 +47,11 @@ class EditablePricedSizeRange {
 }
 
 @Component({
-    selector: 'app-sizes',
-    templateUrl: './sizes.component.html',
-    styleUrls: ['./sizes.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-sizes',
+  templateUrl: './sizes.component.html',
+  styleUrls: ['./sizes.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class SizesComponent implements OnDestroy {
   @Input()

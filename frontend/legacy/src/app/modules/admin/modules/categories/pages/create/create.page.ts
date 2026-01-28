@@ -20,11 +20,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { someOrNone } from '../../../../../shared/modules/option';
 
 @Component({
-    selector: 'app-create-page',
-    templateUrl: './create.page.html',
-    styleUrls: ['./create.page.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-create-page',
+  templateUrl: './create.page.html',
+  styleUrls: ['./create.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class CreatePage implements OnDestroy {
   private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>('');

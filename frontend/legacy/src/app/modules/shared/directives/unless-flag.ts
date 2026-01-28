@@ -2,8 +2,8 @@ import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 import { Flag, FlagService } from '../services';
 
 @Directive({
-    selector: '[unlessFlag]',
-    standalone: false
+  selector: '[unlessFlag]',
+  standalone: false,
 })
 export class UnlessFlagDirective {
   private hasView = false;

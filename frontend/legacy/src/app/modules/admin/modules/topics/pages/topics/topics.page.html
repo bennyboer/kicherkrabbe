@@ -10,23 +10,27 @@
 
 <app-loading-bar [visible]="isLoading() | async"></app-loading-bar>
 
-@if (getTopics() | async; as topics) { @if (topics.length === 0) { @if (isSearching() | async) {
-<p>Es gibt keine Themen, die deiner Suche entsprechen.</p>
-} @else if (isFailed() | async) {
-<app-note level="error"> Es ist ein Fehler aufgetreten. Bitte versuche es später erneut. </app-note>
-} @else {
-<p>Es gibt noch keine Themen. Versuche eines anzulegen.</p>
-} } @else {
-<ul class="topics-list">
-  @for (topic of topics; track topic.id) {
-  <li [routerLink]="[topic.id]">
-    <span class="details">
-      <span class="name"> {{ topic.name }} </span>
-      <span class="created-at">
-        Erstellt am {{ topic.createdAt | date: 'dd.MM.yyyy' }} um {{ topic.createdAt | date: 'HH:mm' }} Uhr
-      </span>
-    </span>
-  </li>
+@if (getTopics() | async; as topics) {
+  @if (topics.length === 0) {
+    @if (isSearching() | async) {
+      <p>Es gibt keine Themen, die deiner Suche entsprechen.</p>
+    } @else if (isFailed() | async) {
+      <app-note level="error"> Es ist ein Fehler aufgetreten. Bitte versuche es später erneut. </app-note>
+    } @else {
+      <p>Es gibt noch keine Themen. Versuche eines anzulegen.</p>
+    }
+  } @else {
+    <ul class="topics-list">
+      @for (topic of topics; track topic.id) {
+        <li [routerLink]="[topic.id]">
+          <span class="details">
+            <span class="name"> {{ topic.name }} </span>
+            <span class="created-at">
+              Erstellt am {{ topic.createdAt | date: "dd.MM.yyyy" }} um {{ topic.createdAt | date: "HH:mm" }} Uhr
+            </span>
+          </span>
+        </li>
+      }
+    </ul>
   }
-</ul>
-} }
+}

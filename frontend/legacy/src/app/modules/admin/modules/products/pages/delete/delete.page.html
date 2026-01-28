@@ -2,16 +2,16 @@
 
 @if (product$ | async; as product) {
   <app-note level="warn">
-    Sie sind im Begriff das Produkt mit der Nummer „{{ product.number }}“ zu löschen.
-    Hierbei handelt es sich um eine Aktion, die <strong>nicht</strong> rückgängig gemacht werden kann.
+    Sie sind im Begriff das Produkt mit der Nummer „{{ product.number }}“ zu löschen. Hierbei handelt es sich um eine
+    Aktion, die <strong>nicht</strong> rückgängig gemacht werden kann.
   </app-note>
 
   <div class="actions">
     <app-button routerLink="..">
-    <span class="icon-button">
-      <span class="material-icons">close</span>
-      <span>Abbrechen</span>
-    </span>
+      <span class="icon-button">
+        <span class="material-icons">close</span>
+        <span>Abbrechen</span>
+      </span>
     </app-button>
 
     <app-button [disabled]="deleting$ | async" (click)="deleteProduct(product)" color="warn">
