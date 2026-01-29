@@ -107,8 +107,12 @@ public abstract class InMemoryEventSourcingReadModelRepo<ID, T extends Versioned
                 Version newVersion = readModel.getVersion();
 
                 T existing = lookup.get(id);
-                if (existing != null && existing.getVersion().compareTo(newVersion) >= 0) {
-                    return;
+                if (existing != null) {
+                    int comparison = existing.getVersion().compareTo(newVersion);
+                    boolean reject = allowSameVersionUpdate() ? comparison > 0 : comparison >= 0;
+                    if (reject) {
+                        return;
+                    }
                 }
 
                 lookup.put(id, readModel);
@@ -135,6 +139,10 @@ public abstract class InMemoryEventSourcingReadModelRepo<ID, T extends Versioned
                 }
             }
         });
+    }
+
+    protected boolean allowSameVersionUpdate() {
+        return false;
     }
 
     @Value

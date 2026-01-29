@@ -56,4 +56,9 @@ public class InMemoryRequestRepo
                 .filter(request -> request.getCreatedAt().isBefore(to));
     }
 
+    @Override
+    protected boolean allowSameVersionUpdate() {
+        return true;
+    }
+
 }

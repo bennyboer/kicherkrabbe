@@ -39,7 +39,10 @@ public abstract class MongoEventSourcingReadModelRepo<ID, T extends VersionedRea
         String id = stringifyId(readModel.getId());
         long version = readModel.getVersion().getValue();
 
-        Criteria criteria = where("_id").is(id).and("version").not().gte(version);
+        Criteria versionCriteria = allowSameVersionUpdate()
+                ? where("version").not().gt(version)
+                : where("version").not().gte(version);
+        Criteria criteria = where("_id").is(id).andOperator(versionCriteria);
         Query query = query(criteria);
 
         S serialized = serializer.serialize(readModel);
@@ -65,6 +68,10 @@ public abstract class MongoEventSourcingReadModelRepo<ID, T extends VersionedRea
 
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         return Mono.empty();
+    }
+
+    protected boolean allowSameVersionUpdate() {
+        return false;
     }
 
     protected abstract String stringifyId(ID id);

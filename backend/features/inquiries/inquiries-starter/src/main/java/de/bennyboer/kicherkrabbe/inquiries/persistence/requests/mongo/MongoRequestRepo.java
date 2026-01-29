@@ -100,6 +100,11 @@ public class MongoRequestRepo
     }
 
     @Override
+    protected boolean allowSameVersionUpdate() {
+        return true;
+    }
+
+    @Override
     protected String stringifyId(RequestId requestId) {
         return requestId.getValue();
     }
