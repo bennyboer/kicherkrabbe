@@ -1,6 +1,5 @@
 package de.bennyboer.kicherkrabbe.users.persistence.lookup.mongo;
 
-import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -16,8 +15,7 @@ public class MongoLookupUser {
     @MongoId
     String id;
 
-    @Nullable
-    Long version;
+    long version;
 
     String firstName;
 

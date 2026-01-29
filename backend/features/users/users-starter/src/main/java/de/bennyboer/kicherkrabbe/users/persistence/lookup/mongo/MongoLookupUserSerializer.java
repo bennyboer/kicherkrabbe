@@ -5,8 +5,6 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.ReadM
 import de.bennyboer.kicherkrabbe.users.*;
 import de.bennyboer.kicherkrabbe.users.persistence.lookup.LookupUser;
 
-import java.util.Optional;
-
 public class MongoLookupUserSerializer implements ReadModelSerializer<LookupUser, MongoLookupUser> {
 
     @Override
@@ -24,11 +22,9 @@ public class MongoLookupUserSerializer implements ReadModelSerializer<LookupUser
 
     @Override
     public LookupUser deserialize(MongoLookupUser serialized) {
-        var version = Optional.ofNullable(serialized.version).orElse(0L);
-
         return LookupUser.of(
                 UserId.of(serialized.id),
-                Version.of(version),
+                Version.of(serialized.version),
                 FullName.of(
                         FirstName.of(serialized.firstName),
                         LastName.of(serialized.lastName)

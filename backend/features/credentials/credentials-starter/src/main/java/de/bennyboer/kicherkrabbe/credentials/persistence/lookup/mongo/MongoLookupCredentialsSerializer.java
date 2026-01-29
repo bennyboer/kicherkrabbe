@@ -7,8 +7,6 @@ import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.LookupCredential
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.ReadModelSerializer;
 
-import java.util.Optional;
-
 public class MongoLookupCredentialsSerializer
         implements ReadModelSerializer<LookupCredentials, MongoLookupCredentials> {
 
@@ -26,11 +24,9 @@ public class MongoLookupCredentialsSerializer
 
     @Override
     public LookupCredentials deserialize(MongoLookupCredentials serialized) {
-        var version = Optional.ofNullable(serialized.version).orElse(0L);
-
         return LookupCredentials.of(
                 CredentialsId.of(serialized.id),
-                Version.of(version),
+                Version.of(serialized.version),
                 Name.of(serialized.name),
                 UserId.of(serialized.userId)
         );

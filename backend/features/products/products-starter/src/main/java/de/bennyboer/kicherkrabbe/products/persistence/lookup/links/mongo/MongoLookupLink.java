@@ -1,6 +1,5 @@
 package de.bennyboer.kicherkrabbe.products.persistence.lookup.links.mongo;
 
-import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -16,8 +15,7 @@ public class MongoLookupLink {
     @MongoId
     String id;
 
-    @Nullable
-    Long version;
+    long version;
 
     MongoLinkType type;
 

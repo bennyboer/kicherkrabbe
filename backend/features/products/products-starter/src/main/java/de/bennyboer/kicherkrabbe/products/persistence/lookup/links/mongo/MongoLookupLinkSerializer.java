@@ -7,8 +7,6 @@ import de.bennyboer.kicherkrabbe.products.product.LinkId;
 import de.bennyboer.kicherkrabbe.products.product.LinkName;
 import de.bennyboer.kicherkrabbe.products.product.LinkType;
 
-import java.util.Optional;
-
 public class MongoLookupLinkSerializer implements ReadModelSerializer<LookupLink, MongoLookupLink> {
 
     @Override
@@ -27,7 +25,7 @@ public class MongoLookupLinkSerializer implements ReadModelSerializer<LookupLink
     @Override
     public LookupLink deserialize(MongoLookupLink link) {
         var id = link.id;
-        var version = Version.of(Optional.ofNullable(link.version).orElse(0L));
+        var version = Version.of(link.version);
         var type = toInternalLinkType(link.type);
         var linkId = LinkId.of(link.linkId);
         var name = LinkName.of(link.name);
