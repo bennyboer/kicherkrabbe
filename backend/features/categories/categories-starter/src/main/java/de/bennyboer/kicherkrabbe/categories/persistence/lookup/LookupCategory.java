@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.categories.CategoryGroup;
 import de.bennyboer.kicherkrabbe.categories.CategoryId;
 import de.bennyboer.kicherkrabbe.categories.CategoryName;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
@@ -14,7 +15,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class LookupCategory {
+public class LookupCategory implements VersionedReadModel<CategoryId> {
 
     CategoryId id;
 

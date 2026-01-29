@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.notifications.persistence.lookup.notification;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
 import de.bennyboer.kicherkrabbe.notifications.channel.Channel;
 import de.bennyboer.kicherkrabbe.notifications.notification.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class LookupNotification {
+public class LookupNotification implements VersionedReadModel<NotificationId> {
 
     NotificationId id;
 

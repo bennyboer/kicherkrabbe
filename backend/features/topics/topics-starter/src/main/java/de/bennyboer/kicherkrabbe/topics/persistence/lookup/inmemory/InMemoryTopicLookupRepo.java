@@ -16,11 +16,6 @@ public class InMemoryTopicLookupRepo extends InMemoryEventSourcingReadModelRepo<
         implements TopicLookupRepo {
 
     @Override
-    protected TopicId getId(LookupTopic readModel) {
-        return readModel.getId();
-    }
-
-    @Override
     public Mono<LookupTopicPage> find(Collection<TopicId> topicIds, String searchTerm, long skip, long limit) {
         return getAll()
                 .filter(topic -> topicIds.contains(topic.getId()))

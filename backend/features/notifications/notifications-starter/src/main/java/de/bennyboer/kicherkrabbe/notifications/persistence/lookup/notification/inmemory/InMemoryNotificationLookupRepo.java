@@ -42,9 +42,4 @@ public class InMemoryNotificationLookupRepo
                 .filter(notification -> notification.getSentAt().isBefore(instant));
     }
 
-    @Override
-    protected NotificationId getId(LookupNotification notification) {
-        return notification.getId();
-    }
-
 }

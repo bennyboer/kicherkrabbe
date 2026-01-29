@@ -18,6 +18,8 @@ public class MongoRequest {
     @MongoId
     String id;
 
+    long version;
+
     String mail;
 
     @Nullable

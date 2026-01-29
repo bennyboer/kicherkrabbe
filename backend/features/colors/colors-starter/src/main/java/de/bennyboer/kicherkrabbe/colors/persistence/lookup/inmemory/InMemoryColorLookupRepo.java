@@ -42,9 +42,4 @@ public class InMemoryColorLookupRepo extends InMemoryEventSourcingReadModelRepo<
                 });
     }
 
-    @Override
-    protected ColorId getId(LookupColor readModel) {
-        return readModel.getId();
-    }
-
 }

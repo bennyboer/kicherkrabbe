@@ -57,9 +57,4 @@ public class InMemoryMailLookupRepo
                 .count();
     }
 
-    @Override
-    protected MailId getId(LookupMail mail) {
-        return mail.getId();
-    }
-
 }

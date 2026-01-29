@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.fabrictypes.persistence.lookup;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
 import de.bennyboer.kicherkrabbe.fabrictypes.FabricTypeId;
 import de.bennyboer.kicherkrabbe.fabrictypes.FabricTypeName;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class LookupFabricType {
+public class LookupFabricType implements VersionedReadModel<FabricTypeId> {
 
     FabricTypeId id;
 

@@ -15,11 +15,6 @@ public class InMemoryRequestRepo
         implements RequestRepo {
 
     @Override
-    protected RequestId getId(Request request) {
-        return request.getId();
-    }
-
-    @Override
     public Mono<Void> insert(Request request) {
         return update(request);
     }

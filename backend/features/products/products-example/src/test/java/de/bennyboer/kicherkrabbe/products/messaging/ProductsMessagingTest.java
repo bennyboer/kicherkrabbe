@@ -311,6 +311,7 @@ public class ProductsMessagingTest extends EventListenerTest {
         request.link.type = LinkTypeDTO.PATTERN;
         request.link.id = "PATTERN_ID";
         request.link.name = "Pattern";
+        request.version = 1;
         verify(module, timeout(5000).times(1)).updateLinkInLookup(eq(request), eq(Agent.system()));
     }
 
@@ -336,6 +337,7 @@ public class ProductsMessagingTest extends EventListenerTest {
         request.link.type = LinkTypeDTO.PATTERN;
         request.link.id = "PATTERN_ID";
         request.link.name = "New name";
+        request.version = 1;
         verify(module, timeout(5000).times(1)).updateLinkInLookup(eq(request), eq(Agent.system()));
     }
 
@@ -382,6 +384,7 @@ public class ProductsMessagingTest extends EventListenerTest {
         request.link.type = LinkTypeDTO.FABRIC;
         request.link.id = "FABRIC_ID";
         request.link.name = "Fabric";
+        request.version = 1;
         verify(module, timeout(5000).times(1)).updateLinkInLookup(eq(request), eq(Agent.system()));
     }
 
@@ -407,6 +410,7 @@ public class ProductsMessagingTest extends EventListenerTest {
         request.link.type = LinkTypeDTO.FABRIC;
         request.link.id = "FABRIC_ID";
         request.link.name = "New name";
+        request.version = 1;
         verify(module, timeout(5000).times(1)).updateLinkInLookup(eq(request), eq(Agent.system()));
     }
 

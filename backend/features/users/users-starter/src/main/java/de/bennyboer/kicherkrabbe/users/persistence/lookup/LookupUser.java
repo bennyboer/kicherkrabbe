@@ -1,5 +1,7 @@
 package de.bennyboer.kicherkrabbe.users.persistence.lookup;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.Version;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
 import de.bennyboer.kicherkrabbe.users.FullName;
 import de.bennyboer.kicherkrabbe.users.Mail;
 import de.bennyboer.kicherkrabbe.users.UserId;
@@ -11,20 +13,23 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class LookupUser {
+public class LookupUser implements VersionedReadModel<UserId> {
 
-    UserId userId;
+    UserId id;
+
+    Version version;
 
     FullName name;
 
     Mail mail;
 
-    public static LookupUser of(UserId userId, FullName name, Mail mail) {
-        notNull(userId, "User ID must be given");
+    public static LookupUser of(UserId id, Version version, FullName name, Mail mail) {
+        notNull(id, "User ID must be given");
+        notNull(version, "Version must be given");
         notNull(name, "Name must be given");
         notNull(mail, "Mail must be given");
 
-        return new LookupUser(userId, name, mail);
+        return new LookupUser(id, version, name, mail);
     }
 
 }

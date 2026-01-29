@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.topics.persistence.lookup;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
 import de.bennyboer.kicherkrabbe.topics.TopicId;
 import de.bennyboer.kicherkrabbe.topics.TopicName;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class LookupTopic {
+public class LookupTopic implements VersionedReadModel<TopicId> {
 
     TopicId id;
 

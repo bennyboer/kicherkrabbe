@@ -120,6 +120,7 @@ public class CredentialsModule {
         return credentialsService.getOrThrow(CredentialsId.of(credentialsId))
                 .flatMap(credentials -> credentialsLookupRepo.update(LookupCredentials.of(
                         credentials.getId(),
+                        credentials.getVersion(),
                         credentials.getName(),
                         credentials.getUserId()
                 )));

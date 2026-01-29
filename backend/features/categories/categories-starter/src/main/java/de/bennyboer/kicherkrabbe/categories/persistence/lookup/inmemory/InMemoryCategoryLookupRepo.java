@@ -17,11 +17,6 @@ public class InMemoryCategoryLookupRepo extends InMemoryEventSourcingReadModelRe
         implements CategoryLookupRepo {
 
     @Override
-    protected CategoryId getId(LookupCategory readModel) {
-        return readModel.getId();
-    }
-
-    @Override
     public Mono<LookupCategoryPage> find(Collection<CategoryId> categoryIds, String searchTerm, long skip, long limit) {
         return getAll()
                 .filter(category -> categoryIds.contains(category.getId()))

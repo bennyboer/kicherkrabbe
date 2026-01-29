@@ -131,7 +131,7 @@ public class ProductsModule {
         Link link = LinkTransformer.toInternal(req.link);
 
         return assertAgentIsAllowedToOnLinks(agent, UPDATE)
-                .then(linkLookupRepo.update(LookupLink.create(link)))
+                .then(linkLookupRepo.update(LookupLink.create(link, Version.of(req.version))))
                 .thenMany(updateLinkInProducts(link.getType(), link.getId(), agent))
                 .map(ProductId::getValue);
     }

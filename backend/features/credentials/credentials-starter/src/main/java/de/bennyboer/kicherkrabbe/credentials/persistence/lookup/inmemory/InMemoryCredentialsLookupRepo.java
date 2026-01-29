@@ -23,9 +23,4 @@ public class InMemoryCredentialsLookupRepo extends InMemoryEventSourcingReadMode
         return getAll().filter(lookup -> lookup.getUserId().equals(userId));
     }
 
-    @Override
-    protected CredentialsId getId(LookupCredentials readModel) {
-        return readModel.getId();
-    }
-
 }

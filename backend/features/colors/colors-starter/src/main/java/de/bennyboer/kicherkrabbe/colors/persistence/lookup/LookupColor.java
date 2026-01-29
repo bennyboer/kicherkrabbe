@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.colors.persistence.lookup;
 import de.bennyboer.kicherkrabbe.colors.ColorId;
 import de.bennyboer.kicherkrabbe.colors.ColorName;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
@@ -14,7 +15,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class LookupColor {
+public class LookupColor implements VersionedReadModel<ColorId> {
 
     ColorId id;
 

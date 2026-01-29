@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.products.persistence.lookup.links;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.products.product.Link;
 import de.bennyboer.kicherkrabbe.products.product.LinkId;
 import de.bennyboer.kicherkrabbe.products.product.LinkName;
@@ -32,7 +33,7 @@ public abstract class LinkLookupRepoTest {
         );
 
         // when: updating the link
-        update(link);
+        update(link, Version.of(1));
 
         // then: the link is updated
         var actualLink = findOne(PATTERN, link.getId());
@@ -58,8 +59,8 @@ public abstract class LinkLookupRepoTest {
                 LinkId.of("FABRIC_ID"),
                 LinkName.of("Fabric")
         );
-        update(link1);
-        update(link2);
+        update(link1, Version.of(1));
+        update(link2, Version.of(1));
 
         // when: removing a link
         remove(PATTERN, link1.getId());
@@ -88,8 +89,8 @@ public abstract class LinkLookupRepoTest {
                 LinkId.of("FABRIC_ID"),
                 LinkName.of("Fabric")
         );
-        update(link1);
-        update(link2);
+        update(link1, Version.of(1));
+        update(link2, Version.of(1));
 
         // when: querying all links
         var page = find("", 0, 10);
@@ -125,8 +126,55 @@ public abstract class LinkLookupRepoTest {
         assertThat(linkIds).containsExactly(link2.getId());
     }
 
-    private void update(Link link) {
-        repo.update(LookupLink.create(link)).block();
+    @Test
+    void shouldRejectStaleWrites() {
+        // given: a link with version 5
+        var link = Link.of(
+                PATTERN,
+                LinkId.of("PATTERN_ID"),
+                LinkName.of("Pattern v5")
+        );
+        update(link, Version.of(5));
+
+        // when: trying to update with an older version (stale write)
+        var staleLink = Link.of(
+                PATTERN,
+                LinkId.of("PATTERN_ID"),
+                LinkName.of("Pattern v3 - STALE")
+        );
+        update(staleLink, Version.of(3));
+
+        // then: the stale write is rejected, original data is preserved
+        var actualLink = findOne(PATTERN, link.getId());
+        assertThat(actualLink.getName().getValue()).isEqualTo("Pattern v5");
+
+        // when: trying to update with the same version
+        var sameVersionLink = Link.of(
+                PATTERN,
+                LinkId.of("PATTERN_ID"),
+                LinkName.of("Pattern v5 - SAME VERSION")
+        );
+        update(sameVersionLink, Version.of(5));
+
+        // then: the same version write is also rejected
+        actualLink = findOne(PATTERN, link.getId());
+        assertThat(actualLink.getName().getValue()).isEqualTo("Pattern v5");
+
+        // when: updating with a newer version
+        var newerLink = Link.of(
+                PATTERN,
+                LinkId.of("PATTERN_ID"),
+                LinkName.of("Pattern v7")
+        );
+        update(newerLink, Version.of(7));
+
+        // then: the newer version is accepted
+        actualLink = findOne(PATTERN, link.getId());
+        assertThat(actualLink.getName().getValue()).isEqualTo("Pattern v7");
+    }
+
+    private void update(Link link, Version version) {
+        repo.update(LookupLink.create(link, version)).block();
     }
 
     private void remove(LinkType type, LinkId linkId) {

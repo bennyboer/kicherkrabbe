@@ -18,11 +18,6 @@ public class InMemoryPatternLookupRepo
         implements PatternLookupRepo {
 
     @Override
-    protected PatternId getId(LookupPattern readModel) {
-        return readModel.getId();
-    }
-
-    @Override
     public Mono<LookupPatternPage> find(
             Collection<PatternId> patternIds,
             Set<PatternCategoryId> categories,

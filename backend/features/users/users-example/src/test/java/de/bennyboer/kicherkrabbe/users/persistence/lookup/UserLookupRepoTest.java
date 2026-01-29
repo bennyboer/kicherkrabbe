@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.users.persistence.lookup;
 
 import de.bennyboer.kicherkrabbe.users.*;
+import de.bennyboer.kicherkrabbe.users.samples.SampleLookupUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,14 +21,7 @@ public abstract class UserLookupRepoTest {
     @Test
     void shouldUpdateUserInLookup() {
         // given: a user to update in the lookup
-        var userLookup = LookupUser.of(
-                UserId.of("USER_ID"),
-                FullName.of(
-                        FirstName.of("Max"),
-                        LastName.of("Mustermann")
-                ),
-                Mail.of("max.mustermann@kicherkrabbe.com")
-        );
+        var userLookup = SampleLookupUser.builder().build().toModel();
 
         // when: the user is updated in the lookup
         update(userLookup);
@@ -40,18 +34,11 @@ public abstract class UserLookupRepoTest {
     @Test
     void shouldRemoveUserFromLookup() {
         // given: a user in the lookup
-        var userLookup = LookupUser.of(
-                UserId.of("USER_ID"),
-                FullName.of(
-                        FirstName.of("Max"),
-                        LastName.of("Mustermann")
-                ),
-                Mail.of("max.mustermann@kicherkrabbe.com")
-        );
+        var userLookup = SampleLookupUser.builder().build().toModel();
         update(userLookup);
 
         // when: the user is removed from the lookup
-        remove(userLookup.getUserId());
+        remove(userLookup.getId());
 
         // then: the user can not be found by its mail
         var foundUser = findByMail(userLookup.getMail());
@@ -67,14 +54,10 @@ public abstract class UserLookupRepoTest {
         assertThat(count).isEqualTo(0);
 
         // when: adding a user in the lookup
-        var userLookup1 = LookupUser.of(
-                UserId.of("USER_ID_1"),
-                FullName.of(
-                        FirstName.of("Max"),
-                        LastName.of("Mustermann")
-                ),
-                Mail.of("max.mustermann@kicherkrabbe.com")
-        );
+        var userLookup1 = SampleLookupUser.builder()
+                .id(UserId.of("USER_ID_1"))
+                .mail(Mail.of("max.mustermann@kicherkrabbe.com"))
+                .build().toModel();
         update(userLookup1);
 
         // then: the count is 1
@@ -82,14 +65,14 @@ public abstract class UserLookupRepoTest {
         assertThat(count).isEqualTo(1);
 
         // when: adding another user in the lookup
-        var userLookup2 = LookupUser.of(
-                UserId.of("USER_ID_2"),
-                FullName.of(
+        var userLookup2 = SampleLookupUser.builder()
+                .id(UserId.of("USER_ID_2"))
+                .name(FullName.of(
                         FirstName.of("John"),
                         LastName.of("Doe")
-                ),
-                Mail.of("john.doe@kicherkrabbe.com")
-        );
+                ))
+                .mail(Mail.of("john.doe@kicherkrabbe.com"))
+                .build().toModel();
         update(userLookup2);
 
         // then: the count is 2

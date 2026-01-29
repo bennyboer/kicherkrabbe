@@ -13,6 +13,7 @@ public class MongoRequestSerializer implements ReadModelSerializer<Request, Mong
         var result = new MongoRequest();
 
         result.id = request.getId().getValue();
+        result.version = request.getVersion().getValue();
         result.mail = request.getMail().getValue();
         result.ipAddress = request.getIpAddress().orElse(null);
         result.createdAt = request.getCreatedAt();

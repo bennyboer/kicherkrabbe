@@ -14,4 +14,6 @@ public class UpdateLinkInLookupRequest {
 
     LinkDTO link;
 
+    long version;
+
 }

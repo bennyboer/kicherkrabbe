@@ -1,6 +1,9 @@
 package de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.EventSourcingReadModelRepo;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.mongodb.core.FindAndReplaceOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.index.ReactiveIndexOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -10,7 +13,8 @@ import reactor.core.publisher.Mono;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
-public abstract class MongoEventSourcingReadModelRepo<ID, T, S> implements EventSourcingReadModelRepo<ID, T> {
+public abstract class MongoEventSourcingReadModelRepo<ID, T extends VersionedReadModel<ID>, S>
+        implements EventSourcingReadModelRepo<ID, T> {
 
     protected final String collectionName;
 
@@ -32,7 +36,22 @@ public abstract class MongoEventSourcingReadModelRepo<ID, T, S> implements Event
 
     @Override
     public Mono<Void> update(T readModel) {
-        return template.save(serializer.serialize(readModel), collectionName).then();
+        String id = stringifyId(readModel.getId());
+        long version = readModel.getVersion().getValue();
+
+        Criteria criteria = where("_id").is(id).and("version").not().gte(version);
+        Query query = query(criteria);
+
+        S serialized = serializer.serialize(readModel);
+
+        return template.findAndReplace(
+                        query,
+                        serialized,
+                        FindAndReplaceOptions.options().upsert(),
+                        collectionName
+                )
+                .onErrorResume(DuplicateKeyException.class, e -> Mono.empty())
+                .then();
     }
 
     @Override
