@@ -50,9 +50,4 @@ public class InMemoryLinkLookupRepo
                 .then();
     }
 
-    @Override
-    protected String getId(LookupLink readModel) {
-        return readModel.getId();
-    }
-
 }

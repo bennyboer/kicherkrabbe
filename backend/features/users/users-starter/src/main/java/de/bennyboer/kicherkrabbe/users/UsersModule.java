@@ -115,7 +115,7 @@ public class UsersModule {
 
     public Mono<Void> updateUserInLookup(String userId) {
         return usersService.getOrThrow(UserId.of(userId))
-                .map(user -> LookupUser.of(user.getId(), user.getName(), user.getMail()))
+                .map(user -> LookupUser.of(user.getId(), user.getVersion(), user.getName(), user.getMail()))
                 .flatMap(userLookupRepo::update);
     }
 

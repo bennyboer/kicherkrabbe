@@ -15,11 +15,6 @@ public class InMemoryEventSourcingReadModelTests extends EventSourcingReadModelT
             implements SampleAggregateReadModelRepo {
 
         @Override
-        protected String getId(SampleAggregateReadModel readModel) {
-            return readModel.getId();
-        }
-
-        @Override
         public Mono<SampleAggregateReadModel> get(String id) {
             return super.get(id);
         }

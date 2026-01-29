@@ -1,6 +1,8 @@
 package de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.inmemory;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.EventSourcingReadModelRepo;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -16,15 +18,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-public abstract class InMemoryEventSourcingReadModelRepo<ID, T> implements EventSourcingReadModelRepo<ID, T> {
+public abstract class InMemoryEventSourcingReadModelRepo<ID, T extends VersionedReadModel<ID>>
+        implements EventSourcingReadModelRepo<ID, T> {
 
     private final List<Awaiter<T>> updateAwaiters = new ArrayList<>();
 
     private final List<Awaiter<ID>> removalAwaiters = new ArrayList<>();
 
     protected final Map<ID, T> lookup = new HashMap<>();
-
-    protected abstract ID getId(T readModel);
 
     public void awaitUpdate(ID id) {
         awaitUpdate(id, Duration.ofSeconds(5));
@@ -35,7 +36,7 @@ public abstract class InMemoryEventSourcingReadModelRepo<ID, T> implements Event
     }
 
     public void awaitUpdate(ID id, Duration timeout) {
-        awaitUpdate(obj -> getId(obj).equals(id), timeout);
+        awaitUpdate(obj -> obj.getId().equals(id), timeout);
     }
 
     public void awaitUpdate(Predicate<T> predicate, Duration timeout) {
@@ -102,7 +103,19 @@ public abstract class InMemoryEventSourcingReadModelRepo<ID, T> implements Event
     public Mono<Void> update(T readModel) {
         return Mono.fromRunnable(() -> {
             synchronized (lookup) {
-                lookup.put(getId(readModel), readModel);
+                ID id = readModel.getId();
+                Version newVersion = readModel.getVersion();
+
+                T existing = lookup.get(id);
+                if (existing != null) {
+                    int comparison = existing.getVersion().compareTo(newVersion);
+                    boolean reject = allowSameVersionUpdate() ? comparison > 0 : comparison >= 0;
+                    if (reject) {
+                        return;
+                    }
+                }
+
+                lookup.put(id, readModel);
 
                 synchronized (updateAwaiters) {
                     for (Awaiter<T> awaiter : updateAwaiters) {
@@ -126,6 +139,10 @@ public abstract class InMemoryEventSourcingReadModelRepo<ID, T> implements Event
                 }
             }
         });
+    }
+
+    protected boolean allowSameVersionUpdate() {
+        return false;
     }
 
     @Value

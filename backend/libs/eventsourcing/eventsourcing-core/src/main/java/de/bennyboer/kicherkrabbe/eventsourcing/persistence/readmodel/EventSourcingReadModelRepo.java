@@ -2,16 +2,10 @@ package de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel;
 
 import reactor.core.publisher.Mono;
 
-public interface EventSourcingReadModelRepo<ID, T> {
+public interface EventSourcingReadModelRepo<ID, T extends VersionedReadModel<ID>> {
 
-    /**
-     * Add or update the aggregate in the read model.
-     */
     Mono<Void> update(T readModel);
 
-    /**
-     * Remove the read model from the read model with the given ID.
-     */
     Mono<Void> remove(ID id);
 
 }

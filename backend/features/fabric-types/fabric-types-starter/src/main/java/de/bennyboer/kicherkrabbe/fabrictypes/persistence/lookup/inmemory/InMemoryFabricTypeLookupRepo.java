@@ -16,11 +16,6 @@ public class InMemoryFabricTypeLookupRepo extends InMemoryEventSourcingReadModel
         implements FabricTypeLookupRepo {
 
     @Override
-    protected FabricTypeId getId(LookupFabricType readModel) {
-        return readModel.getId();
-    }
-
-    @Override
     public Mono<LookupFabricTypePage> find(
             Collection<FabricTypeId> fabricTypeIds,
             String searchTerm,

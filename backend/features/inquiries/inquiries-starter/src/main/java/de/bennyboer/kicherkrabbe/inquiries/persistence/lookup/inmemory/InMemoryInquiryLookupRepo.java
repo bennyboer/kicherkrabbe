@@ -23,9 +23,4 @@ public class InMemoryInquiryLookupRepo
                 .next();
     }
 
-    @Override
-    protected InquiryId getId(LookupInquiry inquiry) {
-        return inquiry.getId();
-    }
-
 }

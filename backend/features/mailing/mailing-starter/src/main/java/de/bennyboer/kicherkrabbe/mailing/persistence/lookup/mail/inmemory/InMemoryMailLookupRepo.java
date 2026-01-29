@@ -47,9 +47,4 @@ public class InMemoryMailLookupRepo
                 .filter(mail -> mail.getSentAt().isBefore(instant));
     }
 
-    @Override
-    protected MailId getId(LookupMail mail) {
-        return mail.getId();
-    }
-
 }

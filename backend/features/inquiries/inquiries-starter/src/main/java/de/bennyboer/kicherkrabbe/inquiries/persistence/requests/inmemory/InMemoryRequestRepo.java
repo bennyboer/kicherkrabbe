@@ -15,11 +15,6 @@ public class InMemoryRequestRepo
         implements RequestRepo {
 
     @Override
-    protected RequestId getId(Request request) {
-        return request.getId();
-    }
-
-    @Override
     public Mono<Void> insert(Request request) {
         return update(request);
     }
@@ -59,6 +54,11 @@ public class InMemoryRequestRepo
         return getAll()
                 .filter(request -> !request.getCreatedAt().isBefore(from))
                 .filter(request -> request.getCreatedAt().isBefore(to));
+    }
+
+    @Override
+    protected boolean allowSameVersionUpdate() {
+        return true;
     }
 
 }

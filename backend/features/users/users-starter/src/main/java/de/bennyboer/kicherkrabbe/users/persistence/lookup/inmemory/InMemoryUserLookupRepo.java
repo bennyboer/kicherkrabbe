@@ -11,11 +11,6 @@ public class InMemoryUserLookupRepo extends InMemoryEventSourcingReadModelRepo<U
         implements UserLookupRepo {
 
     @Override
-    protected UserId getId(LookupUser readModel) {
-        return readModel.getUserId();
-    }
-
-    @Override
     public Mono<LookupUser> findByMail(Mail mail) {
         return getAll()
                 .filter(userLookup -> userLookup.getMail().equals(mail))

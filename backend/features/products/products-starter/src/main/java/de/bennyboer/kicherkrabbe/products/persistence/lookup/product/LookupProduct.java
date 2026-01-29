@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.products.persistence.lookup.product;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
 import de.bennyboer.kicherkrabbe.products.product.*;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -13,7 +14,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class LookupProduct {
+public class LookupProduct implements VersionedReadModel<ProductId> {
 
     ProductId id;
 

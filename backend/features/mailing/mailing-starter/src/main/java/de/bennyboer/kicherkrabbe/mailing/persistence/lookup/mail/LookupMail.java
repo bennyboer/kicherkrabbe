@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.mailing.persistence.lookup.mail;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
 import de.bennyboer.kicherkrabbe.mailing.mail.*;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -13,7 +14,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class LookupMail {
+public class LookupMail implements VersionedReadModel<MailId> {
 
     MailId id;
 

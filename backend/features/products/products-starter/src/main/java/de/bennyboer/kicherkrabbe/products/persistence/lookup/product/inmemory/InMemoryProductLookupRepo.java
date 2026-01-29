@@ -62,9 +62,4 @@ public class InMemoryProductLookupRepo
                 .filter(product -> product.getLinks().contains(linkType, linkId));
     }
 
-    @Override
-    protected ProductId getId(LookupProduct readModel) {
-        return readModel.getId();
-    }
-
 }

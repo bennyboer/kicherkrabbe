@@ -1,5 +1,7 @@
 package de.bennyboer.kicherkrabbe.inquiries.persistence.requests;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.Version;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
 import de.bennyboer.kicherkrabbe.inquiries.EMail;
 import de.bennyboer.kicherkrabbe.inquiries.RequestId;
 import jakarta.annotation.Nullable;
@@ -14,7 +16,9 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class Request {
+public class Request implements VersionedReadModel<RequestId> {
+
+    private static final Version VERSION = Version.of(1);
 
     RequestId id;
 
@@ -36,6 +40,11 @@ public class Request {
         notNull(createdAt, "Created at must be given");
 
         return new Request(id, mail, ipAddress, createdAt);
+    }
+
+    @Override
+    public Version getVersion() {
+        return VERSION;
     }
 
     public Optional<String> getIpAddress() {

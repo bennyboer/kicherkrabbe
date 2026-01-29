@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.patterns.persistence.lookup;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
+import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
 import de.bennyboer.kicherkrabbe.patterns.*;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class LookupPattern {
+public class LookupPattern implements VersionedReadModel<PatternId> {
 
     PatternId id;
 

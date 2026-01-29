@@ -147,6 +147,7 @@ public class ManageLinksTest extends ProductsModuleTest {
                 .name("Pattern")
                 .build()
                 .toDTO();
+        updateLinkInLookupRequest.version = 1;
         updateLinkInLookup(updateLinkInLookupRequest, Agent.system());
 
         // and: the links are added to a product
@@ -167,6 +168,7 @@ public class ManageLinksTest extends ProductsModuleTest {
 
         // when: updating the link
         updateLinkInLookupRequest.link.name = "New name";
+        updateLinkInLookupRequest.version = 2;
         updateLinkInLookup(updateLinkInLookupRequest, Agent.system());
 
         // then: the link is updated in the product
