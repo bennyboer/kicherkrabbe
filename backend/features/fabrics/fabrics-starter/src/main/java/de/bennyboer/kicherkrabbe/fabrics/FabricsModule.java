@@ -417,6 +417,7 @@ public class FabricsModule {
                         fabric.getTopics(),
                         fabric.getAvailability(),
                         fabric.isPublished(),
+                        fabric.isFeatured(),
                         fabric.getCreatedAt()
                 ))
                 .flatMap(fabricLookupRepo::update);

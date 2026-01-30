@@ -38,6 +38,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
                 ),
                 false,
+                false,
                 Instant.parse("2024-03-12T12:30:00.00Z")
         );
 
@@ -64,6 +65,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
                 ),
                 true,
+                false,
                 Instant.parse("2024-03-12T12:30:00.00Z")
         );
         var fabric2 = LookupFabric.of(
@@ -77,6 +79,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
                 ),
+                false,
                 false,
                 Instant.parse("2024-03-12T12:30:00.00Z")
         );
@@ -106,6 +109,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
                 ),
                 true,
+                false,
                 Instant.parse("2024-03-12T13:00:00.00Z")
         );
         var fabric2 = LookupFabric.of(
@@ -119,6 +123,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
                 ),
+                false,
                 false,
                 Instant.parse("2024-03-12T12:30:00.00Z")
         );
@@ -147,6 +152,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
                 ),
                 true,
+                false,
                 Instant.parse("2024-03-12T13:00:00.00Z")
         );
         var fabric2 = LookupFabric.of(
@@ -161,6 +167,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
                 ),
                 false,
+                false,
                 Instant.parse("2024-03-12T09:30:00.00Z")
         );
         var fabric3 = LookupFabric.of(
@@ -174,6 +181,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
                 ),
+                false,
                 false,
                 Instant.parse("2024-03-12T11:00:00.00Z")
         );
@@ -222,6 +230,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
                 ),
                 false,
+                false,
                 Instant.parse("2024-03-12T13:00:00.00Z")
         );
         var fabric2 = LookupFabric.of(
@@ -236,6 +245,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
                 ),
                 true,
+                false,
                 Instant.parse("2024-03-12T09:30:00.00Z")
         );
         var fabric3 = LookupFabric.of(
@@ -250,6 +260,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
                 ),
                 true,
+                false,
                 Instant.parse("2024-03-12T11:00:00.00Z")
         );
         update(fabric1);
@@ -297,6 +308,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
                 ),
                 true,
+                false,
                 Instant.parse("2024-03-12T13:00:00.00Z")
         );
         var fabric2 = LookupFabric.of(
@@ -311,6 +323,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
                 ),
                 true,
+                false,
                 Instant.parse("2024-03-12T09:30:00.00Z")
         );
         var fabric3 = LookupFabric.of(
@@ -324,6 +337,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
                 ),
+                false,
                 false,
                 Instant.parse("2024-03-12T11:00:00.00Z")
         );
@@ -362,6 +376,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
                 ),
                 true,
+                false,
                 Instant.parse("2024-03-12T13:00:00.00Z")
         );
         var fabric2 = LookupFabric.of(
@@ -375,6 +390,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
                 ),
+                false,
                 false,
                 Instant.parse("2024-03-12T09:30:00.00Z")
         );
@@ -409,6 +425,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
                 ),
                 true,
+                false,
                 Instant.parse("2024-03-12T13:00:00.00Z")
         );
         var fabric2 = LookupFabric.of(
@@ -423,6 +440,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
                 ),
                 true,
+                false,
                 Instant.parse("2024-03-12T09:30:00.00Z")
         );
         var fabric3 = LookupFabric.of(
@@ -436,6 +454,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
                         FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
                 ),
+                false,
                 false,
                 Instant.parse("2024-03-12T11:00:00.00Z")
         );
@@ -595,6 +614,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(),
                 Set.of(),
                 true,
+                false,
                 Instant.parse("2024-03-12T13:00:00.00Z")
         );
         var fabric2 = LookupFabric.of(
@@ -606,6 +626,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(),
                 Set.of(),
                 true,
+                false,
                 Instant.parse("2024-03-12T09:30:00.00Z")
         );
         var fabric3 = LookupFabric.of(
@@ -617,6 +638,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(),
                 Set.of(),
                 true,
+                false,
                 Instant.parse("2024-03-12T11:00:00.00Z")
         );
         update(fabric1);
@@ -658,6 +680,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(topicId1),
                 Set.of(),
                 true,
+                false,
                 Instant.parse("2024-03-12T13:00:00.00Z")
         );
         var fabric2 = LookupFabric.of(
@@ -669,6 +692,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(topicId2),
                 Set.of(),
                 true,
+                false,
                 Instant.parse("2024-03-12T09:30:00.00Z")
         );
         var fabric3 = LookupFabric.of(
@@ -680,6 +704,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(topicId3, topicId2),
                 Set.of(),
                 true,
+                false,
                 Instant.parse("2024-03-12T11:00:00.00Z")
         );
         update(fabric1);
@@ -721,6 +746,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(),
                 Set.of(FabricTypeAvailability.of(fabricTypeId1, true)),
                 true,
+                false,
                 Instant.parse("2024-03-12T13:00:00.00Z")
         );
         var fabric2 = LookupFabric.of(
@@ -732,6 +758,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(),
                 Set.of(FabricTypeAvailability.of(fabricTypeId2, true)),
                 true,
+                false,
                 Instant.parse("2024-03-12T09:30:00.00Z")
         );
         var fabric3 = LookupFabric.of(
@@ -746,6 +773,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(fabricTypeId3, true)
                 ),
                 true,
+                false,
                 Instant.parse("2024-03-12T11:00:00.00Z")
         );
         update(fabric1);
@@ -787,6 +815,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(),
                 Set.of(),
                 true,
+                false,
                 Instant.parse("2024-03-12T13:00:00.00Z")
         );
         var fabric2 = LookupFabric.of(
@@ -798,6 +827,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(),
                 Set.of(),
                 true,
+                false,
                 Instant.parse("2024-03-12T09:30:00.00Z")
         );
         var fabric3 = LookupFabric.of(
@@ -809,6 +839,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(),
                 Set.of(),
                 true,
+                false,
                 Instant.parse("2024-03-12T11:00:00.00Z")
         );
         update(fabric1);
@@ -847,6 +878,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(topicId1),
                 Set.of(),
                 true,
+                false,
                 Instant.parse("2024-03-12T13:00:00.00Z")
         );
         var fabric2 = LookupFabric.of(
@@ -858,6 +890,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(topicId2),
                 Set.of(),
                 true,
+                false,
                 Instant.parse("2024-03-12T09:30:00.00Z")
         );
         var fabric3 = LookupFabric.of(
@@ -869,6 +902,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(topicId3, topicId2),
                 Set.of(),
                 true,
+                false,
                 Instant.parse("2024-03-12T11:00:00.00Z")
         );
         update(fabric1);
@@ -908,6 +942,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(),
                 Set.of(FabricTypeAvailability.of(fabricTypeId1, true)),
                 true,
+                false,
                 Instant.parse("2024-03-12T13:00:00.00Z")
         );
         var fabric2 = LookupFabric.of(
@@ -919,6 +954,7 @@ public abstract class FabricLookupRepoTest {
                 Set.of(),
                 Set.of(FabricTypeAvailability.of(fabricTypeId2, true)),
                 true,
+                false,
                 Instant.parse("2024-03-12T09:30:00.00Z")
         );
         var fabric3 = LookupFabric.of(
@@ -933,6 +969,7 @@ public abstract class FabricLookupRepoTest {
                         FabricTypeAvailability.of(fabricTypeId3, true)
                 ),
                 true,
+                false,
                 Instant.parse("2024-03-12T11:00:00.00Z")
         );
 

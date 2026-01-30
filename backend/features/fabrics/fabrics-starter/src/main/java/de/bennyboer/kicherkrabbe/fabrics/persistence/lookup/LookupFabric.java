@@ -3,10 +3,12 @@ package de.bennyboer.kicherkrabbe.fabrics.persistence.lookup;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
 import de.bennyboer.kicherkrabbe.fabrics.*;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
@@ -32,6 +34,9 @@ public class LookupFabric implements VersionedReadModel<FabricId> {
 
     boolean published;
 
+    @Nullable
+    Boolean featured;
+
     Instant createdAt;
 
     public static LookupFabric of(
@@ -43,6 +48,7 @@ public class LookupFabric implements VersionedReadModel<FabricId> {
             Set<TopicId> topics,
             Set<FabricTypeAvailability> availability,
             boolean published,
+            @Nullable Boolean featured,
             Instant createdAt
     ) {
         notNull(id, "Fabric ID must be given");
@@ -54,7 +60,11 @@ public class LookupFabric implements VersionedReadModel<FabricId> {
         notNull(availability, "Availability must be given");
         notNull(createdAt, "Created at must be given");
 
-        return new LookupFabric(id, version, name, image, colors, topics, availability, published, createdAt);
+        return new LookupFabric(id, version, name, image, colors, topics, availability, published, featured, createdAt);
+    }
+
+    public Optional<Boolean> getFeatured() {
+        return Optional.ofNullable(featured);
     }
 
 }

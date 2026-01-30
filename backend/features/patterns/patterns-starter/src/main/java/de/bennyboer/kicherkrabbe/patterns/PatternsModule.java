@@ -523,6 +523,7 @@ public class PatternsModule {
                         pattern.getId(),
                         pattern.getVersion(),
                         pattern.isPublished(),
+                        pattern.isFeatured(),
                         pattern.getName(),
                         pattern.getNumber(),
                         pattern.getDescription().orElse(null),
