@@ -12,7 +12,9 @@ import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.*;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.colors.Color;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.fabrictypes.FabricType;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.topics.Topic;
+import de.bennyboer.kicherkrabbe.fabrics.feature.AlreadyFeaturedError;
 import de.bennyboer.kicherkrabbe.fabrics.publish.AlreadyPublishedError;
+import de.bennyboer.kicherkrabbe.fabrics.unfeature.AlreadyUnfeaturedError;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.AlreadyUnpublishedError;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.ReactiveTransactionManager;
@@ -331,6 +333,70 @@ public class FabricsHttpHandler {
                         e
                 ))
                 .onErrorMap(AlreadyUnpublishedError.class, e -> new ResponseStatusException(
+                        PRECONDITION_FAILED,
+                        e.getMessage(),
+                        e
+                ))
+                .as(transactionalOperator::transactional);
+    }
+
+    public Mono<ServerResponse> featureFabric(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        String fabricId = request.pathVariable("fabricId");
+        long version = request.queryParam("version")
+                .map(Long::parseLong)
+                .orElseThrow(() -> new ResponseStatusException(
+                        BAD_REQUEST,
+                        "Missing version query parameter"
+                ));
+
+        return toAgent(request)
+                .flatMap(agent -> module.featureFabric(fabricId, version, agent))
+                .map(newVersion -> {
+                    var response = new FeatureFabricResponse();
+                    response.version = newVersion;
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                        CONFLICT,
+                        e.getMessage(),
+                        e
+                ))
+                .onErrorMap(AlreadyFeaturedError.class, e -> new ResponseStatusException(
+                        PRECONDITION_FAILED,
+                        e.getMessage(),
+                        e
+                ))
+                .as(transactionalOperator::transactional);
+    }
+
+    public Mono<ServerResponse> unfeatureFabric(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        String fabricId = request.pathVariable("fabricId");
+        long version = request.queryParam("version")
+                .map(Long::parseLong)
+                .orElseThrow(() -> new ResponseStatusException(
+                        BAD_REQUEST,
+                        "Missing version query parameter"
+                ));
+
+        return toAgent(request)
+                .flatMap(agent -> module.unfeatureFabric(fabricId, version, agent))
+                .map(newVersion -> {
+                    var response = new UnfeatureFabricResponse();
+                    response.version = newVersion;
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                        CONFLICT,
+                        e.getMessage(),
+                        e
+                ))
+                .onErrorMap(AlreadyUnfeaturedError.class, e -> new ResponseStatusException(
                         PRECONDITION_FAILED,
                         e.getMessage(),
                         e

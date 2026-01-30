@@ -262,6 +262,24 @@ public class PatternsModule {
     }
 
     @Transactional(propagation = MANDATORY)
+    public Mono<Long> featurePattern(String patternId, long version, Agent agent) {
+        var internalPatternId = PatternId.of(patternId);
+
+        return assertAgentIsAllowedTo(agent, FEATURE, internalPatternId)
+                .then(patternService.feature(internalPatternId, Version.of(version), agent))
+                .map(Version::getValue);
+    }
+
+    @Transactional(propagation = MANDATORY)
+    public Mono<Long> unfeaturePattern(String patternId, long version, Agent agent) {
+        var internalPatternId = PatternId.of(patternId);
+
+        return assertAgentIsAllowedTo(agent, UNFEATURE, internalPatternId)
+                .then(patternService.unfeature(internalPatternId, Version.of(version), agent))
+                .map(Version::getValue);
+    }
+
+    @Transactional(propagation = MANDATORY)
     public Mono<Long> updatePatternVariants(
             String patternId,
             long version,
@@ -422,6 +440,18 @@ public class PatternsModule {
                 .holder(holder)
                 .isAllowedTo(UNPUBLISH)
                 .on(resource);
+        var featurePermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(FEATURE)
+                .on(resource);
+        var unfeaturePermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(UNFEATURE)
+                .on(resource);
+        var readFeaturedPermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(READ_FEATURED)
+                .on(resource);
         var updateAttributionPermission = Permission.builder()
                 .holder(holder)
                 .isAllowedTo(UPDATE_ATTRIBUTION)
@@ -461,6 +491,9 @@ public class PatternsModule {
                 renamePermission,
                 publishPermission,
                 unpublishPermission,
+                featurePermission,
+                unfeaturePermission,
+                readFeaturedPermission,
                 updateAttributionPermission,
                 updateCategoriesPermission,
                 updateImagesPermission,
@@ -555,6 +588,46 @@ public class PatternsModule {
         return permissionsService.removePermissions(
                 readPublishedPermission,
                 readPublishedSystemPermission
+        );
+    }
+
+    public Mono<Void> allowAnonymousAndSystemUsersToReadFeaturedPattern(String patternId) {
+        var resource = Resource.of(getResourceType(), ResourceId.of(patternId));
+        var systemHolder = Holder.group(HolderId.system());
+        var anonymousHolder = Holder.group(HolderId.anonymous());
+
+        var readFeaturedPermission = Permission.builder()
+                .holder(anonymousHolder)
+                .isAllowedTo(READ_FEATURED)
+                .on(resource);
+        var readFeaturedSystemPermission = Permission.builder()
+                .holder(systemHolder)
+                .isAllowedTo(READ_FEATURED)
+                .on(resource);
+
+        return permissionsService.addPermissions(
+                readFeaturedPermission,
+                readFeaturedSystemPermission
+        );
+    }
+
+    public Mono<Void> disallowAnonymousAndSystemUsersToReadFeaturedPattern(String patternId) {
+        var resource = Resource.of(getResourceType(), ResourceId.of(patternId));
+        var systemHolder = Holder.group(HolderId.system());
+        var anonymousHolder = Holder.group(HolderId.anonymous());
+
+        var readFeaturedPermission = Permission.builder()
+                .holder(anonymousHolder)
+                .isAllowedTo(READ_FEATURED)
+                .on(resource);
+        var readFeaturedSystemPermission = Permission.builder()
+                .holder(systemHolder)
+                .isAllowedTo(READ_FEATURED)
+                .on(resource);
+
+        return permissionsService.removePermissions(
+                readFeaturedPermission,
+                readFeaturedSystemPermission
         );
     }
 

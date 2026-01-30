@@ -282,6 +282,24 @@ public class FabricsModule {
     }
 
     @Transactional(propagation = MANDATORY)
+    public Mono<Long> featureFabric(String fabricId, long version, Agent agent) {
+        var id = FabricId.of(fabricId);
+
+        return assertAgentIsAllowedTo(agent, FEATURE, id)
+                .then(fabricService.feature(id, Version.of(version), agent))
+                .map(Version::getValue);
+    }
+
+    @Transactional(propagation = MANDATORY)
+    public Mono<Long> unfeatureFabric(String fabricId, long version, Agent agent) {
+        var id = FabricId.of(fabricId);
+
+        return assertAgentIsAllowedTo(agent, UNFEATURE, id)
+                .then(fabricService.unfeature(id, Version.of(version), agent))
+                .map(Version::getValue);
+    }
+
+    @Transactional(propagation = MANDATORY)
     public Mono<Long> updateFabricImage(String fabricId, long version, String imageId, Agent agent) {
         var id = FabricId.of(fabricId);
 
@@ -444,6 +462,18 @@ public class FabricsModule {
                 .holder(holder)
                 .isAllowedTo(UNPUBLISH)
                 .on(resource);
+        var featurePermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(FEATURE)
+                .on(resource);
+        var unfeaturePermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(UNFEATURE)
+                .on(resource);
+        var readFeaturedPermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(READ_FEATURED)
+                .on(resource);
         var updateImagePermission = Permission.builder()
                 .holder(holder)
                 .isAllowedTo(UPDATE_IMAGE)
@@ -471,6 +501,9 @@ public class FabricsModule {
                 renamePermission,
                 publishPermission,
                 unpublishPermission,
+                featurePermission,
+                unfeaturePermission,
+                readFeaturedPermission,
                 updateImagePermission,
                 updateColorsPermission,
                 updateTopicsPermission,
@@ -516,6 +549,46 @@ public class FabricsModule {
         return permissionsService.removePermissions(
                 readPublishedPermission,
                 readPublishedSystemPermission
+        );
+    }
+
+    public Mono<Void> allowAnonymousAndSystemUsersToReadFeaturedFabric(String fabricId) {
+        var resource = Resource.of(getResourceType(), ResourceId.of(fabricId));
+        var systemHolder = Holder.group(HolderId.system());
+        var anonymousHolder = Holder.group(HolderId.anonymous());
+
+        var readFeaturedPermission = Permission.builder()
+                .holder(anonymousHolder)
+                .isAllowedTo(READ_FEATURED)
+                .on(resource);
+        var readFeaturedSystemPermission = Permission.builder()
+                .holder(systemHolder)
+                .isAllowedTo(READ_FEATURED)
+                .on(resource);
+
+        return permissionsService.addPermissions(
+                readFeaturedPermission,
+                readFeaturedSystemPermission
+        );
+    }
+
+    public Mono<Void> disallowAnonymousAndSystemUsersToReadFeaturedFabric(String fabricId) {
+        var resource = Resource.of(getResourceType(), ResourceId.of(fabricId));
+        var systemHolder = Holder.group(HolderId.system());
+        var anonymousHolder = Holder.group(HolderId.anonymous());
+
+        var readFeaturedPermission = Permission.builder()
+                .holder(anonymousHolder)
+                .isAllowedTo(READ_FEATURED)
+                .on(resource);
+        var readFeaturedSystemPermission = Permission.builder()
+                .holder(systemHolder)
+                .isAllowedTo(READ_FEATURED)
+                .on(resource);
+
+        return permissionsService.removePermissions(
+                readFeaturedPermission,
+                readFeaturedSystemPermission
         );
     }
 
