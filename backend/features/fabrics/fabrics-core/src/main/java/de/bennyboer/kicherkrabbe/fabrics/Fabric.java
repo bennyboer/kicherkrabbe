@@ -19,11 +19,17 @@ import de.bennyboer.kicherkrabbe.fabrics.delete.fabrictype.FabricTypeRemovedEven
 import de.bennyboer.kicherkrabbe.fabrics.delete.fabrictype.RemoveFabricTypeCmd;
 import de.bennyboer.kicherkrabbe.fabrics.delete.topics.RemoveTopicCmd;
 import de.bennyboer.kicherkrabbe.fabrics.delete.topics.TopicRemovedEvent;
+import de.bennyboer.kicherkrabbe.fabrics.feature.AlreadyFeaturedError;
+import de.bennyboer.kicherkrabbe.fabrics.feature.FeatureCmd;
+import de.bennyboer.kicherkrabbe.fabrics.feature.FeaturedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.publish.AlreadyPublishedError;
 import de.bennyboer.kicherkrabbe.fabrics.publish.PublishCmd;
 import de.bennyboer.kicherkrabbe.fabrics.publish.PublishedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.rename.RenameCmd;
 import de.bennyboer.kicherkrabbe.fabrics.rename.RenamedEvent;
+import de.bennyboer.kicherkrabbe.fabrics.unfeature.AlreadyUnfeaturedError;
+import de.bennyboer.kicherkrabbe.fabrics.unfeature.UnfeatureCmd;
+import de.bennyboer.kicherkrabbe.fabrics.unfeature.UnfeaturedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.AlreadyUnpublishedError;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.UnpublishCmd;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.UnpublishedEvent;
@@ -73,6 +79,8 @@ public class Fabric implements Aggregate {
 
     boolean published;
 
+    boolean featured;
+
     Instant createdAt;
 
     @Nullable
@@ -87,6 +95,7 @@ public class Fabric implements Aggregate {
                 Set.of(),
                 Set.of(),
                 Set.of(),
+                false,
                 false,
                 null,
                 null
@@ -120,6 +129,20 @@ public class Fabric implements Aggregate {
                 }
 
                 yield ApplyCommandResult.of(UnpublishedEvent.of());
+            }
+            case FeatureCmd ignored -> {
+                if (isFeatured()) {
+                    throw new AlreadyFeaturedError();
+                }
+
+                yield ApplyCommandResult.of(FeaturedEvent.of());
+            }
+            case UnfeatureCmd ignored -> {
+                if (!isFeatured()) {
+                    throw new AlreadyUnfeaturedError();
+                }
+
+                yield ApplyCommandResult.of(UnfeaturedEvent.of());
             }
             case UpdateImageCmd c -> ApplyCommandResult.of(ImageUpdatedEvent.of(c.getImage()));
             case UpdateColorsCmd c -> ApplyCommandResult.of(ColorsUpdatedEvent.of(c.getColors()));
@@ -161,6 +184,8 @@ public class Fabric implements Aggregate {
             case DeletedEvent ignored -> withDeletedAt(metadata.getDate());
             case PublishedEvent ignored -> withPublished(true);
             case UnpublishedEvent ignored -> withPublished(false);
+            case FeaturedEvent ignored -> withFeatured(true);
+            case UnfeaturedEvent ignored -> withFeatured(false);
             case ImageUpdatedEvent e -> withImage(e.getImage());
             case ColorsUpdatedEvent e -> withColors(e.getColors());
             case TopicsUpdatedEvent e -> withTopics(e.getTopics());

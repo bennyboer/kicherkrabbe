@@ -15,11 +15,17 @@ import de.bennyboer.kicherkrabbe.patterns.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.patterns.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.patterns.delete.category.CategoryRemovedEvent;
 import de.bennyboer.kicherkrabbe.patterns.delete.category.RemoveCategoryCmd;
+import de.bennyboer.kicherkrabbe.patterns.feature.AlreadyFeaturedError;
+import de.bennyboer.kicherkrabbe.patterns.feature.FeatureCmd;
+import de.bennyboer.kicherkrabbe.patterns.feature.FeaturedEvent;
 import de.bennyboer.kicherkrabbe.patterns.publish.AlreadyPublishedError;
 import de.bennyboer.kicherkrabbe.patterns.publish.PublishCmd;
 import de.bennyboer.kicherkrabbe.patterns.publish.PublishedEvent;
 import de.bennyboer.kicherkrabbe.patterns.rename.RenameCmd;
 import de.bennyboer.kicherkrabbe.patterns.rename.RenamedEvent;
+import de.bennyboer.kicherkrabbe.patterns.unfeature.AlreadyUnfeaturedError;
+import de.bennyboer.kicherkrabbe.patterns.unfeature.UnfeatureCmd;
+import de.bennyboer.kicherkrabbe.patterns.unfeature.UnfeaturedEvent;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.AlreadyUnpublishedError;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.UnpublishCmd;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.UnpublishedEvent;
@@ -66,6 +72,8 @@ public class Pattern implements Aggregate {
 
     boolean published;
 
+    boolean featured;
+
     PatternName name;
 
     PatternNumber number;
@@ -92,6 +100,7 @@ public class Pattern implements Aggregate {
         return new Pattern(
                 null,
                 Version.zero(),
+                false,
                 false,
                 null,
                 null,
@@ -136,6 +145,20 @@ public class Pattern implements Aggregate {
 
                 yield ApplyCommandResult.of(UnpublishedEvent.of());
             }
+            case FeatureCmd ignored -> {
+                if (isFeatured()) {
+                    throw new AlreadyFeaturedError();
+                }
+
+                yield ApplyCommandResult.of(FeaturedEvent.of());
+            }
+            case UnfeatureCmd ignored -> {
+                if (!isFeatured()) {
+                    throw new AlreadyUnfeaturedError();
+                }
+
+                yield ApplyCommandResult.of(UnfeaturedEvent.of());
+            }
             case RenameCmd c -> ApplyCommandResult.of(RenamedEvent.of(c.getName()));
             case UpdateNumberCmd c -> ApplyCommandResult.of(NumberUpdatedEvent.of(c.getNumber()));
             case UpdateAttributionCmd c -> ApplyCommandResult.of(AttributionUpdatedEvent.of(c.getAttribution()));
@@ -170,6 +193,8 @@ public class Pattern implements Aggregate {
                     .withCreatedAt(metadata.getDate());
             case PublishedEvent ignored -> withPublished(true);
             case UnpublishedEvent ignored -> withPublished(false);
+            case FeaturedEvent ignored -> withFeatured(true);
+            case UnfeaturedEvent ignored -> withFeatured(false);
             case RenamedEvent e -> withName(e.getName());
             case NumberUpdatedEvent e -> withNumber(e.getNumber());
             case AttributionUpdatedEvent e -> withAttribution(e.getAttribution());

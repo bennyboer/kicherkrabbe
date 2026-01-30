@@ -7,8 +7,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.fabrics.feature.AlreadyFeaturedError;
 import de.bennyboer.kicherkrabbe.fabrics.publish.AlreadyPublishedError;
 import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabric;
+import de.bennyboer.kicherkrabbe.fabrics.unfeature.AlreadyUnfeaturedError;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.AlreadyUnpublishedError;
 import org.junit.jupiter.api.Test;
 
@@ -240,6 +242,119 @@ public class FabricServiceTest {
         // when: trying to unpublish the fabric; then: an error is raised
         assertThatThrownBy(() -> unpublish(id, Version.zero()))
                 .isInstanceOf(AlreadyUnpublishedError.class);
+    }
+
+    @Test
+    void shouldFeatureFabric() {
+        // given: a fabric
+        var id = create(
+                FabricName.of("Fabric"),
+                ImageId.of("image"),
+                Set.of(ColorId.of("color")),
+                Set.of(TopicId.of("topic")),
+                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
+        );
+
+        // when: featuring the fabric
+        var updatedVersion = feature(id, Version.zero());
+
+        // then: the fabric is featured
+        var fabric = get(id);
+        assertThat(fabric.getVersion()).isEqualTo(updatedVersion);
+        assertThat(fabric.isFeatured()).isTrue();
+    }
+
+    @Test
+    void shouldNotFeatureFabricGivenAnOutdatedVersion() {
+        // given: a fabric
+        var id = create(
+                FabricName.of("Fabric"),
+                ImageId.of("image"),
+                Set.of(ColorId.of("color")),
+                Set.of(TopicId.of("topic")),
+                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
+        );
+
+        // and: the fabric is renamed
+        rename(id, Version.zero(), FabricName.of("Fabric 2"));
+
+        // when: featuring the fabric with an outdated version; then: an error is raised
+        assertThatThrownBy(() -> feature(id, Version.zero()))
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
+    void shouldRaiseErrorIfFabricAlreadyFeatured() {
+        // given: a featured fabric
+        var id = create(
+                FabricName.of("Fabric"),
+                ImageId.of("image"),
+                Set.of(ColorId.of("color")),
+                Set.of(TopicId.of("topic")),
+                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
+        );
+        feature(id, Version.zero());
+
+        // when: trying to feature the fabric again; then: an error is raised
+        assertThatThrownBy(() -> feature(id, Version.of(1)))
+                .isInstanceOf(AlreadyFeaturedError.class);
+    }
+
+    @Test
+    void shouldUnfeatureFabric() {
+        // given: a featured fabric
+        var id = create(
+                FabricName.of("Fabric"),
+                ImageId.of("image"),
+                Set.of(ColorId.of("color")),
+                Set.of(TopicId.of("topic")),
+                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
+        );
+        feature(id, Version.zero());
+
+        // when: unfeaturing the fabric
+        var updatedVersion = unfeature(id, Version.of(1));
+
+        // then: the fabric is unfeatured
+        var fabric = get(id);
+        assertThat(fabric.getVersion()).isEqualTo(updatedVersion);
+        assertThat(fabric.isFeatured()).isFalse();
+    }
+
+    @Test
+    void shouldNotUnfeatureFabricGivenAnOutdatedVersion() {
+        // given: a featured fabric
+        var id = create(
+                FabricName.of("Fabric"),
+                ImageId.of("image"),
+                Set.of(ColorId.of("color")),
+                Set.of(TopicId.of("topic")),
+                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
+        );
+        var version = feature(id, Version.zero());
+
+        // and: the fabric is renamed
+        rename(id, version, FabricName.of("Fabric 2"));
+
+        // when: unfeaturing the fabric with an outdated version; then: an error is raised
+        assertThatThrownBy(() -> unfeature(id, Version.of(1)))
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
+    void shouldNotUnfeatureFabricGivenAnAlreadyUnfeaturedFabric() {
+        // given: an unfeatured fabric
+        var id = create(
+                FabricName.of("Fabric"),
+                ImageId.of("image"),
+                Set.of(ColorId.of("color")),
+                Set.of(TopicId.of("topic")),
+                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
+        );
+
+        // when: trying to unfeature the fabric; then: an error is raised
+        assertThatThrownBy(() -> unfeature(id, Version.zero()))
+                .isInstanceOf(AlreadyUnfeaturedError.class);
     }
 
     @Test
@@ -610,6 +725,14 @@ public class FabricServiceTest {
 
     private Version unpublish(FabricId id, Version version) {
         return fabricService.unpublish(id, version, Agent.system()).block();
+    }
+
+    private Version feature(FabricId id, Version version) {
+        return fabricService.feature(id, version, Agent.system()).block();
+    }
+
+    private Version unfeature(FabricId id, Version version) {
+        return fabricService.unfeature(id, version, Agent.system()).block();
     }
 
     private Version updateColors(FabricId id, Version version, Set<ColorId> colors) {
