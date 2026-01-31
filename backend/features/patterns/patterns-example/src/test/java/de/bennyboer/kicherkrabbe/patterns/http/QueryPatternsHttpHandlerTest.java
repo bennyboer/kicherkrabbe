@@ -95,6 +95,7 @@ public class QueryPatternsHttpHandlerTest extends HttpHandlerTest {
         assertThat(responsePattern.id).isEqualTo("PATTERN_ID");
         assertThat(responsePattern.version).isEqualTo(0L);
         assertThat(responsePattern.published).isTrue();
+        assertThat(responsePattern.featured).isFalse();
         assertThat(responsePattern.name).isEqualTo("Summerdress");
         assertThat(responsePattern.description).isEqualTo("A beautiful summer dress");
         assertThat(responsePattern.attribution.originalPatternName).isEqualTo("Summerdress EXTREME");

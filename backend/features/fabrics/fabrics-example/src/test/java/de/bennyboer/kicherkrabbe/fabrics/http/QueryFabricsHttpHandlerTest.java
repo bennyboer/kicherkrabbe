@@ -79,6 +79,7 @@ public class QueryFabricsHttpHandlerTest extends HttpHandlerTest {
         assertThat(responseFabric.topicIds).isEmpty();
         assertThat(responseFabric.availability).isEmpty();
         assertThat(responseFabric.published).isFalse();
+        assertThat(responseFabric.featured).isFalse();
         assertThat(responseFabric.createdAt).isNotNull();
     }
 
