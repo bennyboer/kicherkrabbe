@@ -24,8 +24,7 @@ public class MongoLookupPattern {
 
     boolean published;
 
-    @Nullable
-    Boolean featured;
+    boolean featured;
 
     String name;
 

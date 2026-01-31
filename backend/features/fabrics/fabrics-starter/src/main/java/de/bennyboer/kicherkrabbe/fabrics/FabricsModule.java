@@ -130,7 +130,7 @@ public class FabricsModule {
                                         fabric.getTopics(),
                                         fabric.getAvailability(),
                                         fabric.isPublished(),
-                                        fabric.getFeatured().orElse(false),
+                                        fabric.isFeatured(),
                                         fabric.getCreatedAt()
                                 )).toList()
                 ));

@@ -30,7 +30,7 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
                 .map(this::toMongoFabricTypeAvailability)
                 .collect(Collectors.toSet());
         result.published = readModel.isPublished();
-        result.featured = readModel.getFeatured().orElse(null);
+        result.featured = readModel.isFeatured();
         result.createdAt = readModel.getCreatedAt();
 
         return result;

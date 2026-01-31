@@ -19,7 +19,7 @@ public class MongoLookupPatternSerializer implements ReadModelSerializer<LookupP
         result.id = readModel.getId().getValue();
         result.version = readModel.getVersion().getValue();
         result.published = readModel.isPublished();
-        result.featured = readModel.getFeatured().orElse(null);
+        result.featured = readModel.isFeatured();
         result.name = readModel.getName().getValue();
         result.number = readModel.getNumber().getValue();
         result.description = readModel.getDescription()

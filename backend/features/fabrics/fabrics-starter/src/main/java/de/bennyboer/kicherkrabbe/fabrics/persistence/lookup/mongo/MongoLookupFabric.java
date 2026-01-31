@@ -1,6 +1,5 @@
 package de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.mongo;
 
-import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -33,8 +32,7 @@ public class MongoLookupFabric {
 
     boolean published;
 
-    @Nullable
-    Boolean featured;
+    boolean featured;
 
     Instant createdAt;
 

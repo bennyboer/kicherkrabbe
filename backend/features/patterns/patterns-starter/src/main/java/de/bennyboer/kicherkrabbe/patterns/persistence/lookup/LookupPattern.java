@@ -25,8 +25,7 @@ public class LookupPattern implements VersionedReadModel<PatternId> {
 
     boolean published;
 
-    @Nullable
-    Boolean featured;
+    boolean featured;
 
     PatternName name;
 
@@ -53,7 +52,7 @@ public class LookupPattern implements VersionedReadModel<PatternId> {
             PatternId id,
             Version version,
             boolean published,
-            @Nullable Boolean featured,
+            boolean featured,
             PatternName name,
             PatternNumber number,
             @Nullable PatternDescription description,
@@ -93,10 +92,6 @@ public class LookupPattern implements VersionedReadModel<PatternId> {
                 extras,
                 createdAt
         );
-    }
-
-    public Optional<Boolean> getFeatured() {
-        return Optional.ofNullable(featured);
     }
 
     public Optional<PatternDescription> getDescription() {
