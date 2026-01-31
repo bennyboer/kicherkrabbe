@@ -12,8 +12,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingR
 import de.bennyboer.kicherkrabbe.patterns.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.patterns.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.patterns.delete.category.RemoveCategoryCmd;
+import de.bennyboer.kicherkrabbe.patterns.feature.FeatureCmd;
 import de.bennyboer.kicherkrabbe.patterns.publish.PublishCmd;
 import de.bennyboer.kicherkrabbe.patterns.rename.RenameCmd;
+import de.bennyboer.kicherkrabbe.patterns.unfeature.UnfeatureCmd;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.UnpublishCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.attribution.UpdateAttributionCmd;
 import de.bennyboer.kicherkrabbe.patterns.update.categories.UpdateCategoriesCmd;
@@ -75,6 +77,14 @@ public class PatternService extends AggregateService<Pattern, PatternId> {
 
     public Mono<Version> unpublish(PatternId id, Version version, Agent agent) {
         return dispatchCommand(id, version, agent, UnpublishCmd.of());
+    }
+
+    public Mono<Version> feature(PatternId id, Version version, Agent agent) {
+        return dispatchCommand(id, version, agent, FeatureCmd.of());
+    }
+
+    public Mono<Version> unfeature(PatternId id, Version version, Agent agent) {
+        return dispatchCommand(id, version, agent, UnfeatureCmd.of());
     }
 
     public Mono<Version> rename(PatternId id, Version version, PatternName name, Agent agent) {

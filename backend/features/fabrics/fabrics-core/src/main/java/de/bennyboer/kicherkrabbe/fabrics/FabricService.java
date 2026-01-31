@@ -14,8 +14,10 @@ import de.bennyboer.kicherkrabbe.fabrics.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.fabrics.delete.colors.RemoveColorCmd;
 import de.bennyboer.kicherkrabbe.fabrics.delete.fabrictype.RemoveFabricTypeCmd;
 import de.bennyboer.kicherkrabbe.fabrics.delete.topics.RemoveTopicCmd;
+import de.bennyboer.kicherkrabbe.fabrics.feature.FeatureCmd;
 import de.bennyboer.kicherkrabbe.fabrics.publish.PublishCmd;
 import de.bennyboer.kicherkrabbe.fabrics.rename.RenameCmd;
+import de.bennyboer.kicherkrabbe.fabrics.unfeature.UnfeatureCmd;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.UnpublishCmd;
 import de.bennyboer.kicherkrabbe.fabrics.update.availability.UpdateAvailabilityCmd;
 import de.bennyboer.kicherkrabbe.fabrics.update.colors.UpdateColorsCmd;
@@ -71,6 +73,14 @@ public class FabricService extends AggregateService<Fabric, FabricId> {
 
     public Mono<Version> unpublish(FabricId id, Version version, Agent agent) {
         return dispatchCommand(id, version, agent, UnpublishCmd.of());
+    }
+
+    public Mono<Version> feature(FabricId id, Version version, Agent agent) {
+        return dispatchCommand(id, version, agent, FeatureCmd.of());
+    }
+
+    public Mono<Version> unfeature(FabricId id, Version version, Agent agent) {
+        return dispatchCommand(id, version, agent, UnfeatureCmd.of());
     }
 
     public Mono<Version> updateImage(FabricId id, Version version, ImageId image, Agent agent) {

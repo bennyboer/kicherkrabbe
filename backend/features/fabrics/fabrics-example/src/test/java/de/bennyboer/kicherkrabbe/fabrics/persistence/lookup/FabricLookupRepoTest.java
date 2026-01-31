@@ -1,7 +1,7 @@
 package de.bennyboer.kicherkrabbe.fabrics.persistence.lookup;
 
-import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.fabrics.*;
+import de.bennyboer.kicherkrabbe.fabrics.samples.SampleLookupFabric;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,20 +26,7 @@ public abstract class FabricLookupRepoTest {
     @Test
     void shouldUpdateFabric() {
         // given: a fabric to update
-        var fabric = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Ice bear party"),
-                ImageId.of("ICE_BEAR_IMAGE_ID"),
-                Set.of(ColorId.of("BLUE_ID"), ColorId.of("WHITE_ID")),
-                Set.of(TopicId.of("Winter"), TopicId.of("Animals")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), true),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
-                ),
-                false,
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
+        var fabric = SampleLookupFabric.builder().build().toModel();
 
         // when: updating the fabric
         update(fabric);
@@ -52,34 +39,8 @@ public abstract class FabricLookupRepoTest {
     @Test
     void shouldRemoveFabric() {
         // given: some fabrics
-        var fabric1 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Ice bear party"),
-                ImageId.of("ICE_BEAR_IMAGE_ID"),
-                Set.of(ColorId.of("BLUE_ID"), ColorId.of("WHITE_ID")),
-                Set.of(TopicId.of("Winter"), TopicId.of("Animals")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), true),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
-                ),
-                true,
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
-        var fabric2 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Colorful"),
-                ImageId.of("COLORFUL_IMAGE_ID"),
-                Set.of(ColorId.of("RED_ID"), ColorId.of("YELLOW_ID")),
-                Set.of(TopicId.of("Summer"), TopicId.of("Colors")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
-                ),
-                false,
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
+        var fabric1 = SampleLookupFabric.builder().build().toModel();
+        var fabric2 = SampleLookupFabric.builder().build().toModel();
         update(fabric1);
         update(fabric2);
 
@@ -94,34 +55,14 @@ public abstract class FabricLookupRepoTest {
     @Test
     void shouldFindFabrics() {
         // given: some fabrics
-        var fabric1 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Ice bear party"),
-                ImageId.of("ICE_BEAR_IMAGE_ID"),
-                Set.of(ColorId.of("BLUE_ID"), ColorId.of("WHITE_ID")),
-                Set.of(TopicId.of("Winter"), TopicId.of("Animals")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), true),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
-                ),
-                true,
-                Instant.parse("2024-03-12T13:00:00.00Z")
-        );
-        var fabric2 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Colorful"),
-                ImageId.of("COLORFUL_IMAGE_ID"),
-                Set.of(ColorId.of("RED_ID"), ColorId.of("YELLOW_ID")),
-                Set.of(TopicId.of("Summer"), TopicId.of("Colors")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
-                ),
-                false,
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
+        var fabric1 = SampleLookupFabric.builder()
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var fabric2 = SampleLookupFabric.builder()
+                .createdAt(Instant.parse("2024-03-12T12:30:00.00Z"))
+                .build()
+                .toModel();
         update(fabric1);
         update(fabric2);
 
@@ -134,49 +75,22 @@ public abstract class FabricLookupRepoTest {
 
     @Test
     void shouldFindFabricsBySearchTerm() {
-        // given: some fabrics
-        var fabric1 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Ice bear party"),
-                ImageId.of("ICE_BEAR_IMAGE_ID"),
-                Set.of(ColorId.of("BLUE_ID"), ColorId.of("WHITE_ID")),
-                Set.of(TopicId.of("Winter"), TopicId.of("Animals")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), true),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
-                ),
-                true,
-                Instant.parse("2024-03-12T13:00:00.00Z")
-        );
-        var fabric2 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Colorful"),
-                ImageId.of("COLORFUL_IMAGE_ID"),
-                Set.of(ColorId.of("RED_ID"), ColorId.of("YELLOW_ID")),
-                Set.of(TopicId.of("Summer"), TopicId.of("Colors")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
-                ),
-                false,
-                Instant.parse("2024-03-12T09:30:00.00Z")
-        );
-        var fabric3 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Owls"),
-                ImageId.of("OWL_IMAGE_ID"),
-                Set.of(ColorId.of("BROWN_ID"), ColorId.of("GREEN_ID")),
-                Set.of(TopicId.of("Night"), TopicId.of("Animals")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
-                ),
-                false,
-                Instant.parse("2024-03-12T11:00:00.00Z")
-        );
+        // given: some fabrics with different names
+        var fabric1 = SampleLookupFabric.builder()
+                .name(FabricName.of("Ice bear party"))
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var fabric2 = SampleLookupFabric.builder()
+                .name(FabricName.of("Colorful"))
+                .createdAt(Instant.parse("2024-03-12T09:30:00.00Z"))
+                .build()
+                .toModel();
+        var fabric3 = SampleLookupFabric.builder()
+                .name(FabricName.of("Owls"))
+                .createdAt(Instant.parse("2024-03-12T11:00:00.00Z"))
+                .build()
+                .toModel();
         update(fabric1);
         update(fabric2);
         update(fabric3);
@@ -194,139 +108,66 @@ public abstract class FabricLookupRepoTest {
         // then: the fabrics are found by another search term
         assertThat(fabrics).containsExactly(fabric2, fabric1);
 
-        // when: finding fabrics by another search term
+        // when: finding fabrics by blank search term
         fabrics = find(fabricIds, "    ");
 
-        // then: the fabrics are found by another search term
+        // then: all fabrics are found
         assertThat(fabrics).containsExactly(fabric2, fabric3, fabric1);
 
-        // when: finding fabrics by another search term
+        // when: finding fabrics by non-matching search term
         fabrics = find(fabricIds, "blblblbll");
 
-        // then: the fabrics are found by another search term
+        // then: no fabrics are found
         assertThat(fabrics).isEmpty();
     }
 
     @Test
     void shouldFindFabricsWithPaging() {
         // given: some fabrics
-        var fabric1 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Ice bear party"),
-                ImageId.of("ICE_BEAR_IMAGE_ID"),
-                Set.of(ColorId.of("BLUE_ID"), ColorId.of("WHITE_ID")),
-                Set.of(TopicId.of("Winter"), TopicId.of("Animals")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), true),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
-                ),
-                false,
-                Instant.parse("2024-03-12T13:00:00.00Z")
-        );
-        var fabric2 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Colorful"),
-                ImageId.of("COLORFUL_IMAGE_ID"),
-                Set.of(ColorId.of("RED_ID"), ColorId.of("YELLOW_ID")),
-                Set.of(TopicId.of("Summer"), TopicId.of("Colors")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
-                ),
-                true,
-                Instant.parse("2024-03-12T09:30:00.00Z")
-        );
-        var fabric3 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Owls"),
-                ImageId.of("OWL_IMAGE_ID"),
-                Set.of(ColorId.of("BROWN_ID"), ColorId.of("GREEN_ID")),
-                Set.of(TopicId.of("Night"), TopicId.of("Animals")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
-                ),
-                true,
-                Instant.parse("2024-03-12T11:00:00.00Z")
-        );
+        var fabric1 = SampleLookupFabric.builder()
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var fabric2 = SampleLookupFabric.builder()
+                .createdAt(Instant.parse("2024-03-12T09:30:00.00Z"))
+                .build()
+                .toModel();
+        var fabric3 = SampleLookupFabric.builder()
+                .createdAt(Instant.parse("2024-03-12T11:00:00.00Z"))
+                .build()
+                .toModel();
         update(fabric1);
         update(fabric2);
         update(fabric3);
 
         // when: finding fabrics with paging
         var fabricIds = Set.of(fabric1.getId(), fabric2.getId(), fabric3.getId());
-        var fabrics = find(fabricIds, 1, 1);
 
         // then: the fabrics are found with paging
-        assertThat(fabrics).containsExactly(fabric3);
-
-        // when: finding fabrics with paging
-        fabrics = find(fabricIds, 2, 1);
-
-        // then: the fabrics are found with paging
-        assertThat(fabrics).containsExactly(fabric1);
-
-        // when: finding fabrics with paging
-        fabrics = find(fabricIds, 3, 1);
-
-        // then: the fabrics are found with paging
-        assertThat(fabrics).isEmpty();
-
-        // when: finding fabrics with paging
-        fabrics = find(fabricIds, 0, 2);
-
-        // then: the fabrics are found with paging
-        assertThat(fabrics).containsExactly(fabric2, fabric3);
+        assertThat(find(fabricIds, 1, 1)).containsExactly(fabric3);
+        assertThat(find(fabricIds, 2, 1)).containsExactly(fabric1);
+        assertThat(find(fabricIds, 3, 1)).isEmpty();
+        assertThat(find(fabricIds, 0, 2)).containsExactly(fabric2, fabric3);
     }
 
     @Test
     void shouldFindWithSearchTermAndPaging() {
-        // given: some fabrics
-        var fabric1 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Ice bear party"),
-                ImageId.of("ICE_BEAR_IMAGE_ID"),
-                Set.of(ColorId.of("BLUE_ID"), ColorId.of("WHITE_ID")),
-                Set.of(TopicId.of("Winter"), TopicId.of("Animals")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), true),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
-                ),
-                true,
-                Instant.parse("2024-03-12T13:00:00.00Z")
-        );
-        var fabric2 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Colorful"),
-                ImageId.of("COLORFUL_IMAGE_ID"),
-                Set.of(ColorId.of("RED_ID"), ColorId.of("YELLOW_ID")),
-                Set.of(TopicId.of("Summer"), TopicId.of("Colors")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
-                ),
-                true,
-                Instant.parse("2024-03-12T09:30:00.00Z")
-        );
-        var fabric3 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Owls"),
-                ImageId.of("OWL_IMAGE_ID"),
-                Set.of(ColorId.of("BROWN_ID"), ColorId.of("GREEN_ID")),
-                Set.of(TopicId.of("Night"), TopicId.of("Animals")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
-                ),
-                false,
-                Instant.parse("2024-03-12T11:00:00.00Z")
-        );
+        // given: some fabrics with different names
+        var fabric1 = SampleLookupFabric.builder()
+                .name(FabricName.of("Ice bear party"))
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var fabric2 = SampleLookupFabric.builder()
+                .name(FabricName.of("Colorful"))
+                .createdAt(Instant.parse("2024-03-12T09:30:00.00Z"))
+                .build()
+                .toModel();
+        var fabric3 = SampleLookupFabric.builder()
+                .name(FabricName.of("Owls"))
+                .createdAt(Instant.parse("2024-03-12T11:00:00.00Z"))
+                .build()
+                .toModel();
         update(fabric1);
         update(fabric2);
         update(fabric3);
@@ -349,233 +190,148 @@ public abstract class FabricLookupRepoTest {
 
     @Test
     void shouldFindPublishedFabric() {
-        // given: some fabrics
-        var fabric1 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Ice bear party"),
-                ImageId.of("ICE_BEAR_IMAGE_ID"),
-                Set.of(ColorId.of("BLUE_ID"), ColorId.of("WHITE_ID")),
-                Set.of(TopicId.of("Winter"), TopicId.of("Animals")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), true),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
-                ),
-                true,
-                Instant.parse("2024-03-12T13:00:00.00Z")
-        );
-        var fabric2 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Colorful"),
-                ImageId.of("COLORFUL_IMAGE_ID"),
-                Set.of(ColorId.of("RED_ID"), ColorId.of("YELLOW_ID")),
-                Set.of(TopicId.of("Summer"), TopicId.of("Colors")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
-                ),
-                false,
-                Instant.parse("2024-03-12T09:30:00.00Z")
-        );
+        // given: a published and an unpublished fabric
+        var fabric1 = SampleLookupFabric.builder().published(true).build().toModel();
+        var fabric2 = SampleLookupFabric.builder().published(false).build().toModel();
         update(fabric1);
         update(fabric2);
 
-        // when: finding the first fabric
+        // when: finding the published fabric
         var foundFabric1 = findPublished(fabric1.getId());
 
-        // then: the first fabric is found
+        // then: the published fabric is found
         assertThat(foundFabric1).isEqualTo(fabric1);
 
-        // when: finding the second fabric
+        // when: finding the unpublished fabric
         var foundFabric2 = findPublished(fabric2.getId());
 
-        // then: the second fabric is not found
+        // then: the unpublished fabric is not found
         assertThat(foundFabric2).isNull();
     }
 
     @Test
     void shouldFindPublishedFabrics() {
-        // given: some fabrics
-        var fabric1 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Ice bear party"),
-                ImageId.of("ICE_BEAR_IMAGE_ID"),
-                Set.of(ColorId.of("BLUE_ID"), ColorId.of("WHITE_ID")),
-                Set.of(TopicId.of("Winter"), TopicId.of("Animals")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), true),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
-                ),
-                true,
-                Instant.parse("2024-03-12T13:00:00.00Z")
-        );
-        var fabric2 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Colorful"),
-                ImageId.of("COLORFUL_IMAGE_ID"),
-                Set.of(ColorId.of("RED_ID"), ColorId.of("YELLOW_ID")),
-                Set.of(TopicId.of("Summer"), TopicId.of("Colors")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), false)
-                ),
-                true,
-                Instant.parse("2024-03-12T09:30:00.00Z")
-        );
-        var fabric3 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Owls"),
-                ImageId.of("OWL_IMAGE_ID"),
-                Set.of(ColorId.of("BROWN_ID"), ColorId.of("GREEN_ID")),
-                Set.of(TopicId.of("Night"), TopicId.of("Animals")),
-                Set.of(
-                        FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false),
-                        FabricTypeAvailability.of(FabricTypeId.of("COTTON_ID"), true)
-                ),
-                false,
-                Instant.parse("2024-03-12T11:00:00.00Z")
-        );
+        // given: some fabrics with different names and availability
+        var fabric1 = SampleLookupFabric.builder()
+                .name(FabricName.of("Ice bear party"))
+                .availability(FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), true))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var fabric2 = SampleLookupFabric.builder()
+                .name(FabricName.of("Colorful"))
+                .availability(FabricTypeAvailability.of(FabricTypeId.of("JERSEY_ID"), false))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T09:30:00.00Z"))
+                .build()
+                .toModel();
+        var fabric3 = SampleLookupFabric.builder()
+                .name(FabricName.of("Owls"))
+                .published(false)
+                .createdAt(Instant.parse("2024-03-12T11:00:00.00Z"))
+                .build()
+                .toModel();
         update(fabric1);
         update(fabric2);
         update(fabric3);
 
-        // when: finding published fabrics
-        var result = findPublished(
-                "",
-                Set.of(),
-                Set.of(),
-                false,
-                false,
-                true,
-                0,
-                10
-        );
+        // when: finding all published fabrics ordered by name ascending
+        var result = findPublished("", Set.of(), Set.of(), false, false, true, 0, 10);
 
         // then: all published fabrics are found ordered by name ascending
         assertThat(result.getResults()).containsExactly(fabric2, fabric1);
 
-        // when: finding published fabrics ordered by name descending
-        result = findPublished(
-                "",
-                Set.of(),
-                Set.of(),
-                false,
-                false,
-                false,
-                0,
-                10
-        );
+        // when: finding all published fabrics ordered by name descending
+        result = findPublished("", Set.of(), Set.of(), false, false, false, 0, 10);
 
         // then: all published fabrics are found ordered by name descending
         assertThat(result.getResults()).containsExactly(fabric1, fabric2);
 
         // when: finding published fabrics with search term
-        result = findPublished(
-                "o",
-                Set.of(),
-                Set.of(),
-                false,
-                false,
-                true,
-                0,
-                10
-        );
+        result = findPublished("o", Set.of(), Set.of(), false, false, true, 0, 10);
 
         // then: all published fabrics are found with search term
         assertThat(result.getResults()).containsExactly(fabric2);
 
-        // when: finding published fabrics with color filter
-        result = findPublished(
-                "",
-                Set.of(ColorId.of("BLUE_ID")),
-                Set.of(),
-                false,
-                false,
-                true,
-                0,
-                10
-        );
+        // when: finding published fabrics with availability filter (in stock)
+        result = findPublished("", Set.of(), Set.of(), true, true, true, 0, 10);
 
-        // then: all published fabrics are found with color filter
+        // then: all published fabrics are found with availability filter (in stock)
         assertThat(result.getResults()).containsExactly(fabric1);
 
-        // when: finding published fabrics with topic filter
-        result = findPublished(
-                "",
-                Set.of(),
-                Set.of(TopicId.of("Summer")),
-                false,
-                false,
-                true,
-                0,
-                10
-        );
+        // when: finding published fabrics with availability filter (not in stock)
+        result = findPublished("", Set.of(), Set.of(), true, false, true, 0, 10);
 
-        // then: all published fabrics are found with topic filter
-        assertThat(result.getResults()).containsExactly(fabric2);
-
-        // when: finding published fabrics with availability filter
-        result = findPublished(
-                "",
-                Set.of(),
-                Set.of(),
-                true,
-                true,
-                true,
-                0,
-                10
-        );
-
-        // then: all published fabrics are found with availability filter
-        assertThat(result.getResults()).containsExactly(fabric1);
-
-        // when: finding published fabrics with availability filter where we want fabrics that are not in stock
-        result = findPublished(
-                "",
-                Set.of(),
-                Set.of(),
-                true,
-                false,
-                true,
-                0,
-                10
-        );
-
-        // then: all published fabrics are found with availability filter
+        // then: all published fabrics are found with availability filter (not in stock)
         assertThat(result.getResults()).containsExactly(fabric2);
 
         // when: finding published fabrics with paging
-        result = findPublished(
-                "",
-                Set.of(),
-                Set.of(),
-                false,
-                false,
-                true,
-                0,
-                1
-        );
+        result = findPublished("", Set.of(), Set.of(), false, false, true, 0, 1);
 
         // then: all published fabrics are found with paging
         assertThat(result.getResults()).containsExactly(fabric2);
 
         // when: finding published fabrics with paging
-        result = findPublished(
-                "",
-                Set.of(),
-                Set.of(),
-                false,
-                false,
-                true,
-                1,
-                1
-        );
+        result = findPublished("", Set.of(), Set.of(), false, false, true, 1, 1);
 
         // then: all published fabrics are found with paging
+        assertThat(result.getResults()).containsExactly(fabric1);
+    }
+
+    @Test
+    void shouldFindPublishedFabricsByColor() {
+        // given: some published fabrics with different colors
+        var colorId1 = ColorId.of("COLOR_ID_1");
+        var colorId2 = ColorId.of("COLOR_ID_2");
+
+        var fabric1 = SampleLookupFabric.builder()
+                .name(FabricName.of("A"))
+                .color(colorId1)
+                .published(true)
+                .build()
+                .toModel();
+        var fabric2 = SampleLookupFabric.builder()
+                .name(FabricName.of("B"))
+                .color(colorId2)
+                .published(true)
+                .build()
+                .toModel();
+        update(fabric1);
+        update(fabric2);
+
+        // when: finding published fabrics with colors filter
+        var result = findPublished("", Set.of(colorId1), Set.of(), false, false, true, 0, 10);
+
+        // then: only fabrics with the specified color are found
+        assertThat(result.getResults()).containsExactly(fabric1);
+    }
+
+    @Test
+    void shouldFindPublishedFabricsByTopic() {
+        // given: some published fabrics with different topics
+        var topicId1 = TopicId.of("TOPIC_ID_1");
+        var topicId2 = TopicId.of("TOPIC_ID_2");
+
+        var fabric1 = SampleLookupFabric.builder()
+                .name(FabricName.of("A"))
+                .topic(topicId1)
+                .published(true)
+                .build()
+                .toModel();
+        var fabric2 = SampleLookupFabric.builder()
+                .name(FabricName.of("B"))
+                .topic(topicId2)
+                .published(true)
+                .build()
+                .toModel();
+        update(fabric1);
+        update(fabric2);
+
+        // when: finding published fabrics with topics filter
+        var result = findPublished("", Set.of(), Set.of(topicId1), false, false, true, 0, 10);
+
+        // then: only fabrics with the specified topic are found
         assertThat(result.getResults()).containsExactly(fabric1);
     }
 
@@ -584,41 +340,10 @@ public abstract class FabricLookupRepoTest {
         // given: some fabrics with different colors
         var colorId1 = ColorId.of("COLOR_ID_1");
         var colorId2 = ColorId.of("COLOR_ID_2");
-        var colorId3 = ColorId.of("COLOR_ID_3");
 
-        var fabric1 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 1"),
-                ImageId.of("IMAGE_ID_1"),
-                Set.of(colorId1),
-                Set.of(),
-                Set.of(),
-                true,
-                Instant.parse("2024-03-12T13:00:00.00Z")
-        );
-        var fabric2 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 2"),
-                ImageId.of("IMAGE_ID_2"),
-                Set.of(colorId2),
-                Set.of(),
-                Set.of(),
-                true,
-                Instant.parse("2024-03-12T09:30:00.00Z")
-        );
-        var fabric3 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 3"),
-                ImageId.of("IMAGE_ID_3"),
-                Set.of(colorId3, colorId2),
-                Set.of(),
-                Set.of(),
-                true,
-                Instant.parse("2024-03-12T11:00:00.00Z")
-        );
+        var fabric1 = SampleLookupFabric.builder().color(colorId1).build().toModel();
+        var fabric2 = SampleLookupFabric.builder().color(colorId2).build().toModel();
+        var fabric3 = SampleLookupFabric.builder().color(colorId2).color(colorId1).build().toModel();
         update(fabric1);
         update(fabric2);
         update(fabric3);
@@ -633,9 +358,9 @@ public abstract class FabricLookupRepoTest {
         fabrics = findByColor(colorId1);
 
         // then: the fabrics are found by another color
-        assertThat(fabrics).containsExactly(fabric1);
+        assertThat(fabrics).containsExactlyInAnyOrder(fabric1, fabric3);
 
-        // when: finding fabrics by another color that is not used
+        // when: finding fabrics by a color that is not used
         fabrics = findByColor(ColorId.of("COLOR_ID_4"));
 
         // then: no fabrics are found
@@ -647,41 +372,10 @@ public abstract class FabricLookupRepoTest {
         // given: some fabrics with different topics
         var topicId1 = TopicId.of("TOPIC_ID_1");
         var topicId2 = TopicId.of("TOPIC_ID_2");
-        var topicId3 = TopicId.of("TOPIC_ID_3");
 
-        var fabric1 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 1"),
-                ImageId.of("IMAGE_ID_1"),
-                Set.of(),
-                Set.of(topicId1),
-                Set.of(),
-                true,
-                Instant.parse("2024-03-12T13:00:00.00Z")
-        );
-        var fabric2 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 2"),
-                ImageId.of("IMAGE_ID_2"),
-                Set.of(),
-                Set.of(topicId2),
-                Set.of(),
-                true,
-                Instant.parse("2024-03-12T09:30:00.00Z")
-        );
-        var fabric3 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 3"),
-                ImageId.of("IMAGE_ID_3"),
-                Set.of(),
-                Set.of(topicId3, topicId2),
-                Set.of(),
-                true,
-                Instant.parse("2024-03-12T11:00:00.00Z")
-        );
+        var fabric1 = SampleLookupFabric.builder().topic(topicId1).build().toModel();
+        var fabric2 = SampleLookupFabric.builder().topic(topicId2).build().toModel();
+        var fabric3 = SampleLookupFabric.builder().topic(topicId2).topic(topicId1).build().toModel();
         update(fabric1);
         update(fabric2);
         update(fabric3);
@@ -696,9 +390,9 @@ public abstract class FabricLookupRepoTest {
         fabrics = findByTopic(topicId1);
 
         // then: the fabrics are found by another topic
-        assertThat(fabrics).containsExactly(fabric1);
+        assertThat(fabrics).containsExactlyInAnyOrder(fabric1, fabric3);
 
-        // when: finding fabrics by another topic that is not used
+        // when: finding fabrics by a topic that is not used
         fabrics = findByTopic(TopicId.of("TOPIC_ID_4"));
 
         // then: no fabrics are found
@@ -710,44 +404,20 @@ public abstract class FabricLookupRepoTest {
         // given: some fabrics with different fabric types
         var fabricTypeId1 = FabricTypeId.of("FABRIC_TYPE_ID_1");
         var fabricTypeId2 = FabricTypeId.of("FABRIC_TYPE_ID_2");
-        var fabricTypeId3 = FabricTypeId.of("FABRIC_TYPE_ID_3");
 
-        var fabric1 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 1"),
-                ImageId.of("IMAGE_ID_1"),
-                Set.of(),
-                Set.of(),
-                Set.of(FabricTypeAvailability.of(fabricTypeId1, true)),
-                true,
-                Instant.parse("2024-03-12T13:00:00.00Z")
-        );
-        var fabric2 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 2"),
-                ImageId.of("IMAGE_ID_2"),
-                Set.of(),
-                Set.of(),
-                Set.of(FabricTypeAvailability.of(fabricTypeId2, true)),
-                true,
-                Instant.parse("2024-03-12T09:30:00.00Z")
-        );
-        var fabric3 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 3"),
-                ImageId.of("IMAGE_ID_3"),
-                Set.of(),
-                Set.of(),
-                Set.of(
-                        FabricTypeAvailability.of(fabricTypeId2, true),
-                        FabricTypeAvailability.of(fabricTypeId3, true)
-                ),
-                true,
-                Instant.parse("2024-03-12T11:00:00.00Z")
-        );
+        var fabric1 = SampleLookupFabric.builder()
+                .availability(FabricTypeAvailability.of(fabricTypeId1, true))
+                .build()
+                .toModel();
+        var fabric2 = SampleLookupFabric.builder()
+                .availability(FabricTypeAvailability.of(fabricTypeId2, true))
+                .build()
+                .toModel();
+        var fabric3 = SampleLookupFabric.builder()
+                .availability(FabricTypeAvailability.of(fabricTypeId2, true))
+                .availability(FabricTypeAvailability.of(fabricTypeId1, true))
+                .build()
+                .toModel();
         update(fabric1);
         update(fabric2);
         update(fabric3);
@@ -762,9 +432,9 @@ public abstract class FabricLookupRepoTest {
         fabrics = findByFabricType(fabricTypeId1);
 
         // then: the fabrics are found by another fabric type
-        assertThat(fabrics).containsExactly(fabric1);
+        assertThat(fabrics).containsExactlyInAnyOrder(fabric1, fabric3);
 
-        // when: finding fabrics by another fabric type that is not used
+        // when: finding fabrics by a fabric type that is not used
         fabrics = findByFabricType(FabricTypeId.of("FABRIC_TYPE_ID_4"));
 
         // then: no fabrics are found
@@ -776,41 +446,10 @@ public abstract class FabricLookupRepoTest {
         // given: some fabrics with different colors
         var colorId1 = ColorId.of("COLOR_ID_1");
         var colorId2 = ColorId.of("COLOR_ID_2");
-        var colorId3 = ColorId.of("COLOR_ID_3");
 
-        var fabric1 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 1"),
-                ImageId.of("IMAGE_ID_1"),
-                Set.of(colorId1),
-                Set.of(),
-                Set.of(),
-                true,
-                Instant.parse("2024-03-12T13:00:00.00Z")
-        );
-        var fabric2 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 2"),
-                ImageId.of("IMAGE_ID_2"),
-                Set.of(colorId2),
-                Set.of(),
-                Set.of(),
-                true,
-                Instant.parse("2024-03-12T09:30:00.00Z")
-        );
-        var fabric3 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 3"),
-                ImageId.of("IMAGE_ID_3"),
-                Set.of(colorId3, colorId2),
-                Set.of(),
-                Set.of(),
-                true,
-                Instant.parse("2024-03-12T11:00:00.00Z")
-        );
+        var fabric1 = SampleLookupFabric.builder().color(colorId1).build().toModel();
+        var fabric2 = SampleLookupFabric.builder().color(colorId2).build().toModel();
+        var fabric3 = SampleLookupFabric.builder().color(colorId2).color(colorId1).build().toModel();
         update(fabric1);
         update(fabric2);
         update(fabric3);
@@ -819,9 +458,9 @@ public abstract class FabricLookupRepoTest {
         var colors = findUniqueColors();
 
         // then: the unique colors are found
-        assertThat(colors).containsExactlyInAnyOrder(colorId1, colorId2, colorId3);
+        assertThat(colors).containsExactlyInAnyOrder(colorId1, colorId2);
 
-        // when: finding unique colors with no fabrics
+        // when: removing all fabrics and finding unique colors
         remove(fabric1.getId());
         remove(fabric2.getId());
         remove(fabric3.getId());
@@ -836,41 +475,10 @@ public abstract class FabricLookupRepoTest {
         // given: some fabrics with different topics
         var topicId1 = TopicId.of("TOPIC_ID_1");
         var topicId2 = TopicId.of("TOPIC_ID_2");
-        var topicId3 = TopicId.of("TOPIC_ID_3");
 
-        var fabric1 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 1"),
-                ImageId.of("IMAGE_ID_1"),
-                Set.of(),
-                Set.of(topicId1),
-                Set.of(),
-                true,
-                Instant.parse("2024-03-12T13:00:00.00Z")
-        );
-        var fabric2 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 2"),
-                ImageId.of("IMAGE_ID_2"),
-                Set.of(),
-                Set.of(topicId2),
-                Set.of(),
-                true,
-                Instant.parse("2024-03-12T09:30:00.00Z")
-        );
-        var fabric3 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 3"),
-                ImageId.of("IMAGE_ID_3"),
-                Set.of(),
-                Set.of(topicId3, topicId2),
-                Set.of(),
-                true,
-                Instant.parse("2024-03-12T11:00:00.00Z")
-        );
+        var fabric1 = SampleLookupFabric.builder().topic(topicId1).build().toModel();
+        var fabric2 = SampleLookupFabric.builder().topic(topicId2).build().toModel();
+        var fabric3 = SampleLookupFabric.builder().topic(topicId2).topic(topicId1).build().toModel();
         update(fabric1);
         update(fabric2);
         update(fabric3);
@@ -879,13 +487,12 @@ public abstract class FabricLookupRepoTest {
         var topics = findUniqueTopics();
 
         // then: the unique topics are found
-        assertThat(topics).containsExactlyInAnyOrder(topicId1, topicId2, topicId3);
+        assertThat(topics).containsExactlyInAnyOrder(topicId1, topicId2);
 
-        // when: finding unique topics with no fabrics
+        // when: removing all fabrics and finding unique topics
         remove(fabric1.getId());
         remove(fabric2.getId());
         remove(fabric3.getId());
-
         topics = findUniqueTopics();
 
         // then: no unique topics are found
@@ -897,45 +504,20 @@ public abstract class FabricLookupRepoTest {
         // given: some fabrics with different fabric types
         var fabricTypeId1 = FabricTypeId.of("FABRIC_TYPE_ID_1");
         var fabricTypeId2 = FabricTypeId.of("FABRIC_TYPE_ID_2");
-        var fabricTypeId3 = FabricTypeId.of("FABRIC_TYPE_ID_3");
 
-        var fabric1 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 1"),
-                ImageId.of("IMAGE_ID_1"),
-                Set.of(),
-                Set.of(),
-                Set.of(FabricTypeAvailability.of(fabricTypeId1, true)),
-                true,
-                Instant.parse("2024-03-12T13:00:00.00Z")
-        );
-        var fabric2 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 2"),
-                ImageId.of("IMAGE_ID_2"),
-                Set.of(),
-                Set.of(),
-                Set.of(FabricTypeAvailability.of(fabricTypeId2, true)),
-                true,
-                Instant.parse("2024-03-12T09:30:00.00Z")
-        );
-        var fabric3 = LookupFabric.of(
-                FabricId.create(),
-                Version.zero(),
-                FabricName.of("Fabric 3"),
-                ImageId.of("IMAGE_ID_3"),
-                Set.of(),
-                Set.of(),
-                Set.of(
-                        FabricTypeAvailability.of(fabricTypeId2, true),
-                        FabricTypeAvailability.of(fabricTypeId3, true)
-                ),
-                true,
-                Instant.parse("2024-03-12T11:00:00.00Z")
-        );
-
+        var fabric1 = SampleLookupFabric.builder()
+                .availability(FabricTypeAvailability.of(fabricTypeId1, true))
+                .build()
+                .toModel();
+        var fabric2 = SampleLookupFabric.builder()
+                .availability(FabricTypeAvailability.of(fabricTypeId2, true))
+                .build()
+                .toModel();
+        var fabric3 = SampleLookupFabric.builder()
+                .availability(FabricTypeAvailability.of(fabricTypeId2, true))
+                .availability(FabricTypeAvailability.of(fabricTypeId1, true))
+                .build()
+                .toModel();
         update(fabric1);
         update(fabric2);
         update(fabric3);
@@ -944,13 +526,12 @@ public abstract class FabricLookupRepoTest {
         var fabricTypes = findUniqueFabricTypes();
 
         // then: the unique fabric types are found
-        assertThat(fabricTypes).containsExactlyInAnyOrder(fabricTypeId1, fabricTypeId2, fabricTypeId3);
+        assertThat(fabricTypes).containsExactlyInAnyOrder(fabricTypeId1, fabricTypeId2);
 
-        // when: finding unique fabric types with no fabrics
+        // when: removing all fabrics and finding unique fabric types
         remove(fabric1.getId());
         remove(fabric2.getId());
         remove(fabric3.getId());
-
         fabricTypes = findUniqueFabricTypes();
 
         // then: no unique fabric types are found
@@ -995,16 +576,7 @@ public abstract class FabricLookupRepoTest {
             long skip,
             long limit
     ) {
-        return repo.findPublished(
-                searchTerm,
-                colors,
-                topics,
-                filterAvailability,
-                inStock,
-                ascending,
-                skip,
-                limit
-        ).block();
+        return repo.findPublished(searchTerm, colors, topics, filterAvailability, inStock, ascending, skip, limit).block();
     }
 
     private void update(LookupFabric fabric) {

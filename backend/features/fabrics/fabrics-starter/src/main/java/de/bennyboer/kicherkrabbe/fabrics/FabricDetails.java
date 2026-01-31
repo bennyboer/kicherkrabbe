@@ -30,6 +30,8 @@ public class FabricDetails {
 
     boolean published;
 
+    boolean featured;
+
     Instant createdAt;
 
     public static FabricDetails of(
@@ -41,6 +43,7 @@ public class FabricDetails {
             Set<TopicId> topics,
             Set<FabricTypeAvailability> availability,
             boolean published,
+            boolean featured,
             Instant createdAt
     ) {
         notNull(id, "Fabric ID must be given");
@@ -52,7 +55,7 @@ public class FabricDetails {
         notNull(availability, "Availability must be given");
         notNull(createdAt, "Creation date must be given");
 
-        return new FabricDetails(id, version, name, image, colors, topics, availability, published, createdAt);
+        return new FabricDetails(id, version, name, image, colors, topics, availability, published, featured, createdAt);
     }
 
 }

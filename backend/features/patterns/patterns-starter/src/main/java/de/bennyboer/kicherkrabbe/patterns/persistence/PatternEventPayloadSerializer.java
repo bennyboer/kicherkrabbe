@@ -10,8 +10,10 @@ import de.bennyboer.kicherkrabbe.patterns.*;
 import de.bennyboer.kicherkrabbe.patterns.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.patterns.delete.category.CategoryRemovedEvent;
+import de.bennyboer.kicherkrabbe.patterns.feature.FeaturedEvent;
 import de.bennyboer.kicherkrabbe.patterns.publish.PublishedEvent;
 import de.bennyboer.kicherkrabbe.patterns.rename.RenamedEvent;
+import de.bennyboer.kicherkrabbe.patterns.unfeature.UnfeaturedEvent;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.UnpublishedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.attribution.AttributionUpdatedEvent;
 import de.bennyboer.kicherkrabbe.patterns.update.categories.CategoriesUpdatedEvent;
@@ -49,6 +51,8 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             }
             case PublishedEvent ignored -> Map.of();
             case UnpublishedEvent ignored -> Map.of();
+            case FeaturedEvent ignored -> Map.of();
+            case UnfeaturedEvent ignored -> Map.of();
             case RenamedEvent e -> Map.of(
                     "name", e.getName().getValue()
             );
@@ -103,6 +107,8 @@ public class PatternEventPayloadSerializer implements EventSerializer {
             );
             case "PUBLISHED" -> PublishedEvent.of();
             case "UNPUBLISHED" -> UnpublishedEvent.of();
+            case "FEATURED" -> FeaturedEvent.of();
+            case "UNFEATURED" -> UnfeaturedEvent.of();
             case "RENAMED" -> RenamedEvent.of(PatternName.of((String) payload.get("name")));
             case "ATTRIBUTION_UPDATED" ->
                     AttributionUpdatedEvent.of(deserializeAttribution((Map<String, Object>) payload.get("attribution")));

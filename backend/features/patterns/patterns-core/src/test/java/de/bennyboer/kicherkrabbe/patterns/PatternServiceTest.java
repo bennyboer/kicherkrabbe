@@ -9,7 +9,9 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingR
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.money.Money;
 import de.bennyboer.kicherkrabbe.patterns.samples.SamplePattern;
+import de.bennyboer.kicherkrabbe.patterns.feature.AlreadyFeaturedError;
 import de.bennyboer.kicherkrabbe.patterns.publish.AlreadyPublishedError;
+import de.bennyboer.kicherkrabbe.patterns.unfeature.AlreadyUnfeaturedError;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.AlreadyUnpublishedError;
 import jakarta.annotation.Nullable;
 import org.junit.jupiter.api.Test;
@@ -918,6 +920,169 @@ public class PatternServiceTest {
     }
 
     @Test
+    void shouldFeaturePattern() {
+        // given: a pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
+                null,
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+
+        // when: featuring the pattern
+        var updatedVersion = feature(id, Version.zero());
+
+        // then: the pattern is featured
+        var pattern = get(id);
+        assertThat(pattern.getId()).isEqualTo(id);
+        assertThat(pattern.getVersion()).isEqualTo(updatedVersion);
+        assertThat(pattern.isFeatured()).isTrue();
+    }
+
+    @Test
+    void shouldNotFeaturePatternGivenAnOutdatedVersion() {
+        // given: a pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
+                null,
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+
+        // and: the pattern is renamed
+        rename(id, Version.zero(), PatternName.of("Sommerkleid 2024"));
+
+        // when: featuring the pattern with an outdated version; then: an error is raised
+        assertThatThrownBy(() -> feature(id, Version.zero()))
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
+    void shouldUnfeaturePattern() {
+        // given: a featured pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
+                null,
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+        var version = feature(id, Version.zero());
+
+        // when: unfeaturing the pattern
+        var updatedVersion = unfeature(id, version);
+
+        // then: the pattern is unfeatured
+        var pattern = get(id);
+        assertThat(pattern.getId()).isEqualTo(id);
+        assertThat(pattern.getVersion()).isEqualTo(updatedVersion);
+        assertThat(pattern.isFeatured()).isFalse();
+    }
+
+    @Test
+    void shouldNotUnfeaturePatternGivenAnOutdatedVersion() {
+        // given: a featured pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
+                null,
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+        var version = feature(id, Version.zero());
+
+        // and: the pattern is renamed
+        rename(id, version, PatternName.of("Sommerkleid 2024"));
+
+        // when: unfeaturing the pattern with an outdated version; then: an error is raised
+        assertThatThrownBy(() -> unfeature(id, version))
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
+    void shouldNotBeAbleToFeatureAlreadyFeaturedPattern() {
+        // given: a featured pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
+                null,
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+        var version = feature(id, Version.zero());
+
+        // when: trying to feature the pattern again; then: an error is raised
+        assertThatThrownBy(() -> feature(id, version))
+                .matches(e -> e instanceof AlreadyFeaturedError);
+    }
+
+    @Test
+    void shouldNotBeAbleToUnfeatureAlreadyUnfeaturedPattern() {
+        // given: an unfeatured pattern
+        var id = create(
+                PatternName.of("Sommerkleid"),
+                PatternNumber.of("S-D-SUM-1"),
+                null,
+                PatternAttribution.empty(),
+                Set.of(),
+                List.of(ImageId.of("IMAGE_ID_1")),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(80L, 86L, "EU", Money.euro(2900)))
+                        )
+                ),
+                List.of()
+        );
+
+        // when: trying to unfeature the pattern; then: an error is raised
+        assertThatThrownBy(() -> unfeature(id, Version.zero()))
+                .matches(e -> e instanceof AlreadyUnfeaturedError);
+    }
+
+    @Test
     void shouldRestoreFromSnapshot() {
         // given: a pattern
         var name = PatternName.of("Sommerkleid");
@@ -1271,6 +1436,14 @@ public class PatternServiceTest {
 
     private Version unpublish(PatternId id, Version version) {
         return patternService.unpublish(id, version, Agent.system()).block();
+    }
+
+    private Version feature(PatternId id, Version version) {
+        return patternService.feature(id, version, Agent.system()).block();
+    }
+
+    private Version unfeature(PatternId id, Version version) {
+        return patternService.unfeature(id, version, Agent.system()).block();
     }
 
     private Version rename(PatternId id, Version version, PatternName name) {

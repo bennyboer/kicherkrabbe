@@ -44,6 +44,8 @@ public class PatternsHttpConfig {
                                 .andRoute(POST("/rename"), handler::renamePattern)
                                 .andRoute(POST("/publish"), handler::publishPattern)
                                 .andRoute(POST("/unpublish"), handler::unpublishPattern)
+                                .andRoute(POST("/feature"), handler::featurePattern)
+                                .andRoute(POST("/unfeature"), handler::unfeaturePattern)
                                 .andRoute(DELETE(""), handler::deletePattern)
                                 .andNest(
                                         path("/update"),
