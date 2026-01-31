@@ -307,6 +307,42 @@ public class PatternsMessagingTest extends EventListenerTest {
     }
 
     @Test
+    void shouldUpdatePatternInLookupOnPatternFeatured() {
+        // when: a pattern featured event is published
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(1),
+                EventName.of("FEATURED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
+    }
+
+    @Test
+    void shouldUpdatePatternInLookupOnPatternUnfeatured() {
+        // when: a pattern unfeatured event is published
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(1),
+                EventName.of("UNFEATURED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the pattern is updated in the lookup
+        verify(module, timeout(10000).times(1)).updatePatternInLookup(eq("PATTERN_ID"));
+    }
+
+    @Test
     void shouldRemovePatternFromLookupOnPatternDeleted() {
         // when: a pattern deleted event is published
         send(

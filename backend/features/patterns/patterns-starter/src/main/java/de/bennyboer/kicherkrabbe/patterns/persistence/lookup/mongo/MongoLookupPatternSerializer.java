@@ -19,6 +19,7 @@ public class MongoLookupPatternSerializer implements ReadModelSerializer<LookupP
         result.id = readModel.getId().getValue();
         result.version = readModel.getVersion().getValue();
         result.published = readModel.isPublished();
+        result.featured = readModel.getFeatured().orElse(null);
         result.name = readModel.getName().getValue();
         result.number = readModel.getNumber().getValue();
         result.description = readModel.getDescription()
@@ -92,6 +93,7 @@ public class MongoLookupPatternSerializer implements ReadModelSerializer<LookupP
         var id = PatternId.of(serialized.id);
         var version = Version.of(serialized.version);
         var published = serialized.published;
+        var featured = serialized.featured;
         var name = PatternName.of(serialized.name);
         var number = PatternNumber.of(serialized.number);
         var description = Optional.ofNullable(serialized.description)
@@ -147,6 +149,7 @@ public class MongoLookupPatternSerializer implements ReadModelSerializer<LookupP
                 id,
                 version,
                 published,
+                featured,
                 name,
                 number,
                 description,

@@ -153,6 +153,40 @@ public class PatternsMessaging {
     }
 
     @Bean
+    public EventListener onPatternFeaturedAllowAnonymousAndSystemUsersToReadFeaturedPattern(
+            EventListenerFactory factory,
+            PatternsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "patterns.pattern-featured-allow-anonymous-and-system-users-to-read-featured-pattern",
+                AggregateType.of("PATTERN"),
+                EventName.of("FEATURED"),
+                (event) -> {
+                    String patternId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.allowAnonymousAndSystemUsersToReadFeaturedPattern(patternId);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onPatternUnfeaturedDisallowAnonymousAndSystemUsersToReadFeaturedPattern(
+            EventListenerFactory factory,
+            PatternsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "patterns.pattern-unfeatured-disallow-anonymous-and-system-users-to-read-featured-pattern",
+                AggregateType.of("PATTERN"),
+                EventName.of("UNFEATURED"),
+                (event) -> {
+                    String patternId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.disallowAnonymousAndSystemUsersToReadFeaturedPattern(patternId);
+                }
+        );
+    }
+
+    @Bean
     public EventListener onCategoryDeletedRemoveCategoryFromPatterns(
             EventListenerFactory factory,
             PatternsModule module

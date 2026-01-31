@@ -10,7 +10,9 @@ import de.bennyboer.kicherkrabbe.patterns.*;
 import de.bennyboer.kicherkrabbe.patterns.http.api.*;
 import de.bennyboer.kicherkrabbe.patterns.http.api.requests.*;
 import de.bennyboer.kicherkrabbe.patterns.http.api.responses.*;
+import de.bennyboer.kicherkrabbe.patterns.feature.AlreadyFeaturedError;
 import de.bennyboer.kicherkrabbe.patterns.publish.AlreadyPublishedError;
+import de.bennyboer.kicherkrabbe.patterns.unfeature.AlreadyUnfeaturedError;
 import de.bennyboer.kicherkrabbe.patterns.unpublish.AlreadyUnpublishedError;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.ReactiveTransactionManager;
@@ -299,6 +301,78 @@ public class PatternsHttpHandler {
                 )
                 .onErrorMap(
                         AlreadyUnpublishedError.class, e -> new ResponseStatusException(
+                                PRECONDITION_FAILED,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .as(transactionalOperator::transactional);
+    }
+
+    public Mono<ServerResponse> featurePattern(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        String patternId = request.pathVariable("patternId");
+        long version = request.queryParam("version")
+                .map(Long::parseLong)
+                .orElseThrow(() -> new ResponseStatusException(
+                        BAD_REQUEST,
+                        "Missing version query parameter"
+                ));
+
+        return toAgent(request)
+                .flatMap(agent -> module.featurePattern(patternId, version, agent))
+                .map(newVersion -> {
+                    var response = new FeaturePatternResponse();
+                    response.version = newVersion;
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorMap(
+                        AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                                CONFLICT,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        AlreadyFeaturedError.class, e -> new ResponseStatusException(
+                                PRECONDITION_FAILED,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .as(transactionalOperator::transactional);
+    }
+
+    public Mono<ServerResponse> unfeaturePattern(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        String patternId = request.pathVariable("patternId");
+        long version = request.queryParam("version")
+                .map(Long::parseLong)
+                .orElseThrow(() -> new ResponseStatusException(
+                        BAD_REQUEST,
+                        "Missing version query parameter"
+                ));
+
+        return toAgent(request)
+                .flatMap(agent -> module.unfeaturePattern(patternId, version, agent))
+                .map(newVersion -> {
+                    var response = new UnfeaturePatternResponse();
+                    response.version = newVersion;
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorMap(
+                        AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                                CONFLICT,
+                                e.getMessage(),
+                                e
+                        )
+                )
+                .onErrorMap(
+                        AlreadyUnfeaturedError.class, e -> new ResponseStatusException(
                                 PRECONDITION_FAILED,
                                 e.getMessage(),
                                 e

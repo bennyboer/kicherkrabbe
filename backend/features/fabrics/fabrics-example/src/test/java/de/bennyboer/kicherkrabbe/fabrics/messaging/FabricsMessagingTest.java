@@ -230,6 +230,42 @@ public class FabricsMessagingTest extends EventListenerTest {
     }
 
     @Test
+    void shouldUpdateFabricInLookupOnFabricFeatured() {
+        // when: a fabric featured event is published
+        send(
+                AggregateType.of("FABRIC"),
+                AggregateId.of("FABRIC_ID"),
+                Version.of(1),
+                EventName.of("FEATURED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the fabric is updated in the lookup
+        verify(module, timeout(5000).times(1)).updateFabricInLookup(eq("FABRIC_ID"));
+    }
+
+    @Test
+    void shouldUpdateFabricInLookupOnFabricUnfeatured() {
+        // when: a fabric unfeatured event is published
+        send(
+                AggregateType.of("FABRIC"),
+                AggregateId.of("FABRIC_ID"),
+                Version.of(1),
+                EventName.of("UNFEATURED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the fabric is updated in the lookup
+        verify(module, timeout(5000).times(1)).updateFabricInLookup(eq("FABRIC_ID"));
+    }
+
+    @Test
     void shouldRemoveFabricTypeFromFabricsOnFabricTypeDeleted() {
         // when: a fabric type deleted event is published
         send(

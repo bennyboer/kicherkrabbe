@@ -16,6 +16,12 @@ public class Actions {
 
     public static final Action UNPUBLISH = Action.of("UNPUBLISH");
 
+    public static final Action FEATURE = Action.of("FEATURE");
+
+    public static final Action UNFEATURE = Action.of("UNFEATURE");
+
+    public static final Action READ_FEATURED = Action.of("READ_FEATURED");
+
     public static final Action UPDATE_ATTRIBUTION = Action.of("UPDATE_ATTRIBUTION");
 
     public static final Action UPDATE_CATEGORIES = Action.of("UPDATE_CATEGORIES");
