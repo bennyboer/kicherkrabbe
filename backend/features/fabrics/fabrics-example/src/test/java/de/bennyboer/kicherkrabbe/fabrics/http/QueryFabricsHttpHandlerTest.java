@@ -48,6 +48,7 @@ public class QueryFabricsHttpHandlerTest extends HttpHandlerTest {
                         Set.of(),
                         Set.of(),
                         false,
+                        false,
                         Instant.now()
                 ))
         )));

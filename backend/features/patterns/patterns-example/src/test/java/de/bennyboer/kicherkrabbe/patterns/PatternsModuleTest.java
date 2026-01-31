@@ -125,6 +125,18 @@ public class PatternsModuleTest {
         module.disallowAnonymousAndSystemUsersToReadPublishedPattern(patternId).block();
     }
 
+    public void featurePattern(String patternId, long version, Agent agent) {
+        module.featurePattern(patternId, version, agent).block();
+
+        module.updatePatternInLookup(patternId).block();
+    }
+
+    public void unfeaturePattern(String patternId, long version, Agent agent) {
+        module.unfeaturePattern(patternId, version, agent).block();
+
+        module.updatePatternInLookup(patternId).block();
+    }
+
     public void updatePatternAttribution(
             String patternId,
             long version,

@@ -30,15 +30,17 @@ public class SampleLookupPattern {
     @Builder.Default
     private PatternName name = PatternName.of("Sample Pattern");
 
+    @Nullable
     @Builder.Default
-    private PatternNumber number = PatternNumber.of("S-X-SAM-1");
+    private PatternNumber number = null;
 
     @Nullable
     @Builder.Default
     private PatternDescription description = null;
 
+    @Nullable
     @Builder.Default
-    private PatternAlias alias = PatternAlias.of("sample-pattern");
+    private PatternAlias alias = null;
 
     @Builder.Default
     private PatternAttribution attribution = PatternAttribution.of(null, null);
@@ -65,9 +67,9 @@ public class SampleLookupPattern {
                 published,
                 featured,
                 name,
-                number,
+                number != null ? number : PatternNumber.of("S-X-SAM-" + id.getValue().substring(0, 8)),
                 description,
-                alias,
+                alias != null ? alias : PatternAlias.of("sample-pattern-" + id.getValue()),
                 attribution,
                 categories,
                 images.isEmpty() ? List.of(ImageId.of("IMAGE_ID")) : images,
