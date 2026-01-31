@@ -236,6 +236,7 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
         IndexDefinition topicsIndex = new Index().on("topics", Sort.Direction.ASC);
         IndexDefinition availabilityFabricTypeIndex = new Index().on("availability.fabricTypeId", Sort.Direction.ASC);
         IndexDefinition availabilityInStockIndex = new Index().on("availability.inStock", Sort.Direction.ASC);
+        IndexDefinition featuredIndex = new Index().on("published", Sort.Direction.ASC).on("featured", Sort.Direction.ASC);
 
         return indexOps.createIndex(createdAtIndex)
                 .then(indexOps.createIndex(nameIndex))
@@ -244,6 +245,7 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
                 .then(indexOps.createIndex(topicsIndex))
                 .then(indexOps.createIndex(availabilityFabricTypeIndex))
                 .then(indexOps.createIndex(availabilityInStockIndex))
+                .then(indexOps.createIndex(featuredIndex))
                 .then();
     }
 

@@ -227,10 +227,12 @@ public class MongoPatternLookupRepo
         IndexDefinition categoriesIndex = new Index().on("categories", ASC);
         IndexDefinition aliasIndex = new Index().on("alias", ASC);
         IndexDefinition numberIndex = new Index().on("number", ASC).unique();
+        IndexDefinition featuredIndex = new Index().on("published", ASC).on("featured", ASC);
 
         return indexOps.createIndex(categoriesIndex)
                 .then(indexOps.createIndex(aliasIndex))
                 .then(indexOps.createIndex(numberIndex))
+                .then(indexOps.createIndex(featuredIndex))
                 .then();
     }
 
