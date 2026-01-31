@@ -204,6 +204,18 @@ public class FabricsHttpHandler {
                 .switchIfEmpty(Mono.error(new ResponseStatusException(NOT_FOUND, "Fabric not available")));
     }
 
+    public Mono<ServerResponse> getFeaturedFabrics(ServerRequest request) {
+        return toAgent(request)
+                .flatMapMany(module::getFeaturedFabrics)
+                .collectList()
+                .map(fabrics -> {
+                    var response = new QueryFeaturedFabricsResponse();
+                    response.fabrics = toPublishedFabricDTOs(fabrics);
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response));
+    }
+
     public Mono<ServerResponse> createFabric(ServerRequest request) {
         var transactionalOperator = TransactionalOperator.create(transactionManager);
 
@@ -636,6 +648,7 @@ public class FabricsHttpHandler {
         result.topicIds = toTopicIds(fabric.getTopics());
         result.availability = toFabricTypeAvailabilityDTOs(fabric.getAvailability());
         result.published = fabric.isPublished();
+        result.featured = fabric.isFeatured();
         result.createdAt = fabric.getCreatedAt();
 
         return result;

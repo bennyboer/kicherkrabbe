@@ -152,6 +152,18 @@ public class FabricsModule {
                 .onErrorResume(MissingPermissionError.class, e -> Mono.empty());
     }
 
+    public Flux<PublishedFabric> getFeaturedFabrics(Agent ignoredAgent) {
+        return fabricLookupRepo.findFeatured()
+                .map(fabric -> PublishedFabric.of(
+                        fabric.getId(),
+                        fabric.getName(),
+                        fabric.getImage(),
+                        fabric.getColors(),
+                        fabric.getTopics(),
+                        fabric.getAvailability()
+                ));
+    }
+
     public Mono<PublishedFabricsPage> getPublishedFabrics(
             String searchTerm,
             Set<String> colorIds,

@@ -156,6 +156,18 @@ public class PatternsHttpHandler {
                 .switchIfEmpty(Mono.error(new ResponseStatusException(NOT_FOUND, "Pattern not available")));
     }
 
+    public Mono<ServerResponse> getFeaturedPatterns(ServerRequest request) {
+        return toAgent(request)
+                .flatMapMany(module::getFeaturedPatterns)
+                .collectList()
+                .map(patterns -> {
+                    var response = new QueryFeaturedPatternsResponse();
+                    response.patterns = toPublishedPatternDTOs(patterns);
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response));
+    }
+
     public Mono<ServerResponse> createPattern(ServerRequest request) {
         var transactionalOperator = TransactionalOperator.create(transactionManager);
 
@@ -714,6 +726,7 @@ public class PatternsHttpHandler {
         result.id = pattern.getId().getValue();
         result.version = pattern.getVersion().getValue();
         result.published = pattern.isPublished();
+        result.featured = pattern.isFeatured();
         result.name = pattern.getName().getValue();
         result.number = pattern.getNumber().getValue();
         result.description = pattern.getDescription()

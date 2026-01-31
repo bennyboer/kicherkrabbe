@@ -208,6 +208,16 @@ public class MongoPatternLookupRepo
     }
 
     @Override
+    public Flux<LookupPattern> findFeatured() {
+        Criteria criteria = where("published").is(true)
+                .and("featured").is(true);
+        Query query = query(criteria);
+
+        return template.find(query, MongoLookupPattern.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
     protected String stringifyId(PatternId patternId) {
         return patternId.getValue();
     }

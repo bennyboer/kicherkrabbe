@@ -146,4 +146,10 @@ public class InMemoryFabricLookupRepo extends InMemoryEventSourcingReadModelRepo
                 .distinct();
     }
 
+    @Override
+    public Flux<LookupFabric> findFeatured() {
+        return getAll()
+                .filter(fabric -> fabric.isPublished() && fabric.isFeatured());
+    }
+
 }

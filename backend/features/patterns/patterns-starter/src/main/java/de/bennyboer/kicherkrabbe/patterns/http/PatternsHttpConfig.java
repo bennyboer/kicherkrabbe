@@ -36,6 +36,7 @@ public class PatternsHttpConfig {
                 route(POST(""), handler::getPatterns)
                         .andRoute(GET("/changes"), handler::getChanges)
                         .andRoute(POST("/published"), handler::getPublishedPatterns)
+                        .andRoute(GET("/featured"), handler::getFeaturedPatterns)
                         .andRoute(GET("/categories"), handler::getAvailableCategoriesForPatterns)
                         .andRoute(GET("/categories/used"), handler::getCategoriesUsedInPatterns)
                         .andRoute(POST("/create"), handler::createPattern)
@@ -63,6 +64,7 @@ public class PatternsHttpConfig {
     @Bean
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> patternsAuthorizeExchangeSpecCustomizer() {
         return exchanges -> exchanges.pathMatchers(POST, "/api/patterns/published").permitAll()
+                .pathMatchers(GET, "/api/patterns/featured").permitAll()
                 .pathMatchers(GET, "/api/patterns/{patternId}/published").permitAll()
                 .pathMatchers(GET, "/api/patterns/categories/used").permitAll();
     }

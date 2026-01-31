@@ -22,6 +22,8 @@ public class PatternDTO {
 
     boolean published;
 
+    boolean featured;
+
     String name;
 
     String number;

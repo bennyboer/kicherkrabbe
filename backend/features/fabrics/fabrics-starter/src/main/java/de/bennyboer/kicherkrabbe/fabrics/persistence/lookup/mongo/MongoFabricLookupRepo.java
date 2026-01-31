@@ -218,6 +218,16 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
     }
 
     @Override
+    public Flux<LookupFabric> findFeatured() {
+        Criteria criteria = where("published").is(true)
+                .and("featured").is(true);
+        Query query = query(criteria);
+
+        return template.find(query, MongoLookupFabric.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         IndexDefinition createdAtIndex = new Index().on("createdAt", Sort.Direction.ASC);
         IndexDefinition nameIndex = new Index().on("name", Sort.Direction.ASC);

@@ -149,4 +149,10 @@ public class InMemoryPatternLookupRepo
                 .singleOrEmpty();
     }
 
+    @Override
+    public Flux<LookupPattern> findFeatured() {
+        return getAll()
+                .filter(pattern -> pattern.isPublished() && pattern.isFeatured());
+    }
+
 }

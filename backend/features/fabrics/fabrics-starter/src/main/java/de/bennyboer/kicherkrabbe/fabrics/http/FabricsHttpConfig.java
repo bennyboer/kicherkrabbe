@@ -33,6 +33,7 @@ public class FabricsHttpConfig {
                 route(POST("/"), handler::getFabrics)
                         .andRoute(GET("/changes"), handler::getChanges)
                         .andRoute(POST("/published"), handler::getPublishedFabrics)
+                        .andRoute(GET("/featured"), handler::getFeaturedFabrics)
                         .andRoute(GET("/topics"), handler::getAvailableTopicsForFabrics)
                         .andRoute(GET("/topics/used"), handler::getTopicsUsedInFabrics)
                         .andRoute(GET("/colors"), handler::getAvailableColorsForFabrics)
@@ -64,6 +65,7 @@ public class FabricsHttpConfig {
     @Bean
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> fabricsAuthorizeExchangeSpecCustomizer() {
         return exchanges -> exchanges.pathMatchers(POST, "/api/fabrics/published").permitAll()
+                .pathMatchers(GET, "/api/fabrics/featured").permitAll()
                 .pathMatchers(GET, "/api/fabrics/{fabricId}/published").permitAll()
                 .pathMatchers(GET, "/api/fabrics/topics/used").permitAll()
                 .pathMatchers(GET, "/api/fabrics/colors/used").permitAll()

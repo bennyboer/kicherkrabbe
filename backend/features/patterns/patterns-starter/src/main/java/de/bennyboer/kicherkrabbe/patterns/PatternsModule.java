@@ -167,6 +167,22 @@ public class PatternsModule {
                 .onErrorResume(MissingPermissionError.class, e -> Mono.empty());
     }
 
+    public Flux<PublishedPattern> getFeaturedPatterns(Agent ignoredAgent) {
+        return patternLookupRepo.findFeatured()
+                .map(pattern -> PublishedPattern.of(
+                        pattern.getId(),
+                        pattern.getName(),
+                        pattern.getNumber(),
+                        pattern.getDescription().orElse(null),
+                        pattern.getAlias(),
+                        pattern.getAttribution(),
+                        pattern.getCategories(),
+                        pattern.getImages(),
+                        pattern.getVariants(),
+                        pattern.getExtras()
+                ));
+    }
+
     public Flux<PatternCategory> getAvailableCategoriesForPatterns(Agent agent) {
         return assertAgentIsAllowedTo(agent, CREATE)
                 .thenMany(patternCategoryRepo.findAll());
