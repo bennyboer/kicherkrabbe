@@ -23,6 +23,8 @@ public class PatternDetails {
 
     boolean published;
 
+    boolean featured;
+
     PatternName name;
 
     PatternNumber number;
@@ -46,6 +48,7 @@ public class PatternDetails {
             PatternId id,
             Version version,
             boolean published,
+            boolean featured,
             PatternName name,
             PatternNumber number,
             @Nullable PatternDescription description,
@@ -71,6 +74,7 @@ public class PatternDetails {
                 id,
                 version,
                 published,
+                featured,
                 name,
                 number,
                 description,

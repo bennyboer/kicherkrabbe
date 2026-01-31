@@ -152,6 +152,18 @@ public class FabricsModuleTest {
         module.disallowAnonymousAndSystemUsersToReadPublishedFabric(fabricId).block();
     }
 
+    public void featureFabric(String fabricId, long version, Agent agent) {
+        module.featureFabric(fabricId, version, agent).block();
+
+        module.updateFabricInLookup(fabricId).block();
+    }
+
+    public void unfeatureFabric(String fabricId, long version, Agent agent) {
+        module.unfeatureFabric(fabricId, version, agent).block();
+
+        module.updateFabricInLookup(fabricId).block();
+    }
+
     public void updateFabricImage(String fabricId, long version, String imageId, Agent agent) {
         module.updateFabricImage(fabricId, version, imageId, agent).block();
 

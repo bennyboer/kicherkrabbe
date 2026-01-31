@@ -106,6 +106,7 @@ public class FabricsModule {
                         fabric.getTopics(),
                         fabric.getAvailability(),
                         fabric.isPublished(),
+                        fabric.isFeatured(),
                         fabric.getCreatedAt()
                 ));
     }
@@ -129,6 +130,7 @@ public class FabricsModule {
                                         fabric.getTopics(),
                                         fabric.getAvailability(),
                                         fabric.isPublished(),
+                                        fabric.getFeatured().orElse(false),
                                         fabric.getCreatedAt()
                                 )).toList()
                 ));
@@ -417,6 +419,7 @@ public class FabricsModule {
                         fabric.getTopics(),
                         fabric.getAvailability(),
                         fabric.isPublished(),
+                        fabric.isFeatured(),
                         fabric.getCreatedAt()
                 ))
                 .flatMap(fabricLookupRepo::update);

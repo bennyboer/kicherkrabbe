@@ -30,6 +30,7 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
                 .map(this::toMongoFabricTypeAvailability)
                 .collect(Collectors.toSet());
         result.published = readModel.isPublished();
+        result.featured = readModel.getFeatured().orElse(null);
         result.createdAt = readModel.getCreatedAt();
 
         return result;
@@ -54,6 +55,7 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
                 .map(this::toFabricTypeAvailability)
                 .collect(Collectors.toSet());
         var published = serialized.published;
+        var featured = serialized.featured;
         var createdAt = serialized.createdAt;
 
         return LookupFabric.of(
@@ -65,6 +67,7 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
                 topics,
                 availability,
                 published,
+                featured,
                 createdAt
         );
     }
