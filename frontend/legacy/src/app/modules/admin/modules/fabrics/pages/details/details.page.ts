@@ -190,7 +190,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.publish({
-            message: `Der Stoff „${fabric.name}“ wurde erfolgreich von der Öffentlichkeit zurückgezogen.`,
+            message: `Der Stoff „${fabric.name}" wurde erfolgreich von der Öffentlichkeit zurückgezogen.`,
             type: 'success',
           });
         },
@@ -198,6 +198,47 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
           this.notificationService.publish({
             message:
               'Ein Fehler ist aufgetreten. Der Stoff konnte nicht von der Öffentlichkeit zurückgezogen werden. Versuche es noch einmal.',
+            type: 'error',
+          });
+        },
+      });
+  }
+
+  featureFabric(fabric: Fabric): void {
+    this.fabricsService
+      .featureFabric(fabric.id, fabric.version)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.notificationService.publish({
+            message: `Der Stoff „${fabric.name}" wurde hervorgehoben.`,
+            type: 'success',
+          });
+        },
+        error: () => {
+          this.notificationService.publish({
+            message: 'Ein Fehler ist aufgetreten. Der Stoff konnte nicht hervorgehoben werden. Versuche es noch einmal.',
+            type: 'error',
+          });
+        },
+      });
+  }
+
+  unfeatureFabric(fabric: Fabric): void {
+    this.fabricsService
+      .unfeatureFabric(fabric.id, fabric.version)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.notificationService.publish({
+            message: `Der Stoff „${fabric.name}" wird nicht mehr hervorgehoben.`,
+            type: 'success',
+          });
+        },
+        error: () => {
+          this.notificationService.publish({
+            message:
+              'Ein Fehler ist aufgetreten. Die Hervorhebung des Stoffs konnte nicht aufgehoben werden. Versuche es noch einmal.',
             type: 'error',
           });
         },

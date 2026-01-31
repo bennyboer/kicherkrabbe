@@ -31,6 +31,12 @@ h3 {
   gap: 12px;
 }
 
+.top-action-bar-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
+
 .image-edit-centering-container {
   display: flex;
   flex-direction: row;
@@ -114,6 +120,11 @@ h3 {
   .top-action-bar {
     flex-direction: column;
     align-items: center;
+  }
+
+  .top-action-bar-actions {
+    flex-direction: column;
+    width: 100%;
   }
 
   .image-edit-container {
