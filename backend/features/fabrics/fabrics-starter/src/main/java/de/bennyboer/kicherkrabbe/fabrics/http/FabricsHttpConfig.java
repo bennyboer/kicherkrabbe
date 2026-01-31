@@ -45,6 +45,8 @@ public class FabricsHttpConfig {
                                 .andRoute(POST("/rename"), handler::renameFabric)
                                 .andRoute(POST("/publish"), handler::publishFabric)
                                 .andRoute(POST("/unpublish"), handler::unpublishFabric)
+                                .andRoute(POST("/feature"), handler::featureFabric)
+                                .andRoute(POST("/unfeature"), handler::unfeatureFabric)
                                 .andRoute(DELETE("/"), handler::deleteFabric)
                                 .andNest(
                                         path("/update"),

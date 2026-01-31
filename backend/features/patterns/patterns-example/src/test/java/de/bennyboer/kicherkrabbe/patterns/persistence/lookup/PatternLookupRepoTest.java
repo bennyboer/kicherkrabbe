@@ -1,8 +1,8 @@
 package de.bennyboer.kicherkrabbe.patterns.persistence.lookup;
 
-import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.money.Money;
 import de.bennyboer.kicherkrabbe.patterns.*;
+import de.bennyboer.kicherkrabbe.patterns.samples.SampleLookupPattern;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,45 +26,7 @@ public abstract class PatternLookupRepoTest {
     @Test
     void shouldUpdatePattern() {
         // given: a pattern to update
-        var pattern = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("Summerdress"),
-                PatternNumber.of("S-D-SUM-1"),
-                PatternDescription.of("A beautiful summer dress"),
-                PatternAlias.of("summerdress"),
-                PatternAttribution.of(
-                        OriginalPatternName.of("Summerdress EXTREME"),
-                        PatternDesigner.of("EXTREME PATTERNS inc.")
-                ),
-                Set.of(PatternCategoryId.of("DRESS_ID"), PatternCategoryId.of("SKIRT_ID")),
-                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Short"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        ),
-                                        PricedSizeRange.of(
-                                                98,
-                                                104L,
-                                                null,
-                                                Money.euro(3100)
-                                        )
-                                )
-                        )
-                ),
-                List.of(PatternExtra.of(
-                        PatternExtraName.of("Sewing instructions"),
-                        Money.euro(200)
-                )),
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
+        var pattern = SampleLookupPattern.builder().build().toModel();
 
         // when: updating the pattern
         update(pattern);
@@ -77,75 +39,8 @@ public abstract class PatternLookupRepoTest {
     @Test
     void shouldRemovePattern() {
         // given: some patterns
-        var pattern1 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("Summerdress"),
-                PatternNumber.of("S-D-SUM-1"),
-                null,
-                PatternAlias.of("summerdress"),
-                PatternAttribution.of(
-                        OriginalPatternName.of("Summerdress EXTREME"),
-                        PatternDesigner.of("EXTREME PATTERNS inc.")
-                ),
-                Set.of(PatternCategoryId.of("DRESS_ID"), PatternCategoryId.of("SKIRT_ID")),
-                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Short"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        ),
-                                        PricedSizeRange.of(
-                                                98,
-                                                104L,
-                                                null,
-                                                Money.euro(3100)
-                                        )
-                                )
-                        )
-                ),
-                List.of(PatternExtra.of(
-                        PatternExtraName.of("Sewing instructions"),
-                        Money.euro(200)
-                )),
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
-        var pattern2 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("Some trousers"),
-                PatternNumber.of("S-T-SOM-1"),
-                null,
-                PatternAlias.of("some-trousers"),
-                PatternAttribution.of(
-                        OriginalPatternName.of("Summerdress EXTREME"),
-                        PatternDesigner.of("EXTREME PATTERNS inc.")
-                ),
-                Set.of(PatternCategoryId.of("TROUSERS_ID")),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
+        var pattern1 = SampleLookupPattern.builder().build().toModel();
+        var pattern2 = SampleLookupPattern.builder().build().toModel();
         update(pattern1);
         update(pattern2);
 
@@ -160,72 +55,14 @@ public abstract class PatternLookupRepoTest {
     @Test
     void shouldFindPatterns() {
         // given: some patterns
-        var pattern1 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("Summerdress"),
-                PatternNumber.of("S-D-SUM-1"),
-                null,
-                PatternAlias.of("summerdress"),
-                PatternAttribution.of(
-                        OriginalPatternName.of("Summerdress EXTREME"),
-                        PatternDesigner.of("EXTREME PATTERNS inc.")
-                ),
-                Set.of(PatternCategoryId.of("DRESS_ID"), PatternCategoryId.of("SKIRT_ID")),
-                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Short"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        ),
-                                        PricedSizeRange.of(
-                                                98,
-                                                104L,
-                                                null,
-                                                Money.euro(3100)
-                                        )
-                                )
-                        )
-                ),
-                List.of(PatternExtra.of(
-                        PatternExtraName.of("Sewing instructions"),
-                        Money.euro(200)
-                )),
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
-        var pattern2 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("Some trousers"),
-                PatternNumber.of("S-T-SOM-1"),
-                null,
-                PatternAlias.of("some-trousers"),
-                PatternAttribution.of(null, null),
-                Set.of(PatternCategoryId.of("TROUSERS_ID")),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-12T12:00:00.00Z")
-        );
+        var pattern1 = SampleLookupPattern.builder()
+                .createdAt(Instant.parse("2024-03-12T12:30:00.00Z"))
+                .build()
+                .toModel();
+        var pattern2 = SampleLookupPattern.builder()
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
         update(pattern1);
         update(pattern2);
 
@@ -238,100 +75,22 @@ public abstract class PatternLookupRepoTest {
 
     @Test
     void shouldFindPatternsBySearchTerm() {
-        // given: some patterns
-        var pattern1 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("Summerdress"),
-                PatternNumber.of("S-D-SUM-1"),
-                null,
-                PatternAlias.of("summerdress"),
-                PatternAttribution.of(
-                        OriginalPatternName.of("Summerdress EXTREME"),
-                        PatternDesigner.of("EXTREME PATTERNS inc.")
-                ),
-                Set.of(PatternCategoryId.of("DRESS_ID"), PatternCategoryId.of("SKIRT_ID")),
-                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Short"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        ),
-                                        PricedSizeRange.of(
-                                                98,
-                                                104L,
-                                                null,
-                                                Money.euro(3100)
-                                        )
-                                )
-                        )
-                ),
-                List.of(PatternExtra.of(
-                        PatternExtraName.of("Sewing instructions"),
-                        Money.euro(200)
-                )),
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
-        var pattern2 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("Some trousers"),
-                PatternNumber.of("S-T-SOM-1"),
-                null,
-                PatternAlias.of("some-trousers"),
-                PatternAttribution.of(null, null),
-                Set.of(PatternCategoryId.of("TROUSERS_ID")),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-12T12:00:00.00Z")
-        );
-        var pattern3 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("A little hat"),
-                PatternNumber.of("S-H-ALH-1"),
-                null,
-                PatternAlias.of("a-little-hat"),
-                PatternAttribution.of(null, null),
-                Set.of(PatternCategoryId.of("HATS_ID")),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-11T11:00:00.00Z")
-        );
+        // given: some patterns with different names
+        var pattern1 = SampleLookupPattern.builder()
+                .name(PatternName.of("Summerdress"))
+                .createdAt(Instant.parse("2024-03-12T12:30:00.00Z"))
+                .build()
+                .toModel();
+        var pattern2 = SampleLookupPattern.builder()
+                .name(PatternName.of("Some trousers"))
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        var pattern3 = SampleLookupPattern.builder()
+                .name(PatternName.of("A little hat"))
+                .createdAt(Instant.parse("2024-03-11T11:00:00.00Z"))
+                .build()
+                .toModel();
         update(pattern1);
         update(pattern2);
         update(pattern3);
@@ -349,241 +108,66 @@ public abstract class PatternLookupRepoTest {
         // then: the patterns are found by another search term
         assertThat(patterns).containsExactly(pattern2, pattern1);
 
-        // when: finding patterns by another search term
+        // when: finding patterns by blank search term
         patterns = find(patternIds, "    ");
 
-        // then: the patterns are found by another search term
+        // then: all patterns are found
         assertThat(patterns).containsExactly(pattern3, pattern2, pattern1);
 
-        // when: finding patterns by another search term
+        // when: finding patterns by non-matching search term
         patterns = find(patternIds, "blblblbll");
 
-        // then: the patterns are found by another search term
+        // then: no patterns are found
         assertThat(patterns).isEmpty();
     }
 
     @Test
     void shouldFindPatternsWithPaging() {
         // given: some patterns
-        var pattern1 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("Summerdress"),
-                PatternNumber.of("S-D-SUM-1"),
-                null,
-                PatternAlias.of("summerdress"),
-                PatternAttribution.of(
-                        OriginalPatternName.of("Summerdress EXTREME"),
-                        PatternDesigner.of("EXTREME PATTERNS inc.")
-                ),
-                Set.of(PatternCategoryId.of("DRESS_ID"), PatternCategoryId.of("SKIRT_ID")),
-                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Short"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        ),
-                                        PricedSizeRange.of(
-                                                98,
-                                                104L,
-                                                null,
-                                                Money.euro(3100)
-                                        )
-                                )
-                        )
-                ),
-                List.of(PatternExtra.of(
-                        PatternExtraName.of("Sewing instructions"),
-                        Money.euro(200)
-                )),
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
-        var pattern2 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("Some trousers"),
-                PatternNumber.of("S-T-SOM-1"),
-                null,
-                PatternAlias.of("some-trousers"),
-                PatternAttribution.of(null, null),
-                Set.of(PatternCategoryId.of("TROUSERS_ID")),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-12T12:00:00.00Z")
-        );
-        var pattern3 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("A little hat"),
-                PatternNumber.of("S-H-ALH-1"),
-                null,
-                PatternAlias.of("a-little-hat"),
-                PatternAttribution.of(null, null),
-                Set.of(PatternCategoryId.of("HATS_ID")),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-11T11:00:00.00Z")
-        );
+        var pattern1 = SampleLookupPattern.builder()
+                .createdAt(Instant.parse("2024-03-12T12:30:00.00Z"))
+                .build()
+                .toModel();
+        var pattern2 = SampleLookupPattern.builder()
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        var pattern3 = SampleLookupPattern.builder()
+                .createdAt(Instant.parse("2024-03-11T11:00:00.00Z"))
+                .build()
+                .toModel();
         update(pattern1);
         update(pattern2);
         update(pattern3);
 
         // when: finding patterns with paging
         var patternIds = Set.of(pattern1.getId(), pattern2.getId(), pattern3.getId());
-        var patterns = find(patternIds, 1, 1);
 
         // then: the patterns are found with paging
-        assertThat(patterns).containsExactly(pattern2);
-
-        // when: finding patterns with paging
-        patterns = find(patternIds, 2, 1);
-
-        // then: the patterns are found with paging
-        assertThat(patterns).containsExactly(pattern1);
-
-        // when: finding patterns with paging
-        patterns = find(patternIds, 3, 1);
-
-        // then: the patterns are found with paging
-        assertThat(patterns).isEmpty();
-
-        // when: finding patterns with paging
-        patterns = find(patternIds, 0, 2);
-
-        // then: the patterns are found with paging
-        assertThat(patterns).containsExactly(pattern3, pattern2);
+        assertThat(find(patternIds, 1, 1)).containsExactly(pattern2);
+        assertThat(find(patternIds, 2, 1)).containsExactly(pattern1);
+        assertThat(find(patternIds, 3, 1)).isEmpty();
+        assertThat(find(patternIds, 0, 2)).containsExactly(pattern3, pattern2);
     }
 
     @Test
     void shouldFindWithSearchTermAndPaging() {
-        // given: some patterns
-        var pattern1 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("Summerdress"),
-                PatternNumber.of("S-D-SUM-1"),
-                null,
-                PatternAlias.of("summerdress"),
-                PatternAttribution.of(
-                        OriginalPatternName.of("Summerdress EXTREME"),
-                        PatternDesigner.of("EXTREME PATTERNS inc.")
-                ),
-                Set.of(PatternCategoryId.of("DRESS_ID"), PatternCategoryId.of("SKIRT_ID")),
-                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Short"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        ),
-                                        PricedSizeRange.of(
-                                                98,
-                                                104L,
-                                                null,
-                                                Money.euro(3100)
-                                        )
-                                )
-                        )
-                ),
-                List.of(PatternExtra.of(
-                        PatternExtraName.of("Sewing instructions"),
-                        Money.euro(200)
-                )),
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
-        var pattern2 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("Some trousers"),
-                PatternNumber.of("S-T-SOM-1"),
-                null,
-                PatternAlias.of("some-trousers"),
-                PatternAttribution.of(null, null),
-                Set.of(PatternCategoryId.of("TROUSERS_ID")),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-12T12:00:00.00Z")
-        );
-        var pattern3 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("A little hat"),
-                PatternNumber.of("S-H-ALH-1"),
-                null,
-                PatternAlias.of("a-little-hat"),
-                PatternAttribution.of(null, null),
-                Set.of(PatternCategoryId.of("HATS_ID")),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-11T11:00:00.00Z")
-        );
+        // given: some patterns with different names
+        var pattern1 = SampleLookupPattern.builder()
+                .name(PatternName.of("Summerdress"))
+                .createdAt(Instant.parse("2024-03-12T12:30:00.00Z"))
+                .build()
+                .toModel();
+        var pattern2 = SampleLookupPattern.builder()
+                .name(PatternName.of("Some trousers"))
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        var pattern3 = SampleLookupPattern.builder()
+                .name(PatternName.of("A little hat"))
+                .createdAt(Instant.parse("2024-03-11T11:00:00.00Z"))
+                .build()
+                .toModel();
         update(pattern1);
         update(pattern2);
         update(pattern3);
@@ -596,356 +180,148 @@ public abstract class PatternLookupRepoTest {
         assertThat(page.getResults()).containsExactly(pattern2);
         assertThat(page.getTotal()).isEqualTo(2);
 
-        // when: finding patterns with search term and paging
+        // when: finding patterns with another search term and paging
         page = findPage(patternIds, Set.of(), "hat", 1, 1);
 
-        // then: the patterns are found with search term and paging
+        // then: the patterns are found with another search term and paging
         assertThat(page.getResults()).isEmpty();
         assertThat(page.getTotal()).isEqualTo(1);
     }
 
     @Test
     void shouldFindPublishedPattern() {
-        // given: some patterns
-        var pattern1 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("Summerdress"),
-                PatternNumber.of("S-D-SUM-1"),
-                null,
-                PatternAlias.of("summerdress"),
-                PatternAttribution.of(
-                        OriginalPatternName.of("Summerdress EXTREME"),
-                        PatternDesigner.of("EXTREME PATTERNS inc.")
-                ),
-                Set.of(PatternCategoryId.of("DRESS_ID"), PatternCategoryId.of("SKIRT_ID")),
-                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Short"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        ),
-                                        PricedSizeRange.of(
-                                                98,
-                                                104L,
-                                                null,
-                                                Money.euro(3100)
-                                        )
-                                )
-                        )
-                ),
-                List.of(PatternExtra.of(
-                        PatternExtraName.of("Sewing instructions"),
-                        Money.euro(200)
-                )),
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
-        var pattern2 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("Some trousers"),
-                PatternNumber.of("S-T-SOM-1"),
-                null,
-                PatternAlias.of("some-trousers"),
-                PatternAttribution.of(null, null),
-                Set.of(PatternCategoryId.of("TROUSERS_ID")),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-12T12:00:00.00Z")
-        );
-        var pattern3 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("A little hat"),
-                PatternNumber.of("S-H-ALH-1"),
-                null,
-                PatternAlias.of("a-little-hat"),
-                PatternAttribution.of(null, null),
-                Set.of(PatternCategoryId.of("HATS_ID")),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-11T11:00:00.00Z")
-        );
+        // given: a published and an unpublished pattern
+        var pattern1 = SampleLookupPattern.builder().published(true).build().toModel();
+        var pattern2 = SampleLookupPattern.builder().published(false).build().toModel();
         update(pattern1);
         update(pattern2);
-        update(pattern3);
 
-        // when: finding the first pattern
+        // when: finding the published pattern
         var foundPattern1 = findPublished(pattern1.getId());
 
-        // then: the first pattern is found
+        // then: the published pattern is found
         assertThat(foundPattern1).isEqualTo(pattern1);
 
-        // when: finding the second pattern
+        // when: finding the unpublished pattern
         var foundPattern2 = findPublished(pattern2.getId());
 
-        // then: the second pattern is not found
+        // then: the unpublished pattern is not found
         assertThat(foundPattern2).isNull();
     }
 
     @Test
     void shouldFindPublishedPatterns() {
-        // given: some patterns
-        var pattern1 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("C"),
-                PatternNumber.of("S-D-SUM-1"),
-                null,
-                PatternAlias.of("c"),
-                PatternAttribution.of(
-                        OriginalPatternName.of("Summerdress EXTREME"),
-                        PatternDesigner.of("EXTREME PATTERNS inc.")
-                ),
-                Set.of(PatternCategoryId.of("DRESS_ID"), PatternCategoryId.of("SKIRT_ID")),
-                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Short"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        ),
-                                        PricedSizeRange.of(
-                                                98,
-                                                104L,
-                                                null,
-                                                Money.euro(3100)
-                                        )
-                                )
-                        )
-                ),
-                List.of(PatternExtra.of(
-                        PatternExtraName.of("Sewing instructions"),
-                        Money.euro(200)
-                )),
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
-        var pattern2 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("B"),
-                PatternNumber.of("S-T-SOM-1"),
-                null,
-                PatternAlias.of("b"),
-                PatternAttribution.of(null, null),
-                Set.of(PatternCategoryId.of("TROUSERS_ID")),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-12T12:00:00.00Z")
-        );
-        var pattern3 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("A"),
-                PatternNumber.of("S-H-ALH-1"),
-                null,
-                PatternAlias.of("a"),
-                PatternAttribution.of(null, null),
-                Set.of(PatternCategoryId.of("HATS_ID")),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-11T11:00:00.00Z")
-        );
+        // given: some patterns with different names
+        var pattern1 = SampleLookupPattern.builder()
+                .name(PatternName.of("C"))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T12:30:00.00Z"))
+                .build()
+                .toModel();
+        var pattern2 = SampleLookupPattern.builder()
+                .name(PatternName.of("B"))
+                .published(false)
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        var pattern3 = SampleLookupPattern.builder()
+                .name(PatternName.of("A"))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-11T11:00:00.00Z"))
+                .build()
+                .toModel();
         update(pattern1);
         update(pattern2);
         update(pattern3);
 
-        // when: finding published patterns
-        var result = findPublished(
-                "",
-                Set.of(),
-                Set.of(),
-                true,
-                0,
-                10
-        );
+        // when: finding all published patterns ordered by name ascending
+        var result = findPublished("", Set.of(), Set.of(), true, 0, 10);
 
         // then: all published patterns are found ordered by name ascending
         assertThat(result.getResults()).containsExactly(pattern3, pattern1);
 
-        // when: finding published patterns ordered by name descending
-        result = findPublished(
-                "a",
-                Set.of(),
-                Set.of(),
-                false,
-                0,
-                10
-        );
+        // when: finding published patterns by search term
+        result = findPublished("a", Set.of(), Set.of(), false, 0, 10);
 
-        // then: all published patterns are found ordered by name descending
+        // then: all published patterns are found by search term
         assertThat(result.getResults()).containsExactly(pattern3);
 
-        // when: finding published patterns with search term
-        result = findPublished(
-                "C",
-                Set.of(),
-                Set.of(),
-                true,
-                0,
-                10
-        );
+        // when: finding published patterns with paging
+        result = findPublished("", Set.of(), Set.of(), true, 0, 1);
 
-        // then: all published patterns are found with search term
+        // then: all published patterns are found with paging
+        assertThat(result.getResults()).containsExactly(pattern3);
+
+        // when: finding published patterns with paging
+        result = findPublished("", Set.of(), Set.of(), true, 1, 1);
+
+        // then: all published patterns are found with paging
         assertThat(result.getResults()).containsExactly(pattern1);
+    }
+
+    @Test
+    void shouldFindPublishedPatternsByCategory() {
+        // given: some published patterns with different categories
+        var categoryId1 = PatternCategoryId.of("CATEGORY_ID_1");
+        var categoryId2 = PatternCategoryId.of("CATEGORY_ID_2");
+
+        var pattern1 = SampleLookupPattern.builder()
+                .name(PatternName.of("A"))
+                .category(categoryId1)
+                .published(true)
+                .build()
+                .toModel();
+        var pattern2 = SampleLookupPattern.builder()
+                .name(PatternName.of("B"))
+                .category(categoryId2)
+                .published(true)
+                .build()
+                .toModel();
+        update(pattern1);
+        update(pattern2);
 
         // when: finding published patterns with categories filter
-        result = findPublished(
-                "",
-                Set.of(PatternCategoryId.of("HATS_ID")),
-                Set.of(),
-                true,
-                0,
-                10
-        );
+        var result = findPublished("", Set.of(categoryId1), Set.of(), true, 0, 10);
 
-        // then: all published patterns are found with categories filter
-        assertThat(result.getResults()).containsExactly(pattern3);
+        // then: only patterns with the specified category are found
+        assertThat(result.getResults()).containsExactly(pattern1);
+    }
 
-        // when: finding published patterns with sizes filter
-        result = findPublished(
-                "",
-                Set.of(),
-                Set.of(92L),
-                true,
-                0,
-                10
-        );
+    @Test
+    void shouldFindPublishedPatternsBySize() {
+        // given: some published patterns with different sizes
+        var pattern1 = SampleLookupPattern.builder()
+                .name(PatternName.of("A"))
+                .variant(PatternVariant.of(
+                        PatternVariantName.of("Normal"),
+                        Set.of(PricedSizeRange.of(86, 92L, null, Money.euro(2900)))
+                ))
+                .published(true)
+                .build()
+                .toModel();
+        var pattern2 = SampleLookupPattern.builder()
+                .name(PatternName.of("B"))
+                .variant(PatternVariant.of(
+                        PatternVariantName.of("Normal"),
+                        Set.of(PricedSizeRange.of(98, 104L, null, Money.euro(2900)))
+                ))
+                .published(true)
+                .build()
+                .toModel();
+        update(pattern1);
+        update(pattern2);
 
-        // then: all published patterns are found with sizes filter
-        assertThat(result.getResults()).containsExactlyInAnyOrder(pattern1, pattern3);
+        // when: finding published patterns with size filter
+        var result = findPublished("", Set.of(), Set.of(92L), true, 0, 10);
 
-        // when: finding published patterns with another sizes filter
-        result = findPublished(
-                "",
-                Set.of(),
-                Set.of(104L),
-                true,
-                0,
-                10
-        );
-
-        // then: all published patterns are found with another sizes filter
+        // then: only patterns with the specified size are found
         assertThat(result.getResults()).containsExactly(pattern1);
 
-        // when: finding published patterns with another sizes filter
-        result = findPublished(
-                "",
-                Set.of(),
-                Set.of(170L),
-                true,
-                0,
-                10
-        );
+        // when: finding published patterns with a non-matching size filter
+        result = findPublished("", Set.of(), Set.of(170L), true, 0, 10);
 
-        // then: all published patterns are found with another sizes filter
+        // then: no patterns are found
         assertThat(result.getResults()).isEmpty();
-
-        // when: finding published patterns with another sizes filter
-        result = findPublished(
-                "",
-                Set.of(),
-                Set.of(86L, 104L),
-                true,
-                0,
-                10
-        );
-
-        // then: all published patterns are found with another sizes filter
-        assertThat(result.getResults()).containsExactlyInAnyOrder(pattern1, pattern3);
-
-        // when: finding published patterns with paging
-        result = findPublished(
-                "",
-                Set.of(),
-                Set.of(),
-                true,
-                0,
-                1
-        );
-
-        // then: all published patterns are found with paging
-        assertThat(result.getResults()).containsExactly(pattern3);
-
-        // when: finding published patterns with paging
-        result = findPublished(
-                "",
-                Set.of(),
-                Set.of(),
-                true,
-                1,
-                1
-        );
-
-        // then: all published patterns are found with paging
-        assertThat(result.getResults()).containsExactly(pattern1);
     }
 
     @Test
@@ -953,101 +329,10 @@ public abstract class PatternLookupRepoTest {
         // given: some patterns with different categories
         var categoryId1 = PatternCategoryId.of("CATEGORY_ID_1");
         var categoryId2 = PatternCategoryId.of("CATEGORY_ID_2");
-        var categoryId3 = PatternCategoryId.of("CATEGORY_ID_3");
 
-        var pattern1 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("C"),
-                PatternNumber.of("S-D-SUM-1"),
-                null,
-                PatternAlias.of("c"),
-                PatternAttribution.of(
-                        OriginalPatternName.of("Summerdress EXTREME"),
-                        PatternDesigner.of("EXTREME PATTERNS inc.")
-                ),
-                Set.of(categoryId1, categoryId3),
-                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Short"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        ),
-                                        PricedSizeRange.of(
-                                                98,
-                                                104L,
-                                                null,
-                                                Money.euro(3100)
-                                        )
-                                )
-                        )
-                ),
-                List.of(PatternExtra.of(
-                        PatternExtraName.of("Sewing instructions"),
-                        Money.euro(200)
-                )),
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
-        var pattern2 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("B"),
-                PatternNumber.of("S-T-SOM-1"),
-                null,
-                PatternAlias.of("b"),
-                PatternAttribution.of(null, null),
-                Set.of(categoryId2),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-12T12:00:00.00Z")
-        );
-        var pattern3 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("A"),
-                PatternNumber.of("S-H-ALH-1"),
-                null,
-                PatternAlias.of("a"),
-                PatternAttribution.of(null, null),
-                Set.of(categoryId3, categoryId2),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-11T11:00:00.00Z")
-        );
+        var pattern1 = SampleLookupPattern.builder().category(categoryId1).build().toModel();
+        var pattern2 = SampleLookupPattern.builder().category(categoryId2).build().toModel();
+        var pattern3 = SampleLookupPattern.builder().category(categoryId2).category(categoryId1).build().toModel();
         update(pattern1);
         update(pattern2);
         update(pattern3);
@@ -1062,9 +347,9 @@ public abstract class PatternLookupRepoTest {
         patterns = findByCategory(categoryId1);
 
         // then: the patterns are found by another category
-        assertThat(patterns).containsExactly(pattern1);
+        assertThat(patterns).containsExactlyInAnyOrder(pattern1, pattern3);
 
-        // when: finding patterns by another category that is not used
+        // when: finding patterns by a category that is not used
         patterns = findByCategory(PatternCategoryId.of("CATEGORY_ID_4"));
 
         // then: no patterns are found
@@ -1076,101 +361,10 @@ public abstract class PatternLookupRepoTest {
         // given: some patterns with different categories
         var categoryId1 = PatternCategoryId.of("CATEGORY_ID_1");
         var categoryId2 = PatternCategoryId.of("CATEGORY_ID_2");
-        var categoryId3 = PatternCategoryId.of("CATEGORY_ID_3");
 
-        var pattern1 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("C"),
-                PatternNumber.of("S-D-SUM-1"),
-                null,
-                PatternAlias.of("c"),
-                PatternAttribution.of(
-                        OriginalPatternName.of("Summerdress EXTREME"),
-                        PatternDesigner.of("EXTREME PATTERNS inc.")
-                ),
-                Set.of(categoryId1, categoryId3),
-                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Short"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        ),
-                                        PricedSizeRange.of(
-                                                98,
-                                                104L,
-                                                null,
-                                                Money.euro(3100)
-                                        )
-                                )
-                        )
-                ),
-                List.of(PatternExtra.of(
-                        PatternExtraName.of("Sewing instructions"),
-                        Money.euro(200)
-                )),
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
-        var pattern2 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("B"),
-                PatternNumber.of("S-T-SOM-1"),
-                null,
-                PatternAlias.of("b"),
-                PatternAttribution.of(null, null),
-                Set.of(categoryId2),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-12T12:00:00.00Z")
-        );
-        var pattern3 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("A"),
-                PatternNumber.of("S-H-ALH-1"),
-                null,
-                PatternAlias.of("a"),
-                PatternAttribution.of(null, null),
-                Set.of(categoryId3, categoryId2),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-11T11:00:00.00Z")
-        );
+        var pattern1 = SampleLookupPattern.builder().category(categoryId1).build().toModel();
+        var pattern2 = SampleLookupPattern.builder().category(categoryId2).build().toModel();
+        var pattern3 = SampleLookupPattern.builder().category(categoryId2).category(categoryId1).build().toModel();
         update(pattern1);
         update(pattern2);
         update(pattern3);
@@ -1179,9 +373,9 @@ public abstract class PatternLookupRepoTest {
         var categories = findUniqueCategories();
 
         // then: the unique categories are found
-        assertThat(categories).containsExactlyInAnyOrder(categoryId1, categoryId2, categoryId3);
+        assertThat(categories).containsExactlyInAnyOrder(categoryId1, categoryId2);
 
-        // when: finding unique categories with no patterns
+        // when: removing all patterns and finding unique categories
         remove(pattern1.getId());
         remove(pattern2.getId());
         remove(pattern3.getId());
@@ -1194,75 +388,15 @@ public abstract class PatternLookupRepoTest {
 
     @Test
     void shouldFindPatternByAlias() {
-        // given: some patterns
-        var pattern1 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                true,
-                PatternName.of("Summerdress"),
-                PatternNumber.of("S-D-SUM-1"),
-                null,
-                PatternAlias.of("summerdress"),
-                PatternAttribution.of(
-                        OriginalPatternName.of("Summerdress EXTREME"),
-                        PatternDesigner.of("EXTREME PATTERNS inc.")
-                ),
-                Set.of(PatternCategoryId.of("DRESS_ID"), PatternCategoryId.of("SKIRT_ID")),
-                List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Short"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        ),
-                                        PricedSizeRange.of(
-                                                98,
-                                                104L,
-                                                null,
-                                                Money.euro(3100)
-                                        )
-                                )
-                        )
-                ),
-                List.of(PatternExtra.of(
-                        PatternExtraName.of("Sewing instructions"),
-                        Money.euro(200)
-                )),
-                Instant.parse("2024-03-12T12:30:00.00Z")
-        );
-
-        var pattern2 = LookupPattern.of(
-                PatternId.create(),
-                Version.zero(),
-                false,
-                PatternName.of("Some trousers"),
-                PatternNumber.of("S-T-SOM-1"),
-                null,
-                PatternAlias.of("some-trousers"),
-                PatternAttribution.of(null, null),
-                Set.of(PatternCategoryId.of("TROUSERS_ID")),
-                List.of(ImageId.of("IMAGE_ID_3")),
-                List.of(
-                        PatternVariant.of(
-                                PatternVariantName.of("Normal"),
-                                Set.of(
-                                        PricedSizeRange.of(
-                                                86,
-                                                92L,
-                                                null,
-                                                Money.euro(2900)
-                                        )
-                                )
-                        )
-                ),
-                List.of(),
-                Instant.parse("2024-03-12T12:00:00.00Z")
-        );
-
+        // given: some patterns with different aliases
+        var pattern1 = SampleLookupPattern.builder()
+                .alias(PatternAlias.of("summerdress"))
+                .build()
+                .toModel();
+        var pattern2 = SampleLookupPattern.builder()
+                .alias(PatternAlias.of("trousers"))
+                .build()
+                .toModel();
         update(pattern1);
         update(pattern2);
 
@@ -1273,7 +407,7 @@ public abstract class PatternLookupRepoTest {
         assertThat(foundPattern1).isEqualTo(pattern1);
 
         // when: finding pattern by alias
-        var foundPattern2 = findByAlias(PatternAlias.of("some-trousers"));
+        var foundPattern2 = findByAlias(PatternAlias.of("trousers"));
 
         // then: the pattern is found by alias
         assertThat(foundPattern2).isEqualTo(pattern2);
@@ -1309,14 +443,7 @@ public abstract class PatternLookupRepoTest {
             long skip,
             long limit
     ) {
-        return repo.findPublished(
-                searchTerm,
-                categories,
-                sizes,
-                ascending,
-                skip,
-                limit
-        ).block();
+        return repo.findPublished(searchTerm, categories, sizes, ascending, skip, limit).block();
     }
 
     private void update(LookupPattern pattern) {

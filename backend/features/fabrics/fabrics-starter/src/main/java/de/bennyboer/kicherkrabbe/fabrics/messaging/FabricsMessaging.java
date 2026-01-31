@@ -155,6 +155,40 @@ public class FabricsMessaging {
     }
 
     @Bean
+    public EventListener onFabricFeaturedAllowAnonymousAndSystemUsersToReadFeaturedFabric(
+            EventListenerFactory factory,
+            FabricsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "fabrics.fabric-featured-allow-anonymous-and-system-users-to-read-featured-fabric",
+                AggregateType.of("FABRIC"),
+                EventName.of("FEATURED"),
+                (event) -> {
+                    String fabricId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.allowAnonymousAndSystemUsersToReadFeaturedFabric(fabricId);
+                }
+        );
+    }
+
+    @Bean
+    public EventListener onFabricUnfeaturedDisallowAnonymousAndSystemUsersToReadFeaturedFabric(
+            EventListenerFactory factory,
+            FabricsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "fabrics.fabric-unfeatured-disallow-anonymous-and-system-users-to-read-featured-fabric",
+                AggregateType.of("FABRIC"),
+                EventName.of("UNFEATURED"),
+                (event) -> {
+                    String fabricId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.disallowAnonymousAndSystemUsersToReadFeaturedFabric(fabricId);
+                }
+        );
+    }
+
+    @Bean
     public EventListener onFabricTypeDeletedRemoveFabricTypeFromFabrics(
             EventListenerFactory factory,
             FabricsModule module
