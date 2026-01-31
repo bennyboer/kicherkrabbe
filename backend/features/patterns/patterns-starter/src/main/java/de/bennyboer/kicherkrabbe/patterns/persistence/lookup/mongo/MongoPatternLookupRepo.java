@@ -208,6 +208,16 @@ public class MongoPatternLookupRepo
     }
 
     @Override
+    public Flux<LookupPattern> findFeatured() {
+        Criteria criteria = where("published").is(true)
+                .and("featured").is(true);
+        Query query = query(criteria);
+
+        return template.find(query, MongoLookupPattern.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
     protected String stringifyId(PatternId patternId) {
         return patternId.getValue();
     }
@@ -217,10 +227,12 @@ public class MongoPatternLookupRepo
         IndexDefinition categoriesIndex = new Index().on("categories", ASC);
         IndexDefinition aliasIndex = new Index().on("alias", ASC);
         IndexDefinition numberIndex = new Index().on("number", ASC).unique();
+        IndexDefinition featuredIndex = new Index().on("published", ASC).on("featured", ASC);
 
         return indexOps.createIndex(categoriesIndex)
                 .then(indexOps.createIndex(aliasIndex))
                 .then(indexOps.createIndex(numberIndex))
+                .then(indexOps.createIndex(featuredIndex))
                 .then();
     }
 

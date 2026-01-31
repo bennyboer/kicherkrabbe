@@ -223,6 +223,10 @@ public class FabricsModuleTest {
         ).block();
     }
 
+    public List<PublishedFabric> getFeaturedFabrics(Agent agent) {
+        return module.getFeaturedFabrics(agent).collectList().block();
+    }
+
     public void removeTopicFromFabrics(String topicId) {
         List<String> updatedFabricIds = module.removeTopicFromFabrics(topicId, Agent.system()).collectList().block();
 

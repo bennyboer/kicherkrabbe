@@ -42,4 +42,6 @@ public interface PatternLookupRepo extends EventSourcingReadModelRepo<PatternId,
 
     Mono<LookupPattern> findByNumber(PatternNumber number);
 
+    Flux<LookupPattern> findFeatured();
+
 }

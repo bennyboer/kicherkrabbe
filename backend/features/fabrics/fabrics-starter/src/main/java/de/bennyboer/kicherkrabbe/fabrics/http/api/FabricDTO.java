@@ -30,6 +30,8 @@ public class FabricDTO {
 
     boolean published;
 
+    boolean featured;
+
     Instant createdAt;
 
 }

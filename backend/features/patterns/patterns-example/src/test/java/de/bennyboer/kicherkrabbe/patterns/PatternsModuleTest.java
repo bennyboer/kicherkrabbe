@@ -212,6 +212,10 @@ public class PatternsModuleTest {
         ).block();
     }
 
+    public List<PublishedPattern> getFeaturedPatterns(Agent agent) {
+        return module.getFeaturedPatterns(agent).collectList().block();
+    }
+
     public void allowUserToCreatePatterns(String userId) {
         module.allowUserToCreatePatterns(userId).block();
     }
