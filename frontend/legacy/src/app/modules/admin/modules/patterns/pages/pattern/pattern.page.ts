@@ -409,6 +409,54 @@ export class PatternPage implements OnInit, OnDestroy {
       });
   }
 
+  featurePattern(pattern: Pattern): void {
+    this.patternsService
+      .featurePattern(pattern.id, pattern.version)
+      .pipe(first())
+      .subscribe({
+        next: (version) => {
+          const updatedPattern = pattern.feature(version);
+          this.pattern$.next(updatedPattern);
+
+          this.notificationService.publish({
+            type: 'success',
+            message: 'Das Schnittmuster wurde hervorgehoben',
+          });
+        },
+        error: (e) => {
+          console.error(e);
+          this.notificationService.publish({
+            type: 'error',
+            message: 'Das Schnittmuster konnte nicht hervorgehoben werden',
+          });
+        },
+      });
+  }
+
+  unfeaturePattern(pattern: Pattern): void {
+    this.patternsService
+      .unfeaturePattern(pattern.id, pattern.version)
+      .pipe(first())
+      .subscribe({
+        next: (version) => {
+          const updatedPattern = pattern.unfeature(version);
+          this.pattern$.next(updatedPattern);
+
+          this.notificationService.publish({
+            type: 'success',
+            message: 'Das Schnittmuster wird nicht mehr hervorgehoben',
+          });
+        },
+        error: (e) => {
+          console.error(e);
+          this.notificationService.publish({
+            type: 'error',
+            message: 'Die Hervorhebung des Schnittmusters konnte nicht aufgehoben werden',
+          });
+        },
+      });
+  }
+
   saveUpdatedAttribution(pattern: Pattern): void {
     const originalPatternName = someOrNone(this.originalPatternName$.value)
       .map((n) => n.trim())

@@ -122,6 +122,12 @@ ul.image-list {
   }
 }
 
+.top-action-bar-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
+
 @media only screen and (max-width: 1000px) {
   .columns {
     flex-direction: column;
@@ -140,6 +146,10 @@ ul.image-list {
         width: 100%;
       }
     }
+  }
+
+  .top-action-bar-actions {
+    flex-direction: column;
   }
 
   ul.image-list {

@@ -7,6 +7,11 @@
       <span class="top-action-bar-actions">
         @if (pattern.published) {
           <app-button color="warn" (click)="unpublishPattern(pattern)">Veröffentlichung aufheben</app-button>
+          @if (pattern.featured) {
+            <app-button color="warn" (click)="unfeaturePattern(pattern)">Nicht mehr hervorheben</app-button>
+          } @else {
+            <app-button (click)="featurePattern(pattern)">Hervorheben</app-button>
+          }
         } @else {
           <app-button color="primary" (click)="publishPattern(pattern)">Veröffentlichen</app-button>
         }

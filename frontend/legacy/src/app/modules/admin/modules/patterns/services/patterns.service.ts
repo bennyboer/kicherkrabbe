@@ -20,6 +20,7 @@ interface PatternDTO {
   id: string;
   version: number;
   published: boolean;
+  featured: boolean;
   name: string;
   number: string;
   description?: string;
@@ -164,6 +165,14 @@ interface PublishPatternResponse {
 }
 
 interface UnpublishPatternResponse {
+  version: number;
+}
+
+interface FeaturePatternResponse {
+  version: number;
+}
+
+interface UnfeaturePatternResponse {
   version: number;
 }
 
@@ -371,6 +380,30 @@ export class PatternsService implements OnDestroy {
       .pipe(map((response) => response.version));
   }
 
+  featurePattern(id: PatternId, version: number): Observable<number> {
+    return this.http
+      .post<FeaturePatternResponse>(
+        `${environment.apiUrl}/patterns/${id}/feature`,
+        {},
+        {
+          params: { version: version.toString() },
+        },
+      )
+      .pipe(map((response) => response.version));
+  }
+
+  unfeaturePattern(id: PatternId, version: number): Observable<number> {
+    return this.http
+      .post<UnfeaturePatternResponse>(
+        `${environment.apiUrl}/patterns/${id}/unfeature`,
+        {},
+        {
+          params: { version: version.toString() },
+        },
+      )
+      .pipe(map((response) => response.version));
+  }
+
   deletePattern(id: string, version: number): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/patterns/${id}`, {
       params: { version: version.toString() },
@@ -409,6 +442,7 @@ export class PatternsService implements OnDestroy {
       id: pattern.id,
       version: pattern.version,
       published: pattern.published,
+      featured: pattern.featured,
       name: pattern.name,
       number: pattern.number,
       description: pattern.description,

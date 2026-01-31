@@ -14,6 +14,7 @@ export class Fabric {
   readonly topics: Set<TopicId>;
   readonly availability: FabricTypeAvailability[];
   readonly published: boolean;
+  readonly featured: boolean;
   readonly createdAt: Date;
 
   private constructor(props: {
@@ -25,6 +26,7 @@ export class Fabric {
     topics: Set<TopicId>;
     availability: FabricTypeAvailability[];
     published: boolean;
+    featured: boolean;
     createdAt: Date;
   }) {
     this.id = props.id;
@@ -35,6 +37,7 @@ export class Fabric {
     this.topics = props.topics;
     this.availability = props.availability;
     this.published = props.published;
+    this.featured = props.featured;
     this.createdAt = props.createdAt;
   }
 
@@ -47,6 +50,7 @@ export class Fabric {
     topics: Set<TopicId>;
     availability: FabricTypeAvailability[];
     published: boolean;
+    featured: boolean;
     createdAt: Date;
   }): Fabric {
     return new Fabric(props);

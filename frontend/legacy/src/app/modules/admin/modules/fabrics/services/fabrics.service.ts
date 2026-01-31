@@ -38,6 +38,7 @@ interface FabricDTO {
   topicIds: string[];
   availability: FabricTypeAvailabilityDTO[];
   published: boolean;
+  featured: boolean;
   createdAt: string;
 }
 
@@ -248,6 +249,26 @@ export class FabricsService implements OnDestroy {
     );
   }
 
+  featureFabric(id: string, version: number): Observable<void> {
+    return this.http.post<void>(
+      `${environment.apiUrl}/fabrics/${id}/feature`,
+      {},
+      {
+        params: { version: version.toString() },
+      },
+    );
+  }
+
+  unfeatureFabric(id: string, version: number): Observable<void> {
+    return this.http.post<void>(
+      `${environment.apiUrl}/fabrics/${id}/unfeature`,
+      {},
+      {
+        params: { version: version.toString() },
+      },
+    );
+  }
+
   updateFabricName(id: FabricId, version: number, name: string): Observable<void> {
     const request: RenameFabricRequest = { version, name };
 
@@ -367,6 +388,7 @@ export class FabricsService implements OnDestroy {
         }),
       ),
       published: fabric.published,
+      featured: fabric.featured,
       createdAt: new Date(fabric.createdAt),
     });
   }

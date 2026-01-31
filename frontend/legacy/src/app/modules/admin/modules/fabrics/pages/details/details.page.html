@@ -10,6 +10,11 @@
         <span class="top-action-bar-actions">
           @if (fabric.published) {
             <app-button color="warn" (click)="unpublishFabric(fabric)">Veröffentlichung aufheben</app-button>
+            @if (fabric.featured) {
+              <app-button color="warn" (click)="unfeatureFabric(fabric)">Nicht mehr hervorheben</app-button>
+            } @else {
+              <app-button (click)="featureFabric(fabric)">Hervorheben</app-button>
+            }
           } @else {
             <app-button color="primary" (click)="publishFabric(fabric)">Veröffentlichen</app-button>
           }

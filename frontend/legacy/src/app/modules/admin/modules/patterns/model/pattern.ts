@@ -12,6 +12,7 @@ export class Pattern {
   readonly id: PatternId;
   readonly version: number;
   readonly published: boolean;
+  readonly featured: boolean;
   readonly name: string;
   readonly number: string;
   readonly description: Option<string>;
@@ -26,6 +27,7 @@ export class Pattern {
     id: PatternId;
     version: number;
     published: boolean;
+    featured: boolean;
     name: string;
     number: string;
     description: Option<string>;
@@ -41,6 +43,7 @@ export class Pattern {
     this.id = props.id;
     this.version = props.version;
     this.published = props.published;
+    this.featured = props.featured;
     this.name = props.name;
     this.number = props.number;
     this.description = props.description;
@@ -56,6 +59,7 @@ export class Pattern {
     id: PatternId;
     version: number;
     published: boolean;
+    featured: boolean;
     name: string;
     number: string;
     description?: string | null;
@@ -70,6 +74,7 @@ export class Pattern {
       id: props.id,
       version: props.version,
       published: props.published,
+      featured: props.featured,
       name: props.name,
       number: props.number,
       description: someOrNone(props.description)
@@ -113,6 +118,22 @@ export class Pattern {
       ...this,
       version,
       published: false,
+    });
+  }
+
+  feature(version: number): Pattern {
+    return new Pattern({
+      ...this,
+      version,
+      featured: true,
+    });
+  }
+
+  unfeature(version: number): Pattern {
+    return new Pattern({
+      ...this,
+      version,
+      featured: false,
     });
   }
 
