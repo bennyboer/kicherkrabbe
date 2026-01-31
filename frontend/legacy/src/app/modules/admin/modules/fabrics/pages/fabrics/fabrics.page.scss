@@ -57,6 +57,12 @@ table.fabrics-table {
       }
     }
 
+    &.featured-cell {
+      width: 50px;
+      text-align: center;
+      color: rgba(var(--text-rgb), 0.5);
+    }
+
     &.published-cell {
       width: 50px;
       text-align: center;

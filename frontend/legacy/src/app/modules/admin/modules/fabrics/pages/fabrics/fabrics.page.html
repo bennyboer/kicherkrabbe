@@ -34,6 +34,11 @@
               </span>
             </span>
           </td>
+          <td class="featured-cell">
+            @if (fabric.featured) {
+              <span class="material-icons" title="Hervorgehoben"> star </span>
+            }
+          </td>
           <td class="published-cell">
             <span class="material-icons" title="{{ fabric.published ? 'Veröffentlicht' : 'Nicht veröffentlicht' }}">
               {{ fabric.published ? "visibility" : "visibility_off" }}

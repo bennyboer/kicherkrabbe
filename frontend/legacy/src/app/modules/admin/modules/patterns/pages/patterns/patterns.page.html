@@ -52,6 +52,9 @@
                   Erstellt am {{ pattern.createdAt | date: "dd.MM.yyyy" }} um
                   {{ pattern.createdAt | date: "HH:mm" }} Uhr
                 </span>
+                @if (pattern.featured) {
+                  <span class="material-icons" title="Hervorgehoben"> star </span>
+                }
                 @if (!pattern.published) {
                   <span class="material-icons" title="Nicht veröffentlicht"> visibility_off </span>
                 }
