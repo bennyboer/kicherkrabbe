@@ -3,7 +3,6 @@ import {
 	provideBrowserGlobalErrorListeners,
 	provideZonelessChangeDetection,
 } from "@angular/core";
-import { provideHttpClient, withFetch } from "@angular/common/http";
 import {
 	provideClientHydration,
 	withEventReplay,
@@ -19,7 +18,6 @@ export const appConfig: ApplicationConfig = {
 		provideBrowserGlobalErrorListeners(),
 		provideZonelessChangeDetection(),
 		provideRouter(routes),
-		provideHttpClient(withFetch()),
 		provideAnimationsAsync(),
 		providePrimeNG({
 			theme: {
