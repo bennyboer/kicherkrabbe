@@ -1,5 +1,5 @@
 {
-	"name": "sassycrab",
+	"name": "customer",
 	"version": "0.0.0",
 	"scripts": {
 		"ng": "ng",
@@ -7,7 +7,7 @@
 		"build": "ng build",
 		"watch": "ng build --watch --configuration development",
 		"test": "ng test",
-		"serve:ssr:sassycrab": "node dist/sassycrab/server/server.mjs"
+		"serve:ssr:customer": "node dist/customer/server/server.mjs"
 	},
 	"prettier": {
 		"printWidth": 100,

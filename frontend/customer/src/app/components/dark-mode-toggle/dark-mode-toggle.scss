@@ -1,0 +1,57 @@
+:host {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+
+	--hoverColor: #292828;
+
+	&.dark-mode {
+		--hoverColor: #e6e6e6;
+	}
+
+	.sun-and-moon > :is(.moon, .sun, .sun-beams) {
+		transform-origin: center;
+	}
+
+	&:is(:hover, :focus-visible) > .sun-and-moon > :is(.moon, .sun) {
+		fill: var(--hoverColor);
+	}
+
+	&:is(:hover, :focus-visible) .sun-and-moon > .sun-beams {
+		stroke: var(--hoverColor);
+	}
+
+	.sun {
+		transition: transform calc(0.25s * 2) cubic-bezier(0.5, 1.25, 0.75, 1.25);
+	}
+
+	&.dark-mode .sun {
+		transition-timing-function: cubic-bezier(0.25, 0, 0.3, 1);
+		transition-duration: 0.25s;
+		transform: scale(1.75);
+	}
+
+	.sun-beams {
+		stroke-linecap: round;
+		transition:
+			transform 0.5s ease,
+			opacity 0.5s cubic-bezier(0.5, 1.5, 0.75, 1.25);
+	}
+
+	&.dark-mode .sun-beams {
+		transition-duration: 0.25s;
+		transform: rotateZ(-25deg);
+		opacity: 0;
+	}
+
+	.moon > circle {
+		transition: transform 0.25s cubic-bezier(0, 0, 0, 1);
+	}
+
+	&.dark-mode .moon > circle {
+		transition: transform 0.25s cubic-bezier(0, 0, 0, 1);
+		transition-delay: 0.25s;
+		transform: translateX(-7px);
+	}
+}

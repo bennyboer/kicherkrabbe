@@ -1,0 +1,17 @@
+@if (getFabrics() | async; as fabrics) {
+	@if (fabrics.length > 0) {
+		<p-carousel
+			[value]="fabrics"
+			[numVisible]="4"
+			[numScroll]="1"
+			[circular]="false"
+			[responsiveOptions]="responsiveOptions"
+		>
+			<ng-template #item let-fabric>
+				<div class="carousel-item">
+					<app-fabric-card [fabric]="fabric"></app-fabric-card>
+				</div>
+			</ng-template>
+		</p-carousel>
+	}
+}

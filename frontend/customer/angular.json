@@ -3,7 +3,7 @@
 	"version": 1,
 	"newProjectRoot": "projects",
 	"projects": {
-		"sassycrab": {
+		"customer": {
 			"projectType": "application",
 			"schematics": {
 				"@schematics/angular:component": {
@@ -61,10 +61,10 @@
 					"builder": "@angular/build:dev-server",
 					"configurations": {
 						"production": {
-							"buildTarget": "sassycrab:build:production"
+							"buildTarget": "customer:build:production"
 						},
 						"development": {
-							"buildTarget": "sassycrab:build:development"
+							"buildTarget": "customer:build:development"
 						}
 					},
 					"defaultConfiguration": "development"

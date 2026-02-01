@@ -7,22 +7,15 @@
 <app-badges></app-badges>
 
 <section>
-	<h1>Angebote</h1>
-	<div class="offers-container">
-		<app-offer-card [offer]="exampleA"></app-offer-card>
-		<app-offer-card [offer]="exampleB"></app-offer-card>
-		<app-offer-card [offer]="exampleC"></app-offer-card>
-		<app-offer-card [offer]="exampleD"></app-offer-card>
-	</div>
-</section>
-<section>
 	<h1>Schnitte</h1>
+	<app-featured-patterns></app-featured-patterns>
 </section>
 <section>
 	<h1>Stoffe</h1>
+	<app-featured-fabrics></app-featured-fabrics>
 </section>
 <section>
 	<h1>Anfrage</h1>
 </section>
 
-<p-button label="Toggle Dark Mode" (onClick)="toggleDarkMode()"/>
+<app-dark-mode-toggle></app-dark-mode-toggle>

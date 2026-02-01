@@ -1,7 +1,7 @@
 import { definePreset } from "@primeuix/themes";
 import Aura from "@primeuix/themes/aura";
 
-export const sassycrabPreset = definePreset(Aura, {
+export const customerPreset = definePreset(Aura, {
 	semantic: {
 		primary: {
 			50: "{zinc.50}",
@@ -62,18 +62,18 @@ export const sassycrabPreset = definePreset(Aura, {
 					contrastColor: "{zinc.900}",
 				},
 				surface: {
-					0: "#000000",
-					50: "{zinc.950}",
-					100: "{zinc.900}",
-					200: "{zinc.800}",
-					300: "{zinc.700}",
-					400: "{zinc.600}",
-					500: "{zinc.500}",
-					600: "{zinc.400}",
-					700: "{zinc.300}",
-					800: "{zinc.200}",
-					900: "{zinc.100}",
-					950: "{zinc.50}",
+					0: "{zinc.950}",
+					50: "{zinc.900}",
+					100: "{zinc.800}",
+					200: "{zinc.700}",
+					300: "{zinc.600}",
+					400: "{zinc.500}",
+					500: "{zinc.400}",
+					600: "{zinc.300}",
+					700: "{zinc.200}",
+					800: "{zinc.100}",
+					900: "{zinc.50}",
+					950: "#ffffff",
 				},
 			},
 		},
@@ -81,7 +81,36 @@ export const sassycrabPreset = definePreset(Aura, {
 			width: "2px",
 			style: "solid",
 			color: "{primary.color}",
-			offset: "2px",
+			offset: "-2px",
+		},
+	},
+	components: {
+		card: {
+			root: {
+				background: "{surface.0}",
+				color: "{surface.700}",
+			},
+			subtitle: {
+				color: "{surface.500}",
+			},
+		},
+		carousel: {
+			colorScheme: {
+				light: {
+					indicator: {
+						background: "{surface.200}",
+						hoverBackground: "{surface.300}",
+						activeBackground: "{surface.900}",
+					},
+				},
+				dark: {
+					indicator: {
+						background: "{zinc.700}",
+						hoverBackground: "{zinc.600}",
+						activeBackground: "#ffffff",
+					},
+				},
+			},
 		},
 	},
 });
