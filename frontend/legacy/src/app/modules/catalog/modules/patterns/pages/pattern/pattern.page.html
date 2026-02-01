@@ -53,9 +53,11 @@
         @if (pattern.attribution.hasSome()) {
           <br />
           Basierend auf dem Schnittmuster
-          <span *ngIf="pattern.attribution.originalPatternName.isSome()">
-            &raquo;{{ pattern.attribution.originalPatternName.orElse("") }}&laquo;
-          </span>
+          @if (pattern.attribution.originalPatternName.isSome()) {
+            <span>
+              &raquo;{{ pattern.attribution.originalPatternName.orElse("") }}&laquo;
+            </span>
+          }
           von &raquo;{{ pattern.attribution.designer.orElse("") }}&laquo;.
         }
       </p>

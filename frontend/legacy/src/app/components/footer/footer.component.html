@@ -1,7 +1,11 @@
 <div class="content">
   <div class="logo" (click)="incrementShowHiddenThingsCounter()">
-    <img *ngIf="isDarkMode() | async" src="/assets/kicherkrabbe_outlines_white.svg" width="128" />
-    <img *ngIf="isLightMode() | async" src="/assets/kicherkrabbe_outlines_black.svg" width="128" />
+    @if (isDarkMode() | async) {
+      <img src="/assets/kicherkrabbe_outlines_white.svg" width="128" />
+    }
+    @if (isLightMode() | async) {
+      <img src="/assets/kicherkrabbe_outlines_black.svg" width="128" />
+    }
   </div>
 
   <div class="catalog">

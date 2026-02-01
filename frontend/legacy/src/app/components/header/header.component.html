@@ -1,4 +1,6 @@
-<div class="placeholder" *ngIf="isSticky() | async" [style.height.px]="headerHeight.orElse(0)"></div>
+@if (isSticky() | async) {
+  <div class="placeholder" [style.height.px]="headerHeight.orElse(0)"></div>
+}
 
 <div class="actual-header" [class.sticky]="isSticky() | async">
   <div class="container" [class.small]="isSticky() | async">
@@ -34,18 +36,20 @@
   </div>
 </div>
 
-<div class="navigation-overlay mobile" *ngIf="isOverlayActive() | async">
-  <div class="mobile-navigation-header">
-    <span class="close-button" (click)="closeOverlay()">
-      <span class="material-icons">close</span>
-    </span>
+@if (isOverlayActive() | async) {
+  <div class="navigation-overlay mobile">
+    <div class="mobile-navigation-header">
+      <span class="close-button" (click)="closeOverlay()">
+        <span class="material-icons">close</span>
+      </span>
+    </div>
+    <nav class="mobile-navigation">
+      <app-button-column #buttonColumn [size]="ButtonSize.LARGE">
+        <ng-container [ngTemplateOutlet]="links" [ngTemplateOutletInjector]="buttonColumn.getInjector()"> </ng-container>
+      </app-button-column>
+    </nav>
   </div>
-  <nav class="mobile-navigation">
-    <app-button-column #buttonColumn [size]="ButtonSize.LARGE">
-      <ng-container [ngTemplateOutlet]="links" [ngTemplateOutletInjector]="buttonColumn.getInjector()"> </ng-container>
-    </app-button-column>
-  </nav>
-</div>
+}
 
 <ng-template #links>
   <app-button routerLink="/catalog/patterns" routerLinkActive="active">Schnitte</app-button>
