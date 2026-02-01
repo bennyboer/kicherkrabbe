@@ -3,7 +3,7 @@ plugins {
 }
 
 processResources {
-    from('../../../frontend/legacy/dist/frontend/browser') {
+    from('../../../frontend/management/dist/management/browser') {
         into 'public'
     }
 }

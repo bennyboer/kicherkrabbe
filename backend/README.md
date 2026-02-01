@@ -14,7 +14,7 @@
 
 ## Build the server
 
-- Make sure to build the frontend beforehand with `yarn build` in the `frontend/legacy` project.
+- Make sure to build the frontend beforehand with `yarn build` in the `frontend/management` project.
 - Run `./gradlew :apps:api:bootJar` in the `backend` project to build the server JAR file.
 - The JAR file will be located in `backend/apps/api/build/libs`.
 - You can run the server by executing `java -jar backend/apps/api/build/libs/api.jar`.

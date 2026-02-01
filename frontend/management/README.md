@@ -1,6 +1,6 @@
-# Frontend
+# Management
 
-kicherkrabbe.com
+The management frontend for kicherkrabbe.com made in Angular.
 
 ## Install
 

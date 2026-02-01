@@ -20,17 +20,17 @@ jobs:
         uses: borales/actions-yarn@v5
         with:
           cmd: install
-          dir: frontend/legacy
+          dir: frontend/management
       - name: Build
         uses: borales/actions-yarn@v5
         with:
           cmd: build
-          dir: frontend/legacy
+          dir: frontend/management
       - name: Upload built frontend
         uses: actions/upload-artifact@v4
         with:
           name: frontend
-          path: frontend/legacy/dist
+          path: frontend/management/dist
 
   build-customer:
     name: Build customer frontend
@@ -77,7 +77,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend
-          path: frontend/legacy/dist
+          path: frontend/management/dist
       - name: Build Jar
         run: ./gradlew :apps:api:bootJar
         working-directory: backend
