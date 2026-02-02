@@ -185,6 +185,18 @@ jobs:
     needs: [push-backend, push-customer, push-management]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Copy deploy files
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_REMOTE_HOST }}
+          username: ${{ secrets.SSH_REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_REMOTE_PORT }}
+          source: "deploy/docker-swarm.yml,deploy/traefik.yml"
+          target: /opt/kicherkrabbe
+          strip_components: 1
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
