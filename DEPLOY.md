@@ -60,10 +60,6 @@ Edit the `.env` file with your actual values:
 DOMAIN=kicherkrabbe.example.com
 ACME_EMAIL=your-email@example.com
 
-# Generate Traefik dashboard password:
-# htpasswd -nb admin yourpassword
-TRAEFIK_DASHBOARD_AUTH=admin:$apr1$xyz...
-
 # MongoDB - use strong passwords!
 MONGO_ROOT_USERNAME=admin
 MONGO_ROOT_PASSWORD=<generate-strong-password>
@@ -161,8 +157,6 @@ After deployment, the following URLs will be available (replace with your domain
 | Management Frontend | `https://kicherkrabbe.example.com` |
 | Customer Frontend | `https://customer.kicherkrabbe.example.com` |
 | API | `https://api.kicherkrabbe.example.com` |
-| Traefik Dashboard | `https://traefik.kicherkrabbe.example.com/dashboard/` |
-| RabbitMQ Management | `https://rabbitmq.kicherkrabbe.example.com` |
 
 ## DNS Configuration
 
@@ -171,8 +165,6 @@ Create DNS A records pointing to your server:
 - `www.kicherkrabbe.example.com` → `<your-server-ip>` (redirects to non-www)
 - `api.kicherkrabbe.example.com` → `<your-server-ip>` (API)
 - `customer.kicherkrabbe.example.com` → `<your-server-ip>` (Customer Frontend)
-- `traefik.kicherkrabbe.example.com` → `<your-server-ip>`
-- `rabbitmq.kicherkrabbe.example.com` → `<your-server-ip>`
 
 ## Updating the Application
 
@@ -270,6 +262,69 @@ docker run --rm -v kicherkrabbe_traefik-certificates:/data -v $(pwd):/backup alp
 docker stack deploy -c docker-swarm.yml kicherkrabbe
 ```
 
+## Connecting to MongoDB
+
+To connect to MongoDB using `mongosh` when logged into the server:
+
+```bash
+cd /opt/kicherkrabbe
+source .env
+
+docker exec -it $(docker ps -q -f name=kicherkrabbe_mongo) mongosh \
+  -u "$MONGO_ROOT_USERNAME" \
+  -p "$MONGO_ROOT_PASSWORD" \
+  --authenticationDatabase admin
+```
+
+To connect as the application user (limited permissions):
+
+```bash
+docker exec -it $(docker ps -q -f name=kicherkrabbe_mongo) mongosh \
+  -u "$MONGO_APP_USERNAME" \
+  -p "$MONGO_APP_PASSWORD" \
+  --authenticationDatabase kicherkrabbe \
+  kicherkrabbe
+```
+
+## Accessing RabbitMQ Management
+
+RabbitMQ management UI is not exposed publicly for security reasons. Access it via SSH tunnel:
+
+```bash
+ssh -L 15672:localhost:15672 user@your-server \
+  "docker exec -it \$(docker ps -q -f name=kicherkrabbe_rabbitmq) cat /dev/null && \
+   socat TCP-LISTEN:15672,fork TCP:\$(docker inspect --format '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' \$(docker ps -q -f name=kicherkrabbe_rabbitmq)):15672"
+```
+
+Alternatively, use Docker's network directly from the server:
+
+```bash
+ssh user@your-server
+
+RABBITMQ_IP=$(docker inspect --format '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -q -f name=kicherkrabbe_rabbitmq))
+curl http://$RABBITMQ_IP:15672
+```
+
+For a simpler approach, temporarily expose the port for administration:
+
+```bash
+ssh -L 15672:localhost:15672 user@your-server \
+  "docker run --rm --network kicherkrabbe_internal alpine/socat TCP-LISTEN:15672,fork TCP:rabbitmq:15672"
+```
+
+Then open http://localhost:15672 in your browser and log in with your RabbitMQ credentials from `.env`.
+
+## Accessing Traefik Dashboard
+
+Traefik dashboard is not exposed publicly for security reasons. Access it via SSH tunnel:
+
+```bash
+ssh -L 8080:localhost:8080 user@your-server \
+  "docker run --rm --network kicherkrabbe_traefik-public alpine/socat TCP-LISTEN:8080,fork TCP:traefik:8080"
+```
+
+Then open http://localhost:8080/dashboard/ in your browser.
+
 ## Troubleshooting
 
 ### Services not starting
@@ -325,7 +380,7 @@ The application has CORS configured for `https://www.kicherkrabbe.com` in produc
    chmod 600 .env
    ```
 
-3. **Admin Interfaces**: The Traefik dashboard and RabbitMQ management UI are exposed to the internet. For higher security, consider hiding these behind a VPN or removing their DNS records entirely. We accept this risk with two-factor authentication enabled on admin accounts.
+3. **Admin Interfaces**: Both Traefik dashboard and RabbitMQ management are only accessible via SSH tunnel (see respective sections above). This prevents exposure of administrative interfaces to the internet.
 
 4. **Updates**: Regularly update base images:
    ```bash
@@ -333,7 +388,7 @@ The application has CORS configured for `https://www.kicherkrabbe.com` in produc
    docker pull mongo:8.2
    docker pull rabbitmq:4.2-management
    docker pull eclipse-temurin:25-jre-alpine
-   docker pull node:22-alpine
+   docker pull node:24-alpine
    ```
 
 5. **Backup**: Implement automated backups (see Backup section below).
@@ -345,7 +400,7 @@ Before going live, verify the following:
 - [ ] Generated unique JWT keypair for production (not copied from development)
 - [ ] All passwords in `.env` are strong (32+ characters, generated with `openssl rand -base64 32`)
 - [ ] `.env` file permissions set to `600`
-- [ ] Two-factor authentication enabled on Traefik dashboard and RabbitMQ management accounts
+- [ ] SSH access properly secured (key-based authentication, no root login)
 - [ ] DNS records configured correctly
 - [ ] Firewall allows only ports 80 and 443
 - [ ] SSL certificates are being issued correctly by Let's Encrypt

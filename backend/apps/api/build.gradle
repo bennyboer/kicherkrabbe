@@ -21,6 +21,8 @@ dependencies {
     implementation project(':features:topics:topics-starter')
     implementation project(':features:users:users-starter')
 
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
     testImplementation project(':libs:persistence:persistence-testing')
     testImplementation project(':libs:messaging:messaging-testing')
 
