@@ -1,15 +1,22 @@
-@if (getPatterns() | async; as patterns) {
-	@if (patterns.length > 0) {
+@if (getItems() | async; as items) {
+	@if (items.length > 1) {
 		<p-carousel
-			[value]="patterns"
+			[value]="items"
 			[numVisible]="4"
 			[numScroll]="1"
 			[circular]="false"
 			[responsiveOptions]="responsiveOptions"
 		>
-			<ng-template #item let-pattern>
+			<ng-template #item let-item>
 				<div class="carousel-item">
-					<app-pattern-card [pattern]="pattern"></app-pattern-card>
+					@if (item.type === "pattern") {
+						<app-pattern-card [pattern]="item.pattern"></app-pattern-card>
+					} @else {
+						<app-show-more-card
+							label="Weitere Schnitte..."
+							link="/patterns"
+						></app-show-more-card>
+					}
 				</div>
 			</ng-template>
 		</p-carousel>
