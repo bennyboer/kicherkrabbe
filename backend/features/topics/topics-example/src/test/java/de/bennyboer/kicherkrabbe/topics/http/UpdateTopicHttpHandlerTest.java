@@ -36,7 +36,7 @@ public class UpdateTopicHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/topics/TOPIC_ID/update")
+                .uri("/topics/TOPIC_ID/update")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -60,7 +60,7 @@ public class UpdateTopicHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/topics/TOPIC_ID/update")
+                .uri("/topics/TOPIC_ID/update")
                 .bodyValue(request)
                 .exchange();
 
@@ -72,7 +72,7 @@ public class UpdateTopicHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.delete()
-                .uri("/api/topics/TOPIC_ID/update")
+                .uri("/topics/TOPIC_ID/update")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -104,7 +104,7 @@ public class UpdateTopicHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/topics/TOPIC_ID/update")
+                .uri("/topics/TOPIC_ID/update")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -133,7 +133,7 @@ public class UpdateTopicHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/topics/TOPIC_ID/update")
+                .uri("/topics/TOPIC_ID/update")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();

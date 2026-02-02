@@ -30,7 +30,7 @@ public class UnpublishPatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/unpublish?version=3")
+                .uri("/patterns/PATTERN_ID/unpublish?version=3")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -60,7 +60,7 @@ public class UnpublishPatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/unpublish?version=3")
+                .uri("/patterns/PATTERN_ID/unpublish?version=3")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -75,7 +75,7 @@ public class UnpublishPatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without a version
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/unpublish")
+                .uri("/patterns/PATTERN_ID/unpublish")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -87,7 +87,7 @@ public class UnpublishPatternHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/unpublish")
+                .uri("/patterns/PATTERN_ID/unpublish")
                 .exchange();
 
         // then: the response is unauthorized
@@ -98,7 +98,7 @@ public class UnpublishPatternHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/unpublish")
+                .uri("/patterns/PATTERN_ID/unpublish")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -120,7 +120,7 @@ public class UnpublishPatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/unpublish?version=3")
+                .uri("/patterns/PATTERN_ID/unpublish?version=3")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

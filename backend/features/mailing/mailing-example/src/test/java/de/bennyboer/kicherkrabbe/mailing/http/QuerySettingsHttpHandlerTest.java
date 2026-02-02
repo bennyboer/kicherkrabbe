@@ -34,7 +34,7 @@ public class QuerySettingsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/mailing/settings").build())
+                .uri(builder -> builder.path("/mailing/settings").build())
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -50,7 +50,7 @@ public class QuerySettingsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/mailing/settings")
+                .uri("/mailing/settings")
                 .exchange();
 
         // then: the response is unauthorized
@@ -61,7 +61,7 @@ public class QuerySettingsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/mailing/settings")
+                .uri("/mailing/settings")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -86,7 +86,7 @@ public class QuerySettingsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/mailing/settings")
+                .uri("/mailing/settings")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

@@ -29,7 +29,7 @@ public class QueryUnreadMailsCountHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/mailbox/mails/unread/count")
+                .uri("/mailbox/mails/unread/count")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -45,7 +45,7 @@ public class QueryUnreadMailsCountHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/mailbox/mails/unread/count")
+                .uri("/mailbox/mails/unread/count")
                 .exchange();
 
         // then: the response is unauthorized
@@ -56,7 +56,7 @@ public class QueryUnreadMailsCountHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/mailbox/mails/unread/count")
+                .uri("/mailbox/mails/unread/count")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -81,7 +81,7 @@ public class QueryUnreadMailsCountHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/mailbox/mails/unread/count")
+                .uri("/mailbox/mails/unread/count")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

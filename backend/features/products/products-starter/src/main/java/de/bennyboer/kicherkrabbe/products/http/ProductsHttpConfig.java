@@ -27,7 +27,7 @@ public class ProductsHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> productsHttpRouting(ProductsHttpHandler handler) {
         return nest(
-                path("/api/products"),
+                path("/products"),
                 route(GET(""), handler::getProducts)
                         .andRoute(POST("/create"), handler::createProduct)
                         .andNest(path("/links"), buildLinksRoutes(handler))
@@ -36,7 +36,7 @@ public class ProductsHttpConfig {
     }
 
     private RouterFunction<ServerResponse> buildProductRoutes(ProductsHttpHandler handler) {
-        // /api/products/{productId}
+        // /products/{productId}
         return route(GET(""), handler::getProduct)
                 .andRoute(DELETE(""), handler::deleteProduct)
                 .andNest(path("/links"), buildProductLinksRoutes(handler))
@@ -47,12 +47,12 @@ public class ProductsHttpConfig {
     }
 
     private RouterFunction<ServerResponse> buildLinksRoutes(ProductsHttpHandler handler) {
-        // /api/products/links
+        // /products/links
         return route(GET(""), handler::getLinks);
     }
 
     private RouterFunction<ServerResponse> buildProductLinksRoutes(ProductsHttpHandler handler) {
-        // /api/products/{productId}/links
+        // /products/{productId}/links
         return route(POST("/add"), handler::addLinkToProduct)
                 .andRoute(DELETE("/{linkType}/{linkId}"), handler::removeLinkFromProduct);
     }

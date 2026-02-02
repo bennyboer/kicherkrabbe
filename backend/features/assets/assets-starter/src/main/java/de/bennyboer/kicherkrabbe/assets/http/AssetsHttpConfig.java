@@ -28,7 +28,7 @@ public class AssetsHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> assetsHttpRouting(AssetsHttpHandler handler) {
         return nest(
-                path("/api/assets"),
+                path("/assets"),
                 route(POST("/upload"), handler::uploadAsset)
                         .andNest(
                                 path("/{assetId}"),
@@ -40,7 +40,7 @@ public class AssetsHttpConfig {
 
     @Bean
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> assetsAuthorizeExchangeSpecCustomizer() {
-        return exchanges -> exchanges.pathMatchers(GET, "/api/assets/{assetId}/content").permitAll();
+        return exchanges -> exchanges.pathMatchers(GET, "/assets/{assetId}/content").permitAll();
     }
 
 }

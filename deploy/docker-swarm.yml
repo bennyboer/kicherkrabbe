@@ -130,17 +130,10 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.app.rule=Host(`${DOMAIN}`)"
+        - "traefik.http.routers.app.rule=Host(`api.${DOMAIN}`)"
         - "traefik.http.routers.app.entrypoints=websecure"
         - "traefik.http.routers.app.tls.certresolver=letsencrypt"
         - "traefik.http.services.app.loadbalancer.server.port=8080"
-        - "traefik.http.routers.app-www.rule=Host(`www.${DOMAIN}`)"
-        - "traefik.http.routers.app-www.entrypoints=websecure"
-        - "traefik.http.routers.app-www.tls.certresolver=letsencrypt"
-        - "traefik.http.routers.app-www.middlewares=www-redirect"
-        - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://www\\.(.+)"
-        - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://$${1}"
-        - "traefik.http.middlewares.www-redirect.redirectregex.permanent=true"
       update_config:
         parallelism: 1
         delay: 10s
@@ -182,10 +175,17 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.management.rule=Host(`management.${DOMAIN}`)"
+        - "traefik.http.routers.management.rule=Host(`${DOMAIN}`)"
         - "traefik.http.routers.management.entrypoints=websecure"
         - "traefik.http.routers.management.tls.certresolver=letsencrypt"
         - "traefik.http.services.management.loadbalancer.server.port=4200"
+        - "traefik.http.routers.management-www.rule=Host(`www.${DOMAIN}`)"
+        - "traefik.http.routers.management-www.entrypoints=websecure"
+        - "traefik.http.routers.management-www.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.management-www.middlewares=www-redirect"
+        - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://www\\.(.+)"
+        - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://$${1}"
+        - "traefik.http.middlewares.www-redirect.redirectregex.permanent=true"
       update_config:
         parallelism: 1
         delay: 10s

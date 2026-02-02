@@ -38,7 +38,7 @@ public class RemoveLinkHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri(builder -> builder.path("/api/products/{productId}/links/{linkType}/{linkId}")
+                .uri(builder -> builder.path("/products/{productId}/links/{linkType}/{linkId}")
                         .queryParam("version", 2L)
                         .build("SOME_PRODUCT_ID", "PATTERN", "LINK_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
@@ -71,7 +71,7 @@ public class RemoveLinkHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri(builder -> builder.path("/api/products/{productId}/links/{linkType}/{linkId}")
+                .uri(builder -> builder.path("/products/{productId}/links/{linkType}/{linkId}")
                         .queryParam("version", 2L)
                         .build("SOME_PRODUCT_ID", "PATTERN", "LINK_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
@@ -88,7 +88,7 @@ public class RemoveLinkHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/products/SOME_PRODUCT_ID/links/PATTERN/LINK_ID?version=0")
+                .uri("/products/SOME_PRODUCT_ID/links/PATTERN/LINK_ID?version=0")
                 .exchange();
 
         // then: the response is unauthorized
@@ -99,7 +99,7 @@ public class RemoveLinkHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/products/SOME_PRODUCT_ID/links/PATTERN/LINK_ID?version=0")
+                .uri("/products/SOME_PRODUCT_ID/links/PATTERN/LINK_ID?version=0")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -128,7 +128,7 @@ public class RemoveLinkHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/products/SOME_PRODUCT_ID/links/PATTERN/LINK_ID?version=2")
+                .uri("/products/SOME_PRODUCT_ID/links/PATTERN/LINK_ID?version=2")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -156,7 +156,7 @@ public class RemoveLinkHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/products/SOME_PRODUCT_ID/links/PATTERN/LINK_ID?version=2")
+                .uri("/products/SOME_PRODUCT_ID/links/PATTERN/LINK_ID?version=2")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

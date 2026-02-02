@@ -50,7 +50,7 @@ public class QueryLinksHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/products/links")
+                .uri(builder -> builder.path("/products/links")
                         .queryParam("searchTerm", "Search term")
                         .queryParam("skip", "100")
                         .queryParam("limit", "300")
@@ -100,7 +100,7 @@ public class QueryLinksHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/products/links").build())
+                .uri(builder -> builder.path("/products/links").build())
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -135,7 +135,7 @@ public class QueryLinksHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/products/links")
+                .uri(builder -> builder.path("/products/links")
                         .queryParam("skip", -100)
                         .queryParam("limit", -100)
                         .build())
@@ -155,7 +155,7 @@ public class QueryLinksHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/products/links")
+                .uri("/products/links")
                 .exchange();
 
         // then: the response is unauthorized
@@ -166,7 +166,7 @@ public class QueryLinksHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/products/links")
+                .uri("/products/links")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -194,7 +194,7 @@ public class QueryLinksHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/products/links")
+                .uri("/products/links")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

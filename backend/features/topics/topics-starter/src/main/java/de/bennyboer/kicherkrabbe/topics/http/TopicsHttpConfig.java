@@ -24,7 +24,7 @@ public class TopicsHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> topicsHttpRouting(TopicsHttpHandler handler) {
         return nest(
-                path("/api/topics"),
+                path("/topics"),
                 route(GET("/"), handler::getTopics)
                         .andRoute(GET("/changes"), handler::getChanges)
                         .andRoute(POST("/create"), handler::createTopic)

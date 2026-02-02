@@ -24,7 +24,7 @@ public class ColorsHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> colorsHttpRouting(ColorsHttpHandler handler) {
         return nest(
-                path("/api/colors"),
+                path("/colors"),
                 route(GET("/"), handler::getColors)
                         .andRoute(GET("/changes"), handler::getColorChanges)
                         .andRoute(POST("/create"), handler::createColor)

@@ -39,7 +39,7 @@ public class UpdatePatternNumberHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/number")
+                .uri("/patterns/PATTERN_ID/update/number")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -76,7 +76,7 @@ public class UpdatePatternNumberHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/number")
+                .uri("/patterns/PATTERN_ID/update/number")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -108,7 +108,7 @@ public class UpdatePatternNumberHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/number")
+                .uri("/patterns/PATTERN_ID/update/number")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -130,7 +130,7 @@ public class UpdatePatternNumberHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/number")
+                .uri("/patterns/PATTERN_ID/update/number")
                 .exchange();
 
         // then: the response is unauthorized
@@ -141,7 +141,7 @@ public class UpdatePatternNumberHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/number")
+                .uri("/patterns/PATTERN_ID/update/number")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 

@@ -34,7 +34,7 @@ public class QueryAssetContentHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/assets/ASSET_ID/content")
+                .uri("/assets/ASSET_ID/content")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -63,7 +63,7 @@ public class QueryAssetContentHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without token
         var exchange = client.get()
-                .uri("/api/assets/ASSET_ID/content")
+                .uri("/assets/ASSET_ID/content")
                 .exchange();
 
         // then: the response is successful
@@ -81,7 +81,7 @@ public class QueryAssetContentHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with invalid token
         var exchange = client.get()
-                .uri("/api/assets/ASSET_ID/content")
+                .uri("/assets/ASSET_ID/content")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -102,7 +102,7 @@ public class QueryAssetContentHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/assets/ASSET_ID/content")
+                .uri("/assets/ASSET_ID/content")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

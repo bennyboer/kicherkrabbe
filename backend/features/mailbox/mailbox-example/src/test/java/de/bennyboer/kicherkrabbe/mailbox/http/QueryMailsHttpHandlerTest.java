@@ -73,7 +73,7 @@ public class QueryMailsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/mailbox/mails")
+                .uri(builder -> builder.path("/mailbox/mails")
                         .queryParam("searchTerm", "Search term")
                         .queryParam("status", "READ")
                         .queryParam("skip", "100")
@@ -143,7 +143,7 @@ public class QueryMailsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/mailbox/mails").build())
+                .uri(builder -> builder.path("/mailbox/mails").build())
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -179,7 +179,7 @@ public class QueryMailsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/mailbox/mails")
+                .uri(builder -> builder.path("/mailbox/mails")
                         .queryParam("skip", -100)
                         .queryParam("limit", -100)
                         .build())
@@ -199,7 +199,7 @@ public class QueryMailsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/mailbox/mails")
+                .uri("/mailbox/mails")
                 .exchange();
 
         // then: the response is unauthorized
@@ -210,7 +210,7 @@ public class QueryMailsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/mailbox/mails")
+                .uri("/mailbox/mails")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -239,7 +239,7 @@ public class QueryMailsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/mailbox/mails")
+                .uri("/mailbox/mails")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

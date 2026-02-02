@@ -39,7 +39,7 @@ public class ClearBotApiTokenHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/telegram/settings/bot/api-token/clear").build())
+                .uri(builder -> builder.path("/telegram/settings/bot/api-token/clear").build())
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -56,7 +56,7 @@ public class ClearBotApiTokenHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/telegram/settings/bot/api-token/clear")
+                .uri("/telegram/settings/bot/api-token/clear")
                 .exchange();
 
         // then: the response is unauthorized
@@ -67,7 +67,7 @@ public class ClearBotApiTokenHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/telegram/settings/bot/api-token/clear")
+                .uri("/telegram/settings/bot/api-token/clear")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -96,7 +96,7 @@ public class ClearBotApiTokenHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/telegram/settings/bot/api-token/clear")
+                .uri("/telegram/settings/bot/api-token/clear")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -126,7 +126,7 @@ public class ClearBotApiTokenHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/telegram/settings/bot/api-token/clear")
+                .uri("/telegram/settings/bot/api-token/clear")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();

@@ -19,7 +19,7 @@ public class QueryStatusHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/inquiries/status")
+                .uri("/inquiries/status")
                 .exchange();
 
         // then: the response is successful
@@ -38,7 +38,7 @@ public class QueryStatusHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/inquiries/status")
+                .uri("/inquiries/status")
                 .exchange();
 
         // then: the response is successful

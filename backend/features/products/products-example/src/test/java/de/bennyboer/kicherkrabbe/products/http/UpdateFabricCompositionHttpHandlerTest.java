@@ -55,7 +55,7 @@ public class UpdateFabricCompositionHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/products/{productId}/fabric-composition/update")
+                .uri(builder -> builder.path("/products/{productId}/fabric-composition/update")
                         .build("SOME_PRODUCT_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
@@ -100,7 +100,7 @@ public class UpdateFabricCompositionHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/products/{productId}/fabric-composition/update")
+                .uri(builder -> builder.path("/products/{productId}/fabric-composition/update")
                         .build("SOME_PRODUCT_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
@@ -117,7 +117,7 @@ public class UpdateFabricCompositionHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/fabric-composition/update")
+                .uri("/products/SOME_PRODUCT_ID/fabric-composition/update")
                 .exchange();
 
         // then: the response is unauthorized
@@ -128,7 +128,7 @@ public class UpdateFabricCompositionHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/fabric-composition/update")
+                .uri("/products/SOME_PRODUCT_ID/fabric-composition/update")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -169,7 +169,7 @@ public class UpdateFabricCompositionHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/fabric-composition/update")
+                .uri("/products/SOME_PRODUCT_ID/fabric-composition/update")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -210,7 +210,7 @@ public class UpdateFabricCompositionHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/fabric-composition/update")
+                .uri("/products/SOME_PRODUCT_ID/fabric-composition/update")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -240,7 +240,7 @@ public class UpdateFabricCompositionHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/fabric-composition/update")
+                .uri("/products/SOME_PRODUCT_ID/fabric-composition/update")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();

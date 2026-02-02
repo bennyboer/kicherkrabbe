@@ -27,7 +27,7 @@ public class MailboxHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> mailboxHttpRouting(MailboxHttpHandler handler) {
         return nest(
-                path("/api/mailbox"),
+                path("/mailbox"),
                 nest(
                         path("/mails"),
                         route(GET(""), handler::getMails)

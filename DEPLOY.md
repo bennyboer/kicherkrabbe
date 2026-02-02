@@ -158,19 +158,19 @@ After deployment, the following URLs will be available (replace with your domain
 
 | Service | URL |
 |---------|-----|
-| Application | `https://kicherkrabbe.example.com` |
+| Management Frontend | `https://kicherkrabbe.example.com` |
 | Customer Frontend | `https://customer.kicherkrabbe.example.com` |
-| Management Frontend | `https://management.kicherkrabbe.example.com` |
+| API | `https://api.kicherkrabbe.example.com` |
 | Traefik Dashboard | `https://traefik.kicherkrabbe.example.com/dashboard/` |
 | RabbitMQ Management | `https://rabbitmq.kicherkrabbe.example.com` |
 
 ## DNS Configuration
 
 Create DNS A records pointing to your server:
-- `kicherkrabbe.example.com` → `<your-server-ip>`
+- `kicherkrabbe.example.com` → `<your-server-ip>` (Management Frontend)
 - `www.kicherkrabbe.example.com` → `<your-server-ip>` (redirects to non-www)
-- `customer.kicherkrabbe.example.com` → `<your-server-ip>`
-- `management.kicherkrabbe.example.com` → `<your-server-ip>`
+- `api.kicherkrabbe.example.com` → `<your-server-ip>` (API)
+- `customer.kicherkrabbe.example.com` → `<your-server-ip>` (Customer Frontend)
 - `traefik.kicherkrabbe.example.com` → `<your-server-ip>`
 - `rabbitmq.kicherkrabbe.example.com` → `<your-server-ip>`
 

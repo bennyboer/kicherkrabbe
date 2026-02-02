@@ -59,7 +59,7 @@ public class GetColorsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/colors/?searchTerm=term&skip=2&limit=8")
+                .uri("/colors/?searchTerm=term&skip=2&limit=8")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -95,7 +95,7 @@ public class GetColorsHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.get()
-                .uri("/api/colors/?searchTerm=term&skip=2&limit=8")
+                .uri("/colors/?searchTerm=term&skip=2&limit=8")
                 .exchange();
 
         // then: the response is unauthorized
@@ -106,7 +106,7 @@ public class GetColorsHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.get()
-                .uri("/api/colors/?searchTerm=term&skip=2&limit=8")
+                .uri("/colors/?searchTerm=term&skip=2&limit=8")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 

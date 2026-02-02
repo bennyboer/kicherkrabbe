@@ -29,7 +29,7 @@ public class CreateFabricTypeHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/fabric-types/create")
+                .uri("/fabric-types/create")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -52,7 +52,7 @@ public class CreateFabricTypeHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/fabric-types/create")
+                .uri("/fabric-types/create")
                 .bodyValue(request)
                 .exchange();
 
@@ -68,7 +68,7 @@ public class CreateFabricTypeHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/api/fabric-types/create")
+                .uri("/fabric-types/create")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
@@ -94,7 +94,7 @@ public class CreateFabricTypeHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/fabric-types/create")
+                .uri("/fabric-types/create")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();

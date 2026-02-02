@@ -36,7 +36,7 @@ public class UpdatePatternDescriptionHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/description")
+                .uri("/patterns/PATTERN_ID/update/description")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -73,7 +73,7 @@ public class UpdatePatternDescriptionHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/description")
+                .uri("/patterns/PATTERN_ID/update/description")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -86,7 +86,7 @@ public class UpdatePatternDescriptionHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/description")
+                .uri("/patterns/PATTERN_ID/update/description")
                 .exchange();
 
         // then: the response is unauthorized
@@ -97,7 +97,7 @@ public class UpdatePatternDescriptionHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/description")
+                .uri("/patterns/PATTERN_ID/update/description")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 

@@ -22,12 +22,10 @@ public class UsersHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> usersHttpRouting(UsersHttpHandler handler) {
         return route()
-                .nest(path("/api"), () -> route()
-                        .nest(path("/users"), () -> route()
-                                .GET("/me", handler::getLoggedInUserDetails)
-                                .build())
-                        .build()
-                ).build();
+                .nest(path("/users"), () -> route()
+                        .GET("/me", handler::getLoggedInUserDetails)
+                        .build())
+                .build();
     }
 
     @Bean

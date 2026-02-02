@@ -67,7 +67,7 @@ public class QueryMailsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/mailing/mails").build())
+                .uri(builder -> builder.path("/mailing/mails").build())
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -126,7 +126,7 @@ public class QueryMailsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/mailing/mails")
+                .uri(builder -> builder.path("/mailing/mails")
                         .queryParam("skip", "30")
                         .queryParam("limit", "50")
                         .build())
@@ -146,7 +146,7 @@ public class QueryMailsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/mailing/mails")
+                .uri("/mailing/mails")
                 .exchange();
 
         // then: the response is unauthorized
@@ -157,7 +157,7 @@ public class QueryMailsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/mailing/mails")
+                .uri("/mailing/mails")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -184,7 +184,7 @@ public class QueryMailsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/mailing/mails")
+                .uri("/mailing/mails")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

@@ -41,7 +41,7 @@ public class DeactivateSystemChannelHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/notifications/settings/system/channels/deactivate").build())
+                .uri(builder -> builder.path("/notifications/settings/system/channels/deactivate").build())
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -58,7 +58,7 @@ public class DeactivateSystemChannelHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/notifications/settings/system/channels/deactivate")
+                .uri("/notifications/settings/system/channels/deactivate")
                 .exchange();
 
         // then: the response is unauthorized
@@ -69,7 +69,7 @@ public class DeactivateSystemChannelHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/notifications/settings/system/channels/deactivate")
+                .uri("/notifications/settings/system/channels/deactivate")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -100,7 +100,7 @@ public class DeactivateSystemChannelHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/notifications/settings/system/channels/deactivate")
+                .uri("/notifications/settings/system/channels/deactivate")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -131,7 +131,7 @@ public class DeactivateSystemChannelHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/notifications/settings/system/channels/deactivate")
+                .uri("/notifications/settings/system/channels/deactivate")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
