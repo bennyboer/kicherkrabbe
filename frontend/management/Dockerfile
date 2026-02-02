@@ -6,7 +6,8 @@ COPY --chown=node:node dist/management ./dist/management
 COPY --chown=node:node server.mjs ./server.mjs
 COPY --chown=node:node package.json ./package.json
 
-RUN npm install --omit=dev --ignore-scripts && chown -R node:node node_modules
+RUN yarn install --production --frozen-lockfile --ignore-scripts
+RUN chown -R node:node node_modules
 
 USER node
 
