@@ -173,6 +173,27 @@ services:
         condition: on-failure
         delay: 5s
 
+  management:
+    image: ${MANAGEMENT_IMAGE:-ghcr.io/bennyboer/kicherkrabbe-management:latest}
+    networks:
+      - traefik-public
+    environment:
+      - PORT=4200
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.management.rule=Host(`management.${DOMAIN}`)"
+        - "traefik.http.routers.management.entrypoints=websecure"
+        - "traefik.http.routers.management.tls.certresolver=letsencrypt"
+        - "traefik.http.services.management.loadbalancer.server.port=4200"
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+
 networks:
   traefik-public:
     driver: overlay

@@ -6,11 +6,13 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "serve:express": "node server.mjs"
   },
   "private": true,
   "dependencies": {
     "@angular/animations": "^21.1.2",
+    "express": "^5.1.0",
     "@angular/cdk": "^19.0.4",
     "@angular/common": "^21.1.2",
     "@angular/compiler": "^21.1.2",
@@ -34,6 +36,8 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^21.1.2",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.15.21",
     "@angular/cli": "^21.1.2",
     "@angular/compiler-cli": "^21.1.2",
     "@types/jasmine": "~5.1.0",

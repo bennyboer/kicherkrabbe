@@ -1,9 +1,0 @@
-plugins {
-    id 'kicherkrabbe.java-conventions'
-}
-
-processResources {
-    from('../../../frontend/management/dist/management/browser') {
-        into 'public'
-    }
-}
