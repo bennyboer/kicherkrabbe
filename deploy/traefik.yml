@@ -1,10 +1,12 @@
 api:
   dashboard: true
+  insecure: true
 
 providers:
   swarm:
     exposedByDefault: false
     endpoint: unix:///var/run/docker.sock
+    network: traefik-public
 
 entryPoints:
   web:
