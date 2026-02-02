@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { map, Observable } from "rxjs";
 import { environment } from "../../environments";
+import { none, Option } from "../util/option";
 import { Fabric } from "./fabric";
 
 interface PublishedFabricDTO {
@@ -20,16 +21,15 @@ interface QueryFeaturedFabricsResponse {
 export class FabricsService {
 	constructor(private readonly http: HttpClient) {}
 
-	getFeaturedFabrics(): Observable<Fabric[]> {
-		return this.http
-			.get<QueryFeaturedFabricsResponse>(
-				`${environment.apiUrl}/fabrics/featured`
+	getFeaturedFabrics(seed: Option<number> = none()): Observable<Fabric[]> {
+		let url = `${environment.apiUrl}/fabrics/featured`;
+		seed.ifSome((s) => (url += `?seed=${s}`));
+
+		return this.http.get<QueryFeaturedFabricsResponse>(url).pipe(
+			map((response) =>
+				response.fabrics.map((fabric) => this.toInternalFabric(fabric))
 			)
-			.pipe(
-				map((response) =>
-					response.fabrics.map((fabric) => this.toInternalFabric(fabric))
-				)
-			);
+		);
 	}
 
 	getImageUrl(imageId: string): string {

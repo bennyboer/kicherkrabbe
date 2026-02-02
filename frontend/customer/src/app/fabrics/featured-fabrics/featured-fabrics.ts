@@ -1,7 +1,8 @@
 import { AsyncPipe } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { Carousel } from "primeng/carousel";
+import { SeedService } from "../../services/seed.service";
 import { Fabric } from "../fabric";
 import { FabricCard } from "../fabric-card/fabric-card";
 import { FabricsService } from "../fabrics.service";
@@ -14,6 +15,7 @@ import { FabricsService } from "../fabrics.service";
 	imports: [AsyncPipe, FabricCard, Carousel],
 })
 export class FeaturedFabrics implements OnInit {
+	private readonly seedService = inject(SeedService);
 	private readonly fabrics$: BehaviorSubject<Fabric[]> = new BehaviorSubject<
 		Fabric[]
 	>([]);
@@ -44,7 +46,8 @@ export class FeaturedFabrics implements OnInit {
 	constructor(private readonly fabricsService: FabricsService) {}
 
 	ngOnInit(): void {
-		this.fabricsService.getFeaturedFabrics().subscribe((fabrics) => {
+		const seed = this.seedService.getSeed();
+		this.fabricsService.getFeaturedFabrics(seed).subscribe((fabrics) => {
 			this.fabrics$.next(fabrics);
 		});
 	}

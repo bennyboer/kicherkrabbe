@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gradlew.bat:*)",
+      "Bash(./gradlew.bat :features:fabrics:fabrics-example:test:*)",
+      "Bash(./gradlew.bat :features:patterns:patterns-example:test:*)"
+    ]
+  }
+}
