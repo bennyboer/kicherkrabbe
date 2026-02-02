@@ -43,7 +43,7 @@ public class AddLinkHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/products/{productId}/links/add")
+                .uri(builder -> builder.path("/products/{productId}/links/add")
                         .build("SOME_PRODUCT_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
@@ -80,7 +80,7 @@ public class AddLinkHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/products/{productId}/links/add")
+                .uri(builder -> builder.path("/products/{productId}/links/add")
                         .build("SOME_PRODUCT_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
@@ -97,7 +97,7 @@ public class AddLinkHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/links/add")
+                .uri("/products/SOME_PRODUCT_ID/links/add")
                 .exchange();
 
         // then: the response is unauthorized
@@ -108,7 +108,7 @@ public class AddLinkHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/links/add")
+                .uri("/products/SOME_PRODUCT_ID/links/add")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -141,7 +141,7 @@ public class AddLinkHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/links/add")
+                .uri("/products/SOME_PRODUCT_ID/links/add")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -174,7 +174,7 @@ public class AddLinkHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/links/add")
+                .uri("/products/SOME_PRODUCT_ID/links/add")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -196,7 +196,7 @@ public class AddLinkHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/links/add")
+                .uri("/products/SOME_PRODUCT_ID/links/add")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();

@@ -38,7 +38,7 @@ public class GetCategoryHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/categories/CATEGORY_ID")
+                .uri("/categories/CATEGORY_ID")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -60,7 +60,7 @@ public class GetCategoryHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.get()
-                .uri("/api/categories/CATEGORY_ID")
+                .uri("/categories/CATEGORY_ID")
                 .exchange();
 
         // then: the response is unauthorized
@@ -71,7 +71,7 @@ public class GetCategoryHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.get()
-                .uri("/api/categories/CATEGORY_ID")
+                .uri("/categories/CATEGORY_ID")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 

@@ -27,7 +27,7 @@ public class DeletePatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/patterns/PATTERN_ID?version=3")
+                .uri("/patterns/PATTERN_ID?version=3")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -42,7 +42,7 @@ public class DeletePatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without version query param
         var exchange = client.delete()
-                .uri("/api/patterns/PATTERN_ID")
+                .uri("/patterns/PATTERN_ID")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -54,7 +54,7 @@ public class DeletePatternHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.delete()
-                .uri("/api/patterns/PATTERN_ID")
+                .uri("/patterns/PATTERN_ID")
                 .exchange();
 
         // then: the response is unauthorized
@@ -65,7 +65,7 @@ public class DeletePatternHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.delete()
-                .uri("/api/patterns/PATTERN_ID")
+                .uri("/patterns/PATTERN_ID")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -91,7 +91,7 @@ public class DeletePatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/patterns/PATTERN_ID?version=3")
+                .uri("/patterns/PATTERN_ID?version=3")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

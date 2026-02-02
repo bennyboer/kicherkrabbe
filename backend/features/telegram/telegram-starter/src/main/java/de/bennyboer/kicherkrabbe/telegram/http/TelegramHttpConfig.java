@@ -27,7 +27,7 @@ public class TelegramHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> telegramHttpRouting(TelegramHttpHandler handler) {
         return nest(
-                path("/api/telegram"),
+                path("/telegram"),
                 nest(path("/settings"), buildSettingsHttpRouting(handler))
         );
     }

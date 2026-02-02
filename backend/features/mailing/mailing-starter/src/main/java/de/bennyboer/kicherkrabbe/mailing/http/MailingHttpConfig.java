@@ -27,42 +27,42 @@ public class MailingHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> mailingHttpRouting(MailingHttpHandler handler) {
         return nest(
-                path("/api/mailing"),
+                path("/mailing"),
                 nest(path("/mails"), buildMailsHttpRouting(handler))
                         .andNest(path("/settings"), buildSettingsHttpRouting(handler))
         );
     }
 
     private RouterFunction<ServerResponse> buildMailsHttpRouting(MailingHttpHandler handler) {
-        // /api/mailing/mails
+        // /mailing/mails
         return route(GET(""), handler::getMails)
                 .andNest(path("/{mailId}"), buildMailHttpRouting(handler));
     }
 
     private RouterFunction<ServerResponse> buildMailHttpRouting(MailingHttpHandler handler) {
-        // /api/mailing/mails/{mailId}
+        // /mailing/mails/{mailId}
         return route(GET(""), handler::getMail);
     }
 
     private RouterFunction<ServerResponse> buildSettingsHttpRouting(MailingHttpHandler handler) {
-        // /api/mailing/settings
+        // /mailing/settings
         return route(GET(""), handler::getSettings)
                 .andNest(path("/rate-limit"), buildRateLimitSettingsHttpRouting(handler))
                 .andNest(path("/mailgun"), buildMailgunSettingsHttpRouting(handler));
     }
 
     private RouterFunction<ServerResponse> buildRateLimitSettingsHttpRouting(MailingHttpHandler handler) {
-        // /api/mailing/settings/rate-limit
+        // /mailing/settings/rate-limit
         return route(POST("/update"), handler::updateRateLimitSettings);
     }
 
     private RouterFunction<ServerResponse> buildMailgunSettingsHttpRouting(MailingHttpHandler handler) {
-        // /api/mailing/settings/mailgun
+        // /mailing/settings/mailgun
         return nest(path("/api-token"), buildMailgunApiTokenHttpRouting(handler));
     }
 
     private RouterFunction<ServerResponse> buildMailgunApiTokenHttpRouting(MailingHttpHandler handler) {
-        // /api/mailing/settings/mailgun/api-token
+        // /mailing/settings/mailgun/api-token
         return route(POST("/update"), handler::updateMailgunApiToken)
                 .andRoute(POST("/clear"), handler::clearMailgunApiToken);
     }

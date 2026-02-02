@@ -65,7 +65,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/fabrics/published")
+                .uri("/fabrics/published")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -130,7 +130,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/fabrics/published")
+                .uri("/fabrics/published")
                 .bodyValue(request)
                 .exchange();
 
@@ -170,7 +170,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/api/fabrics/published")
+                .uri("/fabrics/published")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();

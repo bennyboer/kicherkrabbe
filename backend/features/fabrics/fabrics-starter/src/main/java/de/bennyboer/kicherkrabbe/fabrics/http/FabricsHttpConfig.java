@@ -29,7 +29,7 @@ public class FabricsHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> fabricsHttpRouting(FabricsHttpHandler handler) {
         return nest(
-                path("/api/fabrics"),
+                path("/fabrics"),
                 route(POST("/"), handler::getFabrics)
                         .andRoute(GET("/changes"), handler::getChanges)
                         .andRoute(POST("/published"), handler::getPublishedFabrics)
@@ -64,12 +64,12 @@ public class FabricsHttpConfig {
 
     @Bean
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> fabricsAuthorizeExchangeSpecCustomizer() {
-        return exchanges -> exchanges.pathMatchers(POST, "/api/fabrics/published").permitAll()
-                .pathMatchers(GET, "/api/fabrics/featured").permitAll()
-                .pathMatchers(GET, "/api/fabrics/{fabricId}/published").permitAll()
-                .pathMatchers(GET, "/api/fabrics/topics/used").permitAll()
-                .pathMatchers(GET, "/api/fabrics/colors/used").permitAll()
-                .pathMatchers(GET, "/api/fabrics/fabric-types/used").permitAll();
+        return exchanges -> exchanges.pathMatchers(POST, "/fabrics/published").permitAll()
+                .pathMatchers(GET, "/fabrics/featured").permitAll()
+                .pathMatchers(GET, "/fabrics/{fabricId}/published").permitAll()
+                .pathMatchers(GET, "/fabrics/topics/used").permitAll()
+                .pathMatchers(GET, "/fabrics/colors/used").permitAll()
+                .pathMatchers(GET, "/fabrics/fabric-types/used").permitAll();
     }
 
 }

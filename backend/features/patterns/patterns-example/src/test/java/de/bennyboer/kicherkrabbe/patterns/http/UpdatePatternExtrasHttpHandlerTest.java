@@ -53,7 +53,7 @@ public class UpdatePatternExtrasHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/extras")
+                .uri("/patterns/PATTERN_ID/update/extras")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -102,7 +102,7 @@ public class UpdatePatternExtrasHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/extras")
+                .uri("/patterns/PATTERN_ID/update/extras")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -115,7 +115,7 @@ public class UpdatePatternExtrasHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/extras")
+                .uri("/patterns/PATTERN_ID/update/extras")
                 .exchange();
 
         // then: the response is unauthorized
@@ -126,7 +126,7 @@ public class UpdatePatternExtrasHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/extras")
+                .uri("/patterns/PATTERN_ID/update/extras")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -153,7 +153,7 @@ public class UpdatePatternExtrasHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/extras")
+                .uri("/patterns/PATTERN_ID/update/extras")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();

@@ -38,7 +38,7 @@ public class SendInquiryHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/inquiries/send")
+                .uri("/inquiries/send")
                 .bodyValue(request)
                 .exchange();
 
@@ -72,7 +72,7 @@ public class SendInquiryHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/inquiries/send")
+                .uri("/inquiries/send")
                 .bodyValue(request)
                 .exchange();
 
@@ -103,7 +103,7 @@ public class SendInquiryHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/inquiries/send")
+                .uri("/inquiries/send")
                 .bodyValue(request)
                 .exchange();
 
@@ -134,7 +134,7 @@ public class SendInquiryHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/inquiries/send")
+                .uri("/inquiries/send")
                 .bodyValue(request)
                 .exchange();
 

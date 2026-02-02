@@ -27,7 +27,7 @@ public class FabricTypesHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> fabricTypesHttpRouting(FabricTypesHttpHandler handler) {
         return nest(
-                path("/api/fabric-types"),
+                path("/fabric-types"),
                 route(GET("/"), handler::getFabricTypes)
                         .andRoute(GET("/changes"), handler::getChanges)
                         .andRoute(POST("/create"), handler::createFabricType)

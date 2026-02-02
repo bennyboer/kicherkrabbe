@@ -21,7 +21,7 @@ public class QueryFeaturedPatternsHttpHandlerTest extends HttpHandlerTest {
         ));
 
         var exchange = client.get()
-                .uri("/api/patterns/featured")
+                .uri("/patterns/featured")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -38,7 +38,7 @@ public class QueryFeaturedPatternsHttpHandlerTest extends HttpHandlerTest {
         ));
 
         var exchange = client.get()
-                .uri("/api/patterns/featured")
+                .uri("/patterns/featured")
                 .exchange();
 
         exchange.expectStatus().isOk();
@@ -50,7 +50,7 @@ public class QueryFeaturedPatternsHttpHandlerTest extends HttpHandlerTest {
     @Test
     void shouldNotAllowAccessWithInvalidToken() {
         var exchange = client.get()
-                .uri("/api/patterns/featured")
+                .uri("/patterns/featured")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 

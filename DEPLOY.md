@@ -10,6 +10,7 @@ The deployment consists of:
 - **RabbitMQ**: Message broker for event-driven communication
 - **App**: The Kicherkrabbe server application
 - **Customer**: The customer-facing Angular SSR frontend
+- **Management**: The admin/management Angular frontend
 
 ## Prerequisites
 
@@ -104,6 +105,7 @@ On your development machine:
 
 ```bash
 # Build the application
+cd backend
 ./gradlew :apps:api:bootJar
 
 # Build Docker image
@@ -116,7 +118,7 @@ docker push your-registry/kicherkrabbe-server:latest
 If you don't have a registry, you can build directly on the server:
 ```bash
 # On the server
-docker build -t kicherkrabbe-server:latest .
+docker build -t kicherkrabbe-server:latest backend/
 
 # Update .env
 APP_IMAGE=kicherkrabbe-server:latest
@@ -141,6 +143,7 @@ docker service ls
 # Check service logs
 docker service logs kicherkrabbe_app
 docker service logs kicherkrabbe_customer
+docker service logs kicherkrabbe_management
 docker service logs kicherkrabbe_mongo
 docker service logs kicherkrabbe_rabbitmq
 docker service logs kicherkrabbe_traefik
@@ -155,17 +158,19 @@ After deployment, the following URLs will be available (replace with your domain
 
 | Service | URL |
 |---------|-----|
-| Application | `https://kicherkrabbe.example.com` |
+| Management Frontend | `https://kicherkrabbe.example.com` |
 | Customer Frontend | `https://customer.kicherkrabbe.example.com` |
+| API | `https://api.kicherkrabbe.example.com` |
 | Traefik Dashboard | `https://traefik.kicherkrabbe.example.com/dashboard/` |
 | RabbitMQ Management | `https://rabbitmq.kicherkrabbe.example.com` |
 
 ## DNS Configuration
 
 Create DNS A records pointing to your server:
-- `kicherkrabbe.example.com` → `<your-server-ip>`
+- `kicherkrabbe.example.com` → `<your-server-ip>` (Management Frontend)
 - `www.kicherkrabbe.example.com` → `<your-server-ip>` (redirects to non-www)
-- `customer.kicherkrabbe.example.com` → `<your-server-ip>`
+- `api.kicherkrabbe.example.com` → `<your-server-ip>` (API)
+- `customer.kicherkrabbe.example.com` → `<your-server-ip>` (Customer Frontend)
 - `traefik.kicherkrabbe.example.com` → `<your-server-ip>`
 - `rabbitmq.kicherkrabbe.example.com` → `<your-server-ip>`
 
@@ -173,6 +178,7 @@ Create DNS A records pointing to your server:
 
 ```bash
 # Build and push new image
+cd backend
 ./gradlew :apps:api:bootJar
 docker build -t your-registry/kicherkrabbe-server:v1.2.3 .
 docker push your-registry/kicherkrabbe-server:v1.2.3

@@ -27,7 +27,7 @@ public class CategoriesHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> categoriesHttpRouting(CategoriesHttpHandler handler) {
         return nest(
-                path("/api/categories"),
+                path("/categories"),
                 route(GET(""), handler::getCategories)
                         .andRoute(GET("/groups/{group}"), handler::getCategoriesByGroup)
                         .andRoute(GET("/changes"), handler::getChanges)

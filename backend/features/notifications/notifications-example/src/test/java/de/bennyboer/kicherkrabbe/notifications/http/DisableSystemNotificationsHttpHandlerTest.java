@@ -39,7 +39,7 @@ public class DisableSystemNotificationsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/notifications/settings/system/disable").build())
+                .uri(builder -> builder.path("/notifications/settings/system/disable").build())
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -56,7 +56,7 @@ public class DisableSystemNotificationsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/notifications/settings/system/disable")
+                .uri("/notifications/settings/system/disable")
                 .exchange();
 
         // then: the response is unauthorized
@@ -67,7 +67,7 @@ public class DisableSystemNotificationsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/notifications/settings/system/disable")
+                .uri("/notifications/settings/system/disable")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -97,7 +97,7 @@ public class DisableSystemNotificationsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/notifications/settings/system/disable")
+                .uri("/notifications/settings/system/disable")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -127,7 +127,7 @@ public class DisableSystemNotificationsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/notifications/settings/system/disable")
+                .uri("/notifications/settings/system/disable")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();

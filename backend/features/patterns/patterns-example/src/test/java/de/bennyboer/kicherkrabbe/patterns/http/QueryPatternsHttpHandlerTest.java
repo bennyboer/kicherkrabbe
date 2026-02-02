@@ -75,7 +75,7 @@ public class QueryPatternsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns")
+                .uri("/patterns")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -133,7 +133,7 @@ public class QueryPatternsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/patterns")
+                .uri("/patterns")
                 .bodyValue(request)
                 .exchange();
 
@@ -152,7 +152,7 @@ public class QueryPatternsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/api/patterns")
+                .uri("/patterns")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();

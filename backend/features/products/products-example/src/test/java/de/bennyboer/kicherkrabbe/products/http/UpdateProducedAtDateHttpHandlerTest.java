@@ -43,7 +43,7 @@ public class UpdateProducedAtDateHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/products/{productId}/produced-at/update")
+                .uri(builder -> builder.path("/products/{productId}/produced-at/update")
                         .build("SOME_PRODUCT_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
@@ -78,7 +78,7 @@ public class UpdateProducedAtDateHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/products/{productId}/produced-at/update")
+                .uri(builder -> builder.path("/products/{productId}/produced-at/update")
                         .build("SOME_PRODUCT_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
@@ -95,7 +95,7 @@ public class UpdateProducedAtDateHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/produced-at/update")
+                .uri("/products/SOME_PRODUCT_ID/produced-at/update")
                 .exchange();
 
         // then: the response is unauthorized
@@ -106,7 +106,7 @@ public class UpdateProducedAtDateHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/produced-at/update")
+                .uri("/products/SOME_PRODUCT_ID/produced-at/update")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -137,7 +137,7 @@ public class UpdateProducedAtDateHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/produced-at/update")
+                .uri("/products/SOME_PRODUCT_ID/produced-at/update")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -168,7 +168,7 @@ public class UpdateProducedAtDateHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/produced-at/update")
+                .uri("/products/SOME_PRODUCT_ID/produced-at/update")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -188,7 +188,7 @@ public class UpdateProducedAtDateHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/produced-at/update")
+                .uri("/products/SOME_PRODUCT_ID/produced-at/update")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();

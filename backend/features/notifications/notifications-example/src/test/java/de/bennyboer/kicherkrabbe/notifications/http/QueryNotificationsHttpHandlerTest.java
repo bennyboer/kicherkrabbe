@@ -76,7 +76,7 @@ public class QueryNotificationsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/notifications")
+                .uri(builder -> builder.path("/notifications")
                         .queryParam("from", "2024-12-03T00:00:00.000Z")
                         .queryParam("to", "2024-12-04T00:00:00.000Z")
                         .queryParam("skip", "100")
@@ -143,7 +143,7 @@ public class QueryNotificationsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/notifications").build())
+                .uri(builder -> builder.path("/notifications").build())
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -177,7 +177,7 @@ public class QueryNotificationsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/notifications")
+                .uri(builder -> builder.path("/notifications")
                         .queryParam("skip", "-100")
                         .queryParam("limit", "-100")
                         .build())
@@ -197,7 +197,7 @@ public class QueryNotificationsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/notifications")
+                .uri("/notifications")
                 .exchange();
 
         // then: the response is unauthorized
@@ -208,7 +208,7 @@ public class QueryNotificationsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/notifications")
+                .uri("/notifications")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -236,7 +236,7 @@ public class QueryNotificationsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/notifications")
+                .uri("/notifications")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

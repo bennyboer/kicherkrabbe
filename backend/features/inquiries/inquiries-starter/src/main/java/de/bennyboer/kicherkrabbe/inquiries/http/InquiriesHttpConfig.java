@@ -35,7 +35,7 @@ public class InquiriesHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> inquiriesHttpRouting(InquiriesHttpHandler handler) {
         return nest(
-                path("/api/inquiries"),
+                path("/inquiries"),
                 route(POST("/send"), handler::sendInquiry)
                         .andRoute(GET("/status"), handler::getStatus)
                         .andRoute(GET("/statistics"), handler::getStatistics)
@@ -52,8 +52,8 @@ public class InquiriesHttpConfig {
     @Bean
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> inquiriesAuthorizeExchangeSpecCustomizer() {
         return exchanges -> exchanges
-                .pathMatchers(POST, "/api/inquiries/send").permitAll()
-                .pathMatchers(GET, "/api/inquiries/status").permitAll();
+                .pathMatchers(POST, "/inquiries/send").permitAll()
+                .pathMatchers(GET, "/inquiries/status").permitAll();
     }
 
 }

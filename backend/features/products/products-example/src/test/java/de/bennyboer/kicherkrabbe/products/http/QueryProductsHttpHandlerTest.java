@@ -91,7 +91,7 @@ public class QueryProductsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/products")
+                .uri(builder -> builder.path("/products")
                         .queryParam("searchTerm", "Search term")
                         .queryParam("from", "2024-12-01T00:00:00.000Z")
                         .queryParam("to", "2024-12-31T23:59:59.999Z")
@@ -184,7 +184,7 @@ public class QueryProductsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/products").build())
+                .uri(builder -> builder.path("/products").build())
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -221,7 +221,7 @@ public class QueryProductsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/products")
+                .uri(builder -> builder.path("/products")
                         .queryParam("skip", -100)
                         .queryParam("limit", -100)
                         .build())
@@ -241,7 +241,7 @@ public class QueryProductsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/products")
+                .uri("/products")
                 .exchange();
 
         // then: the response is unauthorized
@@ -252,7 +252,7 @@ public class QueryProductsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/products")
+                .uri("/products")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -282,7 +282,7 @@ public class QueryProductsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/products")
+                .uri("/products")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

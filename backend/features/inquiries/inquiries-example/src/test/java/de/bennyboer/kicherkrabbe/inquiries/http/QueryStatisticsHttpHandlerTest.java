@@ -58,7 +58,7 @@ public class QueryStatisticsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(uri -> uri.path("/api/inquiries/statistics")
+                .uri(uri -> uri.path("/inquiries/statistics")
                         .queryParam("from", from.toString())
                         .queryParam("to", to.toString())
                         .build())
@@ -118,7 +118,7 @@ public class QueryStatisticsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(uri -> uri.path("/api/inquiries/statistics").build())
+                .uri(uri -> uri.path("/inquiries/statistics").build())
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -137,7 +137,7 @@ public class QueryStatisticsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/inquiries/statistics")
+                .uri("/inquiries/statistics")
                 .exchange();
 
         // then: the response is unauthorized
@@ -148,7 +148,7 @@ public class QueryStatisticsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/inquiries/statistics")
+                .uri("/inquiries/statistics")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -199,7 +199,7 @@ public class QueryStatisticsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(uri -> uri.path("/api/inquiries/statistics")
+                .uri(uri -> uri.path("/inquiries/statistics")
                         .queryParam("from", from.toString())
                         .queryParam("to", to.toString())
                         .build())

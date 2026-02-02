@@ -27,7 +27,7 @@ public class QueryFabricTypesUsedInFabricsHttpHandlerTest extends HttpHandlerTes
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/fabrics/fabric-types/used")
+                .uri("/fabrics/fabric-types/used")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -57,7 +57,7 @@ public class QueryFabricTypesUsedInFabricsHttpHandlerTest extends HttpHandlerTes
 
         // when: posting the request without a token
         var exchange = client.get()
-                .uri("/api/fabrics/fabric-types/used")
+                .uri("/fabrics/fabric-types/used")
                 .exchange();
 
         // then: the response is successful
@@ -80,7 +80,7 @@ public class QueryFabricTypesUsedInFabricsHttpHandlerTest extends HttpHandlerTes
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.get()
-                .uri("/api/fabrics/fabric-types/used")
+                .uri("/fabrics/fabric-types/used")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 

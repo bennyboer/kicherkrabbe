@@ -40,7 +40,7 @@ public class MarkMailAsReadHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/mailbox/mails/{mailId}/read")
+                .uri(builder -> builder.path("/mailbox/mails/{mailId}/read")
                         .build("SOME_MAIL_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
@@ -75,7 +75,7 @@ public class MarkMailAsReadHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/mailbox/mails/{mailId}/read")
+                .uri(builder -> builder.path("/mailbox/mails/{mailId}/read")
                         .build("SOME_MAIL_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
@@ -92,7 +92,7 @@ public class MarkMailAsReadHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID/read")
+                .uri("/mailbox/mails/SOME_MAIL_ID/read")
                 .exchange();
 
         // then: the response is unauthorized
@@ -103,7 +103,7 @@ public class MarkMailAsReadHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID/read")
+                .uri("/mailbox/mails/SOME_MAIL_ID/read")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -134,7 +134,7 @@ public class MarkMailAsReadHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID/read")
+                .uri("/mailbox/mails/SOME_MAIL_ID/read")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -165,7 +165,7 @@ public class MarkMailAsReadHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID/read")
+                .uri("/mailbox/mails/SOME_MAIL_ID/read")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -185,7 +185,7 @@ public class MarkMailAsReadHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID/read")
+                .uri("/mailbox/mails/SOME_MAIL_ID/read")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();

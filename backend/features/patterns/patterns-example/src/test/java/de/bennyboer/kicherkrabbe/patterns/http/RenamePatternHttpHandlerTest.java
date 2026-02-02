@@ -36,7 +36,7 @@ public class RenamePatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/rename")
+                .uri("/patterns/PATTERN_ID/rename")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -58,7 +58,7 @@ public class RenamePatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/rename")
+                .uri("/patterns/PATTERN_ID/rename")
                 .bodyValue(request)
                 .exchange();
 
@@ -75,7 +75,7 @@ public class RenamePatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/rename")
+                .uri("/patterns/PATTERN_ID/rename")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
@@ -108,7 +108,7 @@ public class RenamePatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/rename")
+                .uri("/patterns/PATTERN_ID/rename")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -137,7 +137,7 @@ public class RenamePatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/rename")
+                .uri("/patterns/PATTERN_ID/rename")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();

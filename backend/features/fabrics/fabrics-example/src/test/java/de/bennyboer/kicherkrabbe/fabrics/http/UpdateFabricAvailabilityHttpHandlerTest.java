@@ -48,7 +48,7 @@ public class UpdateFabricAvailabilityHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/fabrics/FABRIC_ID/update/availability")
+                .uri("/fabrics/FABRIC_ID/update/availability")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -85,7 +85,7 @@ public class UpdateFabricAvailabilityHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/fabrics/FABRIC_ID/update/availability")
+                .uri("/fabrics/FABRIC_ID/update/availability")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -98,7 +98,7 @@ public class UpdateFabricAvailabilityHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/fabrics/FABRIC_ID/update/availability")
+                .uri("/fabrics/FABRIC_ID/update/availability")
                 .exchange();
 
         // then: the response is unauthorized
@@ -109,7 +109,7 @@ public class UpdateFabricAvailabilityHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/api/fabrics/FABRIC_ID/update/availability")
+                .uri("/fabrics/FABRIC_ID/update/availability")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -141,7 +141,7 @@ public class UpdateFabricAvailabilityHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/fabrics/FABRIC_ID/update/availability")
+                .uri("/fabrics/FABRIC_ID/update/availability")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -174,7 +174,7 @@ public class UpdateFabricAvailabilityHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/fabrics/FABRIC_ID/update/availability")
+                .uri("/fabrics/FABRIC_ID/update/availability")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
