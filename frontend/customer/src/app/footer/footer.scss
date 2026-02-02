@@ -44,43 +44,6 @@ footer {
 	}
 }
 
-.theme-toggle {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 8px;
-	border-radius: 50%;
-	cursor: pointer;
-	transition: background-color 0.2s ease;
-
-	&:hover {
-		background-color: var(--p-surface-200);
-	}
-
-	.sun-and-moon {
-		.sun {
-			fill: var(--p-surface-600);
-			transition: all 0.3s ease;
-		}
-
-		.sun-beams {
-			stroke: var(--p-surface-600);
-			stroke-linecap: round;
-			transition: all 0.3s ease;
-		}
-	}
-
-	&:hover .sun-and-moon {
-		.sun {
-			fill: var(--p-primary-500);
-		}
-
-		.sun-beams {
-			stroke: var(--p-primary-500);
-		}
-	}
-}
-
 @media (max-width: 600px) {
 	footer {
 		padding: 20px 16px;
