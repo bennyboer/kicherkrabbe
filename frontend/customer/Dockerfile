@@ -1,12 +1,10 @@
 FROM node:24-alpine
 
-RUN addgroup -g 1000 appgroup && adduser -u 1000 -G appgroup -D appuser
-
 WORKDIR /app
 
-COPY --chown=appuser:appgroup dist/customer ./dist/customer
+COPY --chown=node:node dist/customer ./dist/customer
 
-USER appuser
+USER node
 
 ENV PORT=4000
 

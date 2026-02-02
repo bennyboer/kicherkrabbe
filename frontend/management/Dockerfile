@@ -1,16 +1,14 @@
 FROM node:24-alpine
 
-RUN addgroup -g 1000 appgroup && adduser -u 1000 -G appgroup -D appuser
-
 WORKDIR /app
 
-COPY --chown=appuser:appgroup dist/management ./dist/management
-COPY --chown=appuser:appgroup server.mjs ./server.mjs
-COPY --chown=appuser:appgroup package.json ./package.json
+COPY --chown=node:node dist/management ./dist/management
+COPY --chown=node:node server.mjs ./server.mjs
+COPY --chown=node:node package.json ./package.json
 
-RUN npm install --omit=dev --ignore-scripts && chown -R appuser:appgroup node_modules
+RUN npm install --omit=dev --ignore-scripts && chown -R node:node node_modules
 
-USER appuser
+USER node
 
 ENV PORT=4200
 
