@@ -23,13 +23,14 @@ services:
           - node.role == manager
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
-        - "traefik.http.routers.dashboard.service=api@internal"
-        - "traefik.http.routers.dashboard.entrypoints=websecure"
-        - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
-        - "traefik.http.routers.dashboard.middlewares=dashboard-auth"
-        - "traefik.http.middlewares.dashboard-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
-        - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
+        - "traefik.http.middlewares.security-headers.headers.stsSeconds=31536000"
+        - "traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
+        - "traefik.http.middlewares.security-headers.headers.stsPreload=true"
+        - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+        - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
+        - "traefik.http.middlewares.security-headers.headers.browserXssFilter=true"
+        - "traefik.http.middlewares.security-headers.headers.referrerPolicy=strict-origin-when-cross-origin"
+        - "traefik.http.middlewares.security-headers.headers.permissionsPolicy=geolocation=(), microphone=(), camera=()"
 
   mongo:
     image: mongo:8.2
@@ -102,13 +103,6 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-kicherkrabbe}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
-    deploy:
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.${DOMAIN}`)"
-        - "traefik.http.routers.rabbitmq.entrypoints=websecure"
-        - "traefik.http.routers.rabbitmq.tls.certresolver=letsencrypt"
-        - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
 
   app:
     image: ${APP_IMAGE:-kicherkrabbe-server:latest}
@@ -133,6 +127,7 @@ services:
         - "traefik.http.routers.app.rule=Host(`api.${DOMAIN}`)"
         - "traefik.http.routers.app.entrypoints=websecure"
         - "traefik.http.routers.app.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.app.middlewares=security-headers@swarm"
         - "traefik.http.services.app.loadbalancer.server.port=8080"
       update_config:
         parallelism: 1
@@ -157,6 +152,7 @@ services:
         - "traefik.http.routers.customer.rule=Host(`customer.${DOMAIN}`)"
         - "traefik.http.routers.customer.entrypoints=websecure"
         - "traefik.http.routers.customer.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.customer.middlewares=security-headers@swarm"
         - "traefik.http.services.customer.loadbalancer.server.port=4000"
       update_config:
         parallelism: 1
@@ -178,11 +174,12 @@ services:
         - "traefik.http.routers.management.rule=Host(`${DOMAIN}`)"
         - "traefik.http.routers.management.entrypoints=websecure"
         - "traefik.http.routers.management.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.management.middlewares=security-headers@swarm"
         - "traefik.http.services.management.loadbalancer.server.port=4200"
         - "traefik.http.routers.management-www.rule=Host(`www.${DOMAIN}`)"
         - "traefik.http.routers.management-www.entrypoints=websecure"
         - "traefik.http.routers.management-www.tls.certresolver=letsencrypt"
-        - "traefik.http.routers.management-www.middlewares=www-redirect"
+        - "traefik.http.routers.management-www.middlewares=security-headers@swarm,www-redirect"
         - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://www\\.(.+)"
         - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://$${1}"
         - "traefik.http.middlewares.www-redirect.redirectregex.permanent=true"

@@ -14,3 +14,11 @@ server:
     min-response-size: 2048
   http2:
     enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
