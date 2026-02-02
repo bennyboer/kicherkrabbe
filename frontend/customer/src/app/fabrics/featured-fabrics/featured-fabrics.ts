@@ -1,18 +1,23 @@
 import { AsyncPipe } from "@angular/common";
 import { Component, inject, OnInit } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, map } from "rxjs";
 import { Carousel } from "primeng/carousel";
 import { SeedService } from "../../services/seed.service";
+import { ShowMoreCard } from "../../shared/show-more-card/show-more-card";
 import { Fabric } from "../fabric";
 import { FabricCard } from "../fabric-card/fabric-card";
 import { FabricsService } from "../fabrics.service";
+
+export type FabricCarouselItem =
+	| { type: "fabric"; fabric: Fabric }
+	| { type: "showMore" };
 
 @Component({
 	selector: "app-featured-fabrics",
 	templateUrl: "./featured-fabrics.html",
 	styleUrl: "./featured-fabrics.scss",
 	standalone: true,
-	imports: [AsyncPipe, FabricCard, Carousel],
+	imports: [AsyncPipe, FabricCard, ShowMoreCard, Carousel],
 })
 export class FeaturedFabrics implements OnInit {
 	private readonly seedService = inject(SeedService);
@@ -52,7 +57,14 @@ export class FeaturedFabrics implements OnInit {
 		});
 	}
 
-	getFabrics(): Observable<Fabric[]> {
-		return this.fabrics$.asObservable();
+	getItems(): Observable<FabricCarouselItem[]> {
+		return this.fabrics$.pipe(
+			map((fabrics) => [
+				...fabrics.map(
+					(fabric): FabricCarouselItem => ({ type: "fabric", fabric }),
+				),
+				{ type: "showMore" } as FabricCarouselItem,
+			]),
+		);
 	}
 }

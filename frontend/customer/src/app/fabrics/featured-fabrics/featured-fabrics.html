@@ -1,15 +1,22 @@
-@if (getFabrics() | async; as fabrics) {
-	@if (fabrics.length > 0) {
+@if (getItems() | async; as items) {
+	@if (items.length > 1) {
 		<p-carousel
-			[value]="fabrics"
+			[value]="items"
 			[numVisible]="4"
 			[numScroll]="1"
 			[circular]="false"
 			[responsiveOptions]="responsiveOptions"
 		>
-			<ng-template #item let-fabric>
+			<ng-template #item let-item>
 				<div class="carousel-item">
-					<app-fabric-card [fabric]="fabric"></app-fabric-card>
+					@if (item.type === "fabric") {
+						<app-fabric-card [fabric]="item.fabric"></app-fabric-card>
+					} @else {
+						<app-show-more-card
+							label="Weitere Stoffe..."
+							link="/fabrics"
+						></app-show-more-card>
+					}
 				</div>
 			</ng-template>
 		</p-carousel>
