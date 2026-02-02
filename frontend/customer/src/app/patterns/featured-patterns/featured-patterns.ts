@@ -1,7 +1,8 @@
 import { AsyncPipe } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { Carousel } from "primeng/carousel";
+import { SeedService } from "../../services/seed.service";
 import { Pattern } from "../pattern";
 import { PatternCard } from "../pattern-card/pattern-card";
 import { PatternsService } from "../patterns.service";
@@ -14,6 +15,7 @@ import { PatternsService } from "../patterns.service";
 	imports: [AsyncPipe, PatternCard, Carousel],
 })
 export class FeaturedPatterns implements OnInit {
+	private readonly seedService = inject(SeedService);
 	private readonly patterns$: BehaviorSubject<Pattern[]> = new BehaviorSubject<
 		Pattern[]
 	>([]);
@@ -44,7 +46,8 @@ export class FeaturedPatterns implements OnInit {
 	constructor(private readonly patternsService: PatternsService) {}
 
 	ngOnInit(): void {
-		this.patternsService.getFeaturedPatterns().subscribe((patterns) => {
+		const seed = this.seedService.getSeed();
+		this.patternsService.getFeaturedPatterns(seed).subscribe((patterns) => {
 			this.patterns$.next(patterns);
 		});
 	}

@@ -22,8 +22,11 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static java.util.stream.Collectors.toSet;
 import static org.springframework.http.HttpStatus.*;
@@ -157,9 +160,19 @@ public class PatternsHttpHandler {
     }
 
     public Mono<ServerResponse> getFeaturedPatterns(ServerRequest request) {
+        var seed = request.queryParam("seed").map(Long::parseLong);
+
         return toAgent(request)
                 .flatMapMany(module::getFeaturedPatterns)
                 .collectList()
+                .map(patterns -> {
+                    if (seed.isPresent()) {
+                        var shuffled = new ArrayList<>(patterns);
+                        Collections.shuffle(shuffled, new Random(seed.get()));
+                        return shuffled;
+                    }
+                    return patterns;
+                })
                 .map(patterns -> {
                     var response = new QueryFeaturedPatternsResponse();
                     response.patterns = toPublishedPatternDTOs(patterns);

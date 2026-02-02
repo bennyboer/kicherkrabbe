@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { map, Observable } from "rxjs";
 import { environment } from "../../environments";
+import { none, Option } from "../util/option";
 import { Pattern, PatternVariant, PricedSizeRange } from "./pattern";
 
 interface MoneyDTO {
@@ -38,16 +39,15 @@ interface QueryFeaturedPatternsResponse {
 export class PatternsService {
 	constructor(private readonly http: HttpClient) {}
 
-	getFeaturedPatterns(): Observable<Pattern[]> {
-		return this.http
-			.get<QueryFeaturedPatternsResponse>(
-				`${environment.apiUrl}/patterns/featured`
+	getFeaturedPatterns(seed: Option<number> = none()): Observable<Pattern[]> {
+		let url = `${environment.apiUrl}/patterns/featured`;
+		seed.ifSome((s) => (url += `?seed=${s}`));
+
+		return this.http.get<QueryFeaturedPatternsResponse>(url).pipe(
+			map((response) =>
+				response.patterns.map((pattern) => this.toInternalPattern(pattern))
 			)
-			.pipe(
-				map((response) =>
-					response.patterns.map((pattern) => this.toInternalPattern(pattern))
-				)
-			);
+		);
 	}
 
 	getImageUrl(imageId: string): string {

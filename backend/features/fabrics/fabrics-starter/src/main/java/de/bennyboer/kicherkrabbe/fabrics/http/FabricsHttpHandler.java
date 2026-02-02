@@ -24,7 +24,10 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -205,9 +208,19 @@ public class FabricsHttpHandler {
     }
 
     public Mono<ServerResponse> getFeaturedFabrics(ServerRequest request) {
+        var seed = request.queryParam("seed").map(Long::parseLong);
+
         return toAgent(request)
                 .flatMapMany(module::getFeaturedFabrics)
                 .collectList()
+                .map(fabrics -> {
+                    if (seed.isPresent()) {
+                        var shuffled = new ArrayList<>(fabrics);
+                        Collections.shuffle(shuffled, new Random(seed.get()));
+                        return shuffled;
+                    }
+                    return fabrics;
+                })
                 .map(fabrics -> {
                     var response = new QueryFeaturedFabricsResponse();
                     response.fabrics = toPublishedFabricDTOs(fabrics);
