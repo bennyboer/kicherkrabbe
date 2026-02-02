@@ -33,7 +33,7 @@ public class GetLoggedInUserDetailsHttpHandlerTest extends HttpHandlerTest {
 
         // when: "fetching the user details for the logged in user"
         var exchange = client.get()
-                .uri("/api/users/me")
+                .uri("/users/me")
                 .header("Authorization", "Bearer " + token)
                 .exchange();
 
@@ -54,7 +54,7 @@ public class GetLoggedInUserDetailsHttpHandlerTest extends HttpHandlerTest {
     void shouldFailToGetLoggedInUserDetailsWhenTokenIsInvalid() {
         // when: "fetching the user details for the logged in user without token"
         var exchange = client.get()
-                .uri("/api/users/me")
+                .uri("/users/me")
                 .exchange();
 
         // then: the response is unauthorized

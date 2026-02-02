@@ -27,27 +27,27 @@ public class NotificationsHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> notificationsHttpRouting(NotificationsHttpHandler handler) {
         return nest(
-                path("/api/notifications"),
+                path("/notifications"),
                 route(GET(""), handler::getNotifications)
                         .andNest(path("/settings"), buildSettingsRoutes(handler))
         );
     }
 
     private RouterFunction<ServerResponse> buildSettingsRoutes(NotificationsHttpHandler handler) {
-        // /api/notifications/settings
+        // /notifications/settings
         return route(GET(""), handler::getSettings)
                 .andNest(path("/system"), buildSystemSettingsRoutes(handler));
     }
 
     private RouterFunction<ServerResponse> buildSystemSettingsRoutes(NotificationsHttpHandler handler) {
-        // /api/notifications/settings/system
+        // /notifications/settings/system
         return route(POST("/enable"), handler::enableSystemNotifications)
                 .andRoute(POST("/disable"), handler::disableSystemNotifications)
                 .andNest(path("/channels"), buildSystemSettingsChannelsRoutes(handler));
     }
 
     private RouterFunction<ServerResponse> buildSystemSettingsChannelsRoutes(NotificationsHttpHandler handler) {
-        // /api/notifications/settings/system/channels
+        // /notifications/settings/system/channels
         return route(POST("/update"), handler::updateSystemNotificationChannel)
                 .andRoute(POST("/activate"), handler::activateSystemNotificationChannel)
                 .andRoute(POST("/deactivate"), handler::deactivateSystemNotificationChannel);

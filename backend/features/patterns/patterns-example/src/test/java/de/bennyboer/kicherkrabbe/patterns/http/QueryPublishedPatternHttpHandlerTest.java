@@ -54,7 +54,7 @@ public class QueryPublishedPatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/patterns/PATTERN_ID/published")
+                .uri("/patterns/PATTERN_ID/published")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -125,7 +125,7 @@ public class QueryPublishedPatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without a token
         var exchange = client.get()
-                .uri("/api/patterns/PATTERN_ID/published")
+                .uri("/patterns/PATTERN_ID/published")
                 .exchange();
 
         // then: the response is successful
@@ -163,7 +163,7 @@ public class QueryPublishedPatternHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.get()
-                .uri("/api/patterns/PATTERN_ID/published")
+                .uri("/patterns/PATTERN_ID/published")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -184,7 +184,7 @@ public class QueryPublishedPatternHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/patterns/PATTERN_ID/published")
+                .uri("/patterns/PATTERN_ID/published")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

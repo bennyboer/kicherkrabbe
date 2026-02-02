@@ -29,7 +29,7 @@ public class DeleteFabricTypeHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/fabric-types/FABRIC_TYPE_ID/?version=3")
+                .uri("/fabric-types/FABRIC_TYPE_ID/?version=3")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -47,7 +47,7 @@ public class DeleteFabricTypeHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.delete()
-                .uri("/api/fabric-types/FABRIC_TYPE_ID/?version=3")
+                .uri("/fabric-types/FABRIC_TYPE_ID/?version=3")
                 .exchange();
 
         // then: the response is unauthorized
@@ -58,7 +58,7 @@ public class DeleteFabricTypeHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.delete()
-                .uri("/api/fabric-types/FABRIC_TYPE_ID/?version=3")
+                .uri("/fabric-types/FABRIC_TYPE_ID/?version=3")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -84,7 +84,7 @@ public class DeleteFabricTypeHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/fabric-types/FABRIC_TYPE_ID/?version=3")
+                .uri("/fabric-types/FABRIC_TYPE_ID/?version=3")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

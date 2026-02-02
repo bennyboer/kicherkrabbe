@@ -24,7 +24,7 @@ public class DeleteAssetHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/assets/ASSET_ID/?version=42")
+                .uri("/assets/ASSET_ID/?version=42")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -36,7 +36,7 @@ public class DeleteAssetHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/assets/ASSET_ID/")
+                .uri("/assets/ASSET_ID/")
                 .exchange();
 
         // then: the response is unauthorized
@@ -47,7 +47,7 @@ public class DeleteAssetHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/assets/ASSET_ID/")
+                .uri("/assets/ASSET_ID/")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 

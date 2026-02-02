@@ -1,0 +1,44 @@
+<div class="content">
+  <div class="logo" (click)="incrementShowHiddenThingsCounter()">
+    @if (isDarkMode() | async) {
+      <img src="/assets/kicherkrabbe_outlines_white.svg" width="128" />
+    }
+    @if (isLightMode() | async) {
+      <img src="/assets/kicherkrabbe_outlines_black.svg" width="128" />
+    }
+  </div>
+
+  <div class="catalog">
+    <div class="navigation-title"><a routerLink="/catalog">Katalog</a></div>
+    <ul class="navigation">
+      <li><a routerLink="/catalog/patterns">Schnitte</a></li>
+      <li><a routerLink="/catalog/fabrics">Stoffe</a></li>
+    </ul>
+  </div>
+
+  <div class="legal">
+    <div class="navigation-title">Rechtliches</div>
+    <ul class="navigation">
+      <li><a routerLink="/legal/imprint">Impressum</a></li>
+      <li><a routerLink="/legal/terms-and-conditions">AGB</a></li>
+      <li><a routerLink="/legal/privacy-policy">Datenschutzerklärung</a></li>
+      <li><a routerLink="/legal/cancellation-policy">Widerrufsbelehrung</a></li>
+    </ul>
+  </div>
+
+  <div class="other">
+    <div class="navigation-title">Sonstiges</div>
+    <ul class="navigation">
+      <li><a routerLink="/contact">Kontakt</a></li>
+    </ul>
+  </div>
+
+  @if (showHiddenThings$ | async) {
+    <div class="admin">
+      <div class="navigation-title">Verwaltung</div>
+      <ul class="navigation">
+        <li><a routerLink="/admin">Zur Verwaltung</a></li>
+      </ul>
+    </div>
+  }
+</div>

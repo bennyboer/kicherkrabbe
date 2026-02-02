@@ -69,7 +69,7 @@ public class CreateProductHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/products/create").build())
+                .uri(builder -> builder.path("/products/create").build())
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -87,7 +87,7 @@ public class CreateProductHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/create")
+                .uri("/products/create")
                 .exchange();
 
         // then: the response is unauthorized
@@ -98,7 +98,7 @@ public class CreateProductHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/create")
+                .uri("/products/create")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -156,7 +156,7 @@ public class CreateProductHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/create")
+                .uri("/products/create")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();

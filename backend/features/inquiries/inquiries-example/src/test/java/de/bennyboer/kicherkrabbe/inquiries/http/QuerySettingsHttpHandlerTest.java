@@ -40,7 +40,7 @@ public class QuerySettingsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/inquiries/settings")
+                .uri("/inquiries/settings")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -62,7 +62,7 @@ public class QuerySettingsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/inquiries/settings")
+                .uri("/inquiries/settings")
                 .exchange();
 
         // then: the response is unauthorized
@@ -73,7 +73,7 @@ public class QuerySettingsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/inquiries/settings")
+                .uri("/inquiries/settings")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -96,7 +96,7 @@ public class QuerySettingsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/inquiries/settings")
+                .uri("/inquiries/settings")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

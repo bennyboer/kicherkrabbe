@@ -45,7 +45,7 @@ public class UpdateNotesHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/products/{productId}/notes/update")
+                .uri(builder -> builder.path("/products/{productId}/notes/update")
                         .build("SOME_PRODUCT_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
@@ -84,7 +84,7 @@ public class UpdateNotesHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/products/{productId}/notes/update")
+                .uri(builder -> builder.path("/products/{productId}/notes/update")
                         .build("SOME_PRODUCT_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
@@ -101,7 +101,7 @@ public class UpdateNotesHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/notes/update")
+                .uri("/products/SOME_PRODUCT_ID/notes/update")
                 .exchange();
 
         // then: the response is unauthorized
@@ -112,7 +112,7 @@ public class UpdateNotesHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/notes/update")
+                .uri("/products/SOME_PRODUCT_ID/notes/update")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -147,7 +147,7 @@ public class UpdateNotesHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/notes/update")
+                .uri("/products/SOME_PRODUCT_ID/notes/update")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -182,7 +182,7 @@ public class UpdateNotesHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/notes/update")
+                .uri("/products/SOME_PRODUCT_ID/notes/update")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -206,7 +206,7 @@ public class UpdateNotesHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/products/SOME_PRODUCT_ID/notes/update")
+                .uri("/products/SOME_PRODUCT_ID/notes/update")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();

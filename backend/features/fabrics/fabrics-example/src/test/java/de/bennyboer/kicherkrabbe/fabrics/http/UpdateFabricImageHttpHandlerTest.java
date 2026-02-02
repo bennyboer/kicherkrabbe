@@ -36,7 +36,7 @@ public class UpdateFabricImageHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/fabrics/FABRIC_ID/update/image")
+                .uri("/fabrics/FABRIC_ID/update/image")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -73,7 +73,7 @@ public class UpdateFabricImageHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/fabrics/FABRIC_ID/update/image")
+                .uri("/fabrics/FABRIC_ID/update/image")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -86,7 +86,7 @@ public class UpdateFabricImageHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/fabrics/FABRIC_ID/update/image")
+                .uri("/fabrics/FABRIC_ID/update/image")
                 .exchange();
 
         // then: the response is unauthorized
@@ -97,7 +97,7 @@ public class UpdateFabricImageHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/api/fabrics/FABRIC_ID/update/image")
+                .uri("/fabrics/FABRIC_ID/update/image")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -125,7 +125,7 @@ public class UpdateFabricImageHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/fabrics/FABRIC_ID/update/image")
+                .uri("/fabrics/FABRIC_ID/update/image")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();

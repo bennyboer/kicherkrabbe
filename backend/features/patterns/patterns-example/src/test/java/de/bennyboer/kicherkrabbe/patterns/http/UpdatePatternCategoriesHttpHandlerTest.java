@@ -40,7 +40,7 @@ public class UpdatePatternCategoriesHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/categories")
+                .uri("/patterns/PATTERN_ID/update/categories")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -77,7 +77,7 @@ public class UpdatePatternCategoriesHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/categories")
+                .uri("/patterns/PATTERN_ID/update/categories")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -90,7 +90,7 @@ public class UpdatePatternCategoriesHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/categories")
+                .uri("/patterns/PATTERN_ID/update/categories")
                 .exchange();
 
         // then: the response is unauthorized
@@ -101,7 +101,7 @@ public class UpdatePatternCategoriesHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/categories")
+                .uri("/patterns/PATTERN_ID/update/categories")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -129,7 +129,7 @@ public class UpdatePatternCategoriesHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/categories")
+                .uri("/patterns/PATTERN_ID/update/categories")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -158,7 +158,7 @@ public class UpdatePatternCategoriesHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/patterns/PATTERN_ID/update/categories")
+                .uri("/patterns/PATTERN_ID/update/categories")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();

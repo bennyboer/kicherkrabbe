@@ -41,7 +41,7 @@ public class MarkMailAsUnreadHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/mailbox/mails/{mailId}/unread")
+                .uri(builder -> builder.path("/mailbox/mails/{mailId}/unread")
                         .build("SOME_MAIL_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
@@ -76,7 +76,7 @@ public class MarkMailAsUnreadHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/mailbox/mails/{mailId}/unread")
+                .uri(builder -> builder.path("/mailbox/mails/{mailId}/unread")
                         .build("SOME_MAIL_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
@@ -93,7 +93,7 @@ public class MarkMailAsUnreadHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID/unread")
+                .uri("/mailbox/mails/SOME_MAIL_ID/unread")
                 .exchange();
 
         // then: the response is unauthorized
@@ -104,7 +104,7 @@ public class MarkMailAsUnreadHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID/unread")
+                .uri("/mailbox/mails/SOME_MAIL_ID/unread")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -135,7 +135,7 @@ public class MarkMailAsUnreadHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID/unread")
+                .uri("/mailbox/mails/SOME_MAIL_ID/unread")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -166,7 +166,7 @@ public class MarkMailAsUnreadHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID/unread")
+                .uri("/mailbox/mails/SOME_MAIL_ID/unread")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -186,7 +186,7 @@ public class MarkMailAsUnreadHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID/unread")
+                .uri("/mailbox/mails/SOME_MAIL_ID/unread")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();

@@ -27,7 +27,7 @@ public class QueryColorsUsedInFabricsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/fabrics/colors/used")
+                .uri("/fabrics/colors/used")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -63,7 +63,7 @@ public class QueryColorsUsedInFabricsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without a token
         var exchange = client.get()
-                .uri("/api/fabrics/colors/used")
+                .uri("/fabrics/colors/used")
                 .exchange();
 
         // then: the response is successful
@@ -92,7 +92,7 @@ public class QueryColorsUsedInFabricsHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.get()
-                .uri("/api/fabrics/colors/used")
+                .uri("/fabrics/colors/used")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 

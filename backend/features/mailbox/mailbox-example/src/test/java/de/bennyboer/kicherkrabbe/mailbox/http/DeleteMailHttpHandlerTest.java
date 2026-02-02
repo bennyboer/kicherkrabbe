@@ -35,7 +35,7 @@ public class DeleteMailHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri(builder -> builder.path("/api/mailbox/mails/{mailId}")
+                .uri(builder -> builder.path("/mailbox/mails/{mailId}")
                         .queryParam("version", 2L)
                         .build("SOME_MAIL_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
@@ -66,7 +66,7 @@ public class DeleteMailHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri(builder -> builder.path("/api/mailbox/mails/{mailId}")
+                .uri(builder -> builder.path("/mailbox/mails/{mailId}")
                         .queryParam("version", 2L)
                         .build("SOME_MAIL_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
@@ -83,7 +83,7 @@ public class DeleteMailHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID?version=2")
+                .uri("/mailbox/mails/SOME_MAIL_ID?version=2")
                 .exchange();
 
         // then: the response is unauthorized
@@ -94,7 +94,7 @@ public class DeleteMailHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID?version=2")
+                .uri("/mailbox/mails/SOME_MAIL_ID?version=2")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -121,7 +121,7 @@ public class DeleteMailHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID?version=2")
+                .uri("/mailbox/mails/SOME_MAIL_ID?version=2")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -147,7 +147,7 @@ public class DeleteMailHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID?version=2")
+                .uri("/mailbox/mails/SOME_MAIL_ID?version=2")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -162,7 +162,7 @@ public class DeleteMailHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.delete()
-                .uri("/api/mailbox/mails/SOME_MAIL_ID")
+                .uri("/mailbox/mails/SOME_MAIL_ID")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

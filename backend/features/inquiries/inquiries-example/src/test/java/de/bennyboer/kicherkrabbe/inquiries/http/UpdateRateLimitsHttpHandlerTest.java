@@ -42,7 +42,7 @@ public class UpdateRateLimitsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/inquiries/settings/rate-limits")
+                .uri("/inquiries/settings/rate-limits")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -58,7 +58,7 @@ public class UpdateRateLimitsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/inquiries/settings/rate-limits")
+                .uri("/inquiries/settings/rate-limits")
                 .exchange();
 
         // then: the response is unauthorized
@@ -69,7 +69,7 @@ public class UpdateRateLimitsHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/inquiries/settings/rate-limits")
+                .uri("/inquiries/settings/rate-limits")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -106,7 +106,7 @@ public class UpdateRateLimitsHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/inquiries/settings/rate-limits")
+                .uri("/inquiries/settings/rate-limits")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();

@@ -1,0 +1,17 @@
+@if (getPatterns() | async; as patterns) {
+	@if (patterns.length > 0) {
+		<p-carousel
+			[value]="patterns"
+			[numVisible]="4"
+			[numScroll]="1"
+			[circular]="false"
+			[responsiveOptions]="responsiveOptions"
+		>
+			<ng-template #item let-pattern>
+				<div class="carousel-item">
+					<app-pattern-card [pattern]="pattern"></app-pattern-card>
+				</div>
+			</ng-template>
+		</p-carousel>
+	}
+}

@@ -41,7 +41,7 @@ public class UpdateRateLimitHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/mailing/settings/rate-limit/update").build())
+                .uri(builder -> builder.path("/mailing/settings/rate-limit/update").build())
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -58,7 +58,7 @@ public class UpdateRateLimitHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailing/settings/rate-limit/update")
+                .uri("/mailing/settings/rate-limit/update")
                 .exchange();
 
         // then: the response is unauthorized
@@ -69,7 +69,7 @@ public class UpdateRateLimitHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailing/settings/rate-limit/update")
+                .uri("/mailing/settings/rate-limit/update")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -100,7 +100,7 @@ public class UpdateRateLimitHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailing/settings/rate-limit/update")
+                .uri("/mailing/settings/rate-limit/update")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -132,7 +132,7 @@ public class UpdateRateLimitHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailing/settings/rate-limit/update")
+                .uri("/mailing/settings/rate-limit/update")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();

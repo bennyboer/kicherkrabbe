@@ -27,7 +27,7 @@ public class QueryAvailableCategoriesForPatternsHttpHandlerTest extends HttpHand
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/patterns/categories")
+                .uri("/patterns/categories")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -51,7 +51,7 @@ public class QueryAvailableCategoriesForPatternsHttpHandlerTest extends HttpHand
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.get()
-                .uri("/api/patterns/categories")
+                .uri("/patterns/categories")
                 .exchange();
 
         // then: the response is unauthorized
@@ -62,7 +62,7 @@ public class QueryAvailableCategoriesForPatternsHttpHandlerTest extends HttpHand
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.get()
-                .uri("/api/patterns/categories")
+                .uri("/patterns/categories")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 

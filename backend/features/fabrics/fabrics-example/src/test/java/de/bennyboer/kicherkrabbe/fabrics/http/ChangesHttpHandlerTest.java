@@ -32,7 +32,7 @@ public class ChangesHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/fabrics/changes")
+                .uri("/fabrics/changes")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -53,7 +53,7 @@ public class ChangesHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.get()
-                .uri("/api/fabrics/changes")
+                .uri("/fabrics/changes")
                 .exchange();
 
         // then: the response is unauthorized
@@ -64,7 +64,7 @@ public class ChangesHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.get()
-                .uri("/api/fabrics/changes")
+                .uri("/fabrics/changes")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 

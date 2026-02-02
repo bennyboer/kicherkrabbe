@@ -68,7 +68,7 @@ public class QueryProductHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/products/{productId}").build("SOME_PRODUCT_ID"))
+                .uri(builder -> builder.path("/products/{productId}").build("SOME_PRODUCT_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -93,7 +93,7 @@ public class QueryProductHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri(builder -> builder.path("/api/products/{productId}").build("SOME_PRODUCT_ID"))
+                .uri(builder -> builder.path("/products/{productId}").build("SOME_PRODUCT_ID"))
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -108,7 +108,7 @@ public class QueryProductHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/products/SOME_PRODUCT_ID")
+                .uri("/products/SOME_PRODUCT_ID")
                 .exchange();
 
         // then: the response is unauthorized
@@ -119,7 +119,7 @@ public class QueryProductHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/products/SOME_PRODUCT_ID")
+                .uri("/products/SOME_PRODUCT_ID")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -145,7 +145,7 @@ public class QueryProductHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.get()
-                .uri("/api/products/SOME_PRODUCT_ID")
+                .uri("/products/SOME_PRODUCT_ID")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 

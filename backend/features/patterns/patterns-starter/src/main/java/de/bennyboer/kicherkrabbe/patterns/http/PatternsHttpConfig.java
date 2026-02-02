@@ -32,7 +32,7 @@ public class PatternsHttpConfig {
     @Bean
     public RouterFunction<ServerResponse> patternsHttpRouting(PatternsHttpHandler handler) {
         return nest(
-                path("/api/patterns"),
+                path("/patterns"),
                 route(POST(""), handler::getPatterns)
                         .andRoute(GET("/changes"), handler::getChanges)
                         .andRoute(POST("/published"), handler::getPublishedPatterns)
@@ -63,10 +63,10 @@ public class PatternsHttpConfig {
 
     @Bean
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> patternsAuthorizeExchangeSpecCustomizer() {
-        return exchanges -> exchanges.pathMatchers(POST, "/api/patterns/published").permitAll()
-                .pathMatchers(GET, "/api/patterns/featured").permitAll()
-                .pathMatchers(GET, "/api/patterns/{patternId}/published").permitAll()
-                .pathMatchers(GET, "/api/patterns/categories/used").permitAll();
+        return exchanges -> exchanges.pathMatchers(POST, "/patterns/published").permitAll()
+                .pathMatchers(GET, "/patterns/featured").permitAll()
+                .pathMatchers(GET, "/patterns/{patternId}/published").permitAll()
+                .pathMatchers(GET, "/patterns/categories/used").permitAll();
     }
 
 }

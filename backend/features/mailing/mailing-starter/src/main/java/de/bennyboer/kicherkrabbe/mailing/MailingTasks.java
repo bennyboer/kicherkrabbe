@@ -26,7 +26,6 @@ public class MailingTasks {
         module.cleanupOldMails(Agent.system())
                 .count()
                 .doOnNext(count -> {
-                    System.out.println("Count: " + count);
                     if (count > 0) {
                         log.info("Cleaned up {} old mails", count);
                     }

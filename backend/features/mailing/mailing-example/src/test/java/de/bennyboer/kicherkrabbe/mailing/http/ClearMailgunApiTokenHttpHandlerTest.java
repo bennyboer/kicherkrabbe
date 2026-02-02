@@ -39,7 +39,7 @@ public class ClearMailgunApiTokenHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri(builder -> builder.path("/api/mailing/settings/mailgun/api-token/clear").build())
+                .uri(builder -> builder.path("/mailing/settings/mailgun/api-token/clear").build())
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -56,7 +56,7 @@ public class ClearMailgunApiTokenHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForAnonymousAccess() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailing/settings/mailgun/api-token/clear")
+                .uri("/mailing/settings/mailgun/api-token/clear")
                 .exchange();
 
         // then: the response is unauthorized
@@ -67,7 +67,7 @@ public class ClearMailgunApiTokenHttpHandlerTest extends HttpHandlerTest {
     void shouldRespondWithUnauthorizedForInvalidToken() {
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailing/settings/mailgun/api-token/clear")
+                .uri("/mailing/settings/mailgun/api-token/clear")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -96,7 +96,7 @@ public class ClearMailgunApiTokenHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailing/settings/mailgun/api-token/clear")
+                .uri("/mailing/settings/mailgun/api-token/clear")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();
@@ -126,7 +126,7 @@ public class ClearMailgunApiTokenHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/mailing/settings/mailgun/api-token/clear")
+                .uri("/mailing/settings/mailgun/api-token/clear")
                 .headers(headers -> headers.setBearerAuth(token))
                 .bodyValue(request)
                 .exchange();

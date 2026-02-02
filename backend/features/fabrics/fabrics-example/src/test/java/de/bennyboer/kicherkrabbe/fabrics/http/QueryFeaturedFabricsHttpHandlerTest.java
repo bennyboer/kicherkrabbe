@@ -21,7 +21,7 @@ public class QueryFeaturedFabricsHttpHandlerTest extends HttpHandlerTest {
         ));
 
         var exchange = client.get()
-                .uri("/api/fabrics/featured")
+                .uri("/fabrics/featured")
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
 
@@ -38,7 +38,7 @@ public class QueryFeaturedFabricsHttpHandlerTest extends HttpHandlerTest {
         ));
 
         var exchange = client.get()
-                .uri("/api/fabrics/featured")
+                .uri("/fabrics/featured")
                 .exchange();
 
         exchange.expectStatus().isOk();
@@ -50,7 +50,7 @@ public class QueryFeaturedFabricsHttpHandlerTest extends HttpHandlerTest {
     @Test
     void shouldNotAllowAccessWithInvalidToken() {
         var exchange = client.get()
-                .uri("/api/fabrics/featured")
+                .uri("/fabrics/featured")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 

@@ -37,7 +37,7 @@ public class UploadAssetHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/assets/upload")
+                .uri("/assets/upload")
                 .body(BodyInserters.fromMultipartData(multipartBodyBuilder.build()))
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -61,7 +61,7 @@ public class UploadAssetHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/api/assets/upload")
+                .uri("/assets/upload")
                 .body(BodyInserters.fromMultipartData(multipartBodyBuilder.build()))
                 .exchange();
 
@@ -78,7 +78,7 @@ public class UploadAssetHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/api/assets/upload")
+                .uri("/assets/upload")
                 .body(BodyInserters.fromMultipartData(multipartBodyBuilder.build()))
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
@@ -98,7 +98,7 @@ public class UploadAssetHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/assets/upload")
+                .uri("/assets/upload")
                 .body(BodyInserters.fromMultipartData(multipartBodyBuilder.build()))
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -127,7 +127,7 @@ public class UploadAssetHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/api/assets/upload")
+                .uri("/assets/upload")
                 .body(BodyInserters.fromMultipartData(multipartBodyBuilder.build()))
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
