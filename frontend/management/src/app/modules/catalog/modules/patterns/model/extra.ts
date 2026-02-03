@@ -1,5 +1,5 @@
 import { Money, validateProps } from '../../../../../util';
-import { someOrNone } from '../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 export class PatternExtra {
   readonly name: string;

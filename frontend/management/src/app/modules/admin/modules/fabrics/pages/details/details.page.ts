@@ -5,7 +5,7 @@ import { FabricsService } from '../../services';
 import { Chip, ColorBadgeColor, NotificationService } from '../../../../../shared';
 import { Fabric, FabricColor, FabricTopic, FabricType, FabricTypeAvailability } from '../../model';
 import { environment } from '../../../../../../../environments';
-import { none, Option, some, someOrNone } from '../../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-fabric-details-page',

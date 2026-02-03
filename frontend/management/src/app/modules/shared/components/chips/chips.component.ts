@@ -18,7 +18,7 @@ import { BehaviorSubject, combineLatest, map, Observable, Subject, takeUntil } f
 import { Point } from '../../../../util';
 import { NotificationService, OverlayRef, OverlayService } from '../../services';
 import { ButtonSize as ButtonSize } from '../button/button.component';
-import { none, Option, some, someOrNone } from '../../modules/option';
+import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 
 export class Chip {
   readonly id: string;

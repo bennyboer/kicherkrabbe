@@ -1,0 +1,9 @@
+{
+  "name": "kicherkrabbe-frontend",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "customer",
+    "management"
+  ]
+}

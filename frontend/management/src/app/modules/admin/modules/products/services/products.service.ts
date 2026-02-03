@@ -74,7 +74,7 @@ import {
   YAK,
 } from '../model';
 import { environment } from '../../../../../../environments';
-import { someOrNone } from '../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 interface CreateProductRequest {
   images: string[];

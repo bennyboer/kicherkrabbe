@@ -30,7 +30,7 @@ import { Eq } from '../../../../../../util';
 import { environment } from '../../../../../../../environments';
 import Quill, { Delta } from 'quill/core';
 import { ContentChange } from 'ngx-quill';
-import { none, Option, someOrNone } from '../../../../../shared/modules/option';
+import { none, Option, someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-pattern-page',

@@ -1,6 +1,6 @@
 import { isPlatformBrowser } from "@angular/common";
 import { Injectable, PLATFORM_ID, inject } from "@angular/core";
-import { Option, none, some } from "../util/option";
+import { Option, none, some } from "@kicherkrabbe/shared";
 
 @Injectable({ providedIn: "root" })
 export class SeedService {

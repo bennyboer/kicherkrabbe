@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, TemplateRef } from '@angular/core';
-import { none, Option, someOrNone } from '../../modules/option';
+import { none, Option, someOrNone } from '@kicherkrabbe/shared';
 
 export class CardListItem {
   readonly title: string;

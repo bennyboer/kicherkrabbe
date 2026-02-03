@@ -16,9 +16,7 @@
     "experimentalDecorators": true,
     "moduleResolution": "bundler",
     "paths": {
-      "sew-ui": [
-        "./projects/sew-ui/src/public-api"
-      ]
+      "@kicherkrabbe/shared": ["../packages/shared/src/index.ts"]
     },
     "importHelpers": true,
     "target": "ES2022",

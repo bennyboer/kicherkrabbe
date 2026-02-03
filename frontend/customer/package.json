@@ -23,6 +23,7 @@
   },
   "private": true,
   "dependencies": {
+    "@kicherkrabbe/shared": "1.0.0",
     "@angular/animations": "^21.1.2",
     "@angular/common": "^21.1.2",
     "@angular/compiler": "^21.1.2",

@@ -7,7 +7,7 @@ import {
   OnDestroy,
   ViewChild,
 } from '@angular/core';
-import { none, Option, some, someOrNone } from '../../../option';
+import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 import { BehaviorSubject, combineLatest, map, Subject, takeUntil } from 'rxjs';
 import { Theme, ThemeService } from '../../../../../../services';
 

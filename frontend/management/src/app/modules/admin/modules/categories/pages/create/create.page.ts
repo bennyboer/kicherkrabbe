@@ -17,7 +17,7 @@ import {
 import { CategoryGroup, CategoryGroupType, GROUPS, NONE } from '../../model';
 import { DropdownComponent, DropdownItem, DropdownItemId, NotificationService } from '../../../../../shared';
 import { ActivatedRoute, Router } from '@angular/router';
-import { someOrNone } from '../../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-create-page',

@@ -1,5 +1,5 @@
 import { validateProps } from '../../../util';
-import { someOrNone } from '../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 export class InquiriesStatus {
   readonly enabled: boolean;

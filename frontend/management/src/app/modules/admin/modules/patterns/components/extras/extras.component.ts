@@ -4,7 +4,7 @@ import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
 import { PatternExtra } from '../../model';
 import { Money, validateProps } from '../../../../../../util';
 import currency from 'currency.js';
-import { someOrNone } from '../../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 class EditablePatternExtra {
   readonly id: string;

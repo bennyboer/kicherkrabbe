@@ -3,7 +3,7 @@ import { BehaviorSubject, fromEvent, map, startWith, Subject, takeUntil } from '
 import { PatternVariant, PricedSizeRange } from '../../model';
 import { validateProps } from '../../../../../../util';
 import { ButtonSize } from '../../../../../shared';
-import { someOrNone } from '../../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 class EditablePatternVariant {
   readonly variant: PatternVariant;

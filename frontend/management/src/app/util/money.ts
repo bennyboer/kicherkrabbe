@@ -1,6 +1,6 @@
 import { Currency } from './currency';
 import { Eq } from './equals';
-import { someOrNone } from '../modules/shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 export class Money implements Eq<Money> {
   readonly value: number;

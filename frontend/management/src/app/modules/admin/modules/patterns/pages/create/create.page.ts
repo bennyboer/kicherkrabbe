@@ -7,7 +7,7 @@ import { PatternCategoriesService, PatternsService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ContentChange } from 'ngx-quill';
 import { Delta } from 'quill/core';
-import { someOrNone } from '../../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-create-pattern-page',

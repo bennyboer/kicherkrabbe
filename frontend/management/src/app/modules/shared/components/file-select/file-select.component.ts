@@ -10,7 +10,7 @@ import {
   Renderer2,
 } from '@angular/core';
 import { BehaviorSubject, fromEvent, map, Observable, race, Subject, take, takeUntil } from 'rxjs';
-import { none, Option, someOrNone } from '../../modules/option';
+import { none, Option, someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-file-select',

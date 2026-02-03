@@ -22,7 +22,7 @@ import {
   takeUntil,
 } from 'rxjs';
 import { Eq } from '../../../../util';
-import { Option, someOrNone } from '../../modules/option';
+import { Option, someOrNone } from '@kicherkrabbe/shared';
 
 export type FilterId = string;
 export type FilterItemId = string;

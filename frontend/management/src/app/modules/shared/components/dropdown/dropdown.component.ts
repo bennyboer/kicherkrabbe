@@ -18,7 +18,7 @@ import { BehaviorSubject, combineLatest, filter, map, Observable, of, Subject, s
 import { Point, Rect, Size } from '../../../../util';
 import { OverlayRef, OverlayService } from '../../services';
 import { ButtonSize as ButtonSize } from '../button/button.component';
-import { none, Option, some, someOrNone } from '../../modules/option';
+import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 
 export type DropdownItemId = string;
 

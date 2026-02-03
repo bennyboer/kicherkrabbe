@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { INQUIRY, Mail, Origin, OriginType, Sender, Status, StatusType } from '../model';
 import { map, Observable } from 'rxjs';
-import { someOrNone } from '../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 import { environment } from '../../../../../../environments';
 
 interface QueryMailsResponse {

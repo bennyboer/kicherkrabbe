@@ -16,7 +16,7 @@ import {
 import { PatternCategoriesService, PatternsService } from '../../services';
 import { DropdownComponent, DropdownItem, DropdownItemId, NotificationService } from '../../../../../shared';
 import { Pattern, PatternCategory } from '../../model';
-import { someOrNone } from '../../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-patterns-page',

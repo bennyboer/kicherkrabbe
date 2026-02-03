@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable, Subject, takeUntil } from 'rxjs';
 import { AdminAuthService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { someOrNone } from '../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-login-page',

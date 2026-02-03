@@ -1,6 +1,6 @@
 import { RateLimits } from './rate-limits';
 import { validateProps } from '../../../../../util';
-import { someOrNone } from '../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 export class Settings {
   readonly enabled: boolean;

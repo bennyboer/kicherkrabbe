@@ -1,6 +1,6 @@
 import { Image } from '../../../../../util';
 import { Availability } from './availability';
-import { someOrNone } from '../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 type ColorId = string;
 type ThemeId = string;

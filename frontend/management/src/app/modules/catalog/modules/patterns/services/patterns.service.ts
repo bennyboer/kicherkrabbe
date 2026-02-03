@@ -4,7 +4,7 @@ import { map, Observable } from 'rxjs';
 import { Pattern, PatternAttribution, PatternExtra, PatternVariant, PricedSizeRange } from '../model';
 import { Currency, Money } from '../../../../../util';
 import { environment } from '../../../../../../environments';
-import { someOrNone } from '../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 interface PatternsSortDTO {
   property: PatternsSortPropertyDTO;

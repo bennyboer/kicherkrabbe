@@ -13,7 +13,7 @@ import {
   takeUntil,
 } from 'rxjs';
 import { Link } from '../../model';
-import { Option, someOrNone } from '../../../../../shared/modules/option';
+import { Option, someOrNone } from '@kicherkrabbe/shared';
 import { NotificationService } from '../../../../../shared';
 import { validateProps } from '../../../../../../util';
 

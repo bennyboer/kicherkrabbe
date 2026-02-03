@@ -11,6 +11,7 @@
   },
   "private": true,
   "dependencies": {
+    "@kicherkrabbe/shared": "1.0.0",
     "@angular/animations": "^21.1.2",
     "express": "^5.1.0",
     "@angular/cdk": "^19.0.4",

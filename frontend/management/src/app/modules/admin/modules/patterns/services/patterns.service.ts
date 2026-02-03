@@ -14,7 +14,7 @@ import {
   PatternVariant,
   PricedSizeRange,
 } from '../model';
-import { none, Option, some, someOrNone } from '../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 
 interface PatternDTO {
   id: string;

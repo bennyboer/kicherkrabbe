@@ -1,4 +1,4 @@
-import { Option } from '../../../../shared/modules/option';
+import { Option } from '@kicherkrabbe/shared';
 import { Telegram } from './telegram';
 import { ChannelType, EMAIL, TELEGRAM } from './channel-type';
 import { validateProps } from '../../../../../util';

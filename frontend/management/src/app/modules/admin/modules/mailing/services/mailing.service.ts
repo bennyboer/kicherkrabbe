@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../../../../../environments';
 import { Mail, MailgunSettings, RateLimitSettings, Settings } from '../model';
-import { someOrNone } from '../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 interface UpdateMailgunApiTokenRequest {
   version: number;
