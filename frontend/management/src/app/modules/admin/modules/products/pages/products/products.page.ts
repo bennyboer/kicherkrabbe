@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, debounceTime, finalize, first, map, Subject, takeUntil } from 'rxjs';
 import { Product } from '../../model';
-import { none, Option, someOrNone } from '../../../../../shared/modules/option';
+import { none, Option, someOrNone } from '@kicherkrabbe/shared';
 import { ProductsService } from '../../services';
 import { NotificationService } from '../../../../../shared';
 import { environment } from '../../../../../../../environments';

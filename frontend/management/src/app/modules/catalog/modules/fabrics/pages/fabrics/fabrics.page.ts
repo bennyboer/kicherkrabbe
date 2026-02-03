@@ -14,7 +14,7 @@ import {
 import { CardListItem, Filter, FilterSelectionMode, SortingOption } from '../../../../../shared';
 import { Color, Fabric, Theme } from '../../model';
 import { RemoteFabricsService } from '../../services';
-import { none, Option, some } from '../../../../../shared/modules/option';
+import { none, Option, some } from '@kicherkrabbe/shared';
 
 interface Sorting {
   property: string;

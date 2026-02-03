@@ -13,7 +13,7 @@ import { Chip, ColorBadgeColor, NotificationService } from '../../../../../share
 import { ActivatedRoute, Router } from '@angular/router';
 import { FabricColor, FabricTopic, FabricType, FabricTypeAvailability } from '../../model';
 import { environment } from '../../../../../../../environments';
-import { none, Option, some } from '../../../../../shared/modules/option';
+import { none, Option, some } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-create-fabric-page',

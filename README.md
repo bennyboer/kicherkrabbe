@@ -6,7 +6,9 @@ Resources for the kicherkrabbe.com shop.
 
 ```
 kicherkrabbe/
-├── frontend/                    # Frontend applications
+├── frontend/                    # Frontend applications (Yarn workspace)
+│   ├── packages/
+│   │   └── shared/              # Shared TypeScript library (@kicherkrabbe/shared)
 │   ├── management/              # Angular 21 admin/management frontend
 │   └── customer/                # Angular 21 customer-facing frontend (SSR)
 │
@@ -53,6 +55,7 @@ kicherkrabbe/
 
 See individual READMEs for setup instructions:
 - [Backend](backend/README.md)
+- [Frontend](frontend/README.md)
 - [Management Frontend](frontend/management/README.md)
 - [Customer Frontend](frontend/customer/README.md)
 

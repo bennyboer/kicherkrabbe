@@ -1,4 +1,4 @@
-import { Option, someOrNone } from '../../shared/modules/option';
+import { Option, someOrNone } from '@kicherkrabbe/shared';
 import { validateProps } from '../../../util';
 
 export class Sender {

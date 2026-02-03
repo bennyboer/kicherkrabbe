@@ -17,7 +17,7 @@ import { Topic } from '../model';
 import { environment } from '../../../../../../environments';
 import { AdminAuthService } from '../../../services';
 import { SSE } from 'sse.js';
-import { none, Option, some, someOrNone } from '../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 
 interface QueryTopicsResponse {
   skip: number;

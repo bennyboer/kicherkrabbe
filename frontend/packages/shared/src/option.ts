@@ -1,4 +1,4 @@
-import { Eq } from '../../../../util';
+import { Eq } from './equals';
 
 export const some = <T>(value: T | null | undefined) => Option.some(value);
 export const someOrNone = <T>(value: T | null | undefined) => Option.someOrNone(value);

@@ -16,7 +16,7 @@ import {
 import { DropdownComponent, DropdownItem, DropdownItemId, NotificationService } from '../../../../../shared';
 import { Mail, READ, Status, UNREAD } from '../../model';
 import { MailboxService } from '../../services';
-import { none, Option, some, someOrNone } from '../../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 
 const MAILS_LIMIT = 10;
 

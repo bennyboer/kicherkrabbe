@@ -2,7 +2,7 @@ import { Injectable, OnDestroy, TemplateRef } from '@angular/core';
 import { BehaviorSubject, filter, map, Observable, Subject, takeUntil } from 'rxjs';
 import { Point } from '../../../util';
 import { Overlay, OverlayId } from '../models';
-import { Option, someOrNone } from '../modules/option';
+import { Option, someOrNone } from '@kicherkrabbe/shared';
 
 interface OverlayLookup {
   [key: string]: Overlay;

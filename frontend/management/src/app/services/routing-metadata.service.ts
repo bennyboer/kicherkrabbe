@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
-import { someOrNone } from '../modules/shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 @Injectable()
 export class RoutingMetadataService {

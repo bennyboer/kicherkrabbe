@@ -4,7 +4,7 @@ import { Availability, Color, Fabric, Theme, Type, TypeAvailability } from '../m
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../../environments';
 import { Image } from '../../../../../util';
-import { someOrNone } from '../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 interface FabricsAvailabilityFilterDTO {
   active: boolean;

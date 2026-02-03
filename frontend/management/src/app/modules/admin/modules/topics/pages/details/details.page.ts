@@ -4,7 +4,7 @@ import { TopicsService } from '../../services';
 import { BehaviorSubject, combineLatest, map, Observable, Subject, switchMap, takeUntil } from 'rxjs';
 import { Topic } from '../../model';
 import { NotificationService } from '../../../../../shared';
-import { none, Option, someOrNone } from '../../../../../shared/modules/option';
+import { none, Option, someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-topic-details',

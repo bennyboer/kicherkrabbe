@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Option, someOrNone } from '../option';
+import { Option, someOrNone } from '@kicherkrabbe/shared';
 
 @Pipe({
   name: 'ifSome',

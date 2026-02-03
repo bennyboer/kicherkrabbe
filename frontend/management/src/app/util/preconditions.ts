@@ -1,4 +1,4 @@
-import { someOrNone } from '../modules/shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 interface Props {
   [key: string]: unknown;

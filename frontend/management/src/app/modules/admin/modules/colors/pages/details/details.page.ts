@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ColorsService } from '../../services';
 import { ColorPickerColor, NotificationService } from '../../../../../shared';
 import { Color } from '../../model';
-import { none, Option, someOrNone } from '../../../../../shared/modules/option';
+import { none, Option, someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-color-details-page',

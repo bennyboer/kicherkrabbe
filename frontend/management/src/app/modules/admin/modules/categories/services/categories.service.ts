@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { AdminAuthService } from '../../../services';
 import { environment } from '../../../../../../environments';
 import { Category, CategoryGroup, CategoryId, CLOTHING, NONE } from '../model';
-import { none, Option, some, someOrNone } from '../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 
 interface CategoryDTO {
   id: string;

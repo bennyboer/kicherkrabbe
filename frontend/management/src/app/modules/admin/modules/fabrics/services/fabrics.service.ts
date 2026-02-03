@@ -27,7 +27,7 @@ import {
   ImageId,
   TopicId,
 } from '../model';
-import { none, Option, some, someOrNone } from '../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 
 interface FabricDTO {
   id: string;

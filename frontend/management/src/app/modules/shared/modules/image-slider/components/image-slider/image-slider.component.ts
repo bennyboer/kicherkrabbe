@@ -11,7 +11,7 @@ import {
 import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
 import { ImageSliderImage } from '../../models';
 import { SlidingImageComponent } from '../sliding-image/sliding-image.component';
-import { someOrNone } from '../../../option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-image-slider',

@@ -16,7 +16,7 @@ import {
 import { DropdownComponent, DropdownItem, DropdownItemId, NotificationService } from '../../../../../shared';
 import { Category, CategoryGroup, CategoryGroupType, CLOTHING, GROUPS } from '../../model';
 import { CategoriesService } from '../../services';
-import { none, Option, someOrNone } from '../../../../../shared/modules/option';
+import { none, Option, someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-categories-page',

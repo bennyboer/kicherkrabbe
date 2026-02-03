@@ -23,7 +23,7 @@ import {
   NoteType,
 } from '../../dialogs';
 import { ProductsService } from '../../services';
-import { none, Option, some } from '../../../../../shared/modules/option';
+import { none, Option, some } from '@kicherkrabbe/shared';
 import { AssetsService } from '../../../assets/services/assets.service';
 import { ImageSliderImage } from '../../../../../shared/modules/image-slider';
 import { environment } from '../../../../../../../environments';

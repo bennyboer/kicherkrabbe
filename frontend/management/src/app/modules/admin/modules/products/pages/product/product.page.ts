@@ -12,7 +12,7 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
-import { none, Option, some } from '../../../../../shared/modules/option';
+import { none, Option, some } from '@kicherkrabbe/shared';
 import { ActivatedRoute } from '@angular/router';
 import { ButtonSize, NotificationService } from '../../../../../shared';
 import { Link, Product } from '../../model';

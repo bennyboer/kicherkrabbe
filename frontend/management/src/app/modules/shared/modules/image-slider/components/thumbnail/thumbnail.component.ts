@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy } from '@angular/core';
 import { ImageSliderImage } from '../../models';
 import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
-import { someOrNone } from '../../../option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-image-slider-thumbnail',

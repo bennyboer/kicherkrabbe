@@ -2,7 +2,7 @@ import { Origin } from './origin';
 import { Target } from './target';
 import { Channel } from './channel';
 import { validateProps } from '../../../../../util';
-import { someOrNone } from '../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 export class Notification {
   readonly id: string;

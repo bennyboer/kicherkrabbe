@@ -1,5 +1,5 @@
 import { validateProps } from '../../../../../util';
-import { none, Option, someOrNone } from '../../../../shared/modules/option';
+import { none, Option, someOrNone } from '@kicherkrabbe/shared';
 
 export class MailgunSettings {
   readonly apiToken: Option<string>;

@@ -15,7 +15,7 @@ import {
 } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { ButtonId, ButtonRegistry } from './button-registry';
-import { none, Option, some, someOrNone } from '../../modules/option';
+import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 
 export enum ButtonSize {
   SMALL = 'SMALL',

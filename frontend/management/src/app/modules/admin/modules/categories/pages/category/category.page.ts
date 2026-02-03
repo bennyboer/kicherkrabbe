@@ -19,7 +19,7 @@ import { CategoriesService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category, CategoryGroup, CategoryGroupType, CategoryId, GROUPS } from '../../model';
 import { DropdownComponent, DropdownItem, DropdownItemId, NotificationService } from '../../../../../shared';
-import { none, Option, someOrNone } from '../../../../../shared/modules/option';
+import { none, Option, someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-category-page',

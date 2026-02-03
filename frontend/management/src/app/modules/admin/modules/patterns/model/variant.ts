@@ -1,6 +1,6 @@
 import { Eq, Money, validateProps } from '../../../../../util';
 import { PricedSizeRange } from './priced-size-range';
-import { someOrNone } from '../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 export class PatternVariant implements Eq<PatternVariant> {
   readonly id: string;

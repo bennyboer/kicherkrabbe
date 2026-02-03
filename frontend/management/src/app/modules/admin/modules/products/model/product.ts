@@ -2,7 +2,7 @@ import { Link } from './link';
 import { FabricComposition } from './fabric-composition';
 import { Notes } from './notes';
 import { validateProps } from '../../../../../util';
-import { someOrNone } from '../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 import { LinkType } from './link-type';
 
 type ProductId = string;

@@ -14,7 +14,7 @@ import {
   takeUntil,
 } from 'rxjs';
 import { Mail } from '../../model';
-import { none, Option, some } from '../../../../../shared/modules/option';
+import { none, Option, some } from '@kicherkrabbe/shared';
 import { MailboxService } from '../../services';
 import { NotificationService } from '../../../../../shared';
 import { ActivatedRoute } from '@angular/router';

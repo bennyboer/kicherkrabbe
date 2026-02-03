@@ -8,7 +8,7 @@ import {
   Output,
 } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { someOrNone } from '../../modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-radio',

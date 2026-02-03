@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { Notification, NotificationService } from '../../services';
 import { BehaviorSubject, map, Observable, Subject, Subscription, takeUntil, timer } from 'rxjs';
-import { none, Option, some } from '../../modules/option';
+import { none, Option, some } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-notification-outlet',

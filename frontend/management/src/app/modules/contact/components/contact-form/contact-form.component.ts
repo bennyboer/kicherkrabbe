@@ -3,7 +3,7 @@ import { ContentChange, QuillEditorComponent } from 'ngx-quill';
 import { validateProps } from '../../../../util';
 import { Delta } from 'quill/core';
 import { BehaviorSubject, combineLatest, map, Observable, Subject, takeUntil } from 'rxjs';
-import { Option, someOrNone } from '../../../shared/modules/option';
+import { Option, someOrNone } from '@kicherkrabbe/shared';
 
 export class ContactFormResult {
   readonly name: string;

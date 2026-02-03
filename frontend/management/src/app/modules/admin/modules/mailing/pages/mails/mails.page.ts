@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { BehaviorSubject, combineLatest, finalize, first, map, Observable, Subject } from 'rxjs';
-import { someOrNone } from '../../../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 import { MailingService } from '../../services';
 import { Mail } from '../../model';
 

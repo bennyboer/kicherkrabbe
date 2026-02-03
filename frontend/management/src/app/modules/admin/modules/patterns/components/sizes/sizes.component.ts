@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Money, validateProps } from '../../../../../../util';
 import { ButtonSize } from '../../../../../shared';
 import currency from 'currency.js';
-import { none, Option, someOrNone } from '../../../../../shared/modules/option';
+import { none, Option, someOrNone } from '@kicherkrabbe/shared';
 
 class EditablePricedSizeRange {
   readonly size: PricedSizeRange;

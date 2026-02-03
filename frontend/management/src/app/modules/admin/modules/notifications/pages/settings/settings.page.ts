@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { BehaviorSubject, combineLatest, finalize, first, map, Observable } from 'rxjs';
 import { NotificationsService } from '../../services';
 import { DropdownComponent, DropdownItem, DropdownItemId, NotificationService } from '../../../../../shared';
-import { none, Option, some, someOrNone } from '../../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 import { Channel, CHANNEL_TYPES, ChannelType, InternalChannelType, Settings } from '../../model';
 
 @Component({

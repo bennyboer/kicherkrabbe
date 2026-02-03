@@ -2,7 +2,7 @@ import { PatternVariant } from './variant';
 import { PatternExtra } from './extra';
 import { Money, validateProps } from '../../../../../util';
 import { PatternAttribution } from './attribution';
-import { none, Option, some, someOrNone } from '../../../../shared/modules/option';
+import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 
 export type CategoryId = string;
 export type ImageId = string;

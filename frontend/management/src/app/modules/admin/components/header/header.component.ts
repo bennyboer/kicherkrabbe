@@ -4,7 +4,7 @@ import { DropdownComponent, DropdownItem, DropdownItemId } from '../../../shared
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { validateProps } from '../../../../util';
 import { AdminAuthService } from '../../services';
-import { someOrNone } from '../../../shared/modules/option';
+import { someOrNone } from '@kicherkrabbe/shared';
 
 class ManagementItem {
   readonly label: string;

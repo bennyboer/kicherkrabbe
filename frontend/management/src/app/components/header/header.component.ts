@@ -12,7 +12,7 @@ import {
 } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
 import { ButtonSize } from '../../modules/shared';
-import { none, Option, some } from '../../modules/shared/modules/option';
+import { none, Option, some } from '@kicherkrabbe/shared';
 
 @Component({
   selector: 'app-header',
