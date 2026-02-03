@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
-const browserDistFolder = join(__dirname, "dist/management/browser");
+const browserDistFolder = join(__dirname, "browser");
 
 app.use(
 	express.static(browserDistFolder, {

@@ -5617,7 +5617,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:0.27.2, esbuild@npm:^0.27.0":
+"esbuild@npm:0.27.2, esbuild@npm:^0.27.0, esbuild@npm:^0.27.2":
   version: 0.27.2
   resolution: "esbuild@npm:0.27.2"
   dependencies:
@@ -7465,6 +7465,7 @@ __metadata:
     "@types/jasmine": "npm:~5.1.0"
     "@types/node": "npm:^22.15.21"
     currency.js: "npm:2.0.4"
+    esbuild: "npm:^0.27.2"
     express: "npm:^5.1.0"
     jasmine-core: "npm:~5.1.0"
     karma: "npm:~6.4.3"

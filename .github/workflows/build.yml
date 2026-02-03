@@ -28,10 +28,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: management
-          path: |
-            frontend/management/dist
-            frontend/management/server.mjs
-            frontend/management/package.json
+          path: frontend/management/dist
 
   build-customer:
     name: Build customer frontend
