@@ -5,5 +5,6 @@
     "packages/*",
     "customer",
     "management"
-  ]
+  ],
+  "packageManager": "yarn@4.12.0"
 }

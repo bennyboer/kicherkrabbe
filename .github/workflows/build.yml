@@ -16,16 +16,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
+      - name: Enable Corepack
+        run: corepack enable
       - name: Install workspace dependencies
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: install
-          dir: frontend
+        run: yarn install
+        working-directory: frontend
       - name: Build
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: build
-          dir: frontend/management
+        run: yarn workspace management build
+        working-directory: frontend
       - name: Upload built management frontend
         uses: actions/upload-artifact@v4
         with:
@@ -44,16 +42,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
+      - name: Enable Corepack
+        run: corepack enable
       - name: Install workspace dependencies
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: install
-          dir: frontend
+        run: yarn install
+        working-directory: frontend
       - name: Build
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: build
-          dir: frontend/customer
+        run: yarn workspace customer build
+        working-directory: frontend
       - name: Upload built customer frontend
         uses: actions/upload-artifact@v4
         with:
