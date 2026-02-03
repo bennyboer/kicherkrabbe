@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { BackgroundComponent } from "./background/background";
 import { Footer } from "./footer/footer";
@@ -10,5 +10,6 @@ import { Header } from "./header/header";
 	templateUrl: "./app.html",
 	styleUrl: "./app.scss",
 	standalone: true,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {}

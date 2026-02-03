@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 
 @Component({
 	selector: "app-highlights",
@@ -6,5 +6,6 @@ import { Component } from "@angular/core";
 	styleUrl: "./highlights.scss",
 	standalone: true,
 	imports: [],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HighlightsComponent {}

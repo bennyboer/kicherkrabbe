@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { Badges } from "../badges/badges";
 import { CrabHelper } from "../crab-helper/crab-helper";
@@ -19,5 +19,6 @@ import { FeaturedPatterns } from "../patterns";
 		FeaturedPatterns,
 		FeaturedFabrics,
 	],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomePage {}

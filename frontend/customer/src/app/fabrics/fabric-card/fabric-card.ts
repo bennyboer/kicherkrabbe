@@ -1,4 +1,6 @@
-import { Component, Input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy } from "@angular/core";
+import { AsyncPipe } from "@angular/common";
+import { BehaviorSubject, map } from "rxjs";
 import { Card } from "primeng/card";
 import { Fabric } from "../fabric";
 import { FabricsService } from "../fabrics.service";
@@ -8,15 +10,27 @@ import { FabricsService } from "../fabrics.service";
 	templateUrl: "./fabric-card.html",
 	styleUrl: "./fabric-card.scss",
 	standalone: true,
-	imports: [Card],
+	imports: [Card, AsyncPipe],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FabricCard {
+export class FabricCard implements OnDestroy {
+	private readonly fabricsService = inject(FabricsService);
+	private readonly fabric$ = new BehaviorSubject<Fabric | null>(null);
+
+	readonly imageUrl$ = this.fabric$.pipe(
+		map((fabric) => (fabric ? this.fabricsService.getImageUrl(fabric.imageId) : ""))
+	);
+
 	@Input()
-	fabric!: Fabric;
+	set fabric(value: Fabric) {
+		this.fabric$.next(value);
+	}
 
-	constructor(private readonly fabricsService: FabricsService) {}
+	get fabric(): Fabric {
+		return this.fabric$.value!;
+	}
 
-	getImageUrl(): string {
-		return this.fabricsService.getImageUrl(this.fabric.imageId);
+	ngOnDestroy(): void {
+		this.fabric$.complete();
 	}
 }

@@ -1,6 +1,6 @@
 import { AsyncPipe } from "@angular/common";
-import { Component, inject, OnInit } from "@angular/core";
-import { BehaviorSubject, Observable, map } from "rxjs";
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from "@angular/core";
+import { BehaviorSubject, map } from "rxjs";
 import { Carousel } from "primeng/carousel";
 import { SeedService } from "../../services/seed.service";
 import { ShowMoreCard } from "../../shared/show-more-card/show-more-card";
@@ -18,12 +18,21 @@ export type FabricCarouselItem =
 	styleUrl: "./featured-fabrics.scss",
 	standalone: true,
 	imports: [AsyncPipe, FabricCard, ShowMoreCard, Carousel],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FeaturedFabrics implements OnInit {
+export class FeaturedFabrics implements OnInit, OnDestroy {
 	private readonly seedService = inject(SeedService);
-	private readonly fabrics$: BehaviorSubject<Fabric[]> = new BehaviorSubject<
-		Fabric[]
-	>([]);
+	private readonly fabricsService = inject(FabricsService);
+	private readonly fabrics$ = new BehaviorSubject<Fabric[]>([]);
+
+	readonly items$ = this.fabrics$.pipe(
+		map((fabrics) => [
+			...fabrics.map(
+				(fabric): FabricCarouselItem => ({ type: "fabric", fabric }),
+			),
+			{ type: "showMore" } as FabricCarouselItem,
+		]),
+	);
 
 	responsiveOptions = [
 		{
@@ -48,8 +57,6 @@ export class FeaturedFabrics implements OnInit {
 		},
 	];
 
-	constructor(private readonly fabricsService: FabricsService) {}
-
 	ngOnInit(): void {
 		const seed = this.seedService.getSeed();
 		this.fabricsService.getFeaturedFabrics(seed).subscribe((fabrics) => {
@@ -57,14 +64,7 @@ export class FeaturedFabrics implements OnInit {
 		});
 	}
 
-	getItems(): Observable<FabricCarouselItem[]> {
-		return this.fabrics$.pipe(
-			map((fabrics) => [
-				...fabrics.map(
-					(fabric): FabricCarouselItem => ({ type: "fabric", fabric }),
-				),
-				{ type: "showMore" } as FabricCarouselItem,
-			]),
-		);
+	ngOnDestroy(): void {
+		this.fabrics$.complete();
 	}
 }

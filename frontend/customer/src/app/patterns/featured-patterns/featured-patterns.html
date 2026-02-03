@@ -1,4 +1,4 @@
-@if (getItems() | async; as items) {
+@if (items$ | async; as items) {
 	@if (items.length > 1) {
 		<p-carousel
 			[value]="items"

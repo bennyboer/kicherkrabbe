@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
 import { RouterLink } from "@angular/router";
 
 @Component({
@@ -7,6 +7,7 @@ import { RouterLink } from "@angular/router";
 	styleUrl: "./show-more-card.scss",
 	standalone: true,
 	imports: [RouterLink],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowMoreCard {
 	@Input()

@@ -1,6 +1,6 @@
 import { AsyncPipe } from "@angular/common";
-import { Component, inject, OnInit } from "@angular/core";
-import { BehaviorSubject, Observable, map } from "rxjs";
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from "@angular/core";
+import { BehaviorSubject, map } from "rxjs";
 import { Carousel } from "primeng/carousel";
 import { SeedService } from "../../services/seed.service";
 import { ShowMoreCard } from "../../shared/show-more-card/show-more-card";
@@ -18,12 +18,21 @@ export type PatternCarouselItem =
 	styleUrl: "./featured-patterns.scss",
 	standalone: true,
 	imports: [AsyncPipe, PatternCard, ShowMoreCard, Carousel],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FeaturedPatterns implements OnInit {
+export class FeaturedPatterns implements OnInit, OnDestroy {
 	private readonly seedService = inject(SeedService);
-	private readonly patterns$: BehaviorSubject<Pattern[]> = new BehaviorSubject<
-		Pattern[]
-	>([]);
+	private readonly patternsService = inject(PatternsService);
+	private readonly patterns$ = new BehaviorSubject<Pattern[]>([]);
+
+	readonly items$ = this.patterns$.pipe(
+		map((patterns) => [
+			...patterns.map(
+				(pattern): PatternCarouselItem => ({ type: "pattern", pattern }),
+			),
+			{ type: "showMore" } as PatternCarouselItem,
+		]),
+	);
 
 	responsiveOptions = [
 		{
@@ -48,8 +57,6 @@ export class FeaturedPatterns implements OnInit {
 		},
 	];
 
-	constructor(private readonly patternsService: PatternsService) {}
-
 	ngOnInit(): void {
 		const seed = this.seedService.getSeed();
 		this.patternsService.getFeaturedPatterns(seed).subscribe((patterns) => {
@@ -57,14 +64,7 @@ export class FeaturedPatterns implements OnInit {
 		});
 	}
 
-	getItems(): Observable<PatternCarouselItem[]> {
-		return this.patterns$.pipe(
-			map((patterns) => [
-				...patterns.map(
-					(pattern): PatternCarouselItem => ({ type: "pattern", pattern }),
-				),
-				{ type: "showMore" } as PatternCarouselItem,
-			]),
-		);
+	ngOnDestroy(): void {
+		this.patterns$.complete();
 	}
 }
