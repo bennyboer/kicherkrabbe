@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { map, Observable } from "rxjs";
 import { environment } from "../../environments";
-import { none, Option } from "../util/option";
+import { none, Option } from "@kicherkrabbe/shared";
 import { Fabric } from "./fabric";
 
 interface PublishedFabricDTO {
