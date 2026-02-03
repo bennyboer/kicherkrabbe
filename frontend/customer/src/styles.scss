@@ -18,6 +18,20 @@ body {
 	background-color: var(--p-surface-50);
 }
 
+app-root {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+app-root > router-outlet + * {
+	flex: 1 0 auto;
+}
+
+app-root > app-footer {
+	flex-shrink: 0;
+}
+
 html {
 	--sun1-color: #ff4081;
 	--sun2-color: #00bcd4;

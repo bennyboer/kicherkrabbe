@@ -1,0 +1,37 @@
+@if (loading$ | async) {
+	<div class="loading">Laden...</div>
+}
+
+@if (loaded$ | async) {
+	@if (inquiriesEnabled$ | async) {
+		<app-contact-form (submitted)="sendMessage($event)"></app-contact-form>
+	} @else {
+		<div class="disabled-note">
+			Das Kontaktformular ist derzeit deaktiviert. In der Zwischenzeit können Sie uns gerne per
+			E-Mail oder auf Instagram schreiben.
+		</div>
+
+		<div class="contact-table-wrapper">
+			<table class="contact-table">
+				<tbody>
+					<tr>
+						<td>E-Mail</td>
+						<td><a href="mailto:info@kicherkrabbe.com">info&#64;kicherkrabbe.com</a></td>
+					</tr>
+					<tr>
+						<td>Instagram</td>
+						<td>
+							<a href="https://www.instagram.com/kicherkrabbe" target="_blank">&#64;kicherkrabbe</a>
+						</td>
+					</tr>
+					<tr>
+						<td>Telefon</td>
+						<td>+49 176 4321 0815</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<p class="contact-note">Wir freuen uns auf Ihre Anfrage!</p>
+	}
+}

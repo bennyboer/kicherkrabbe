@@ -34,7 +34,7 @@
 	text-decoration: none;
 	transition: opacity 0.2s ease;
 
-	&:focus:not(:focus-visible) {
+	&:focus {
 		outline: none;
 	}
 

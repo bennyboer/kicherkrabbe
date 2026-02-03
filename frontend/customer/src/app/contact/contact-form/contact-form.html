@@ -1,0 +1,145 @@
+<div class="form">
+  <div class="form-field">
+    <label for="name">
+      Name
+      <span class="input-limit">{{ nameLength$ | async }} / 200</span>
+    </label>
+    <input
+      pInputText
+      #name
+      type="text"
+      id="name"
+      name="name"
+      [disabled]="nameDisabled$ | async"
+      (input)="updateName(name.value)" />
+
+    @if (nameTouched$ | async) {
+      @if (nameMissing$ | async) {
+        <span class="error">Bitte gib einen Namen ein</span>
+      } @else if (nameTooLong$ | async) {
+        <span class="error">Der Name darf maximal 200 Zeichen lang sein</span>
+      }
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="mail">
+      E-Mail
+      <span class="input-limit">{{ mailLength$ | async }} / 70</span>
+    </label>
+    <input
+      pInputText
+      #mail
+      type="email"
+      id="mail"
+      name="mail"
+      required
+      [disabled]="mailDisabled$ | async"
+      (input)="updateMail(mail.value, mail.checkValidity())" />
+
+    @if (mailTouched$ | async) {
+      @if (mailMissing$ | async) {
+        <span class="error">Bitte gib eine E-Mail Adresse ein</span>
+      } @else if (mailFormatInvalid$ | async) {
+        <span class="error">Die E-Mail Adresse scheint ungültig zu sein</span>
+      } @else if (mailTooLong$ | async) {
+        <span class="error">Die E-Mail Adresse darf maximal 70 Zeichen lang sein</span>
+      }
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="phone">
+      Telefon (optional)
+      <span class="input-limit">{{ phoneLength$ | async }} / 30</span>
+    </label>
+    <input
+      pInputText
+      #phone
+      type="tel"
+      id="phone"
+      name="phone"
+      [disabled]="phoneDisabled$ | async"
+      (input)="updatePhone(phone.value)" />
+
+    @if (phoneTouched$ | async) {
+      @if (phoneTooLong$ | async) {
+        <span class="error">Die Telefonnummer darf maximal 30 Zeichen lang sein</span>
+      }
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="subject">
+      Betreff
+      <span class="input-limit">{{ subjectLength$ | async }} / 200</span>
+    </label>
+    <input
+      pInputText
+      #subject
+      type="text"
+      id="subject"
+      name="subject"
+      [disabled]="subjectDisabled$ | async"
+      (input)="updateSubject(subject.value)" />
+
+    @if (subjectTouched$ | async) {
+      @if (subjectMissing$ | async) {
+        <span class="error">Bitte gib einen Betreff ein</span>
+      } @else if (subjectTooLong$ | async) {
+        <span class="error">Der Betreff darf maximal 200 Zeichen lang sein</span>
+      }
+    }
+  </div>
+
+  <div class="form-field">
+    <label>Nachricht</label>
+    @defer (on viewport) {
+      <div class="editor-wrapper">
+        <app-quill-editor-wrapper
+          [modules]="quillModules"
+          (contentChanged)="updateMessage($event)">
+        </app-quill-editor-wrapper>
+      </div>
+      <span class="note">Selektieren Sie Text in Ihrer Nachricht, um ihn zu formatieren.</span>
+    } @placeholder {
+      <div class="editor-placeholder">Editor wird geladen...</div>
+    } @loading {
+      <div class="editor-placeholder">Editor wird geladen...</div>
+    }
+
+    @if (messageTouched$ | async) {
+      @if (messageMissing$ | async) {
+        <span class="error">Bitte gib eine Nachricht ein</span>
+      } @else if (messageTooLong$ | async) {
+        <span class="error">Die Nachricht ist zu lang</span>
+      } @else if (messageHtmlTooLong$ | async) {
+        <span class="error">Die Nachricht ist zu lang</span>
+      }
+    }
+  </div>
+</div>
+
+<div class="notes">
+  <p>
+    Ihre Eingaben werden verschlüsselt übertragen. Wir verwenden Ihre Daten ausschließlich zur
+    Bearbeitung der Anfrage. Weitere Informationen finden Sie in unserer
+    <a routerLink="/legal/privacy-policy" target="_blank">Datenschutzerklärung</a>. Wenn Sie auf
+    „Absenden" klicken, stimmen Sie der Verarbeitung Ihrer Daten zu.
+  </p>
+</div>
+
+<div class="actions">
+  <p-button [disabled]="cannotSubmit$ | async" (click)="submit()">
+    @if (submitting$ | async) {
+      <span class="loading-button-text">
+        <p-progressSpinner
+          strokeWidth="4"
+          [style]="{ width: '16px', height: '16px' }"></p-progressSpinner>
+        <span>Wird gesendet...</span>
+      </span>
+    } @else {
+      Absenden
+    }
+  </p-button>
+</div>

@@ -1,4 +1,5 @@
 import type { Routes } from "@angular/router";
+import { ContactPage, ContactSentPage } from "./contact";
 import { FabricsPage } from "./fabrics/fabrics-page/fabrics-page";
 import { HomePage } from "./home/home-page";
 import { PatternsPage } from "./patterns/patterns-page/patterns-page";
@@ -11,6 +12,8 @@ export const routes: Routes = [
 	{ path: "", component: HomePage },
 	{ path: "patterns", component: PatternsPage },
 	{ path: "fabrics", component: FabricsPage },
+	{ path: "contact", component: ContactPage },
+	{ path: "contact/sent", component: ContactSentPage },
 	{ path: "legal/imprint", component: ImprintPage },
 	{ path: "legal/terms-and-conditions", component: TermsAndConditionsPage },
 	{ path: "legal/privacy-policy", component: PrivacyPolicyPage },

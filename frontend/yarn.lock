@@ -5234,7 +5234,9 @@ __metadata:
     karma-coverage: "npm:~2.2.0"
     karma-jasmine: "npm:~5.1.0"
     karma-jasmine-html-reporter: "npm:~2.1.0"
+    ngx-quill: "npm:^30.0.1"
     primeng: "npm:^21.1.1"
+    quill: "npm:^2.0.3"
     rxjs: "npm:~7.8.0"
     tslib: "npm:^2.3.0"
     typescript: "npm:~5.9.2"
@@ -8754,7 +8756,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"quill@npm:2.0.3":
+"quill@npm:2.0.3, quill@npm:^2.0.3":
   version: 2.0.3
   resolution: "quill@npm:2.0.3"
   dependencies:
