@@ -26,7 +26,10 @@
 								"input": "public"
 							}
 						],
-						"styles": ["src/styles.scss"],
+						"styles": [
+							"src/styles.scss",
+							"../node_modules/quill/dist/quill.bubble.css"
+						],
 						"server": "src/main.server.ts",
 						"outputMode": "server",
 						"ssr": {
@@ -89,7 +92,10 @@
 								"input": "public"
 							}
 						],
-						"styles": ["src/styles.scss"]
+						"styles": [
+							"src/styles.scss",
+							"../node_modules/quill/dist/quill.bubble.css"
+						]
 					}
 				}
 			}

@@ -1,0 +1,141 @@
+:host {
+  display: block;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    justify-content: space-between;
+    align-items: baseline;
+    font-weight: 500;
+    color: var(--p-surface-700);
+  }
+
+  .input-limit {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--p-surface-500);
+  }
+
+  input {
+    width: 100%;
+  }
+}
+
+.editor-wrapper {
+  width: 100%;
+  background-color: var(--p-inputtext-background);
+  border: 0 none;
+  border-radius: var(--p-inputtext-border-radius);
+  box-sizing: border-box;
+  outline: var(--p-inputtext-border-width, 1px) solid var(--p-inputtext-border-color);
+  outline-offset: calc(-1 * var(--p-inputtext-border-width, 1px));
+  transition:
+    background-color 0.2s,
+    outline-color 0.2s;
+
+  &:hover {
+    outline-color: var(--p-inputtext-hover-border-color);
+  }
+
+  &:focus-within {
+    outline-color: var(--p-inputtext-focus-border-color);
+  }
+
+  ::ng-deep .ql-editor {
+    min-height: 300px;
+    padding: 0.75rem 0.75rem;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--p-inputtext-color);
+
+    &.ql-blank::before {
+      color: var(--p-inputtext-placeholder-color);
+      font-style: normal;
+      left: 0.75rem;
+    }
+  }
+
+  ::ng-deep .ql-tooltip {
+    z-index: 1000;
+  }
+
+  ::ng-deep .ql-container {
+    font-family: inherit;
+    font-size: 1rem;
+    border: none;
+  }
+
+  ::ng-deep quill-editor {
+    border: none;
+  }
+
+  ::ng-deep .ql-bubble {
+    border: none;
+  }
+}
+
+.editor-placeholder {
+  width: 100%;
+  height: 300px;
+  background-color: var(--p-inputtext-background);
+  border: 0 none;
+  border-radius: var(--p-inputtext-border-radius);
+  box-sizing: border-box;
+  outline: var(--p-inputtext-border-width, 1px) solid var(--p-inputtext-border-color);
+  outline-offset: calc(-1 * var(--p-inputtext-border-width, 1px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--p-inputtext-placeholder-color);
+  font-size: 1rem;
+}
+
+.error {
+  color: var(--p-red-500);
+  font-size: 0.875rem;
+}
+
+.note {
+  font-size: 0.75rem;
+  color: var(--p-surface-500);
+}
+
+.notes {
+  font-size: 0.75rem;
+  color: var(--p-surface-500);
+  margin-top: 1.5rem;
+  line-height: 1.5;
+
+  a {
+    color: var(--p-primary-color);
+    text-decoration: underline;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.loading-button-text {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

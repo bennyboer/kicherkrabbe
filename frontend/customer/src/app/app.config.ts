@@ -10,6 +10,7 @@ import {
 } from "@angular/platform-browser";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { provideRouter } from "@angular/router";
+import { MessageService } from "primeng/api";
 import { providePrimeNG } from "primeng/config";
 import { routes } from "./app.routes";
 import { customerPreset } from "./preset";
@@ -30,5 +31,6 @@ export const appConfig: ApplicationConfig = {
 			},
 		}),
 		provideClientHydration(withEventReplay()),
+		MessageService,
 	],
 };

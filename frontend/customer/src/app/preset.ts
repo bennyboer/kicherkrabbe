@@ -112,5 +112,30 @@ export const customerPreset = definePreset(Aura, {
 				},
 			},
 		},
+		inputtext: {
+			root: {
+				background: "{surface.0}",
+				color: "{surface.700}",
+				borderColor: "{surface.300}",
+			},
+			colorScheme: {
+				light: {
+					root: {
+						background: "{surface.0}",
+						color: "{surface.900}",
+						borderColor: "{surface.300}",
+						hoverBorderColor: "{surface.400}",
+					},
+				},
+				dark: {
+					root: {
+						background: "{surface.0}",
+						color: "{surface.900}",
+						borderColor: "{surface.300}",
+						hoverBorderColor: "{surface.400}",
+					},
+				},
+			},
+		},
 	},
 });
