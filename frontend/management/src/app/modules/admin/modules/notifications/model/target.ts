@@ -1,5 +1,5 @@
 import { TargetType } from './target-type';
-import { validateProps } from '../../../../../util';
+import { validateProps } from '@kicherkrabbe/shared';
 
 export class Target {
   readonly type: TargetType;

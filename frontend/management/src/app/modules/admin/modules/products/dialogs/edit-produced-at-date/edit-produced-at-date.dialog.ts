@@ -3,8 +3,7 @@ import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
 import { ProductsService } from '../../services';
 import { NotificationService } from '../../../../../shared';
 import { BehaviorSubject, combineLatest, finalize, first, map } from 'rxjs';
-import { none, Option, someOrNone } from '@kicherkrabbe/shared';
-import { validateProps } from '../../../../../../util';
+import { none, Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 export class EditProducedAtDateDialogData {
   readonly product: Option<{ id: string; version: number }>;

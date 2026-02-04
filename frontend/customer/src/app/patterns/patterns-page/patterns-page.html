@@ -1,3 +1,76 @@
-<div class="patterns-page">
-	<h1>Schnitte</h1>
-</div>
+<app-filter-layout
+	[filtersTemplate]="filtersRef"
+	[sortOptions]="sortOptions"
+	[selectedSort]="selectedSort"
+	[hasActiveFilters]="(hasActiveFilters$ | async) ?? false"
+	(sortChange)="onSortChange($event)"
+	(resetFilters)="resetFilters()"
+>
+	<ng-template #filtersRef>
+		<div class="filter-group">
+			<label>Kategorie</label>
+			<p-multiselect
+				[options]="(categories$ | async) ?? []"
+				[ngModel]="selectedCategoryIds$ | async"
+				(ngModelChange)="onCategoriesChange($event)"
+				optionLabel="name"
+				optionValue="id"
+				placeholder="Kategorie wählen"
+				[showClear]="true"
+				[filter]="true"
+				filterPlaceholder="Suchen..."
+				selectedItemsLabel="{0} ausgewählt"
+				styleClass="w-full"
+			/>
+		</div>
+
+		<div class="filter-group">
+			<label>Größe</label>
+			<p-multiselect
+				[options]="(sizes$ | async) ?? []"
+				[ngModel]="selectedSizes$ | async"
+				(ngModelChange)="onSizesChange($event)"
+				optionLabel="label"
+				optionValue="value"
+				placeholder="Größe wählen"
+				[showClear]="true"
+				selectedItemsLabel="{0} ausgewählt"
+				styleClass="w-full"
+			/>
+		</div>
+	</ng-template>
+
+	<ng-container results>
+		<h1>Schnitte</h1>
+
+		@if (loading$ | async) {
+			<div class="loading-container">
+				<p-progressspinner strokeWidth="4" />
+			</div>
+		} @else {
+			@if ((patterns$ | async)?.length === 0) {
+				<div class="empty-state">
+					<p>Keine Schnitte gefunden.</p>
+				</div>
+			} @else {
+				<div class="product-grid">
+					@for (pattern of patterns$ | async; track pattern.id) {
+						<a [routerLink]="['/patterns', pattern.id]" class="product-link">
+							<app-pattern-card [pattern]="pattern" />
+						</a>
+					}
+				</div>
+
+				@if (hasMore$ | async) {
+					<div class="load-more-container">
+						<p-button
+							label="Mehr laden"
+							[outlined]="true"
+							(click)="loadMore()"
+						/>
+					</div>
+				}
+			}
+		}
+	</ng-container>
+</app-filter-layout>

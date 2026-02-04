@@ -1,5 +1,5 @@
 import { InternalLinkType, LinkType } from './link-type';
-import { validateProps } from '../../../../../util';
+import { validateProps } from '@kicherkrabbe/shared';
 
 export class Link {
   readonly type: LinkType;

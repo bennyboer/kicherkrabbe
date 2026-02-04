@@ -1,5 +1,4 @@
-import { validateProps } from '../../../../../util';
-import { none, Option, someOrNone } from '@kicherkrabbe/shared';
+import { none, Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 export class BotSettings {
   readonly apiToken: Option<string>;

@@ -1,2 +1,3 @@
 export type { Eq } from './equals'
 export { Option, some, none, someOrNone } from './option'
+export { validateProps } from './preconditions'

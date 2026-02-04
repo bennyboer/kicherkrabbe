@@ -10,8 +10,7 @@ import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
 import { ProductsService } from '../../services';
 import { BehaviorSubject, map, shareReplay } from 'rxjs';
 import { ButtonSize, DropdownComponent, DropdownItemId, NotificationService } from '../../../../../shared';
-import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
-import { validateProps } from '../../../../../../util';
+import { none, Option, some, someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 export class EditFabricCompositionDialogData {
   readonly product: Option<{ id: string; version: number }>;

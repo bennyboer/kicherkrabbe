@@ -1,6 +1,6 @@
-import { Money, validateProps } from '../../../../../util';
+import { Money } from '../../../../../util';
 import { PricedSizeRange } from './priced-size-range';
-import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
+import { none, Option, some, someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 export class PatternVariant {
   readonly name: string;

@@ -1,21 +1,108 @@
 import type { Routes } from "@angular/router";
-import { ContactPage, ContactSentPage } from "./contact";
-import { FabricsPage } from "./fabrics/fabrics-page/fabrics-page";
-import { HomePage } from "./home/home-page";
-import { PatternsPage } from "./patterns/patterns-page/patterns-page";
-import { ImprintPage } from "./legal/imprint/imprint";
-import { TermsAndConditionsPage } from "./legal/terms-and-conditions/terms-and-conditions";
-import { PrivacyPolicyPage } from "./legal/privacy-policy/privacy-policy";
-import { CancellationPolicyPage } from "./legal/cancellation-policy/cancellation-policy";
+import { PatternsFilterState } from "./patterns/patterns-filter-state.service";
+import { PatternsShell } from "./patterns/patterns-shell";
+import { FabricsFilterState } from "./fabrics/fabrics-filter-state.service";
+import { FabricsShell } from "./fabrics/fabrics-shell";
 
 export const routes: Routes = [
-	{ path: "", component: HomePage },
-	{ path: "patterns", component: PatternsPage },
-	{ path: "fabrics", component: FabricsPage },
-	{ path: "contact", component: ContactPage },
-	{ path: "contact/sent", component: ContactSentPage },
-	{ path: "legal/imprint", component: ImprintPage },
-	{ path: "legal/terms-and-conditions", component: TermsAndConditionsPage },
-	{ path: "legal/privacy-policy", component: PrivacyPolicyPage },
-	{ path: "legal/cancellation-policy", component: CancellationPolicyPage },
+	{
+		path: "",
+		loadComponent: () =>
+			import("./home/home-page").then((m) => m.HomePage),
+	},
+	{
+		path: "patterns",
+		component: PatternsShell,
+		providers: [PatternsFilterState],
+		children: [
+			{
+				path: "",
+				loadComponent: () =>
+					import("./patterns/patterns-page/patterns-page").then(
+						(m) => m.PatternsPage
+					),
+			},
+			{
+				path: ":id",
+				loadComponent: () =>
+					import("./patterns/pattern-detail-page/pattern-detail-page").then(
+						(m) => m.PatternDetailPage
+					),
+			},
+		],
+	},
+	{
+		path: "fabrics",
+		component: FabricsShell,
+		providers: [FabricsFilterState],
+		children: [
+			{
+				path: "",
+				loadComponent: () =>
+					import("./fabrics/fabrics-page/fabrics-page").then(
+						(m) => m.FabricsPage
+					),
+			},
+			{
+				path: ":id",
+				loadComponent: () =>
+					import("./fabrics/fabric-detail-page/fabric-detail-page").then(
+						(m) => m.FabricDetailPage
+					),
+			},
+		],
+	},
+	{
+		path: "contact",
+		loadComponent: () =>
+			import("./contact").then((m) => m.ContactPage),
+	},
+	{
+		path: "contact/sent",
+		loadComponent: () =>
+			import("./contact").then((m) => m.ContactSentPage),
+	},
+	{
+		path: "landing/hochzeit",
+		loadComponent: () =>
+			import("./landing/wedding/wedding-page").then((m) => m.WeddingPage),
+	},
+	{
+		path: "landing/besondere-anlaesse",
+		loadComponent: () =>
+			import("./landing/wedding/wedding-page").then((m) => m.WeddingPage),
+	},
+	{
+		path: "landing/tracht",
+		loadComponent: () =>
+			import("./landing/tradition/tradition-page").then(
+				(m) => m.TraditionPage
+			),
+	},
+	{
+		path: "legal/imprint",
+		loadComponent: () =>
+			import("./legal/imprint/imprint").then((m) => m.ImprintPage),
+	},
+	{
+		path: "legal/terms-and-conditions",
+		loadComponent: () =>
+			import("./legal/terms-and-conditions/terms-and-conditions").then(
+				(m) => m.TermsAndConditionsPage
+			),
+	},
+	{
+		path: "legal/privacy-policy",
+		loadComponent: () =>
+			import("./legal/privacy-policy/privacy-policy").then(
+				(m) => m.PrivacyPolicyPage
+			),
+	},
+	{
+		path: "legal/cancellation-policy",
+		loadComponent: () =>
+			import("./legal/cancellation-policy/cancellation-policy").then(
+				(m) => m.CancellationPolicyPage
+			),
+	},
 ];

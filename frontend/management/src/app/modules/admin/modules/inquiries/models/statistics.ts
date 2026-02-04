@@ -1,5 +1,4 @@
-import { validateProps } from '../../../../../util';
-import { someOrNone } from '@kicherkrabbe/shared';
+import { someOrNone, validateProps } from '@kicherkrabbe/shared';
 import { DateRange } from './date-range';
 
 export class Statistics {

@@ -1,4 +1,4 @@
-<p-card [style]="{ width: '100%', height: '100%', overflow: 'hidden' }">
+<p-card styleClass="product-card" (click)="navigateToDetails()">
 	<ng-template #header>
 		<img alt="Stoff" class="fabric-image" [src]="imageUrl$ | async" />
 	</ng-template>

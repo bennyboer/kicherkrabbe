@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { Option, someOrNone } from '@kicherkrabbe/shared';
+import { Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
 import { environment } from '../../environments';
 
 interface QueryStatusResponse {
@@ -25,6 +25,8 @@ export class InquiriesStatus {
   readonly enabled: boolean;
 
   private constructor(props: { enabled: boolean }) {
+    validateProps(props);
+
     this.enabled = props.enabled;
   }
 
@@ -41,6 +43,8 @@ export class Sender {
   readonly phone: Option<string>;
 
   private constructor(props: { name: string; mail: string; phone: Option<string> }) {
+    validateProps(props);
+
     this.name = props.name;
     this.mail = props.mail;
     this.phone = props.phone;

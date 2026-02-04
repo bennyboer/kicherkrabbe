@@ -1,6 +1,5 @@
-import { validateProps } from '../../../../../util';
 import { ActivatableChannel } from './activatable-channel';
-import { someOrNone } from '@kicherkrabbe/shared';
+import { someOrNone, validateProps } from '@kicherkrabbe/shared';
 import { Channel } from './channel';
 import { ChannelType } from './channel-type';
 

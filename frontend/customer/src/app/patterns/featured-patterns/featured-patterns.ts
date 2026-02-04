@@ -1,5 +1,5 @@
-import { AsyncPipe } from "@angular/common";
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from "@angular/core";
+import { AsyncPipe, isPlatformBrowser } from "@angular/common";
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, PLATFORM_ID } from "@angular/core";
 import { BehaviorSubject, map } from "rxjs";
 import { Carousel } from "primeng/carousel";
 import { SeedService } from "../../services/seed.service";
@@ -21,6 +21,7 @@ export type PatternCarouselItem =
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeaturedPatterns implements OnInit, OnDestroy {
+	private readonly platformId = inject(PLATFORM_ID);
 	private readonly seedService = inject(SeedService);
 	private readonly patternsService = inject(PatternsService);
 	private readonly patterns$ = new BehaviorSubject<Pattern[]>([]);
@@ -33,6 +34,11 @@ export class FeaturedPatterns implements OnInit, OnDestroy {
 			{ type: "showMore" } as PatternCarouselItem,
 		]),
 	);
+
+	private mediaQuery: MediaQueryList | null = null;
+	private readonly mediaQueryListener = (e: MediaQueryListEvent) => this.showNavigators$.next(e.matches);
+
+	readonly showNavigators$ = new BehaviorSubject(true);
 
 	responsiveOptions = [
 		{
@@ -58,6 +64,12 @@ export class FeaturedPatterns implements OnInit, OnDestroy {
 	];
 
 	ngOnInit(): void {
+		if (isPlatformBrowser(this.platformId)) {
+			this.mediaQuery = window.matchMedia("(min-width: 769px)");
+			this.showNavigators$.next(this.mediaQuery.matches);
+			this.mediaQuery.addEventListener("change", this.mediaQueryListener);
+		}
+
 		const seed = this.seedService.getSeed();
 		this.patternsService.getFeaturedPatterns(seed).subscribe((patterns) => {
 			this.patterns$.next(patterns);
@@ -65,6 +77,8 @@ export class FeaturedPatterns implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy(): void {
+		this.mediaQuery?.removeEventListener("change", this.mediaQueryListener);
+		this.showNavigators$.complete();
 		this.patterns$.complete();
 	}
 }

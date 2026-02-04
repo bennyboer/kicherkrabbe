@@ -1,8 +1,7 @@
 import { Origin } from './origin';
 import { Target } from './target';
 import { Channel } from './channel';
-import { validateProps } from '../../../../../util';
-import { someOrNone } from '@kicherkrabbe/shared';
+import { someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 export class Notification {
   readonly id: string;

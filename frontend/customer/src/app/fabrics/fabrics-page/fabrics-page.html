@@ -1,3 +1,107 @@
-<div class="fabrics-page">
-	<h1>Stoffe</h1>
-</div>
+<app-filter-layout
+	[filtersTemplate]="filtersRef"
+	[sortOptions]="sortOptions"
+	[selectedSort]="selectedSort"
+	[hasActiveFilters]="(hasActiveFilters$ | async) ?? false"
+	(sortChange)="onSortChange($event)"
+	(resetFilters)="resetFilters()"
+>
+	<ng-template #filtersRef>
+		<div class="filter-group">
+			<label>Thema</label>
+			<p-multiselect
+				[options]="(topics$ | async) ?? []"
+				[ngModel]="selectedTopicIds$ | async"
+				(ngModelChange)="onTopicsChange($event)"
+				optionLabel="name"
+				optionValue="id"
+				placeholder="Thema wählen"
+				[showClear]="true"
+				[filter]="true"
+				filterPlaceholder="Suchen..."
+				selectedItemsLabel="{0} ausgewählt"
+				styleClass="w-full"
+			/>
+		</div>
+
+		<div class="filter-group">
+			<label>Farbe</label>
+			<p-multiselect
+				[options]="(colors$ | async) ?? []"
+				[ngModel]="selectedColorIds$ | async"
+				(ngModelChange)="onColorsChange($event)"
+				optionLabel="name"
+				optionValue="id"
+				placeholder="Farbe wählen"
+				[showClear]="true"
+				[filter]="true"
+				filterPlaceholder="Suchen..."
+				selectedItemsLabel="{0} ausgewählt"
+				styleClass="w-full"
+			>
+				<ng-template let-color pTemplate="item">
+					<div class="color-option">
+						<app-color-swatch
+							[red]="color.red"
+							[green]="color.green"
+							[blue]="color.blue"
+						/>
+						<span>{{ color.name }}</span>
+					</div>
+				</ng-template>
+				<ng-template let-color pTemplate="selectedItem">
+					<div class="color-option">
+						<app-color-swatch
+							[red]="color.red"
+							[green]="color.green"
+							[blue]="color.blue"
+						/>
+						<span>{{ color.name }}</span>
+					</div>
+				</ng-template>
+			</p-multiselect>
+		</div>
+
+		<div class="filter-group toggle-group">
+			<label>Nur verfügbare</label>
+			<p-toggleswitch
+				[ngModel]="inStockOnly$ | async"
+				(ngModelChange)="onInStockChange($event)"
+			/>
+		</div>
+	</ng-template>
+
+	<ng-container results>
+		<h1>Stoffe</h1>
+
+		@if (loading$ | async) {
+			<div class="loading-container">
+				<p-progressspinner strokeWidth="4" />
+			</div>
+		} @else {
+			@if ((fabrics$ | async)?.length === 0) {
+				<div class="empty-state">
+					<p>Keine Stoffe gefunden.</p>
+				</div>
+			} @else {
+				<div class="product-grid">
+					@for (fabric of fabrics$ | async; track fabric.id) {
+						<a [routerLink]="['/fabrics', fabric.id]" class="product-link">
+							<app-fabric-card [fabric]="fabric" />
+						</a>
+					}
+				</div>
+
+				@if (hasMore$ | async) {
+					<div class="load-more-container">
+						<p-button
+							label="Mehr laden"
+							[outlined]="true"
+							(click)="loadMore()"
+						/>
+					</div>
+				}
+			}
+		}
+	</ng-container>
+</app-filter-layout>

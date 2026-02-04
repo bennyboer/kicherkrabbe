@@ -1,5 +1,5 @@
 import { FabricCompositionItem } from './fabric-composition-item';
-import { validateProps } from '../../../../../util';
+import { validateProps } from '@kicherkrabbe/shared';
 import { FabricType } from './fabric-type';
 
 export enum FabricCompositionValidationError {

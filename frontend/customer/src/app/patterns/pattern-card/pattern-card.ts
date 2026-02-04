@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy } from "@angular/core";
 import { AsyncPipe } from "@angular/common";
+import { Router } from "@angular/router";
 import { BehaviorSubject, map } from "rxjs";
 import { Card } from "primeng/card";
 import { Pattern } from "../pattern";
@@ -14,6 +15,7 @@ import { PatternsService } from "../patterns.service";
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PatternCard implements OnDestroy {
+	private readonly router = inject(Router);
 	private readonly patternsService = inject(PatternsService);
 	private readonly pattern$ = new BehaviorSubject<Pattern | null>(null);
 
@@ -41,5 +43,9 @@ export class PatternCard implements OnDestroy {
 
 	ngOnDestroy(): void {
 		this.pattern$.complete();
+	}
+
+	navigateToDetails(): void {
+		this.router.navigate(["/patterns", this.pattern.id]);
 	}
 }

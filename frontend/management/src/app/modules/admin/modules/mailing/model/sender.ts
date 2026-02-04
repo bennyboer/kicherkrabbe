@@ -1,4 +1,4 @@
-import { validateProps } from '../../../../../util';
+import { validateProps } from '@kicherkrabbe/shared';
 
 export class Sender {
   readonly mail: string;

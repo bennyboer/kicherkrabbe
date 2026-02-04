@@ -1,0 +1,16 @@
+.color-swatch {
+	display: inline-block;
+	border-radius: 50%;
+	border: 1px solid var(--p-surface-300);
+	flex-shrink: 0;
+
+	&.small {
+		width: 16px;
+		height: 16px;
+	}
+
+	&.medium {
+		width: 24px;
+		height: 24px;
+	}
+}

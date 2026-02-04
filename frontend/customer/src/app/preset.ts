@@ -75,6 +75,24 @@ export const customerPreset = definePreset(Aura, {
 					900: "{zinc.50}",
 					950: "#ffffff",
 				},
+				overlay: {
+					select: {
+						background: "{zinc.900}",
+						borderColor: "{zinc.700}",
+						color: "{zinc.50}",
+					},
+				},
+				list: {
+					option: {
+						focusBackground: "{zinc.800}",
+						selectedBackground: "{zinc.700}",
+						selectedFocusBackground: "{zinc.700}",
+						color: "{zinc.50}",
+						focusColor: "{zinc.50}",
+						selectedColor: "{zinc.50}",
+						selectedFocusColor: "{zinc.50}",
+					},
+				},
 			},
 		},
 		focusRing: {
@@ -133,6 +151,78 @@ export const customerPreset = definePreset(Aura, {
 						color: "{surface.900}",
 						borderColor: "{surface.300}",
 						hoverBorderColor: "{surface.400}",
+					},
+				},
+			},
+		},
+		select: {
+			colorScheme: {
+				dark: {
+					root: {
+						background: "{surface.0}",
+						color: "{surface.900}",
+						borderColor: "{surface.300}",
+						hoverBorderColor: "{surface.400}",
+					},
+					dropdown: {
+						color: "{surface.900}",
+					},
+				},
+			},
+		},
+		multiselect: {
+			colorScheme: {
+				dark: {
+					root: {
+						background: "{surface.0}",
+						color: "{surface.900}",
+						borderColor: "{surface.300}",
+						hoverBorderColor: "{surface.400}",
+					},
+					dropdown: {
+						color: "{surface.900}",
+					},
+				},
+			},
+		},
+		checkbox: {
+			colorScheme: {
+				dark: {
+					root: {
+						background: "{surface.0}",
+						checkedBackground: "{primary.color}",
+						borderColor: "{surface.300}",
+						hoverBorderColor: "{surface.400}",
+					},
+				},
+			},
+		},
+		drawer: {
+			colorScheme: {
+				dark: {
+					root: {
+						background: "{surface.0}",
+						borderColor: "{surface.200}",
+						color: "{surface.900}",
+					},
+				},
+			},
+		},
+		toggleswitch: {
+			colorScheme: {
+				dark: {
+					root: {
+						background: "{surface.300}",
+						hoverBackground: "{surface.400}",
+						checkedBackground: "{primary.color}",
+						checkedHoverBackground: "{primary.hoverColor}",
+						borderColor: "{surface.400}",
+					},
+					handle: {
+						background: "{surface.0}",
+						hoverBackground: "{surface.0}",
+						checkedBackground: "{surface.0}",
+						checkedHoverBackground: "{surface.0}",
 					},
 				},
 			},

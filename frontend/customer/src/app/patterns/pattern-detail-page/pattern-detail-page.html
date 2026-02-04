@@ -1,0 +1,122 @@
+<div class="pattern-detail-page">
+	@if (loading$ | async) {
+		<div class="loading-container">
+			<p-progressspinner strokeWidth="4" />
+		</div>
+	} @else if (pattern$ | async; as pattern) {
+		<div class="back-nav">
+			<p-button
+				icon="pi pi-arrow-left"
+				label="Zurück zu Schnitte"
+				[text]="true"
+				(click)="goBack()"
+			/>
+		</div>
+
+		<div class="content-grid">
+			<div class="gallery-section">
+				@if (pattern.images.length > 0) {
+					@let selectedIndex = (selectedImageIndex$ | async) ?? 0;
+					<div class="main-image">
+						<p-image
+							[src]="getImageUrl(pattern.images[selectedIndex])"
+							[alt]="pattern.name"
+							[preview]="true"
+							width="100%"
+							appendTo="body"
+						/>
+					</div>
+
+					@if (pattern.images.length > 1) {
+						<div class="thumbnails">
+							@for (imageId of pattern.images; track imageId; let i = $index) {
+								<button
+									class="thumbnail"
+									[class.active]="selectedIndex === i"
+									(click)="selectImage(i)"
+								>
+									<img [src]="getImageUrl(imageId)" [alt]="pattern.name" />
+								</button>
+							}
+						</div>
+					}
+				}
+			</div>
+
+			<div class="details-section">
+				<h1 class="pattern-name">{{ pattern.name }}</h1>
+
+				@if (pattern.number) {
+					<p class="pattern-number">Artikelnummer: {{ pattern.number }}</p>
+				}
+
+				<p class="price-info">{{ pattern.formatMinPrice() }}</p>
+
+				@if (pattern.attribution; as attr) {
+					@if (attr.designer || attr.originalPatternName) {
+						<div class="attribution">
+							@if (attr.originalPatternName) {
+								<p>Originalschnitt: {{ attr.originalPatternName }}</p>
+							}
+							@if (attr.designer) {
+								<p>Designer: {{ attr.designer }}</p>
+							}
+						</div>
+					}
+				}
+
+				<p-divider />
+
+				<div class="variants-section">
+					<h2>Varianten & Preise</h2>
+					@for (variant of pattern.variants; track variant.name) {
+						<div class="variant">
+							<h3 class="variant-name">{{ variant.name }}</h3>
+							<div class="size-prices">
+								@for (range of sortedSizeRanges(variant.pricedSizeRanges); track range.from) {
+									<div class="size-price-row">
+										<span class="size">Größe {{ formatSizeRange(range) }}</span>
+										<span class="price">{{ formatPrice(range.price.amount) }}</span>
+									</div>
+								}
+							</div>
+						</div>
+					}
+				</div>
+
+				@if (pattern.extras.length > 0) {
+					<p-divider />
+
+					<div class="extras-section">
+						<h2>Extras</h2>
+						<div class="extras-list">
+							@for (extra of pattern.extras; track extra.name) {
+								<div class="extra-row">
+									<span class="extra-name">{{ extra.name }}</span>
+									<span class="extra-price">+ {{ formatPrice(extra.price.amount) }}</span>
+								</div>
+							}
+						</div>
+					</div>
+				}
+
+				<p-divider />
+
+				<div class="contact-cta">
+					<p>Interesse an diesem Schnitt?</p>
+					<a routerLink="/contact">
+						<p-button label="Kontakt aufnehmen" icon="pi pi-envelope" />
+					</a>
+				</div>
+			</div>
+		</div>
+	} @else {
+		<div class="not-found">
+			<p>Schnitt nicht gefunden.</p>
+			<p-button
+				label="Zurück zu Schnitte"
+				(click)="goBack()"
+			/>
+		</div>
+	}
+</div>

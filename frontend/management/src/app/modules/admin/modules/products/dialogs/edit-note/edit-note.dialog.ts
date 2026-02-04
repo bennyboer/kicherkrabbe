@@ -2,12 +2,11 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
 import { NotificationService } from '../../../../../shared';
 import { ProductsService } from '../../services';
-import { Option, someOrNone } from '@kicherkrabbe/shared';
+import { Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
 import { ContentChange } from 'ngx-quill';
 import Quill, { Delta } from 'quill/core';
 import { BehaviorSubject, combineLatest, finalize, first, ReplaySubject, Subject, takeUntil } from 'rxjs';
 import { Notes } from '../../model';
-import { validateProps } from '../../../../../../util';
 
 export class EditNoteDialogData {
   readonly product: Option<{ id: string; version: number }>;

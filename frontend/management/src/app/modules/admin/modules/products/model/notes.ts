@@ -1,5 +1,4 @@
-import { validateProps } from '../../../../../util';
-import { someOrNone } from '@kicherkrabbe/shared';
+import { someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 export class Notes {
   readonly contains: string;

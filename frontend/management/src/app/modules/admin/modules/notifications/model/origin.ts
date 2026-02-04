@@ -1,5 +1,5 @@
 import { OriginType } from './origin-type';
-import { validateProps } from '../../../../../util';
+import { validateProps } from '@kicherkrabbe/shared';
 
 export class Origin {
   readonly type: OriginType;

@@ -13,9 +13,8 @@ import {
   takeUntil,
 } from 'rxjs';
 import { Link } from '../../model';
-import { Option, someOrNone } from '@kicherkrabbe/shared';
+import { Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
 import { NotificationService } from '../../../../../shared';
-import { validateProps } from '../../../../../../util';
 
 const LINKS_LIMIT = 20;
 

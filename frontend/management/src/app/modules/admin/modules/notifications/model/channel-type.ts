@@ -1,4 +1,4 @@
-import { validateProps } from '../../../../../util';
+import { validateProps } from '@kicherkrabbe/shared';
 
 export enum InternalChannelType {
   EMAIL = 'EMAIL',
