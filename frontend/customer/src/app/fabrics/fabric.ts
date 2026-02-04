@@ -1,3 +1,5 @@
+import { validateProps } from "@kicherkrabbe/shared";
+
 export interface TypeAvailability {
 	typeId: string;
 	inStock: boolean;
@@ -19,6 +21,8 @@ export class Fabric {
 		topicIds: string[];
 		availability: TypeAvailability[];
 	}) {
+		validateProps(props);
+
 		this.id = props.id;
 		this.name = props.name;
 		this.imageId = props.imageId;

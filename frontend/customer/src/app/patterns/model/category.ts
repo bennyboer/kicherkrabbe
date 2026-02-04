@@ -1,8 +1,12 @@
+import { validateProps } from "@kicherkrabbe/shared";
+
 export class Category {
 	readonly id: string;
 	readonly name: string;
 
 	private constructor(props: { id: string; name: string }) {
+		validateProps(props);
+
 		this.id = props.id;
 		this.name = props.name;
 	}

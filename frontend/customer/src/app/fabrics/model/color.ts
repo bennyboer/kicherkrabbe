@@ -1,3 +1,5 @@
+import { validateProps } from "@kicherkrabbe/shared";
+
 export class Color {
 	readonly id: string;
 	readonly name: string;
@@ -12,6 +14,8 @@ export class Color {
 		green: number;
 		blue: number;
 	}) {
+		validateProps(props);
+
 		this.id = props.id;
 		this.name = props.name;
 		this.red = props.red;

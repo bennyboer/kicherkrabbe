@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
-import { Option, someOrNone } from '@kicherkrabbe/shared';
+import { Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
 import { RouterLink } from '@angular/router';
 import { InputText } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
@@ -35,6 +35,8 @@ export class ContactFormResult {
     message: MessageContent;
     cancel: () => void;
   }) {
+    validateProps(props);
+
     this.name = props.name;
     this.mail = props.mail;
     this.phone = props.phone;
