@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { PricedSizeRange } from '../../model';
 import { BehaviorSubject } from 'rxjs';
-import { Money, validateProps } from '../../../../../../util';
+import { Money } from '../../../../../../util';
 import { ButtonSize } from '../../../../../shared';
 import currency from 'currency.js';
-import { none, Option, someOrNone } from '@kicherkrabbe/shared';
+import { none, Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 class EditablePricedSizeRange {
   readonly size: PricedSizeRange;

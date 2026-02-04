@@ -1,5 +1,4 @@
-import { Option, someOrNone } from '@kicherkrabbe/shared';
-import { validateProps } from '../../../util';
+import { Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 export class Sender {
   readonly name: string;

@@ -1,5 +1,5 @@
 import { RateLimit } from './rate-limit';
-import { validateProps } from '../../../../../util';
+import { validateProps } from '@kicherkrabbe/shared';
 
 export class RateLimits {
   readonly perMail: RateLimit;

@@ -1,8 +1,7 @@
 import { Link } from './link';
 import { FabricComposition } from './fabric-composition';
 import { Notes } from './notes';
-import { validateProps } from '../../../../../util';
-import { someOrNone } from '@kicherkrabbe/shared';
+import { someOrNone, validateProps } from '@kicherkrabbe/shared';
 import { LinkType } from './link-type';
 
 type ProductId = string;
@@ -75,7 +74,7 @@ export class Product {
     return new Product({
       ...this,
       version,
-      links: [...this.links, link],
+      links: updatedLinks,
     });
   }
 

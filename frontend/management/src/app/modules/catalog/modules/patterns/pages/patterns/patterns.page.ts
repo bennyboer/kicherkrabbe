@@ -17,7 +17,8 @@ import { CardListItem, Filter, FilterSelectionMode, NotificationService, Sorting
 import { Category, ImageId, Pattern } from '../../model';
 import { PatternCategoriesService, PatternsService } from '../../services';
 import { environment } from '../../../../../../../environments';
-import { Eq, validateProps } from '../../../../../../util';
+import { Eq } from '../../../../../../util';
+import { validateProps } from '@kicherkrabbe/shared';
 
 class Sorting implements Eq<Sorting> {
   readonly property: string;

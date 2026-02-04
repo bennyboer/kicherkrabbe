@@ -1,7 +1,6 @@
-import { Option } from '@kicherkrabbe/shared';
+import { Option, validateProps } from '@kicherkrabbe/shared';
 import { Telegram } from './telegram';
 import { ChannelType, EMAIL, TELEGRAM } from './channel-type';
-import { validateProps } from '../../../../../util';
 
 export class Channel {
   readonly type: ChannelType;

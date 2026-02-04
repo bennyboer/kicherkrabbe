@@ -1,5 +1,4 @@
-import { validateProps } from '../../../../../util';
-import { Option, someOrNone } from '@kicherkrabbe/shared';
+import { Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 export class PatternAttribution {
   readonly originalPatternName: Option<string>;

@@ -1,6 +1,6 @@
 import { Sender } from './sender';
 import { Receiver } from './receiver';
-import { validateProps } from '../../../../../util';
+import { validateProps } from '@kicherkrabbe/shared';
 
 export class Mail {
   readonly id: string;

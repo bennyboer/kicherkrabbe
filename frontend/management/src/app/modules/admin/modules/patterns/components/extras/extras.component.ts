@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnI
 import { ButtonSize } from '../../../../../shared';
 import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
 import { PatternExtra } from '../../model';
-import { Money, validateProps } from '../../../../../../util';
+import { Money } from '../../../../../../util';
 import currency from 'currency.js';
-import { someOrNone } from '@kicherkrabbe/shared';
+import { someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 class EditablePatternExtra {
   readonly id: string;

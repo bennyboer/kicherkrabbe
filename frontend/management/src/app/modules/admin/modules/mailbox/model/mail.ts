@@ -1,6 +1,5 @@
 import { Sender } from './sender';
-import { validateProps } from '../../../../../util';
-import { someOrNone } from '@kicherkrabbe/shared';
+import { someOrNone, validateProps } from '@kicherkrabbe/shared';
 import { Origin } from './origin';
 
 export class Mail {

@@ -1,4 +1,4 @@
-import { validateProps } from '../../../../../util';
+import { validateProps } from '@kicherkrabbe/shared';
 import { BotSettings } from './bot-settings';
 
 export class Settings {

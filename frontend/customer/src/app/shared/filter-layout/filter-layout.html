@@ -1,0 +1,72 @@
+<div class="filter-layout">
+	<aside class="filter-sidebar desktop-only">
+		<div class="filter-header">
+			<h2>Filter</h2>
+			<p-button
+				icon="pi pi-filter-slash"
+				[rounded]="true"
+				[text]="true"
+				severity="secondary"
+				[disabled]="!hasActiveFilters"
+				(click)="resetFilters.emit()"
+				pTooltip="Filter zurücksetzen"
+			/>
+		</div>
+		<ng-container *ngTemplateOutlet="filtersTemplate" />
+		<div class="filter-group">
+			<label>Sortierung</label>
+			<p-select
+				[options]="sortOptions"
+				[ngModel]="selectedSort"
+				(ngModelChange)="onSortChange($event)"
+				optionLabel="label"
+				optionValue="value"
+				styleClass="w-full"
+			/>
+		</div>
+	</aside>
+
+	<div class="mobile-filter-bar mobile-only">
+		<p-button
+			icon="pi pi-filter"
+			label="Filter"
+			[outlined]="true"
+			(click)="openSidebar()"
+		/>
+		<p-select
+			[options]="sortOptions"
+			[ngModel]="selectedSort"
+			(ngModelChange)="onSortChange($event)"
+			optionLabel="label"
+			optionValue="value"
+		/>
+	</div>
+
+	<p-drawer
+		[(visible)]="sidebarVisible"
+		position="left"
+		[modal]="true"
+		styleClass="filter-drawer"
+		(onHide)="closeSidebar()"
+	>
+		<ng-template pTemplate="header">
+			<div class="filter-header">
+				<h2>Filter</h2>
+				<p-button
+					icon="pi pi-filter-slash"
+					[rounded]="true"
+					[text]="true"
+					severity="secondary"
+					[disabled]="!hasActiveFilters"
+					(click)="resetFilters.emit()"
+					pTooltip="Filter zurücksetzen"
+				/>
+			</div>
+		</ng-template>
+		<ng-container *ngTemplateOutlet="filtersTemplate" />
+	</p-drawer>
+
+	<main class="results">
+		<ng-content select="[results]" />
+	</main>
+</div>

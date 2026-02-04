@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ContentChange, QuillEditorComponent } from 'ngx-quill';
-import { validateProps } from '../../../../util';
 import { Delta } from 'quill/core';
 import { BehaviorSubject, combineLatest, map, Observable, Subject, takeUntil } from 'rxjs';
-import { Option, someOrNone } from '@kicherkrabbe/shared';
+import { Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 export class ContactFormResult {
   readonly name: string;

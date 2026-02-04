@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { BehaviorSubject, fromEvent, map, startWith, Subject, takeUntil } from 'rxjs';
 import { PatternVariant, PricedSizeRange } from '../../model';
-import { validateProps } from '../../../../../../util';
 import { ButtonSize } from '../../../../../shared';
-import { someOrNone } from '@kicherkrabbe/shared';
+import { someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 class EditablePatternVariant {
   readonly variant: PatternVariant;

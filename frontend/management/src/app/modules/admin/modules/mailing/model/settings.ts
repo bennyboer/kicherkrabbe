@@ -1,4 +1,4 @@
-import { validateProps } from '../../../../../util';
+import { validateProps } from '@kicherkrabbe/shared';
 import { RateLimitSettings } from './rate-limit-settings';
 import { MailgunSettings } from './mailgun-settings';
 

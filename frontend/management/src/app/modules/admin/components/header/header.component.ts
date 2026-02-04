@@ -2,9 +2,8 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from
 import { BehaviorSubject, filter, map, Observable, startWith, Subject, takeUntil } from 'rxjs';
 import { DropdownComponent, DropdownItem, DropdownItemId } from '../../../shared';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { validateProps } from '../../../../util';
 import { AdminAuthService } from '../../services';
-import { someOrNone } from '@kicherkrabbe/shared';
+import { someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 class ManagementItem {
   readonly label: string;

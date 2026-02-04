@@ -1,7 +1,6 @@
-import { validateProps } from '../../../../../util';
 import { ComponentType } from '@angular/cdk/overlay';
 import { Injector } from '@angular/core';
-import { none, Option, someOrNone } from '@kicherkrabbe/shared';
+import { none, Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 export class Dialog<R> {
   readonly id: string;

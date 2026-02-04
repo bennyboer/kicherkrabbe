@@ -4,8 +4,7 @@ import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
 import { NotificationService } from '../../../../../shared';
 import { ProductsService } from '../../services';
 import { environment } from '../../../../../../../environments';
-import { Option, someOrNone } from '@kicherkrabbe/shared';
-import { validateProps } from '../../../../../../util';
+import { Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 type ImageId = string;
 

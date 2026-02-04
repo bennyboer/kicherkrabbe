@@ -28,7 +28,8 @@
 						],
 						"styles": [
 							"src/styles.scss",
-							"../node_modules/quill/dist/quill.bubble.css"
+							"../node_modules/quill/dist/quill.bubble.css",
+							"../node_modules/primeicons/primeicons.css"
 						],
 						"server": "src/main.server.ts",
 						"outputMode": "server",
@@ -94,7 +95,8 @@
 						],
 						"styles": [
 							"src/styles.scss",
-							"../node_modules/quill/dist/quill.bubble.css"
+							"../node_modules/quill/dist/quill.bubble.css",
+							"../node_modules/primeicons/primeicons.css"
 						]
 					}
 				}

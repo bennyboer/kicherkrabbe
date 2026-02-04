@@ -72,3 +72,93 @@ h1 {
 		font-size: 2.5em;
 	}
 }
+
+.filter-group {
+	margin-bottom: 16px;
+
+	label {
+		display: block;
+		margin-bottom: 8px;
+		font-weight: 500;
+		font-size: 0.875rem;
+		color: var(--p-text-color);
+	}
+
+	&.toggle-group {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		label {
+			margin-bottom: 0;
+		}
+	}
+
+	p-multiselect,
+	p-select {
+		display: block;
+		width: 100%;
+	}
+}
+
+.filter-drawer .filter-group label,
+.filter-sidebar .filter-group label {
+	color: var(--p-surface-900);
+}
+
+// PrimeNG sets width: 1% on select/multiselect labels which breaks layout.
+// See: https://github.com/primefaces/primeng/issues/10852
+.p-select,
+.p-multiselect {
+	display: flex !important;
+	flex-direction: row !important;
+	flex-wrap: nowrap !important;
+	align-items: center !important;
+}
+
+.p-select .p-select-label,
+.p-multiselect .p-multiselect-label {
+	width: auto !important;
+	flex: 1 1 auto !important;
+}
+
+.p-select .p-select-clear-icon,
+.p-select .p-select-dropdown,
+.p-multiselect .p-multiselect-clear-icon,
+.p-multiselect .p-multiselect-dropdown {
+	flex: 0 0 auto !important;
+}
+
+.product-card {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	cursor: pointer;
+
+	.p-card-body {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.p-card-title {
+		flex: 1;
+	}
+}
+
+.main-image {
+	p-image {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	p-image img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+}
+

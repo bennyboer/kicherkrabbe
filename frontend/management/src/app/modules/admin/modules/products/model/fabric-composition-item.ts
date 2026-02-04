@@ -1,5 +1,5 @@
 import { FabricType } from './fabric-type';
-import { validateProps } from '../../../../../util';
+import { validateProps } from '@kicherkrabbe/shared';
 
 export class FabricCompositionItem {
   readonly fabricType: FabricType;

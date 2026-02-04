@@ -1,4 +1,4 @@
-import { validateProps } from '../../../../../util';
+import { validateProps } from '@kicherkrabbe/shared';
 import { SystemSettings } from './system-settings';
 import { Channel } from './channel';
 import { ChannelType } from './channel-type';
