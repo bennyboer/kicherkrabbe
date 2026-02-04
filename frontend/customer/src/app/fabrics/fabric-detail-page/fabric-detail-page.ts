@@ -19,7 +19,6 @@ import {
 import { MessageService } from "primeng/api";
 import { Button } from "primeng/button";
 import { ProgressSpinner } from "primeng/progressspinner";
-import { Toast } from "primeng/toast";
 import { Tag } from "primeng/tag";
 import { Divider } from "primeng/divider";
 import { Image } from "primeng/image";
@@ -38,7 +37,6 @@ import { ColorSwatch } from "../../shared";
 		RouterLink,
 		Button,
 		ProgressSpinner,
-		Toast,
 		Tag,
 		Divider,
 		Image,

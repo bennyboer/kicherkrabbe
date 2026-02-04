@@ -1,5 +1,3 @@
-import { validateProps } from "@kicherkrabbe/shared";
-
 export interface Money {
 	amount: number;
 	currency: string;
@@ -49,8 +47,6 @@ export class Pattern {
 		extras: PatternExtra[];
 		categoryIds: string[];
 	}) {
-		validateProps(props);
-
 		this.id = props.id;
 		this.name = props.name;
 		this.number = props.number;

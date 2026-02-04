@@ -21,7 +21,6 @@ import { MessageService } from "primeng/api";
 import { MultiSelect } from "primeng/multiselect";
 import { Button } from "primeng/button";
 import { ProgressSpinner } from "primeng/progressspinner";
-import { Toast } from "primeng/toast";
 import { Pattern } from "../pattern";
 import { PatternsService, SizeOption } from "../patterns.service";
 import { PatternsFilterState } from "../patterns-filter-state.service";
@@ -56,7 +55,6 @@ const arraysEqual = <T>(a: T[], b: T[]): boolean =>
 		MultiSelect,
 		Button,
 		ProgressSpinner,
-		Toast,
 		PatternCard,
 		FilterLayout,
 	],

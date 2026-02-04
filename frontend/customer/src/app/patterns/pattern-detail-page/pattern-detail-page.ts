@@ -11,7 +11,6 @@ import { BehaviorSubject, Subject, switchMap, takeUntil } from "rxjs";
 import { MessageService } from "primeng/api";
 import { Button } from "primeng/button";
 import { ProgressSpinner } from "primeng/progressspinner";
-import { Toast } from "primeng/toast";
 import { Divider } from "primeng/divider";
 import { Image } from "primeng/image";
 import { Pattern, PricedSizeRange } from "../pattern";
@@ -27,7 +26,6 @@ import { PatternsService } from "../patterns.service";
 		RouterLink,
 		Button,
 		ProgressSpinner,
-		Toast,
 		Divider,
 		Image,
 	],

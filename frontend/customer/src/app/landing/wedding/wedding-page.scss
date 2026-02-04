@@ -4,10 +4,15 @@
 	margin: 0 auto;
 }
 
+h1 {
+	font-size: 1.75rem;
+	color: var(--p-surface-900);
+}
+
 p {
 	font-size: 1.125rem;
 	line-height: 1.75;
-	color: var(--p-text-color);
+	color: var(--p-surface-900);
 
 	a {
 		color: var(--p-primary-color);
@@ -24,24 +29,6 @@ p {
 	justify-content: center;
 	align-items: center;
 	padding: 18px 10px;
-
-	.contact-button {
-		font-family: Lexend, sans-serif;
-		font-weight: 200;
-		padding: 10px 20px;
-		border-radius: 8px;
-		border: 2px solid var(--p-primary-600);
-		font-size: 28px;
-		color: var(--p-text-color);
-		background-color: var(--p-primary-color);
-		cursor: pointer;
-		transition: background-color 0.2s ease-in-out;
-		text-decoration: none;
-
-		&:hover {
-			background-color: var(--p-primary-600);
-		}
-	}
 }
 
 .images-container {

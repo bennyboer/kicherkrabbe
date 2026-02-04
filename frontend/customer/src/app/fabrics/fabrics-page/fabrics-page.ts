@@ -22,7 +22,6 @@ import { MultiSelect } from "primeng/multiselect";
 import { ToggleSwitch } from "primeng/toggleswitch";
 import { Button } from "primeng/button";
 import { ProgressSpinner } from "primeng/progressspinner";
-import { Toast } from "primeng/toast";
 import { Fabric } from "../fabric";
 import { FabricsService } from "../fabrics.service";
 import { FabricsFilterState } from "../fabrics-filter-state.service";
@@ -66,7 +65,6 @@ const arraysEqual = <T>(a: T[], b: T[]): boolean =>
 		ToggleSwitch,
 		Button,
 		ProgressSpinner,
-		Toast,
 		FabricCard,
 		ColorSwatch,
 		FilterLayout,
