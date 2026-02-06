@@ -187,7 +187,7 @@ jobs:
           username: ${{ secrets.SSH_REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_REMOTE_PORT }}
-          source: "deploy/docker-swarm.yml,deploy/traefik.yml"
+          source: "deploy/docker-swarm.yml,deploy/traefik.yml,deploy/traefik-dynamic.yml"
           target: /opt/kicherkrabbe
           strip_components: 1
       - name: Deploy via SSH

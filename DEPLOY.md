@@ -43,7 +43,8 @@ scp -r deploy/* user@your-server:/opt/kicherkrabbe/
 
 This includes:
 - `docker-swarm.yml` - Docker Swarm stack definition
-- `traefik.yml` - Traefik reverse proxy configuration
+- `traefik.yml` - Traefik reverse proxy static configuration
+- `traefik-dynamic.yml` - Traefik dynamic configuration (middlewares)
 - `.env.example` - Environment variable template
 
 ### 4. Create Environment File
