@@ -6,12 +6,13 @@ import lombok.Singular;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Builder
 public class SampleFabric {
 
     @Builder.Default
-    private String name = "Sample Fabric";
+    private String name = "Sample Fabric " + UUID.randomUUID().toString().substring(0, 8);
 
     @Builder.Default
     private String imageId = "SAMPLE_IMAGE_ID";

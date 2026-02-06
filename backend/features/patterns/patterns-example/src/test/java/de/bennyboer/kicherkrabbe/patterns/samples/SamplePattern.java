@@ -8,12 +8,13 @@ import lombok.Singular;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Builder
 public class SamplePattern {
 
     @Builder.Default
-    private String name = "Sample Pattern";
+    private String name = "Sample Pattern " + UUID.randomUUID().toString().substring(0, 8);
 
     @Builder.Default
     private String number = "S-X-SAM-1";
