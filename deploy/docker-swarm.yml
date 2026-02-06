@@ -117,7 +117,7 @@ services:
         - "traefik.http.routers.app.rule=Host(`api.${DOMAIN}`)"
         - "traefik.http.routers.app.entrypoints=websecure"
         - "traefik.http.routers.app.tls.certresolver=letsencrypt"
-        - "traefik.http.routers.app.middlewares=security-headers@swarm"
+        - "traefik.http.routers.app.middlewares=security-headers@file"
         - "traefik.http.services.app.loadbalancer.server.port=8080"
       update_config:
         parallelism: 1
@@ -142,12 +142,12 @@ services:
         - "traefik.http.routers.customer.rule=Host(`${DOMAIN}`)"
         - "traefik.http.routers.customer.entrypoints=websecure"
         - "traefik.http.routers.customer.tls.certresolver=letsencrypt"
-        - "traefik.http.routers.customer.middlewares=security-headers@swarm"
+        - "traefik.http.routers.customer.middlewares=security-headers@file"
         - "traefik.http.services.customer.loadbalancer.server.port=4000"
         - "traefik.http.routers.customer-www.rule=Host(`www.${DOMAIN}`)"
         - "traefik.http.routers.customer-www.entrypoints=websecure"
         - "traefik.http.routers.customer-www.tls.certresolver=letsencrypt"
-        - "traefik.http.routers.customer-www.middlewares=security-headers@swarm,www-redirect"
+        - "traefik.http.routers.customer-www.middlewares=security-headers@file,www-redirect@swarm"
         - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://www\\.(.+)"
         - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://$${1}"
         - "traefik.http.middlewares.www-redirect.redirectregex.permanent=true"
@@ -168,18 +168,10 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.middlewares.security-headers.headers.stsSeconds=31536000"
-        - "traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
-        - "traefik.http.middlewares.security-headers.headers.stsPreload=true"
-        - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
-        - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
-        - "traefik.http.middlewares.security-headers.headers.browserXssFilter=true"
-        - "traefik.http.middlewares.security-headers.headers.referrerPolicy=strict-origin-when-cross-origin"
-        - "traefik.http.middlewares.security-headers.headers.permissionsPolicy=geolocation=(), microphone=(), camera=()"
         - "traefik.http.routers.management.rule=Host(`manage.${DOMAIN}`)"
         - "traefik.http.routers.management.entrypoints=websecure"
         - "traefik.http.routers.management.tls.certresolver=letsencrypt"
-        - "traefik.http.routers.management.middlewares=security-headers@swarm"
+        - "traefik.http.routers.management.middlewares=security-headers@file"
         - "traefik.http.services.management.loadbalancer.server.port=4200"
       update_config:
         parallelism: 1
