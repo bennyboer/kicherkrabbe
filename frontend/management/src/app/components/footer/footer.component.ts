@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Theme, ThemeService } from '../../services';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-footer',
@@ -9,17 +9,8 @@ import { BehaviorSubject, map, Observable } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
-export class FooterComponent implements OnDestroy {
-  private readonly showHiddenThingsCounter$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  protected readonly showHiddenThings$: Observable<boolean> = this.showHiddenThingsCounter$.pipe(
-    map((counter) => counter > 10),
-  );
-
+export class FooterComponent {
   constructor(private readonly themeService: ThemeService) {}
-
-  ngOnDestroy(): void {
-    this.showHiddenThingsCounter$.complete();
-  }
 
   isDarkMode(): Observable<boolean> {
     return this.themeService.getTheme().pipe(map((theme) => theme === Theme.DARK));
@@ -27,9 +18,5 @@ export class FooterComponent implements OnDestroy {
 
   isLightMode(): Observable<boolean> {
     return this.themeService.getTheme().pipe(map((theme) => theme === Theme.LIGHT));
-  }
-
-  incrementShowHiddenThingsCounter(): void {
-    this.showHiddenThingsCounter$.next(this.showHiddenThingsCounter$.value + 1);
   }
 }

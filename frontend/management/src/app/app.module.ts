@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent, DarkModeToggleComponent, FooterComponent, HeaderComponent } from './components';
-import { NotFoundPage, StartPage } from './pages';
 import { SharedModule } from './modules/shared/shared.module';
 import { RoutingMetadataService, ThemeService } from './services';
 import { SortablejsModule } from 'nxt-sortablejs';
@@ -15,10 +14,9 @@ import de from '@angular/common/locales/de';
 import { DialogModule } from './modules/shared/modules/dialog';
 
 const COMPONENTS = [AppComponent, HeaderComponent, DarkModeToggleComponent, FooterComponent];
-const PAGES = [StartPage, NotFoundPage];
 
 @NgModule({
-  declarations: [...COMPONENTS, ...PAGES],
+  declarations: [...COMPONENTS],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

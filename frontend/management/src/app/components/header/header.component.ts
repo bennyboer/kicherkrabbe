@@ -3,15 +3,12 @@ import {
   animationFrameScheduler,
   BehaviorSubject,
   distinctUntilChanged,
-  filter,
   fromEvent,
   Observable,
   Subject,
   takeUntil,
   throttleTime,
 } from 'rxjs';
-import { NavigationEnd, Router } from '@angular/router';
-import { ButtonSize } from '../../modules/shared';
 import { none, Option, some } from '@kicherkrabbe/shared';
 
 @Component({
@@ -25,26 +22,11 @@ export class HeaderComponent implements AfterViewInit, OnDestroy {
   protected headerHeight: Option<number> = none();
 
   private readonly sticky$: Subject<boolean> = new BehaviorSubject(false);
-  private readonly overlayActive$: Subject<boolean> = new BehaviorSubject(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   private resizeObserver: Option<ResizeObserver> = none();
 
-  protected readonly ButtonSize = ButtonSize;
-
-  constructor(
-    private readonly elementRef: ElementRef<HTMLElement>,
-    private readonly router: Router,
-  ) {
-    this.router.events
-      .pipe(
-        filter((e) => e instanceof NavigationEnd),
-        takeUntil(this.destroy$),
-      )
-      .subscribe(() => {
-        this.closeOverlay();
-      });
-  }
+  constructor(private readonly elementRef: ElementRef<HTMLElement>) {}
 
   ngAfterViewInit(): void {
     const resizeObserver = new ResizeObserver(() => {
@@ -60,7 +42,6 @@ export class HeaderComponent implements AfterViewInit, OnDestroy {
     this.resizeObserver.ifSome((ro) => ro.disconnect());
 
     this.sticky$.complete();
-    this.overlayActive$.complete();
 
     this.destroy$.next();
     this.destroy$.complete();
@@ -68,18 +49,6 @@ export class HeaderComponent implements AfterViewInit, OnDestroy {
 
   isSticky(): Observable<boolean> {
     return this.sticky$.asObservable().pipe(distinctUntilChanged());
-  }
-
-  isOverlayActive(): Observable<boolean> {
-    return this.overlayActive$.asObservable().pipe(distinctUntilChanged());
-  }
-
-  openOverlay(): void {
-    this.overlayActive$.next(true);
-  }
-
-  closeOverlay(): void {
-    this.overlayActive$.next(false);
   }
 
   private setupScrollListener(): void {

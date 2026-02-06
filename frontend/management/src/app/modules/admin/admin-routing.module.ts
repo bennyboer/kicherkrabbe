@@ -17,7 +17,7 @@ const routes: Routes = [
         return authService.isLoggedIn().pipe(
           map((loggedIn) => {
             if (!loggedIn) {
-              return router.parseUrl('/admin/login');
+              return router.parseUrl('/login');
             }
 
             return true;

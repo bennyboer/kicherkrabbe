@@ -66,7 +66,7 @@ export class LoginPage implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          const redirect = someOrNone(this.route.snapshot.queryParams['redirect']).orElse('/admin');
+          const redirect = someOrNone(this.route.snapshot.queryParams['redirect']).orElse('/');
 
           this.router.navigate([redirect]);
         },
