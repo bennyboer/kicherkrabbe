@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { DOCUMENT } from "@angular/common";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { Badges } from "../badges/badges";
 import { InquirySection } from "../contact";
@@ -23,4 +24,10 @@ import { FeaturedPatterns } from "../patterns";
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomePage {}
+export class HomePage {
+	private readonly document = inject(DOCUMENT);
+
+	scrollToContactForm(): void {
+		this.document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" });
+	}
+}

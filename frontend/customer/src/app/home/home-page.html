@@ -1,6 +1,6 @@
 <app-highlights></app-highlights>
 <div class="offset-into-highlights">
-	<app-crab-helper></app-crab-helper>
+	<app-crab-helper (clicked)="scrollToContactForm()"></app-crab-helper>
 </div>
 <app-badges></app-badges>
 
@@ -18,7 +18,7 @@
 		<a routerLink="/fabrics">Alle Stoffe anzeigen ›</a>
 	</div>
 </section>
-<section>
+<section id="contact-form">
 	<h1>Anfrage</h1>
 	<app-inquiry-section></app-inquiry-section>
 </section>
