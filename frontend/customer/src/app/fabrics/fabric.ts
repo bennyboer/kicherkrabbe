@@ -7,6 +7,7 @@ export interface TypeAvailability {
 
 export class Fabric {
 	readonly id: string;
+	readonly alias: string;
 	readonly name: string;
 	readonly imageId: string;
 	readonly colorIds: string[];
@@ -15,6 +16,7 @@ export class Fabric {
 
 	private constructor(props: {
 		id: string;
+		alias: string;
 		name: string;
 		imageId: string;
 		colorIds: string[];
@@ -24,6 +26,7 @@ export class Fabric {
 		validateProps(props);
 
 		this.id = props.id;
+		this.alias = props.alias;
 		this.name = props.name;
 		this.imageId = props.imageId;
 		this.colorIds = props.colorIds;
@@ -33,6 +36,7 @@ export class Fabric {
 
 	static of(props: {
 		id: string;
+		alias: string;
 		name: string;
 		imageId: string;
 		colorIds?: string[];
@@ -41,6 +45,7 @@ export class Fabric {
 	}): Fabric {
 		return new Fabric({
 			id: props.id,
+			alias: props.alias,
 			name: props.name,
 			imageId: props.imageId,
 			colorIds: props.colorIds ?? [],

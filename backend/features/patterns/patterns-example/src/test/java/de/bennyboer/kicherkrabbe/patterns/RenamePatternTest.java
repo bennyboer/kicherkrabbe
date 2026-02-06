@@ -94,4 +94,59 @@ public class RenamePatternTest extends PatternsModuleTest {
         )).matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
+    @Test
+    void shouldNotRenamePatternWhenAliasIsAlreadyInUse() {
+        // given: a user is allowed to create patterns
+        allowUserToCreatePatterns("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: two patterns are created
+        String patternId1 = createSamplePattern(agent, "Summer Dress", "S-D-SUM-1");
+        String patternId2 = createSamplePattern(agent, "Winter Coat", "S-C-WIN-1");
+
+        // when: the user tries to rename the second pattern to the same name as the first; then: an error is raised
+        assertThatThrownBy(() -> renamePattern(
+                patternId2,
+                0L,
+                "Summer Dress",
+                agent
+        )).matches(e -> e.getCause() instanceof AliasAlreadyInUseError
+                && ((AliasAlreadyInUseError) e.getCause()).getConflictingPatternId().equals(PatternId.of(patternId1))
+                && ((AliasAlreadyInUseError) e.getCause()).getAlias().equals(PatternAlias.of("summer-dress")));
+
+        // when: the user tries to rename to a different name that slugifies to the same alias; then: an error is raised
+        assertThatThrownBy(() -> renamePattern(
+                patternId2,
+                0L,
+                "Summer-Dress",
+                agent
+        )).matches(e -> e.getCause() instanceof AliasAlreadyInUseError);
+
+        // when: the user renames the pattern to a unique name; then: no error is raised
+        renamePattern(patternId2, 0L, "Spring Jacket", agent);
+
+        // then: the pattern is renamed
+        var patterns = getPatterns(agent);
+        var pattern2 = patterns.stream().filter(p -> p.getId().equals(PatternId.of(patternId2))).findFirst().orElseThrow();
+        assertThat(pattern2.getName()).isEqualTo(PatternName.of("Spring Jacket"));
+    }
+
+    @Test
+    void shouldAllowRenamingPatternToSameName() {
+        // given: a user is allowed to create patterns
+        allowUserToCreatePatterns("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: a pattern is created
+        String patternId = createSamplePattern(agent, "Summer Dress", "S-D-SUM-1");
+
+        // when: the user renames the pattern to the same name (e.g., just fixing casing)
+        renamePattern(patternId, 0L, "Summer DRESS", agent);
+
+        // then: no error is raised (since the alias is for the same pattern)
+        var patterns = getPatterns(agent);
+        assertThat(patterns).hasSize(1);
+        assertThat(patterns.getFirst().getName()).isEqualTo(PatternName.of("Summer DRESS"));
+    }
+
 }

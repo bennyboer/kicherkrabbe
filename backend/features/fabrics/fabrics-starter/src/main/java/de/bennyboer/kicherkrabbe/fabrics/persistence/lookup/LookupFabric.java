@@ -22,6 +22,8 @@ public class LookupFabric implements VersionedReadModel<FabricId> {
 
     FabricName name;
 
+    FabricAlias alias;
+
     ImageId image;
 
     Set<ColorId> colors;
@@ -40,6 +42,7 @@ public class LookupFabric implements VersionedReadModel<FabricId> {
             FabricId id,
             Version version,
             FabricName name,
+            FabricAlias alias,
             ImageId image,
             Set<ColorId> colors,
             Set<TopicId> topics,
@@ -51,13 +54,14 @@ public class LookupFabric implements VersionedReadModel<FabricId> {
         notNull(id, "Fabric ID must be given");
         notNull(version, "Version must be given");
         notNull(name, "Name must be given");
+        notNull(alias, "Alias must be given");
         notNull(image, "Image ID must be given");
         notNull(colors, "Color IDs must be given");
         notNull(topics, "Topic IDs must be given");
         notNull(availability, "Availability must be given");
         notNull(createdAt, "Created at must be given");
 
-        return new LookupFabric(id, version, name, image, colors, topics, availability, published, featured, createdAt);
+        return new LookupFabric(id, version, name, alias, image, colors, topics, availability, published, featured, createdAt);
     }
 
 }

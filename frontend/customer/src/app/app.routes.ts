@@ -105,4 +105,9 @@ export const routes: Routes = [
 				(m) => m.CancellationPolicyPage
 			),
 	},
+	{
+		path: "**",
+		loadComponent: () =>
+			import("./not-found/not-found-page").then((m) => m.NotFoundPage),
+	},
 ];

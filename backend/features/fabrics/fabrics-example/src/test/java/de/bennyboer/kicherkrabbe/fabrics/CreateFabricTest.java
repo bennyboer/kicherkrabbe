@@ -350,6 +350,68 @@ public class CreateFabricTest extends FabricsModuleTest {
     }
 
     @Test
+    void shouldNotCreateFabricWhenAliasIsAlreadyInUse() {
+        // given: a user is allowed to create fabrics
+        allowUserToCreateFabrics("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+
+        // and: a fabric is created
+        String fabricId = createFabric(
+                "Ice bear party",
+                "ICE_BEAR_IMAGE_ID",
+                Set.of("BLUE_ID"),
+                Set.of("WINTER_ID"),
+                Set.of(jerseyAvailability),
+                agent
+        );
+
+        // when: another fabric with the same name (and thus alias) is created; then: an error is raised
+        assertThatThrownBy(() -> createFabric(
+                "Ice bear party",
+                "OTHER_IMAGE_ID",
+                Set.of("BLUE_ID"),
+                Set.of("WINTER_ID"),
+                Set.of(jerseyAvailability),
+                agent
+        )).matches(e -> e.getCause() instanceof AliasAlreadyInUseError
+                && ((AliasAlreadyInUseError) e.getCause()).getConflictingFabricId().equals(FabricId.of(fabricId))
+                && ((AliasAlreadyInUseError) e.getCause()).getAlias().equals(FabricAlias.of("ice-bear-party")));
+
+        // when: a fabric with a different name that slugifies to the same alias is created; then: an error is raised
+        assertThatThrownBy(() -> createFabric(
+                "Ice-Bear-Party",
+                "OTHER_IMAGE_ID",
+                Set.of("BLUE_ID"),
+                Set.of("WINTER_ID"),
+                Set.of(jerseyAvailability),
+                agent
+        )).matches(e -> e.getCause() instanceof AliasAlreadyInUseError);
+
+        // when: a fabric with a different name is created; then: no error is raised
+        createFabric(
+                "Summer flowers",
+                "SUMMER_IMAGE_ID",
+                Set.of("BLUE_ID"),
+                Set.of("WINTER_ID"),
+                Set.of(jerseyAvailability),
+                agent
+        );
+
+        // then: two fabrics exist
+        var fabrics = getFabrics(agent);
+        assertThat(fabrics).hasSize(2);
+    }
+
+    @Test
     void shouldCreateMultipleFabrics() {
         // given: a user is allowed to create topics
         allowUserToCreateFabrics("USER_ID");

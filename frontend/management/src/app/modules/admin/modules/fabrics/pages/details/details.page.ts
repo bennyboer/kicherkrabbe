@@ -113,9 +113,17 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
             type: 'success',
           });
         },
-        error: () => {
+        error: (e) => {
           this.updatingName$.next(false);
-          this.failedUpdatingName$.next(true);
+          const reason = e?.error?.reason;
+          if (reason === 'ALIAS_ALREADY_IN_USE') {
+            this.notificationService.publish({
+              message: 'Es existiert bereits ein Stoff mit diesem Namen.',
+              type: 'error',
+            });
+          } else {
+            this.failedUpdatingName$.next(true);
+          }
         },
       });
   }

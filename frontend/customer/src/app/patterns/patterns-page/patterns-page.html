@@ -55,7 +55,7 @@
 			} @else {
 				<div class="product-grid">
 					@for (pattern of patterns$ | async; track pattern.id) {
-						<a [routerLink]="['/patterns', pattern.id]" class="product-link">
+						<a [routerLink]="['/patterns', pattern.alias]" class="product-link">
 							<app-pattern-card [pattern]="pattern" />
 						</a>
 					}

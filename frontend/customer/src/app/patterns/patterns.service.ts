@@ -41,6 +41,7 @@ interface PatternAttributionDTO {
 
 interface PublishedPatternDTO {
 	id: string;
+	alias: string;
 	name: string;
 	number?: string;
 	description?: string;
@@ -195,6 +196,7 @@ export class PatternsService {
 	private toInternalPattern(dto: PublishedPatternDTO): Pattern {
 		return Pattern.of({
 			id: dto.id,
+			alias: dto.alias,
 			name: dto.name,
 			number: dto.number ?? null,
 			description: dto.description ?? null,

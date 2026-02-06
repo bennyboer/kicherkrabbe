@@ -2,6 +2,7 @@ package de.bennyboer.kicherkrabbe.fabrics.http;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.fabrics.FabricAlias;
 import de.bennyboer.kicherkrabbe.fabrics.FabricId;
 import de.bennyboer.kicherkrabbe.fabrics.FabricName;
 import de.bennyboer.kicherkrabbe.fabrics.ImageId;
@@ -29,6 +30,7 @@ public class QueryPublishedFabricHttpHandlerTest extends HttpHandlerTest {
         )).thenReturn(Mono.just(PublishedFabric.of(
                 FabricId.of("FABRIC_ID"),
                 FabricName.of("Fabric name"),
+                FabricAlias.of("fabric-name"),
                 ImageId.of("IMAGE_ID"),
                 Set.of(),
                 Set.of(),
@@ -47,6 +49,7 @@ public class QueryPublishedFabricHttpHandlerTest extends HttpHandlerTest {
         // and: the response contains the published fabric
         var response = exchange.expectBody(QueryPublishedFabricResponse.class).returnResult().getResponseBody();
         assertThat(response.fabric.id).isEqualTo("FABRIC_ID");
+        assertThat(response.fabric.alias).isEqualTo("fabric-name");
         assertThat(response.fabric.name).isEqualTo("Fabric name");
         assertThat(response.fabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(response.fabric.colorIds).isEmpty();
@@ -63,6 +66,7 @@ public class QueryPublishedFabricHttpHandlerTest extends HttpHandlerTest {
         )).thenReturn(Mono.just(PublishedFabric.of(
                 FabricId.of("FABRIC_ID"),
                 FabricName.of("Fabric name"),
+                FabricAlias.of("fabric-name"),
                 ImageId.of("IMAGE_ID"),
                 Set.of(),
                 Set.of(),
@@ -80,6 +84,7 @@ public class QueryPublishedFabricHttpHandlerTest extends HttpHandlerTest {
         // and: the response contains the published fabric
         var response = exchange.expectBody(QueryPublishedFabricResponse.class).returnResult().getResponseBody();
         assertThat(response.fabric.id).isEqualTo("FABRIC_ID");
+        assertThat(response.fabric.alias).isEqualTo("fabric-name");
         assertThat(response.fabric.name).isEqualTo("Fabric name");
         assertThat(response.fabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(response.fabric.colorIds).isEmpty();

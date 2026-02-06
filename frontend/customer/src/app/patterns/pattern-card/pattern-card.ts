@@ -46,6 +46,6 @@ export class PatternCard implements OnDestroy {
 	}
 
 	navigateToDetails(): void {
-		this.router.navigate(["/patterns", this.pattern.id]);
+		this.router.navigate(["/patterns", this.pattern.alias]);
 	}
 }

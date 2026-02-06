@@ -2,6 +2,7 @@ package de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.mongo;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.MongoEventSourcingReadModelRepo;
 import de.bennyboer.kicherkrabbe.fabrics.ColorId;
+import de.bennyboer.kicherkrabbe.fabrics.FabricAlias;
 import de.bennyboer.kicherkrabbe.fabrics.FabricId;
 import de.bennyboer.kicherkrabbe.fabrics.FabricTypeId;
 import de.bennyboer.kicherkrabbe.fabrics.TopicId;
@@ -87,6 +88,25 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
     @Override
     public Mono<LookupFabric> findPublished(FabricId id) {
         Criteria criteria = where("_id").is(id.getValue())
+                .and("published").is(true);
+        Query query = query(criteria);
+
+        return template.findOne(query, MongoLookupFabric.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
+    public Mono<LookupFabric> findByAlias(FabricAlias alias) {
+        Criteria criteria = where("alias").is(alias.getValue());
+        Query query = query(criteria);
+
+        return template.findOne(query, MongoLookupFabric.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
+    public Mono<LookupFabric> findPublishedByAlias(FabricAlias alias) {
+        Criteria criteria = where("alias").is(alias.getValue())
                 .and("published").is(true);
         Query query = query(criteria);
 
@@ -231,6 +251,7 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         IndexDefinition createdAtIndex = new Index().on("createdAt", Sort.Direction.ASC);
         IndexDefinition nameIndex = new Index().on("name", Sort.Direction.ASC);
+        IndexDefinition aliasIndex = new Index().on("alias", Sort.Direction.ASC).unique();
         IndexDefinition publishedIndex = new Index().on("published", Sort.Direction.ASC);
         IndexDefinition colorsIndex = new Index().on("colors", Sort.Direction.ASC);
         IndexDefinition topicsIndex = new Index().on("topics", Sort.Direction.ASC);
@@ -240,6 +261,7 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
 
         return indexOps.createIndex(createdAtIndex)
                 .then(indexOps.createIndex(nameIndex))
+                .then(indexOps.createIndex(aliasIndex))
                 .then(indexOps.createIndex(publishedIndex))
                 .then(indexOps.createIndex(colorsIndex))
                 .then(indexOps.createIndex(topicsIndex))

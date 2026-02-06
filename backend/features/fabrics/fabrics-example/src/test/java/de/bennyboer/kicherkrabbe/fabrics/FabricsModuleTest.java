@@ -125,6 +125,11 @@ public class FabricsModuleTest {
         return createFabric(SampleFabric.builder().build(), agent);
     }
 
+    public String createSampleFabric(Agent agent, String name) {
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+        return createFabric(SampleFabric.builder().name(name).build(), agent);
+    }
+
     public void deleteFabric(String fabricId, long version, Agent agent) {
         module.deleteFabric(fabricId, version, agent).block();
 

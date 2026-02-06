@@ -16,6 +16,8 @@ public class PublishedFabric {
 
     FabricName name;
 
+    FabricAlias alias;
+
     ImageId image;
 
     Set<ColorId> colors;
@@ -27,6 +29,7 @@ public class PublishedFabric {
     public static PublishedFabric of(
             FabricId id,
             FabricName name,
+            FabricAlias alias,
             ImageId image,
             Set<ColorId> colors,
             Set<TopicId> topics,
@@ -34,12 +37,13 @@ public class PublishedFabric {
     ) {
         notNull(id, "Fabric ID must be given");
         notNull(name, "Fabric name must be given");
+        notNull(alias, "Fabric alias must be given");
         notNull(image, "Fabric image must be given");
         notNull(colors, "Fabric colors must be given");
         notNull(topics, "Fabric topics must be given");
         notNull(availability, "Fabric availability must be given");
 
-        return new PublishedFabric(id, name, image, colors, topics, availability);
+        return new PublishedFabric(id, name, alias, image, colors, topics, availability);
     }
 
 }

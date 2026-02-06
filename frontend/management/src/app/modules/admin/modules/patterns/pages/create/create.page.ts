@@ -153,11 +153,24 @@ export class CreatePage implements OnInit, OnDestroy {
       .pipe(
         first(),
         catchError((e) => {
-          console.error(e);
-          this.notificationService.publish({
-            type: 'error',
-            message: 'Das Schnittmuster konnte nicht erstellt werden. Bitte versuche es erneut.',
-          });
+          const reason = e?.error?.reason;
+          if (reason === 'NUMBER_ALREADY_IN_USE') {
+            this.notificationService.publish({
+              type: 'error',
+              message: 'Die Nummer des Schnittmusters ist bereits vergeben.',
+            });
+          } else if (reason === 'ALIAS_ALREADY_IN_USE') {
+            this.notificationService.publish({
+              type: 'error',
+              message: 'Es existiert bereits ein Schnittmuster mit diesem Namen.',
+            });
+          } else {
+            console.error(e);
+            this.notificationService.publish({
+              type: 'error',
+              message: 'Das Schnittmuster konnte nicht erstellt werden. Bitte versuche es erneut.',
+            });
+          }
           return [];
         }),
         finalize(() => this.creating$.next(false)),

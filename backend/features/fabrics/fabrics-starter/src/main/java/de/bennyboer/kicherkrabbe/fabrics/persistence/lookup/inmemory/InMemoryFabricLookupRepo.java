@@ -51,6 +51,20 @@ public class InMemoryFabricLookupRepo extends InMemoryEventSourcingReadModelRepo
     }
 
     @Override
+    public Mono<LookupFabric> findByAlias(FabricAlias alias) {
+        return getAll()
+                .filter(fabric -> fabric.getAlias().equals(alias))
+                .singleOrEmpty();
+    }
+
+    @Override
+    public Mono<LookupFabric> findPublishedByAlias(FabricAlias alias) {
+        return getAll()
+                .filter(fabric -> fabric.getAlias().equals(alias) && fabric.isPublished())
+                .singleOrEmpty();
+    }
+
+    @Override
     public Mono<LookupFabricPage> findPublished(
             String searchTerm,
             Set<ColorId> colors,

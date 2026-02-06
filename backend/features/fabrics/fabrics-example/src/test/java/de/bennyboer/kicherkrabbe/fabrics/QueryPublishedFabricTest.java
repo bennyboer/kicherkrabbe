@@ -149,6 +149,43 @@ public class QueryPublishedFabricTest extends FabricsModuleTest {
     }
 
     @Test
+    void shouldQueryPublishedFabricByAlias() {
+        // given: a user is allowed to create fabrics
+        allowUserToCreateFabrics("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: some topics are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+
+        // and: some colors are available
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+
+        // and: some fabric types are available
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+
+        // and: the user creates a fabric
+        String fabricId = createFabric(
+                "Ice bear party",
+                "ICE_BEAR_IMAGE_ID",
+                Set.of("BLUE_ID"),
+                Set.of("WINTER_ID"),
+                Set.of(jerseyAvailability),
+                agent
+        );
+
+        // and: the fabric is published
+        publishFabric(fabricId, 0L, agent);
+
+        // when: querying the fabric by its alias
+        var fabric = getPublishedFabric("ice-bear-party", Agent.anonymous());
+
+        // then: the published fabric is returned
+        assertThat(fabric.getId()).isEqualTo(FabricId.of(fabricId));
+        assertThat(fabric.getAlias()).isEqualTo(FabricAlias.of("ice-bear-party"));
+        assertThat(fabric.getName()).isEqualTo(FabricName.of("Ice bear party"));
+    }
+
+    @Test
     void shouldReturnEmptyWhenPublishedFabricDoesNotExist() {
         // when: querying a fabric that does not exist
         var fabric = getPublishedFabric("UNKNOWN_FABRIC_ID", Agent.anonymous());

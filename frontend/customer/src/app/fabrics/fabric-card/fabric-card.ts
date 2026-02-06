@@ -37,6 +37,6 @@ export class FabricCard implements OnDestroy {
 	}
 
 	navigateToDetails(): void {
-		this.router.navigate(["/fabrics", this.fabric.id]);
+		this.router.navigate(["/fabrics", this.fabric.alias]);
 	}
 }

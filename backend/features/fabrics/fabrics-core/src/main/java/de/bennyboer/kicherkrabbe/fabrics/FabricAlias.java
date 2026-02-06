@@ -1,4 +1,4 @@
-package de.bennyboer.kicherkrabbe.patterns;
+package de.bennyboer.kicherkrabbe.fabrics;
 
 import com.github.slugify.Slugify;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class PatternAlias {
+public class FabricAlias {
 
     private static final Slugify SLUGIFY = Slugify.builder()
             .locale(Locale.GERMAN)
@@ -20,22 +20,22 @@ public class PatternAlias {
 
     String value;
 
-    public static PatternAlias of(String value) {
-        notNull(value, "Pattern alias must be given");
-        check(!value.isBlank(), "Pattern alias must not be blank");
+    public static FabricAlias of(String value) {
+        notNull(value, "Fabric alias must be given");
+        check(!value.isBlank(), "Fabric alias must not be blank");
 
-        return new PatternAlias(value);
+        return new FabricAlias(value);
     }
 
-    public static PatternAlias fromName(PatternName name) {
-        notNull(name, "Pattern name must be given");
+    public static FabricAlias fromName(FabricName name) {
+        notNull(name, "Fabric name must be given");
 
         return of(SLUGIFY.slugify(name.getValue()));
     }
 
     @Override
     public String toString() {
-        return "PatternAlias(%s)".formatted(value);
+        return "FabricAlias(%s)".formatted(value);
     }
 
 }

@@ -56,6 +56,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
                 List.of(PublishedFabric.of(
                         FabricId.of("FABRIC_ID"),
                         FabricName.of("Fabric name"),
+                        FabricAlias.of("fabric-name"),
                         ImageId.of("IMAGE_ID"),
                         Set.of(ColorId.of("COLOR_ID")),
                         Set.of(TopicId.of("TOPIC_ID")),
@@ -81,6 +82,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
         assertThat(response.fabrics).hasSize(1);
         var fabric = response.fabrics.get(0);
         assertThat(fabric.id).isEqualTo("FABRIC_ID");
+        assertThat(fabric.alias).isEqualTo("fabric-name");
         assertThat(fabric.name).isEqualTo("Fabric name");
         assertThat(fabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(fabric.colorIds).containsExactly("COLOR_ID");
@@ -121,6 +123,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
                 List.of(PublishedFabric.of(
                         FabricId.of("FABRIC_ID"),
                         FabricName.of("Fabric name"),
+                        FabricAlias.of("fabric-name"),
                         ImageId.of("IMAGE_ID"),
                         Set.of(ColorId.of("COLOR_ID")),
                         Set.of(TopicId.of("TOPIC_ID")),
@@ -145,6 +148,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
         assertThat(response.fabrics).hasSize(1);
         var fabric = response.fabrics.get(0);
         assertThat(fabric.id).isEqualTo("FABRIC_ID");
+        assertThat(fabric.alias).isEqualTo("fabric-name");
         assertThat(fabric.name).isEqualTo("Fabric name");
         assertThat(fabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(fabric.colorIds).containsExactly("COLOR_ID");

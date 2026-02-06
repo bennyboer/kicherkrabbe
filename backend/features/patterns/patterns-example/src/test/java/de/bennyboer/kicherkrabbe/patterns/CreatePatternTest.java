@@ -455,10 +455,10 @@ public class CreatePatternTest extends PatternsModuleTest {
         allowUserToCreatePatterns("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
-        // when: the user creates multiple patterns with different numbers
-        createPattern(SamplePattern.builder().number("S-D-PAR-1").build(), agent);
-        createPattern(SamplePattern.builder().number("S-D-SUM-1").build(), agent);
-        createPattern(SamplePattern.builder().number("S-D-WIN-1").build(), agent);
+        // when: the user creates multiple patterns with different names and numbers
+        createPattern(SamplePattern.builder().name("Party Dress").number("S-D-PAR-1").build(), agent);
+        createPattern(SamplePattern.builder().name("Summer Dress").number("S-D-SUM-1").build(), agent);
+        createPattern(SamplePattern.builder().name("Winter Coat").number("S-D-WIN-1").build(), agent);
 
         // then: the patterns are created
         var patterns = getPatterns(agent);
@@ -481,7 +481,7 @@ public class CreatePatternTest extends PatternsModuleTest {
 
         // when: the user creates a pattern without description
         String patternId = createPattern(
-                SamplePattern.builder().number("S-D-SUM-1").description(null).build(),
+                SamplePattern.builder().name("Summer Dress").number("S-D-SUM-1").description(null).build(),
                 agent
         );
 
@@ -495,7 +495,7 @@ public class CreatePatternTest extends PatternsModuleTest {
 
         // when: the user creates a pattern with an empty description
         patternId = createPattern(
-                SamplePattern.builder().number("S-D-NXT-1").description("").build(),
+                SamplePattern.builder().name("Next Pattern").number("S-D-NXT-1").description("").build(),
                 agent
         );
 
@@ -528,6 +528,55 @@ public class CreatePatternTest extends PatternsModuleTest {
 
             return false;
         });
+    }
+
+    @Test
+    void shouldNotCreatePatternWhenAliasIsAlreadyInUse() {
+        // given: a user is allowed to create patterns
+        allowUserToCreatePatterns("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: the user creates a pattern
+        String patternId = createPattern(
+                SamplePattern.builder()
+                        .name("Summer Dress")
+                        .number("S-D-SUM-1")
+                        .build(),
+                agent
+        );
+
+        // when: another pattern with the same name (and thus alias) is created; then: an error is raised
+        assertThatThrownBy(() -> createPattern(
+                SamplePattern.builder()
+                        .name("Summer Dress")
+                        .number("S-D-SUM-2")
+                        .build(),
+                agent
+        )).matches(e -> e.getCause() instanceof AliasAlreadyInUseError
+                && ((AliasAlreadyInUseError) e.getCause()).getConflictingPatternId().equals(PatternId.of(patternId))
+                && ((AliasAlreadyInUseError) e.getCause()).getAlias().equals(PatternAlias.of("summer-dress")));
+
+        // when: a pattern with a different name that slugifies to the same alias is created; then: an error is raised
+        assertThatThrownBy(() -> createPattern(
+                SamplePattern.builder()
+                        .name("Summer-Dress")
+                        .number("S-D-SUM-3")
+                        .build(),
+                agent
+        )).matches(e -> e.getCause() instanceof AliasAlreadyInUseError);
+
+        // when: a pattern with a different name is created; then: no error is raised
+        createPattern(
+                SamplePattern.builder()
+                        .name("Winter Coat")
+                        .number("S-C-WIN-1")
+                        .build(),
+                agent
+        );
+
+        // then: two patterns exist
+        var patterns = getPatterns(agent);
+        assertThat(patterns).hasSize(2);
     }
 
 }

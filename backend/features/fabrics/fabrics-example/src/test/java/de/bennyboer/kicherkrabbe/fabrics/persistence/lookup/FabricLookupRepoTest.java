@@ -210,6 +210,41 @@ public abstract class FabricLookupRepoTest {
     }
 
     @Test
+    void shouldFindPublishedFabricByAlias() {
+        // given: a published and an unpublished fabric with different aliases
+        var fabric1 = SampleLookupFabric.builder()
+                .alias(FabricAlias.of("ice-bear-party"))
+                .published(true)
+                .build()
+                .toModel();
+        var fabric2 = SampleLookupFabric.builder()
+                .alias(FabricAlias.of("colorful-meadow"))
+                .published(false)
+                .build()
+                .toModel();
+        update(fabric1);
+        update(fabric2);
+
+        // when: finding the published fabric by alias
+        var foundFabric1 = findPublishedByAlias(FabricAlias.of("ice-bear-party"));
+
+        // then: the published fabric is found
+        assertThat(foundFabric1).isEqualTo(fabric1);
+
+        // when: finding the unpublished fabric by alias
+        var foundFabric2 = findPublishedByAlias(FabricAlias.of("colorful-meadow"));
+
+        // then: the unpublished fabric is not found
+        assertThat(foundFabric2).isNull();
+
+        // when: finding a fabric by a non-existing alias
+        var foundFabric3 = findPublishedByAlias(FabricAlias.of("non-existing"));
+
+        // then: no fabric is found
+        assertThat(foundFabric3).isNull();
+    }
+
+    @Test
     void shouldFindPublishedFabrics() {
         // given: some fabrics with different names and availability
         var fabric1 = SampleLookupFabric.builder()
@@ -564,6 +599,10 @@ public abstract class FabricLookupRepoTest {
 
     private LookupFabric findPublished(FabricId id) {
         return repo.findPublished(id).block();
+    }
+
+    private LookupFabric findPublishedByAlias(FabricAlias alias) {
+        return repo.findPublishedByAlias(alias).block();
     }
 
     private LookupFabricPage findPublished(

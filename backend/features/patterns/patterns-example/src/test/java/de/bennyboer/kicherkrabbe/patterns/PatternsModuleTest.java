@@ -268,4 +268,8 @@ public class PatternsModuleTest {
         return createPattern(SamplePattern.builder().build(), agent);
     }
 
+    public String createSamplePattern(Agent agent, String name, String number) {
+        return createPattern(SamplePattern.builder().name(name).number(number).build(), agent);
+    }
+
 }

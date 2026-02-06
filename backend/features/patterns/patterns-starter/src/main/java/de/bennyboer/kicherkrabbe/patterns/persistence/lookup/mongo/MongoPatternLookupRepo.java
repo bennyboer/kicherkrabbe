@@ -225,7 +225,7 @@ public class MongoPatternLookupRepo
     @Override
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         IndexDefinition categoriesIndex = new Index().on("categories", ASC);
-        IndexDefinition aliasIndex = new Index().on("alias", ASC);
+        IndexDefinition aliasIndex = new Index().on("alias", ASC).unique();
         IndexDefinition numberIndex = new Index().on("number", ASC).unique();
         IndexDefinition featuredIndex = new Index().on("published", ASC).on("featured", ASC);
 

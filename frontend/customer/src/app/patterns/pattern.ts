@@ -27,6 +27,7 @@ export interface PatternAttribution {
 
 export class Pattern {
 	readonly id: string;
+	readonly alias: string;
 	readonly name: string;
 	readonly number: string | null;
 	readonly description: string | null;
@@ -38,6 +39,7 @@ export class Pattern {
 
 	private constructor(props: {
 		id: string;
+		alias: string;
 		name: string;
 		number: string | null;
 		description: string | null;
@@ -48,6 +50,7 @@ export class Pattern {
 		categoryIds: string[];
 	}) {
 		this.id = props.id;
+		this.alias = props.alias;
 		this.name = props.name;
 		this.number = props.number;
 		this.description = props.description;
@@ -60,6 +63,7 @@ export class Pattern {
 
 	static of(props: {
 		id: string;
+		alias: string;
 		name: string;
 		number?: string | null;
 		description?: string | null;
@@ -71,6 +75,7 @@ export class Pattern {
 	}): Pattern {
 		return new Pattern({
 			id: props.id,
+			alias: props.alias,
 			name: props.name,
 			number: props.number ?? null,
 			description: props.description ?? null,

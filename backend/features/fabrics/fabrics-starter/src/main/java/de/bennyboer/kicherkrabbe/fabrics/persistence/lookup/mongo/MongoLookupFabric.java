@@ -22,6 +22,8 @@ public class MongoLookupFabric {
 
     String name;
 
+    String alias;
+
     String imageId;
 
     Set<String> colorIds;

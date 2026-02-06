@@ -235,9 +235,12 @@ public class PatternsModule {
         var internalVariants = toInternalVariants(variants);
         var internalExtras = toInternalExtras(extras);
 
+        var alias = PatternAlias.fromName(internalName);
+
         return assertAgentIsAllowedTo(agent, CREATE)
                 .then(assertCategoriesAvailable(internalCategories))
                 .then(assertPatternNumberIsNotAlreadyInUse(internalNumber))
+                .then(assertAliasIsNotAlreadyInUse(alias, null))
                 .then(patternService.create(
                         internalName,
                         internalNumber,
@@ -255,8 +258,10 @@ public class PatternsModule {
     @Transactional(propagation = MANDATORY)
     public Mono<Long> renamePattern(String patternId, long version, String name, Agent agent) {
         var internalPatternId = PatternId.of(patternId);
+        var alias = PatternAlias.fromName(PatternName.of(name));
 
         return assertAgentIsAllowedTo(agent, RENAME, internalPatternId)
+                .then(assertAliasIsNotAlreadyInUse(alias, internalPatternId))
                 .then(patternService.rename(internalPatternId, Version.of(version), PatternName.of(name), agent))
                 .map(Version::getValue);
     }
@@ -814,6 +819,13 @@ public class PatternsModule {
         return patternLookupRepo.findByNumber(number)
                 .map(LookupPattern::getId)
                 .flatMap(foundId -> Mono.error(new NumberAlreadyInUseError(foundId, number)));
+    }
+
+    private Mono<Void> assertAliasIsNotAlreadyInUse(PatternAlias alias, @Nullable PatternId excludeId) {
+        return patternLookupRepo.findByAlias(alias)
+                .filter(pattern -> excludeId == null || !pattern.getId().equals(excludeId))
+                .map(LookupPattern::getId)
+                .flatMap(conflictingId -> Mono.error(new AliasAlreadyInUseError(conflictingId, alias)));
     }
 
 }

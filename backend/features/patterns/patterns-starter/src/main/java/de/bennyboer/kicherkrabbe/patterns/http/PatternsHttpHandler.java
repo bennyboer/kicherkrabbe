@@ -224,6 +224,14 @@ public class PatternsHttpHandler {
                                         "number", e.getNumber().getValue()
                                 ))
                 )
+                .onErrorResume(
+                        AliasAlreadyInUseError.class, e -> ServerResponse.status(PRECONDITION_FAILED)
+                                .bodyValue(Map.of(
+                                        "reason", "ALIAS_ALREADY_IN_USE",
+                                        "patternId", e.getConflictingPatternId().getValue(),
+                                        "alias", e.getAlias().getValue()
+                                ))
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -258,6 +266,14 @@ public class PatternsHttpHandler {
                                 e.getMessage(),
                                 e
                         )
+                )
+                .onErrorResume(
+                        AliasAlreadyInUseError.class, e -> ServerResponse.status(PRECONDITION_FAILED)
+                                .bodyValue(Map.of(
+                                        "reason", "ALIAS_ALREADY_IN_USE",
+                                        "patternId", e.getConflictingPatternId().getValue(),
+                                        "alias", e.getAlias().getValue()
+                                ))
                 )
                 .as(transactionalOperator::transactional);
     }

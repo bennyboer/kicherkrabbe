@@ -13,6 +13,7 @@ interface FabricTypeAvailabilityDTO {
 
 interface PublishedFabricDTO {
 	id: string;
+	alias: string;
 	name: string;
 	imageId: string;
 	colorIds: string[];
@@ -223,6 +224,7 @@ export class FabricsService {
 	private toInternalFabric(dto: PublishedFabricDTO): Fabric {
 		return Fabric.of({
 			id: dto.id,
+			alias: dto.alias,
 			name: dto.name,
 			imageId: dto.imageId,
 			colorIds: dto.colorIds ?? [],

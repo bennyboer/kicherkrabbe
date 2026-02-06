@@ -74,6 +74,61 @@ public class RenameFabricTest extends FabricsModuleTest {
     }
 
     @Test
+    void shouldNotRenameFabricWhenAliasIsAlreadyInUse() {
+        // given: a user is allowed to create fabrics
+        allowUserToCreateFabrics("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: two fabrics are created
+        String fabricId1 = createSampleFabric(agent, "Ice bear party");
+        String fabricId2 = createSampleFabric(agent, "Summer flowers");
+
+        // when: the user tries to rename the second fabric to the same name as the first; then: an error is raised
+        assertThatThrownBy(() -> renameFabric(
+                fabricId2,
+                0L,
+                "Ice bear party",
+                agent
+        )).matches(e -> e.getCause() instanceof AliasAlreadyInUseError
+                && ((AliasAlreadyInUseError) e.getCause()).getConflictingFabricId().equals(FabricId.of(fabricId1))
+                && ((AliasAlreadyInUseError) e.getCause()).getAlias().equals(FabricAlias.of("ice-bear-party")));
+
+        // when: the user tries to rename to a different name that slugifies to the same alias; then: an error is raised
+        assertThatThrownBy(() -> renameFabric(
+                fabricId2,
+                0L,
+                "Ice-Bear-Party",
+                agent
+        )).matches(e -> e.getCause() instanceof AliasAlreadyInUseError);
+
+        // when: the user renames the fabric to a unique name; then: no error is raised
+        renameFabric(fabricId2, 0L, "Winter wonderland", agent);
+
+        // then: the fabric is renamed
+        var fabrics = getFabrics(agent);
+        var fabric2 = fabrics.stream().filter(f -> f.getId().equals(FabricId.of(fabricId2))).findFirst().orElseThrow();
+        assertThat(fabric2.getName()).isEqualTo(FabricName.of("Winter wonderland"));
+    }
+
+    @Test
+    void shouldAllowRenamingFabricToSameName() {
+        // given: a user is allowed to create fabrics
+        allowUserToCreateFabrics("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: a fabric is created
+        String fabricId = createSampleFabric(agent, "Ice bear party");
+
+        // when: the user renames the fabric to the same name (e.g., just fixing casing)
+        renameFabric(fabricId, 0L, "Ice Bear Party", agent);
+
+        // then: no error is raised (since the alias is for the same fabric)
+        var fabrics = getFabrics(agent);
+        assertThat(fabrics).hasSize(1);
+        assertThat(fabrics.getFirst().getName()).isEqualTo(FabricName.of("Ice Bear Party"));
+    }
+
+    @Test
     void shouldNotRenameFabricGivenAnOutdatedVersion() {
         // given: a user that is allowed to create fabrics
         allowUserToCreateFabrics("USER_ID");

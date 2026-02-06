@@ -15,6 +15,8 @@ public class PublishedFabricDTO {
 
     String id;
 
+    String alias;
+
     String name;
 
     String imageId;

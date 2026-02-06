@@ -113,9 +113,17 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
           });
           this.router.navigate(['..'], { relativeTo: this.route });
         },
-        error: () => {
-          this.failed$.next(true);
+        error: (e) => {
           this.creatingFabric$.next(false);
+          const reason = e?.error?.reason;
+          if (reason === 'ALIAS_ALREADY_IN_USE') {
+            this.notificationService.publish({
+              message: 'Es existiert bereits ein Stoff mit diesem Namen.',
+              type: 'error',
+            });
+          } else {
+            this.failed$.next(true);
+          }
         },
       });
 

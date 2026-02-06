@@ -27,6 +27,7 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -267,6 +268,13 @@ public class FabricsHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(AliasAlreadyInUseError.class, e -> ServerResponse.status(PRECONDITION_FAILED)
+                        .bodyValue(Map.of(
+                                "reason", "ALIAS_ALREADY_IN_USE",
+                                "fabricId", e.getConflictingFabricId().getValue(),
+                                "alias", e.getAlias().getValue()
+                        ))
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -298,6 +306,13 @@ public class FabricsHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(AliasAlreadyInUseError.class, e -> ServerResponse.status(PRECONDITION_FAILED)
+                        .bodyValue(Map.of(
+                                "reason", "ALIAS_ALREADY_IN_USE",
+                                "fabricId", e.getConflictingFabricId().getValue(),
+                                "alias", e.getAlias().getValue()
+                        ))
+                )
                 .as(transactionalOperator::transactional);
     }
 
@@ -677,6 +692,7 @@ public class FabricsHttpHandler {
         var result = new PublishedFabricDTO();
 
         result.id = fabric.getId().getValue();
+        result.alias = fabric.getAlias().getValue();
         result.name = fabric.getName().getValue();
         result.imageId = fabric.getImage().getValue();
         result.colorIds = toColorIds(fabric.getColors());

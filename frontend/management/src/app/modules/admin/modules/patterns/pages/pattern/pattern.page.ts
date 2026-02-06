@@ -264,11 +264,19 @@ export class PatternPage implements OnInit, OnDestroy {
           });
         },
         error: (e) => {
-          console.error(e);
-          this.notificationService.publish({
-            type: 'error',
-            message: 'Der Name des Schnittmusters konnte nicht geändert werden',
-          });
+          const reason = e?.error?.reason;
+          if (reason === 'ALIAS_ALREADY_IN_USE') {
+            this.notificationService.publish({
+              type: 'error',
+              message: 'Es existiert bereits ein Schnittmuster mit diesem Namen.',
+            });
+          } else {
+            console.error(e);
+            this.notificationService.publish({
+              type: 'error',
+              message: 'Der Name des Schnittmusters konnte nicht geändert werden',
+            });
+          }
         },
       });
   }

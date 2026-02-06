@@ -136,14 +136,18 @@ public class FabricsModule {
                 ));
     }
 
-    public Mono<PublishedFabric> getPublishedFabric(String fabricId, Agent agent) {
-        var id = FabricId.of(fabricId);
-
-        return assertAgentIsAllowedTo(agent, READ_PUBLISHED, id)
-                .then(fabricLookupRepo.findPublished(id))
+    public Mono<PublishedFabric> getPublishedFabric(String fabricIdOrAlias, Agent agent) {
+        return fabricLookupRepo.findPublishedByAlias(FabricAlias.of(fabricIdOrAlias))
+                .switchIfEmpty(Mono.defer(() -> {
+                    var id = FabricId.of(fabricIdOrAlias);
+                    return fabricLookupRepo.findPublished(id);
+                }))
+                .flatMap(fabric -> assertAgentIsAllowedTo(agent, READ_PUBLISHED, fabric.getId())
+                        .thenReturn(fabric))
                 .map(fabric -> PublishedFabric.of(
                         fabric.getId(),
                         fabric.getName(),
+                        fabric.getAlias(),
                         fabric.getImage(),
                         fabric.getColors(),
                         fabric.getTopics(),
@@ -157,6 +161,7 @@ public class FabricsModule {
                 .map(fabric -> PublishedFabric.of(
                         fabric.getId(),
                         fabric.getName(),
+                        fabric.getAlias(),
                         fabric.getImage(),
                         fabric.getColors(),
                         fabric.getTopics(),
@@ -203,6 +208,7 @@ public class FabricsModule {
                                 .map(fabric -> PublishedFabric.of(
                                         fabric.getId(),
                                         fabric.getName(),
+                                        fabric.getAlias(),
                                         fabric.getImage(),
                                         fabric.getColors(),
                                         fabric.getTopics(),
@@ -244,10 +250,13 @@ public class FabricsModule {
                 ))
                 .collect(Collectors.toSet());
 
+        var alias = FabricAlias.fromName(FabricName.of(name));
+
         return assertAgentIsAllowedTo(agent, CREATE)
                 .then(assertTopicsAvailable(topics))
                 .then(assertColorsAvailable(colors))
                 .then(assertFabricTypesAvailable(fabricTypes))
+                .then(assertAliasIsNotAlreadyInUse(alias, null))
                 .then(fabricService.create(
                         FabricName.of(name),
                         ImageId.of(imageId),
@@ -271,8 +280,10 @@ public class FabricsModule {
     @Transactional(propagation = MANDATORY)
     public Mono<Long> renameFabric(String fabricId, long version, String name, Agent agent) {
         var id = FabricId.of(fabricId);
+        var alias = FabricAlias.fromName(FabricName.of(name));
 
         return assertAgentIsAllowedTo(agent, RENAME, id)
+                .then(assertAliasIsNotAlreadyInUse(alias, id))
                 .then(fabricService.rename(id, Version.of(version), FabricName.of(name), agent))
                 .map(Version::getValue);
     }
@@ -426,6 +437,7 @@ public class FabricsModule {
                         fabric.getId(),
                         fabric.getVersion(),
                         fabric.getName(),
+                        FabricAlias.fromName(fabric.getName()),
                         fabric.getImage(),
                         fabric.getColors(),
                         fabric.getTopics(),
@@ -683,6 +695,13 @@ public class FabricsModule {
 
                     return Mono.error(new FabricTypesMissingError(missingFabricTypes));
                 });
+    }
+
+    private Mono<Void> assertAliasIsNotAlreadyInUse(FabricAlias alias, @Nullable FabricId excludeId) {
+        return fabricLookupRepo.findByAlias(alias)
+                .filter(fabric -> excludeId == null || !fabric.getId().equals(excludeId))
+                .map(LookupFabric::getId)
+                .flatMap(conflictingId -> Mono.error(new AliasAlreadyInUseError(conflictingId, alias)));
     }
 
     private Flux<FabricId> getAccessibleFabricIds(Agent agent) {

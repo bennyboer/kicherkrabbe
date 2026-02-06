@@ -16,6 +16,9 @@ public class SamplePublishedFabric {
     private FabricName name = FabricName.of("Sample Fabric");
 
     @Builder.Default
+    private FabricAlias alias = FabricAlias.of("sample-fabric");
+
+    @Builder.Default
     private ImageId image = ImageId.of("IMAGE_ID");
 
     @Singular
@@ -31,6 +34,7 @@ public class SamplePublishedFabric {
         return PublishedFabric.of(
                 id,
                 name,
+                alias,
                 image,
                 colors,
                 topics,

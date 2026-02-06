@@ -2,6 +2,7 @@ package de.bennyboer.kicherkrabbe.fabrics.persistence.lookup;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.EventSourcingReadModelRepo;
 import de.bennyboer.kicherkrabbe.fabrics.ColorId;
+import de.bennyboer.kicherkrabbe.fabrics.FabricAlias;
 import de.bennyboer.kicherkrabbe.fabrics.FabricId;
 import de.bennyboer.kicherkrabbe.fabrics.FabricTypeId;
 import de.bennyboer.kicherkrabbe.fabrics.TopicId;
@@ -16,6 +17,10 @@ public interface FabricLookupRepo extends EventSourcingReadModelRepo<FabricId, L
     Mono<LookupFabricPage> find(Collection<FabricId> fabricIds, String searchTerm, long skip, long limit);
 
     Mono<LookupFabric> findPublished(FabricId id);
+
+    Mono<LookupFabric> findByAlias(FabricAlias alias);
+
+    Mono<LookupFabric> findPublishedByAlias(FabricAlias alias);
 
     Mono<LookupFabricPage> findPublished(
             String searchTerm,
