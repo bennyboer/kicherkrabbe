@@ -1,16 +1,11 @@
-FROM node:24-alpine
+FROM nginx:alpine
 
-WORKDIR /app
+RUN apk add --no-cache curl
 
-COPY --chown=node:node dist/management ./dist/management
-
-USER node
-
-ENV PORT=4200
+COPY dist/management/browser /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 4200
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:4200 || exit 1
-
-CMD ["node", "dist/management/server.mjs"]
+  CMD curl -f http://localhost:4200 || exit 1

@@ -10,7 +10,7 @@ The deployment consists of:
 - **RabbitMQ**: Message broker for event-driven communication
 - **App**: The Kicherkrabbe server application
 - **Customer**: The customer-facing Angular SSR frontend
-- **Management**: The admin/management Angular frontend
+- **Management**: The admin/management Angular frontend (served via nginx)
 
 ## Prerequisites
 
@@ -390,6 +390,7 @@ The application has CORS configured for `https://kicherkrabbe.com` and `https://
    docker pull rabbitmq:4.2-management
    docker pull eclipse-temurin:25-jre-alpine
    docker pull node:24-alpine
+   docker pull nginx:alpine
    ```
 
 5. **Backup**: Implement automated backups (see Backup section below).
