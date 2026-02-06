@@ -154,17 +154,17 @@ After deployment, the following URLs will be available (replace with your domain
 
 | Service | URL |
 |---------|-----|
-| Management Frontend | `https://kicherkrabbe.example.com` |
-| Customer Frontend | `https://customer.kicherkrabbe.example.com` |
+| Customer Frontend | `https://kicherkrabbe.example.com` |
+| Management Frontend | `https://manage.kicherkrabbe.example.com` |
 | API | `https://api.kicherkrabbe.example.com` |
 
 ## DNS Configuration
 
 Create DNS A records pointing to your server:
-- `kicherkrabbe.example.com` → `<your-server-ip>` (Management Frontend)
+- `kicherkrabbe.example.com` → `<your-server-ip>` (Customer Frontend)
 - `www.kicherkrabbe.example.com` → `<your-server-ip>` (redirects to non-www)
 - `api.kicherkrabbe.example.com` → `<your-server-ip>` (API)
-- `customer.kicherkrabbe.example.com` → `<your-server-ip>` (Customer Frontend)
+- `manage.kicherkrabbe.example.com` → `<your-server-ip>` (Management Frontend)
 
 ## Updating the Application
 
@@ -369,7 +369,7 @@ docker exec $(docker ps -q -f name=kicherkrabbe_app) ping rabbitmq
 
 ### CORS Configuration
 
-The application has CORS configured for `https://www.kicherkrabbe.com` in production mode. If you're using a different domain, update `ServerSecurityConfig.java` before building.
+The application has CORS configured for `https://kicherkrabbe.com` and `https://manage.kicherkrabbe.com` in production mode. If you're using a different domain, update `SecurityConfig.java` in `libs/auth/auth-starter` before building.
 
 ## Security Considerations
 

@@ -113,7 +113,7 @@ public class SecurityConfig {
                 var corsConfig = new CorsConfiguration();
 
                 corsConfig.addAllowedOrigin("https://kicherkrabbe.com");
-                corsConfig.addAllowedOrigin("https://customer.kicherkrabbe.com");
+                corsConfig.addAllowedOrigin("https://manage.kicherkrabbe.com");
                 corsConfig.addAllowedMethod("*");
                 corsConfig.addAllowedHeader("*");
                 corsConfig.setAllowCredentials(false);
