@@ -9,7 +9,7 @@ import {
 	withEventReplay,
 } from "@angular/platform-browser";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
-import { provideRouter } from "@angular/router";
+import { provideRouter, withInMemoryScrolling } from "@angular/router";
 import { MessageService } from "primeng/api";
 import { providePrimeNG } from "primeng/config";
 import { routes } from "./app.routes";
@@ -20,7 +20,12 @@ export const appConfig: ApplicationConfig = {
 		provideBrowserGlobalErrorListeners(),
 		provideZonelessChangeDetection(),
 		provideHttpClient(withFetch()),
-		provideRouter(routes),
+		provideRouter(
+			routes,
+			withInMemoryScrolling({
+				scrollPositionRestoration: "enabled",
+			}),
+		),
 		provideAnimationsAsync(),
 		providePrimeNG({
 			theme: {
