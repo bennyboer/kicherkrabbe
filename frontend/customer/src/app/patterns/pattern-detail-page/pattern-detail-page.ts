@@ -13,6 +13,7 @@ import { Button } from "primeng/button";
 import { ProgressSpinner } from "primeng/progressspinner";
 import { Divider } from "primeng/divider";
 import { Image } from "primeng/image";
+import { QuillViewComponent } from "ngx-quill";
 import { Pattern, PricedSizeRange } from "../pattern";
 import { PatternsService } from "../patterns.service";
 
@@ -28,6 +29,7 @@ import { PatternsService } from "../patterns.service";
 		ProgressSpinner,
 		Divider,
 		Image,
+		QuillViewComponent,
 	],
 	providers: [MessageService],
 	changeDetection: ChangeDetectionStrategy.OnPush,

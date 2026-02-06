@@ -54,6 +54,12 @@
 
 				<p class="price-info">{{ pattern.formatMinPrice() }}</p>
 
+				@if (pattern.description) {
+					<div class="description">
+						<quill-view [content]="pattern.description" format="json" theme="bubble" />
+					</div>
+				}
+
 				@if (pattern.attribution; as attr) {
 					@if (attr.designer || attr.originalPatternName) {
 						<div class="attribution">
