@@ -37,7 +37,7 @@
 									[class.active]="selectedIndex === i"
 									(click)="selectImage(i)"
 								>
-									<img [src]="getImageUrl(imageId)" [alt]="pattern.name" />
+									<img [src]="getImageUrl(imageId)" [alt]="pattern.name" loading="lazy" />
 								</button>
 							}
 						</div>

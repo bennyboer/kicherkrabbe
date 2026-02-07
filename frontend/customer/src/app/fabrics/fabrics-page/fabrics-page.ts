@@ -1,11 +1,18 @@
+import { AsyncPipe } from '@angular/common';
 import {
 	ChangeDetectionStrategy,
 	Component,
 	inject,
-	OnDestroy,
-	OnInit,
-} from "@angular/core";
-import { AsyncPipe } from "@angular/common";
+	type OnDestroy,
+	type OnInit,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { Button } from 'primeng/button';
+import { MultiSelect } from 'primeng/multiselect';
+import { ProgressSpinner } from 'primeng/progressspinner';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 import {
 	BehaviorSubject,
 	combineLatest,
@@ -14,20 +21,14 @@ import {
 	map,
 	Subject,
 	takeUntil,
-} from "rxjs";
-import { FormsModule } from "@angular/forms";
-import { RouterLink } from "@angular/router";
-import { MessageService } from "primeng/api";
-import { MultiSelect } from "primeng/multiselect";
-import { ToggleSwitch } from "primeng/toggleswitch";
-import { Button } from "primeng/button";
-import { ProgressSpinner } from "primeng/progressspinner";
-import { Fabric } from "../fabric";
-import { FabricsService } from "../fabrics.service";
-import { FabricsFilterState } from "../fabrics-filter-state.service";
-import { Color, Topic } from "../model";
-import { FabricCard } from "../fabric-card/fabric-card";
-import { ColorSwatch, FilterLayout } from "../../shared";
+} from 'rxjs';
+import { SeoService } from '../../services/seo.service';
+import { ColorSwatch, FilterLayout } from '../../shared';
+import type { Fabric } from '../fabric';
+import { FabricCard } from '../fabric-card/fabric-card';
+import { FabricsService } from '../fabrics.service';
+import { FabricsFilterState } from '../fabrics-filter-state.service';
+import type { Color, Topic } from '../model';
 
 interface TopicOption {
 	id: string;
@@ -53,9 +54,9 @@ const arraysEqual = <T>(a: T[], b: T[]): boolean =>
 	a.length === b.length && a.every((val, i) => val === b[i]);
 
 @Component({
-	selector: "app-fabrics-page",
-	templateUrl: "./fabrics-page.html",
-	styleUrl: "./fabrics-page.scss",
+	selector: 'app-fabrics-page',
+	templateUrl: './fabrics-page.html',
+	styleUrl: './fabrics-page.scss',
 	standalone: true,
 	imports: [
 		AsyncPipe,
@@ -76,7 +77,16 @@ export class FabricsPage implements OnInit, OnDestroy {
 	private readonly fabricsService = inject(FabricsService);
 	private readonly messageService = inject(MessageService);
 	private readonly filterState = inject(FabricsFilterState);
+	private readonly seoService = inject(SeoService);
 	private readonly destroy$ = new Subject<void>();
+
+	constructor() {
+		this.seoService.updateMetaTags({
+			title: 'Stoffe | Kicherkrabbe',
+			description:
+				'Entdecke unsere Stoffe mit individuellen Designs. Motivstoffe auf Baumwolle.',
+		});
+	}
 
 	readonly topics$ = new BehaviorSubject<TopicOption[]>([]);
 	readonly colors$ = new BehaviorSubject<ColorOption[]>([]);
@@ -90,7 +100,7 @@ export class FabricsPage implements OnInit, OnDestroy {
 	readonly sortAscending$ = this.filterState.sortAscending$;
 
 	readonly hasMore$ = combineLatest([this.fabrics$, this.total$]).pipe(
-		map(([fabrics, total]) => fabrics.length < total)
+		map(([fabrics, total]) => fabrics.length < total),
 	);
 
 	readonly hasActiveFilters$ = combineLatest([
@@ -101,24 +111,21 @@ export class FabricsPage implements OnInit, OnDestroy {
 	]).pipe(
 		map(
 			([topicIds, colorIds, inStockOnly, sortAscending]) =>
-				topicIds.length > 0 ||
-				colorIds.length > 0 ||
-				inStockOnly ||
-				!sortAscending
-		)
+				topicIds.length > 0 || colorIds.length > 0 || inStockOnly || !sortAscending,
+		),
 	);
 
 	readonly sortOptions: SortOption[] = [
-		{ label: "A-Z", value: "asc" },
-		{ label: "Z-A", value: "desc" },
+		{ label: 'A-Z', value: 'asc' },
+		{ label: 'Z-A', value: 'desc' },
 	];
 
 	get selectedSort(): string {
-		return this.sortAscending$.value ? "asc" : "desc";
+		return this.sortAscending$.value ? 'asc' : 'desc';
 	}
 
 	set selectedSort(value: string) {
-		this.sortAscending$.next(value === "asc");
+		this.sortAscending$.next(value === 'asc');
 	}
 
 	ngOnInit(): void {
@@ -193,7 +200,7 @@ export class FabricsPage implements OnInit, OnDestroy {
 					this.topics$.next(sorted);
 				},
 				error: (err) => {
-					if (err.status !== 0) console.error("Failed to load topics", err);
+					if (err.status !== 0) console.error('Failed to load topics', err);
 				},
 			});
 
@@ -214,7 +221,7 @@ export class FabricsPage implements OnInit, OnDestroy {
 					this.colors$.next(sorted);
 				},
 				error: (err) => {
-					if (err.status !== 0) console.error("Failed to load colors", err);
+					if (err.status !== 0) console.error('Failed to load colors', err);
 				},
 			});
 	}
@@ -236,7 +243,7 @@ export class FabricsPage implements OnInit, OnDestroy {
 		topicIds: string[],
 		colorIds: string[],
 		inStockOnly: boolean,
-		sortAscending: boolean
+		sortAscending: boolean,
 	): void {
 		this.loading$.next(true);
 		this.fabrics$.next([]);
@@ -266,9 +273,9 @@ export class FabricsPage implements OnInit, OnDestroy {
 
 	private showError(): void {
 		this.messageService.add({
-			severity: "error",
-			summary: "Fehler",
-			detail: "Die Stoffe konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+			severity: 'error',
+			summary: 'Fehler',
+			detail: 'Die Stoffe konnten nicht geladen werden. Bitte versuchen Sie es erneut.',
 		});
 	}
 }

@@ -1,47 +1,31 @@
+import { AsyncPipe } from '@angular/common';
 import {
 	ChangeDetectionStrategy,
 	Component,
 	inject,
-	OnDestroy,
-	OnInit,
-} from "@angular/core";
-import { AsyncPipe } from "@angular/common";
-import { ActivatedRoute, Router, RouterLink } from "@angular/router";
-import {
-	BehaviorSubject,
-	combineLatest,
-	forkJoin,
-	map,
-	Subject,
-	switchMap,
-	takeUntil,
-} from "rxjs";
-import { MessageService } from "primeng/api";
-import { Button } from "primeng/button";
-import { ProgressSpinner } from "primeng/progressspinner";
-import { Tag } from "primeng/tag";
-import { Divider } from "primeng/divider";
-import { Image } from "primeng/image";
-import { Fabric } from "../fabric";
-import { FabricsService } from "../fabrics.service";
-import { Color, FabricType, Topic } from "../model";
-import { ColorSwatch } from "../../shared";
+	type OnDestroy,
+	type OnInit,
+} from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { Button } from 'primeng/button';
+import { Divider } from 'primeng/divider';
+import { Image } from 'primeng/image';
+import { ProgressSpinner } from 'primeng/progressspinner';
+import { Tag } from 'primeng/tag';
+import { BehaviorSubject, combineLatest, forkJoin, map, Subject, switchMap, takeUntil } from 'rxjs';
+import { SeoService } from '../../services/seo.service';
+import { ColorSwatch } from '../../shared';
+import type { Fabric } from '../fabric';
+import { FabricsService } from '../fabrics.service';
+import type { Color, FabricType, Topic } from '../model';
 
 @Component({
-	selector: "app-fabric-detail-page",
-	templateUrl: "./fabric-detail-page.html",
-	styleUrl: "./fabric-detail-page.scss",
+	selector: 'app-fabric-detail-page',
+	templateUrl: './fabric-detail-page.html',
+	styleUrl: './fabric-detail-page.scss',
 	standalone: true,
-	imports: [
-		AsyncPipe,
-		RouterLink,
-		Button,
-		ProgressSpinner,
-		Tag,
-		Divider,
-		Image,
-		ColorSwatch,
-	],
+	imports: [AsyncPipe, RouterLink, Button, ProgressSpinner, Tag, Divider, Image, ColorSwatch],
 	providers: [MessageService],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -50,6 +34,7 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 	private readonly router = inject(Router);
 	private readonly fabricsService = inject(FabricsService);
 	private readonly messageService = inject(MessageService);
+	private readonly seoService = inject(SeoService);
 	private readonly destroy$ = new Subject<void>();
 
 	private readonly fabric$ = new BehaviorSubject<Fabric | null>(null);
@@ -75,12 +60,10 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 					const type = allFabricTypes.find((ft) => ft.id === a.typeId);
 					return type ? { type, inStock: a.inStock } : null;
 				})
-				.filter(
-					(ta): ta is { type: FabricType; inStock: boolean } => ta !== null
-				);
+				.filter((ta): ta is { type: FabricType; inStock: boolean } => ta !== null);
 
 			return { fabric, colors, topics, fabricTypeAvailabilities };
-		})
+		}),
 	);
 
 	ngOnInit(): void {
@@ -89,26 +72,30 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 		this.route.paramMap
 			.pipe(
 				switchMap((params) => {
-					const id = params.get("id");
+					const id = params.get('id');
 					if (!id) {
-						throw new Error("Fabric ID is required");
+						throw new Error('Fabric ID is required');
 					}
 					this.loading$.next(true);
 					return this.fabricsService.getFabric(id);
 				}),
-				takeUntil(this.destroy$)
+				takeUntil(this.destroy$),
 			)
 			.subscribe({
 				next: (fabric) => {
 					this.fabric$.next(fabric);
 					this.loading$.next(false);
+					this.seoService.updateMetaTags({
+						title: `${fabric.name} | Kicherkrabbe`,
+						description: `${fabric.name} - Stoff von Kicherkrabbe für individuelle Kinderkleidung.`,
+					});
 				},
 				error: () => {
 					this.loading$.next(false);
 					this.messageService.add({
-						severity: "error",
-						summary: "Fehler",
-						detail: "Der Stoff konnte nicht geladen werden.",
+						severity: 'error',
+						summary: 'Fehler',
+						detail: 'Der Stoff konnte nicht geladen werden.',
 					});
 				},
 			});
@@ -129,7 +116,7 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 	}
 
 	goBack(): void {
-		this.router.navigate([".."], { relativeTo: this.route });
+		this.router.navigate(['..'], { relativeTo: this.route });
 	}
 
 	private loadMetadata(): void {
@@ -146,7 +133,7 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 					this.allFabricTypes$.next(fabricTypes);
 				},
 				error: (err) => {
-					if (err.status !== 0) console.error("Failed to load metadata", err);
+					if (err.status !== 0) console.error('Failed to load metadata', err);
 				},
 			});
 	}

@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { Button } from "primeng/button";
+import { SeoService } from "../../services/seo.service";
 
 @Component({
 	selector: "app-wedding-page",
@@ -10,4 +11,14 @@ import { Button } from "primeng/button";
 	imports: [RouterLink, Button],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WeddingPage {}
+export class WeddingPage {
+	private readonly seoService = inject(SeoService);
+
+	constructor() {
+		this.seoService.updateMetaTags({
+			title: "Kinderkleidung fuer Hochzeiten | Kicherkrabbe",
+			description:
+				"Handgefertigte Kinder- und Babykleidung für Hochzeiten und festliche Anlässe. Einzigartige Outfits für kleine Gäste.",
+		});
+	}
+}

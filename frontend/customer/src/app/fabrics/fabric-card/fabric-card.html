@@ -1,6 +1,6 @@
 <p-card styleClass="product-card" (click)="navigateToDetails()">
 	<ng-template #header>
-		<img alt="Stoff" class="fabric-image" [src]="imageUrl$ | async" />
+		<img alt="Stoff" class="fabric-image" [src]="imageUrl$ | async" loading="lazy" />
 	</ng-template>
 	<ng-template #title>
 		{{ fabric.name }}

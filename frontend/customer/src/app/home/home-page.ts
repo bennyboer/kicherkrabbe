@@ -7,6 +7,7 @@ import { CrabHelper } from "../crab-helper/crab-helper";
 import { FeaturedFabrics } from "../fabrics";
 import { HighlightsComponent } from "../highlights/highlights";
 import { FeaturedPatterns } from "../patterns";
+import { SeoService } from "../services/seo.service";
 
 @Component({
 	selector: "app-home-page",
@@ -26,6 +27,15 @@ import { FeaturedPatterns } from "../patterns";
 })
 export class HomePage {
 	private readonly document = inject(DOCUMENT);
+	private readonly seoService = inject(SeoService);
+
+	constructor() {
+		this.seoService.updateMetaTags({
+			title: "Kicherkrabbe | Handmade Kinderkleidung aus Bayern",
+			description:
+				"Handgefertigte Kinderkleidung aus Bayern. Individuelle Kleidungsstücke für Babys und Kinder in Größen 56-116.",
+		});
+	}
 
 	scrollToContactForm(): void {
 		this.document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" });

@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
+import { SeoService } from "../services/seo.service";
 
 @Component({
 	selector: "app-not-found-page",
@@ -9,4 +10,12 @@ import { RouterLink } from "@angular/router";
 	standalone: true,
 	imports: [RouterLink],
 })
-export class NotFoundPage {}
+export class NotFoundPage {
+	private readonly seoService = inject(SeoService);
+
+	constructor() {
+		this.seoService.updateMetaTags({
+			title: "Seite nicht gefunden | Kicherkrabbe",
+		});
+	}
+}

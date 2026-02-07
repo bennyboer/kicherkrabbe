@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { SeoService } from "../../services/seo.service";
 
 @Component({
 	selector: "app-terms-and-conditions",
@@ -7,4 +8,12 @@ import { ChangeDetectionStrategy, Component } from "@angular/core";
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	standalone: true,
 })
-export class TermsAndConditionsPage {}
+export class TermsAndConditionsPage {
+	private readonly seoService = inject(SeoService);
+
+	constructor() {
+		this.seoService.updateMetaTags({
+			title: "AGB | Kicherkrabbe",
+		});
+	}
+}

@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { Button } from "primeng/button";
+import { SeoService } from "../../services/seo.service";
 
 @Component({
 	selector: "app-tradition-page",
@@ -10,4 +11,14 @@ import { Button } from "primeng/button";
 	imports: [RouterLink, Button],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TraditionPage {}
+export class TraditionPage {
+	private readonly seoService = inject(SeoService);
+
+	constructor() {
+		this.seoService.updateMetaTags({
+			title: "Bayerische Tracht fuer Kinder | Kicherkrabbe",
+			description:
+				"Traditionelle bayerische Tracht für Kinder. Bequeme Dirndl und Lederhosen-Optik, handgemacht in Bayern.",
+		});
+	}
+}

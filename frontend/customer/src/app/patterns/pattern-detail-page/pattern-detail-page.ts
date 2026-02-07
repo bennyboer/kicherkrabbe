@@ -16,6 +16,7 @@ import { Image } from "primeng/image";
 import { QuillViewComponent } from "ngx-quill";
 import { Pattern, PricedSizeRange } from "../pattern";
 import { PatternsService } from "../patterns.service";
+import { SeoService } from "../../services/seo.service";
 
 @Component({
 	selector: "app-pattern-detail-page",
@@ -39,6 +40,7 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 	private readonly router = inject(Router);
 	private readonly patternsService = inject(PatternsService);
 	private readonly messageService = inject(MessageService);
+	private readonly seoService = inject(SeoService);
 	private readonly destroy$ = new Subject<void>();
 
 	readonly pattern$ = new BehaviorSubject<Pattern | null>(null);
@@ -63,6 +65,10 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 					this.pattern$.next(pattern);
 					this.selectedImageIndex$.next(0);
 					this.loading$.next(false);
+					this.seoService.updateMetaTags({
+						title: `${pattern.name} | Kicherkrabbe`,
+						description: `${pattern.name} - Handgefertigte Kinderkleidung von Kicherkrabbe.`,
+					});
 				},
 				error: () => {
 					this.loading$.next(false);

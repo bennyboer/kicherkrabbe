@@ -27,6 +27,7 @@ import { PatternsFilterState } from "../patterns-filter-state.service";
 import { Category } from "../model";
 import { PatternCard } from "../pattern-card/pattern-card";
 import { FilterLayout } from "../../shared";
+import { SeoService } from "../../services/seo.service";
 
 interface CategoryOption {
 	id: string;
@@ -65,7 +66,16 @@ export class PatternsPage implements OnInit, OnDestroy {
 	private readonly patternsService = inject(PatternsService);
 	private readonly messageService = inject(MessageService);
 	private readonly filterState = inject(PatternsFilterState);
+	private readonly seoService = inject(SeoService);
 	private readonly destroy$ = new Subject<void>();
+
+	constructor() {
+		this.seoService.updateMetaTags({
+			title: "Schnitte | Kicherkrabbe",
+			description:
+				"Entdecke unsere handgefertigten Schnittmuster für Kinderkleidung. Individuelle Designs für Babys und Kinder.",
+		});
+	}
 
 	readonly categories$ = new BehaviorSubject<CategoryOption[]>([]);
 	readonly sizes$ = new BehaviorSubject<SizeOption[]>([]);

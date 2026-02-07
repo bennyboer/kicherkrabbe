@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { SeoService } from "../../services/seo.service";
 
 @Component({
 	selector: "app-imprint",
@@ -7,4 +8,12 @@ import { ChangeDetectionStrategy, Component } from "@angular/core";
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	standalone: true,
 })
-export class ImprintPage {}
+export class ImprintPage {
+	private readonly seoService = inject(SeoService);
+
+	constructor() {
+		this.seoService.updateMetaTags({
+			title: "Impressum | Kicherkrabbe",
+		});
+	}
+}
