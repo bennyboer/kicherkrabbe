@@ -74,6 +74,7 @@ export class PatternsPage implements OnInit, OnDestroy {
 			title: "Schnitte | Kicherkrabbe",
 			description:
 				"Entdecke unsere handgefertigten Schnittmuster für Kinderkleidung. Individuelle Designs für Babys und Kinder.",
+			canonical: "https://kicherkrabbe.com/patterns",
 		});
 	}
 

@@ -34,7 +34,9 @@ export class HomePage {
 			title: "Kicherkrabbe | Handmade Kinderkleidung aus Bayern",
 			description:
 				"Handgefertigte Kinderkleidung aus Bayern. Individuelle Kleidungsstücke für Babys und Kinder in Größen 56-116.",
+			canonical: "https://kicherkrabbe.com/",
 		});
+		this.seoService.setOrganizationStructuredData();
 	}
 
 	scrollToContactForm(): void {

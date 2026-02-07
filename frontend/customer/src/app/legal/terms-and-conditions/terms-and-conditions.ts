@@ -14,6 +14,7 @@ export class TermsAndConditionsPage {
 	constructor() {
 		this.seoService.updateMetaTags({
 			title: "AGB | Kicherkrabbe",
+			canonical: "https://kicherkrabbe.com/legal/terms-and-conditions",
 		});
 	}
 }

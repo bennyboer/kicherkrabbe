@@ -14,6 +14,7 @@ export class CancellationPolicyPage {
 	constructor() {
 		this.seoService.updateMetaTags({
 			title: "Widerrufsbelehrung | Kicherkrabbe",
+			canonical: "https://kicherkrabbe.com/legal/cancellation-policy",
 		});
 	}
 }

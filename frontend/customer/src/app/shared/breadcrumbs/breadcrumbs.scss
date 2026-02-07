@@ -1,0 +1,37 @@
+.breadcrumbs {
+	margin-bottom: 1rem;
+}
+
+ol {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.25rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 0.875rem;
+}
+
+li {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+a {
+	color: var(--primary-color, #e91e63);
+	text-decoration: none;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+span:not(.separator) {
+	color: var(--text-color-secondary, #6c757d);
+}
+
+.separator {
+	color: var(--text-color-secondary, #6c757d);
+}

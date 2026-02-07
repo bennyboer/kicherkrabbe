@@ -19,6 +19,7 @@ export class TraditionPage {
 			title: "Bayerische Tracht fuer Kinder | Kicherkrabbe",
 			description:
 				"Traditionelle bayerische Tracht für Kinder. Bequeme Dirndl und Lederhosen-Optik, handgemacht in Bayern.",
+			canonical: "https://kicherkrabbe.com/landing/tracht",
 		});
 	}
 }

@@ -4,14 +4,7 @@
 			<p-progressspinner strokeWidth="4" />
 		</div>
 	} @else if (pattern$ | async; as pattern) {
-		<div class="back-nav">
-			<p-button
-				icon="pi pi-arrow-left"
-				label="Zurück zu Schnitte"
-				[text]="true"
-				(click)="goBack()"
-			/>
-		</div>
+		<app-breadcrumbs [items]="(breadcrumbs$ | async) ?? []" />
 
 		<div class="content-grid">
 			<div class="gallery-section">
@@ -37,7 +30,7 @@
 									[class.active]="selectedIndex === i"
 									(click)="selectImage(i)"
 								>
-									<img [src]="getImageUrl(imageId)" [alt]="pattern.name" loading="lazy" />
+									<img [src]="getImageUrl(imageId)" [alt]="pattern.name + ' - Bild ' + (i + 1)" loading="lazy" />
 								</button>
 							}
 						</div>

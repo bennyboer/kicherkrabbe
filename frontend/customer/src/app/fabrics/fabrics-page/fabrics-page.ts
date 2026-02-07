@@ -83,8 +83,8 @@ export class FabricsPage implements OnInit, OnDestroy {
 	constructor() {
 		this.seoService.updateMetaTags({
 			title: 'Stoffe | Kicherkrabbe',
-			description:
-				'Entdecke unsere Stoffe mit individuellen Designs. Motivstoffe auf Baumwolle.',
+			description: 'Entdecke unsere Stoffe mit individuellen Designs.',
+			canonical: 'https://kicherkrabbe.com/fabrics',
 		});
 	}
 

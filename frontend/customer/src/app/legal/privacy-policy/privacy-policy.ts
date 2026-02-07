@@ -14,6 +14,7 @@ export class PrivacyPolicyPage {
 	constructor() {
 		this.seoService.updateMetaTags({
 			title: "Datenschutz | Kicherkrabbe",
+			canonical: "https://kicherkrabbe.com/legal/privacy-policy",
 		});
 	}
 }

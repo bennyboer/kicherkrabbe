@@ -14,6 +14,7 @@ export class ImprintPage {
 	constructor() {
 		this.seoService.updateMetaTags({
 			title: "Impressum | Kicherkrabbe",
+			canonical: "https://kicherkrabbe.com/legal/imprint",
 		});
 	}
 }

@@ -18,6 +18,7 @@ export class ContactPage {
 			title: "Kontakt | Kicherkrabbe",
 			description:
 				"Kontaktiere uns für individuelle Kinderkleidung. Wir beraten dich gerne zu deinem Wunschstück.",
+			canonical: "https://kicherkrabbe.com/contact",
 		});
 	}
 }

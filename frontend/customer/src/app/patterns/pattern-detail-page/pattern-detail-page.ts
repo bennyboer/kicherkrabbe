@@ -1,22 +1,23 @@
+import { AsyncPipe } from "@angular/common";
 import {
 	ChangeDetectionStrategy,
 	Component,
 	inject,
-	OnDestroy,
-	OnInit,
+	type OnDestroy,
+	type OnInit,
 } from "@angular/core";
-import { AsyncPipe } from "@angular/common";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
-import { BehaviorSubject, Subject, switchMap, takeUntil } from "rxjs";
 import { MessageService } from "primeng/api";
 import { Button } from "primeng/button";
-import { ProgressSpinner } from "primeng/progressspinner";
 import { Divider } from "primeng/divider";
 import { Image } from "primeng/image";
+import { ProgressSpinner } from "primeng/progressspinner";
 import { QuillViewComponent } from "ngx-quill";
-import { Pattern, PricedSizeRange } from "../pattern";
-import { PatternsService } from "../patterns.service";
+import { BehaviorSubject, Subject, switchMap, takeUntil } from "rxjs";
 import { SeoService } from "../../services/seo.service";
+import { Breadcrumbs, type BreadcrumbItem } from "../../shared";
+import type { Pattern, PricedSizeRange } from "../pattern";
+import { PatternsService } from "../patterns.service";
 
 @Component({
 	selector: "app-pattern-detail-page",
@@ -31,6 +32,7 @@ import { SeoService } from "../../services/seo.service";
 		Divider,
 		Image,
 		QuillViewComponent,
+		Breadcrumbs,
 	],
 	providers: [MessageService],
 	changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,6 +48,7 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 	readonly pattern$ = new BehaviorSubject<Pattern | null>(null);
 	readonly loading$ = new BehaviorSubject<boolean>(true);
 	readonly selectedImageIndex$ = new BehaviorSubject<number>(0);
+	readonly breadcrumbs$ = new BehaviorSubject<BreadcrumbItem[]>([]);
 
 	ngOnInit(): void {
 		this.route.paramMap
@@ -65,10 +68,7 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 					this.pattern$.next(pattern);
 					this.selectedImageIndex$.next(0);
 					this.loading$.next(false);
-					this.seoService.updateMetaTags({
-						title: `${pattern.name} | Kicherkrabbe`,
-						description: `${pattern.name} - Handgefertigte Kinderkleidung von Kicherkrabbe.`,
-					});
+					this.updateSeo(pattern);
 				},
 				error: () => {
 					this.loading$.next(false);
@@ -87,6 +87,8 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 		this.pattern$.complete();
 		this.loading$.complete();
 		this.selectedImageIndex$.complete();
+		this.breadcrumbs$.complete();
+		this.seoService.clearStructuredData();
 	}
 
 	getImageUrl(imageId: string): string {
@@ -99,7 +101,7 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 
 	formatPrice(amount: number): string {
 		const euros = amount / 100;
-		return euros.toFixed(2).replace(".", ",") + " \u20AC";
+		return euros.toFixed(2).replace(".", ",") + " €";
 	}
 
 	formatSizeRange(range: PricedSizeRange): string {
@@ -115,5 +117,46 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 
 	goBack(): void {
 		this.router.navigate([".."], { relativeTo: this.route });
+	}
+
+	private updateSeo(pattern: Pattern): void {
+		const canonicalPath = `/patterns/${pattern.alias}`;
+
+		this.seoService.updateMetaTags({
+			title: `${pattern.name} | Kicherkrabbe`,
+			description: `${pattern.name} - Handgefertigte Kinderkleidung von Kicherkrabbe. Individuelle Schnitte für Babys und Kinder.`,
+			canonical: `https://kicherkrabbe.com${canonicalPath}`,
+		});
+
+		if (pattern.images.length > 0) {
+			this.seoService.setProductImage(pattern.images[0]);
+		}
+
+		this.breadcrumbs$.next([
+			{ label: "Startseite", url: "/" },
+			{ label: "Schnitte", url: "/patterns" },
+			{ label: pattern.name },
+		]);
+
+		this.seoService.setBreadcrumbStructuredData([
+			{ name: "Startseite", url: "/" },
+			{ name: "Schnitte", url: "/patterns" },
+			{ name: pattern.name, url: canonicalPath },
+		]);
+
+		const minPrice = pattern.getMinPrice();
+		this.seoService.setProductStructuredData({
+			name: pattern.name,
+			description: `${pattern.name} - Handgefertigte Kinderkleidung von Kicherkrabbe`,
+			image: pattern.images.length > 0 ? this.getImageUrl(pattern.images[0]) : undefined,
+			sku: pattern.number ?? undefined,
+			offers: minPrice
+				? {
+						price: minPrice.amount,
+						priceCurrency: minPrice.currency,
+						availability: "InStock",
+					}
+				: undefined,
+		});
 	}
 }

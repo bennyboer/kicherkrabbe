@@ -19,6 +19,7 @@ export class WeddingPage {
 			title: "Kinderkleidung fuer Hochzeiten | Kicherkrabbe",
 			description:
 				"Handgefertigte Kinder- und Babykleidung für Hochzeiten und festliche Anlässe. Einzigartige Outfits für kleine Gäste.",
+			canonical: "https://kicherkrabbe.com/landing/hochzeit",
 		});
 	}
 }

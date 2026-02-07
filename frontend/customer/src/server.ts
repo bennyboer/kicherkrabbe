@@ -86,12 +86,12 @@ function generateSitemapXml(
 		"/patterns",
 		"/fabrics",
 		"/contact",
-		"/wedding",
-		"/tradition",
-		"/imprint",
-		"/terms-and-conditions",
-		"/privacy-policy",
-		"/cancellation-policy",
+		"/landing/hochzeit",
+		"/landing/tracht",
+		"/legal/imprint",
+		"/legal/terms-and-conditions",
+		"/legal/privacy-policy",
+		"/legal/cancellation-policy",
 	];
 
 	const urls: string[] = [];
