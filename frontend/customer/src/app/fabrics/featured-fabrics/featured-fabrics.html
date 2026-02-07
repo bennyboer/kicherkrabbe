@@ -11,7 +11,11 @@
 			<ng-template #item let-item>
 				<div class="carousel-item">
 					@if (item.type === "fabric") {
-						<app-fabric-card [fabric]="item.fabric"></app-fabric-card>
+						@defer (on viewport) {
+							<app-fabric-card [fabric]="item.fabric"></app-fabric-card>
+						} @placeholder {
+							<div class="card-placeholder"></div>
+						}
 					} @else {
 						<app-show-more-card
 							label="Weitere Stoffe..."

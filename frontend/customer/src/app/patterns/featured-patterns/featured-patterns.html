@@ -11,7 +11,11 @@
 			<ng-template #item let-item>
 				<div class="carousel-item">
 					@if (item.type === "pattern") {
-						<app-pattern-card [pattern]="item.pattern"></app-pattern-card>
+						@defer (on viewport) {
+							<app-pattern-card [pattern]="item.pattern"></app-pattern-card>
+						} @placeholder {
+							<div class="card-placeholder"></div>
+						}
 					} @else {
 						<app-show-more-card
 							label="Weitere Schnitte..."
