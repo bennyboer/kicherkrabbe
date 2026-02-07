@@ -13,8 +13,10 @@ h1 {
 	color: inherit;
 	display: flex;
 
-	&:hover {
-		opacity: 0.9;
+	@media (hover: hover) {
+		&:hover {
+			opacity: 0.9;
+		}
 	}
 }
 

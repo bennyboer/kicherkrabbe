@@ -2,8 +2,10 @@
 	display: block;
 	width: 100%;
 
-	&:hover {
-		opacity: 0.9;
+	@media (hover: hover) {
+		&:hover {
+			opacity: 0.9;
+		}
 	}
 }
 
