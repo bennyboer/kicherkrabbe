@@ -1,5 +1,5 @@
 <div class="pattern-detail-page">
-	@if (loading$ | async) {
+	@if ((loading$ | async) !== false) {
 		<div class="loading-container">
 			<p-progressspinner strokeWidth="4" />
 		</div>

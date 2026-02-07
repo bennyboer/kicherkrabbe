@@ -160,6 +160,40 @@ h1 {
 		height: 100%;
 		object-fit: contain;
 	}
+
+	.p-image-preview-mask {
+		opacity: 0;
+		transition: opacity 0.2s;
+	}
+
+	&:hover .p-image-preview-mask {
+		opacity: 1;
+	}
+
+	@media (hover: none) {
+		.p-image-preview-mask {
+			opacity: 0 !important;
+			background: transparent !important;
+		}
+	}
+}
+
+.image-section {
+	.p-image-preview-mask {
+		opacity: 0;
+		transition: opacity 0.2s;
+	}
+
+	&:hover .p-image-preview-mask {
+		opacity: 1;
+	}
+
+	@media (hover: none) {
+		.p-image-preview-mask {
+			opacity: 0 !important;
+			background: transparent !important;
+		}
+	}
 }
 
 .description .ql-container {

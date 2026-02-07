@@ -177,6 +177,7 @@
 	padding: 8px 12px;
 	background: var(--p-surface-100);
 	border-radius: 4px;
+	gap: 12px;
 
 	.extra-name {
 		color: var(--p-surface-900);
@@ -185,6 +186,8 @@
 	.extra-price {
 		font-weight: 500;
 		color: var(--p-text-muted-color);
+		white-space: nowrap;
+		flex-shrink: 0;
 	}
 }
 
