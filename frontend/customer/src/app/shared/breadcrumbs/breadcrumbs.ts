@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
-import { RouterLink } from "@angular/router";
+import { MenuItem } from "primeng/api";
+import { Breadcrumb } from "primeng/breadcrumb";
 
 export interface BreadcrumbItem {
 	label: string;
@@ -9,11 +10,19 @@ export interface BreadcrumbItem {
 @Component({
 	selector: "app-breadcrumbs",
 	standalone: true,
-	imports: [RouterLink],
+	imports: [Breadcrumb],
 	templateUrl: "./breadcrumbs.html",
 	styleUrl: "./breadcrumbs.scss",
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Breadcrumbs {
-	@Input() items: BreadcrumbItem[] = [];
+	@Input() set items(value: BreadcrumbItem[]) {
+		this.menuItems = value.map((item) => ({
+			label: item.label,
+			routerLink: item.url,
+		}));
+	}
+
+	home: MenuItem = { icon: "pi pi-home", routerLink: "/" };
+	menuItems: MenuItem[] = [];
 }

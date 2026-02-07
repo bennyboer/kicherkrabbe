@@ -16,6 +16,7 @@ export class ContactSentPage {
 	constructor() {
 		this.seoService.updateMetaTags({
 			title: "Nachricht gesendet | Kicherkrabbe",
+			noIndex: true,
 		});
 	}
 }

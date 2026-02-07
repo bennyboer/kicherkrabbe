@@ -11,9 +11,10 @@ export interface SeoConfig {
 	ogImage?: string;
 	ogUrl?: string;
 	canonical?: string;
+	noIndex?: boolean;
 }
 
-export interface BreadcrumbItem {
+export interface BreadcrumbStructuredDataItem {
 	name: string;
 	url: string;
 }
@@ -76,6 +77,12 @@ export class SeoService {
 		if (config.canonical) {
 			this.updateCanonicalLink(config.canonical);
 			this.updateOrCreateMeta("og:url", config.canonical, "property");
+		}
+
+		if (config.noIndex) {
+			this.updateOrCreateMeta("robots", "noindex, nofollow");
+		} else {
+			this.removeMetaTag("robots");
 		}
 	}
 
@@ -153,7 +160,7 @@ export class SeoService {
 		this.setStructuredData("product", data);
 	}
 
-	setBreadcrumbStructuredData(items: BreadcrumbItem[]): void {
+	setBreadcrumbStructuredData(items: BreadcrumbStructuredDataItem[]): void {
 		const data = {
 			"@context": "https://schema.org",
 			"@type": "BreadcrumbList",
@@ -237,5 +244,9 @@ export class SeoService {
 		if (link) {
 			link.remove();
 		}
+	}
+
+	private removeMetaTag(name: string): void {
+		this.meta.removeTag(`name="${name}"`);
 	}
 }

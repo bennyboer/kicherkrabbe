@@ -133,7 +133,6 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 		}
 
 		this.breadcrumbs$.next([
-			{ label: "Startseite", url: "/" },
 			{ label: "Schnitte", url: "/patterns" },
 			{ label: pattern.name },
 		]);

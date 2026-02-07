@@ -131,7 +131,6 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 		this.seoService.setProductImage(fabric.imageId);
 
 		this.breadcrumbs$.next([
-			{ label: "Startseite", url: "/" },
 			{ label: "Stoffe", url: "/fabrics" },
 			{ label: fabric.name },
 		]);

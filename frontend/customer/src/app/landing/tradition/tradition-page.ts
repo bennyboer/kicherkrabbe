@@ -16,7 +16,7 @@ export class TraditionPage {
 
 	constructor() {
 		this.seoService.updateMetaTags({
-			title: "Bayerische Tracht fuer Kinder | Kicherkrabbe",
+			title: "Bayerische Tracht für Kinder | Kicherkrabbe",
 			description:
 				"Traditionelle bayerische Tracht für Kinder. Bequeme Dirndl und Lederhosen-Optik, handgemacht in Bayern.",
 			canonical: "https://kicherkrabbe.com/landing/tracht",

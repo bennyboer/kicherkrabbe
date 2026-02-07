@@ -103,6 +103,19 @@ export const customerPreset = definePreset(Aura, {
 		},
 	},
 	components: {
+		breadcrumb: {
+			root: {
+				background: "transparent",
+				padding: "0",
+			},
+			item: {
+				color: "{text.muted.color}",
+				hoverColor: "{primary.color}",
+			},
+			separator: {
+				color: "{text.muted.color}",
+			},
+		},
 		card: {
 			root: {
 				background: "{surface.0}",

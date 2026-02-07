@@ -16,7 +16,7 @@ export class WeddingPage {
 
 	constructor() {
 		this.seoService.updateMetaTags({
-			title: "Kinderkleidung fuer Hochzeiten | Kicherkrabbe",
+			title: "Kinderkleidung für Hochzeiten | Kicherkrabbe",
 			description:
 				"Handgefertigte Kinder- und Babykleidung für Hochzeiten und festliche Anlässe. Einzigartige Outfits für kleine Gäste.",
 			canonical: "https://kicherkrabbe.com/landing/hochzeit",

@@ -10,19 +10,19 @@ import { ChangeDetectionStrategy, Component } from "@angular/core";
 export class Badges {
 	badges = [
 		{
-			icon: "✋",
+			icon: "pi-heart-fill",
 			title: "Echte Handarbeit",
 		},
 		{
-			icon: "🏔️",
+			icon: "pi-map-marker",
 			title: "Regional aus Bayern",
 		},
 		{
-			icon: "🧵",
+			icon: "pi-palette",
 			title: "Eigens gedruckter Stoff",
 		},
 		{
-			icon: "⭐",
+			icon: "pi-star-fill",
 			title: "Individuell, wie jedes Kind",
 		},
 	];

@@ -21,23 +21,29 @@
 
 	&:hover {
 		transform: translateY(-5px);
+
+		.badge-icon {
+			transform: scale(1.05);
+			box-shadow: 0 8px 25px rgba(var(--p-primary-500), 0.3);
+		}
 	}
 }
 
 .badge-icon {
-	font-size: 4rem;
 	margin-bottom: 1rem;
-	background-color: var(--p-surface-300);
-	width: 150px;
-	height: 150px;
+	background: linear-gradient(135deg, var(--p-primary-400), var(--p-primary-600));
+	width: 120px;
+	height: 120px;
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	transition: all 0.3s ease;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 
-	&:hover {
-		transform: scale(1.05);
+	.pi {
+		font-size: 3rem;
+		color: white;
 	}
 }
 
@@ -60,9 +66,12 @@
 	}
 
 	.badge-icon {
-		font-size: 2.5rem;
 		width: 70px;
 		height: 70px;
+
+		.pi {
+			font-size: 1.8rem;
+		}
 	}
 
 	.badge-title {
