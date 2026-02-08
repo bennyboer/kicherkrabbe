@@ -217,8 +217,9 @@ export class FabricsService {
 		return this.fabricTypesCache$;
 	}
 
-	getImageUrl(imageId: string): string {
-		return `${environment.apiUrl}/assets/${imageId}/content`;
+	getImageUrl(imageId: string, width?: number): string {
+		const baseUrl = `${environment.apiUrl}/assets/${imageId}/content`;
+		return width ? `${baseUrl}?width=${width}` : baseUrl;
 	}
 
 	private toInternalFabric(dto: PublishedFabricDTO): Fabric {

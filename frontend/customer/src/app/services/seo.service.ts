@@ -93,7 +93,7 @@ export class SeoService {
 	}
 
 	setProductImage(imageId: string): void {
-		const imageUrl = `${API_URL}/assets/${imageId}/content`;
+		const imageUrl = `${API_URL}/assets/${imageId}/content?width=1536`;
 		this.updateOrCreateMeta("og:image", imageUrl, "property");
 	}
 

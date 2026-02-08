@@ -1,3 +1,4 @@
+import { IMAGE_LOADER } from "@angular/common";
 import { provideHttpClient, withFetch } from "@angular/common/http";
 import {
 	type ApplicationConfig,
@@ -14,6 +15,7 @@ import { MessageService } from "primeng/api";
 import { providePrimeNG } from "primeng/config";
 import { routes } from "./app.routes";
 import { customerPreset } from "./preset";
+import { assetImageLoader, ASSET_IMAGE_CONFIG } from "./shared/image-loader";
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -37,5 +39,10 @@ export const appConfig: ApplicationConfig = {
 		}),
 		provideClientHydration(withEventReplay()),
 		MessageService,
+		{
+			provide: IMAGE_LOADER,
+			useValue: assetImageLoader,
+		},
+		ASSET_IMAGE_CONFIG,
 	],
 };

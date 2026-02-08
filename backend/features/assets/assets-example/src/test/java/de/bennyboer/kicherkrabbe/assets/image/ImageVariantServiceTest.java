@@ -157,6 +157,9 @@ public class ImageVariantServiceTest {
 
     private byte[] readBytes(AssetContent content) {
         DataBuffer buffer = DataBufferUtils.join(content.getBuffers()).block();
+        if (buffer == null) {
+            return new byte[0];
+        }
         byte[] bytes = new byte[buffer.readableByteCount()];
         buffer.read(bytes);
         DataBufferUtils.release(buffer);

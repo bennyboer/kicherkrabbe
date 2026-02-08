@@ -104,7 +104,7 @@ public class QueryAssetContentWithWidthTest extends AssetsModuleTest {
     }
 
     @Test
-    void shouldDeleteVariantsWhenAssetDeleted() throws IOException {
+    void shouldDeleteVariantsWhenAssetDeleted() {
         allowUserToCreateAssets("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
         byte[] originalImage = SampleImage.createJpeg(1000, 800);

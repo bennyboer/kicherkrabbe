@@ -44,14 +44,12 @@ public class AssetsModule {
                         return Mono.just(AssetContent.of(asset.getContentType(), buffers$));
                     }
 
-                    return imageVariantService.variantsExist(id, asset.getLocation())
-                            .flatMap(exist -> {
-                                if (!exist) {
-                                    return imageVariantService.generateVariants(id, asset.getLocation(), asset.getContentType())
-                                            .then(imageVariantService.loadBestMatchingVariant(id, asset.getLocation(), width));
-                                }
-                                return imageVariantService.loadBestMatchingVariant(id, asset.getLocation(), width);
-                            });
+                    return imageVariantService.getOrGenerateBestMatchingVariant(
+                            id,
+                            asset.getLocation(),
+                            asset.getContentType(),
+                            width
+                    );
                 });
     }
 

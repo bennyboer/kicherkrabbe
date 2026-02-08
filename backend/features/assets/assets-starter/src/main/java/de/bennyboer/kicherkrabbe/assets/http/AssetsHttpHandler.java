@@ -74,8 +74,8 @@ public class AssetsHttpHandler {
                         if (parsed <= 0) {
                             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Width must be positive");
                         }
-                        if (parsed > 4096) {
-                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Width must not exceed 4096");
+                        if (parsed > 99999) {
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Width must not exceed 99999");
                         }
                         return parsed;
                     } catch (NumberFormatException e) {

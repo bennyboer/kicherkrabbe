@@ -187,4 +187,19 @@ public class QueryAssetContentHttpHandlerTest extends HttpHandlerTest {
         exchange.expectStatus().isBadRequest();
     }
 
+    @Test
+    void shouldRejectWidthExceedingMaximum() {
+        // given: having a valid token for a user
+        var token = createTokenForUser("USER_ID");
+
+        // when: posting the request with width exceeding maximum
+        var exchange = client.get()
+                .uri("/assets/ASSET_ID/content?width=100000")
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        // then: the response is bad request
+        exchange.expectStatus().isBadRequest();
+    }
+
 }

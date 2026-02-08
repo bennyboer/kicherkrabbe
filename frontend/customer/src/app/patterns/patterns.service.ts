@@ -189,8 +189,9 @@ export class PatternsService {
 		return sizes;
 	}
 
-	getImageUrl(imageId: string): string {
-		return `${environment.apiUrl}/assets/${imageId}/content`;
+	getImageUrl(imageId: string, width?: number): string {
+		const baseUrl = `${environment.apiUrl}/assets/${imageId}/content`;
+		return width ? `${baseUrl}?width=${width}` : baseUrl;
 	}
 
 	private toInternalPattern(dto: PublishedPatternDTO): Pattern {

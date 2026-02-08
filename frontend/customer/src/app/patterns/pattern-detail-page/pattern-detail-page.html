@@ -13,6 +13,7 @@
 					<div class="main-image">
 						<p-image
 							[src]="getImageUrl(pattern.images[selectedIndex])"
+							[previewImageSrc]="getOriginalImageUrl(pattern.images[selectedIndex])"
 							[alt]="pattern.name"
 							[preview]="true"
 							width="100%"
@@ -30,7 +31,7 @@
 									[class.active]="selectedIndex === i"
 									(click)="selectImage(i)"
 								>
-									<img [src]="getImageUrl(imageId)" [alt]="pattern.name + ' - Bild ' + (i + 1)" loading="lazy" />
+									<img [src]="getThumbnailUrl(imageId)" [alt]="pattern.name + ' - Bild ' + (i + 1)" loading="lazy" />
 								</button>
 							}
 						</div>

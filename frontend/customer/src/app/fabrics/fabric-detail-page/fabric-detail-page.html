@@ -10,6 +10,7 @@
 			<div class="image-section">
 				<p-image
 					[src]="getImageUrl(data.fabric.imageId)"
+					[previewImageSrc]="getOriginalImageUrl(data.fabric.imageId)"
 					[alt]="data.fabric.name"
 					[preview]="true"
 					width="100%"

@@ -1,48 +1,25 @@
-import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy } from "@angular/core";
-import { AsyncPipe } from "@angular/common";
+import { ChangeDetectionStrategy, Component, inject, Input } from "@angular/core";
+import { NgOptimizedImage } from "@angular/common";
 import { Router } from "@angular/router";
-import { BehaviorSubject, map } from "rxjs";
 import { Card } from "primeng/card";
 import { Pattern } from "../pattern";
-import { PatternsService } from "../patterns.service";
 
 @Component({
 	selector: "app-pattern-card",
 	templateUrl: "./pattern-card.html",
 	styleUrl: "./pattern-card.scss",
 	standalone: true,
-	imports: [Card, AsyncPipe],
+	imports: [Card, NgOptimizedImage],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PatternCard implements OnDestroy {
+export class PatternCard {
 	private readonly router = inject(Router);
-	private readonly patternsService = inject(PatternsService);
-	private readonly pattern$ = new BehaviorSubject<Pattern | null>(null);
 
-	readonly imageUrl$ = this.pattern$.pipe(
-		map((pattern) => {
-			if (!pattern) {
-				return "";
-			}
-			const imageId = pattern.getFirstImage();
-			if (imageId === null) {
-				return "";
-			}
-			return this.patternsService.getImageUrl(imageId);
-		})
-	);
+	@Input({ required: true })
+	pattern!: Pattern;
 
-	@Input()
-	set pattern(value: Pattern) {
-		this.pattern$.next(value);
-	}
-
-	get pattern(): Pattern {
-		return this.pattern$.value!;
-	}
-
-	ngOnDestroy(): void {
-		this.pattern$.complete();
+	get imageId(): string | null {
+		return this.pattern.getFirstImage();
 	}
 
 	navigateToDetails(): void {

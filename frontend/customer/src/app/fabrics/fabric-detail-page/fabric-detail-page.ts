@@ -112,6 +112,10 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 	}
 
 	getImageUrl(imageId: string): string {
+		return this.fabricsService.getImageUrl(imageId, 1536);
+	}
+
+	getOriginalImageUrl(imageId: string): string {
 		return this.fabricsService.getImageUrl(imageId);
 	}
 

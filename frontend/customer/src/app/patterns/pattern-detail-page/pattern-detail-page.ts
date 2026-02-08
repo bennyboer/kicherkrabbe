@@ -92,7 +92,15 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 	}
 
 	getImageUrl(imageId: string): string {
+		return this.patternsService.getImageUrl(imageId, 1536);
+	}
+
+	getOriginalImageUrl(imageId: string): string {
 		return this.patternsService.getImageUrl(imageId);
+	}
+
+	getThumbnailUrl(imageId: string): string {
+		return this.patternsService.getImageUrl(imageId, 384);
 	}
 
 	selectImage(index: number): void {

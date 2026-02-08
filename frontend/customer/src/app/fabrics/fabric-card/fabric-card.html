@@ -1,6 +1,14 @@
 <p-card styleClass="product-card" (click)="navigateToDetails()">
 	<ng-template #header>
-		<img [alt]="fabric.name + ' - Stoff'" class="fabric-image" [src]="imageUrl$ | async" loading="lazy" />
+		<div class="fabric-image-container">
+			<img
+				[ngSrc]="fabric.imageId"
+				[alt]="fabric.name + ' - Stoff'"
+				class="fabric-image"
+				fill
+				sizes="(max-width: 576px) 50vw, (max-width: 992px) 33vw, 25vw"
+			/>
+		</div>
 	</ng-template>
 	<ng-template #title>
 		{{ fabric.name }}

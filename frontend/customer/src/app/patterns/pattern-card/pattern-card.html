@@ -1,6 +1,16 @@
 <p-card styleClass="product-card" (click)="navigateToDetails()">
 	<ng-template #header>
-		<img [alt]="pattern.name + ' - Schnittmuster'" class="pattern-image" [src]="imageUrl$ | async" loading="lazy" />
+		<div class="pattern-image-container">
+			@if (imageId) {
+				<img
+					[ngSrc]="imageId"
+					[alt]="pattern.name + ' - Schnittmuster'"
+					class="pattern-image"
+					fill
+					sizes="(max-width: 576px) 50vw, (max-width: 992px) 33vw, 25vw"
+				/>
+			}
+		</div>
 	</ng-template>
 	<ng-template #title>
 		{{ pattern.name }}

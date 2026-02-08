@@ -1,8 +1,10 @@
 package de.bennyboer.kicherkrabbe.assets.image;
 
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.json.JsonMapper;
 import de.bennyboer.kicherkrabbe.assets.*;
 import de.bennyboer.kicherkrabbe.assets.storage.StorageService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -12,18 +14,33 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-@AllArgsConstructor
 public class ImageVariantService {
 
     private static final String WEBP_CONTENT_TYPE = "image/webp";
+    private static final int METADATA_VERSION = 1;
+    private static final JsonMapper JSON_MAPPER = new JsonMapper();
 
     private final StorageService storageService;
+    private final ConcurrentHashMap<String, Mono<Void>> inProgressGenerations = new ConcurrentHashMap<>();
+
+    public ImageVariantService(StorageService storageService) {
+        this.storageService = storageService;
+    }
+
+    @JsonDeserialize
+    record VariantMetadata(int version, int originalWidth, List<Integer> generatedWidths) {
+        static VariantMetadata of(int originalWidth, List<Integer> generatedWidths) {
+            return new VariantMetadata(METADATA_VERSION, originalWidth, generatedWidths);
+        }
+    }
 
     public Mono<Boolean> variantsExist(AssetId assetId, Location location) {
         Location metadataLocation = metadataLocation(assetId);
@@ -35,28 +52,110 @@ public class ImageVariantService {
             return Mono.empty();
         }
 
-        return loadOriginalBytes(assetId, location)
+        return variantsExist(assetId, location)
+                .flatMap(exists -> {
+                    if (exists) {
+                        return Mono.empty();
+                    }
+                    return doGenerateVariants(assetId, location);
+                });
+    }
+
+    private Mono<Void> doGenerateVariants(AssetId assetId, Location location) {
+        String assetKey = assetId.getValue();
+
+        Mono<Void> generationMono = loadOriginalBytes(assetId, location)
                 .flatMap(originalBytes -> Mono.fromCallable(() -> {
                             ImageDimensions dimensions = ImageProcessor.readDimensions(originalBytes);
                             return new OriginalImageData(originalBytes, dimensions);
                         })
                         .subscribeOn(Schedulers.boundedElastic()))
-                .flatMap(data -> generateAllVariants(assetId, data))
+                .flatMap(data -> generateAllVariantsAndReturnWidths(assetId, data))
+                .then()
+                .doFinally(signal -> inProgressGenerations.remove(assetKey))
                 .onErrorResume(IOException.class, e -> {
                     log.warn("Failed to generate variants for asset {}: {}", assetId, e.getMessage());
                     return Mono.empty();
-                });
+                })
+                .cache();
+
+        Mono<Void> previous = inProgressGenerations.putIfAbsent(assetKey, generationMono);
+        if (previous != null) {
+            return previous;
+        }
+
+        return generationMono;
     }
 
     public Mono<AssetContent> loadBestMatchingVariant(AssetId assetId, Location location, int requestedWidth) {
-        return findExistingVariantWidths(assetId)
+        return loadMetadata(assetId)
+                .map(metadata -> selectBestVariant(metadata.generatedWidths(), requestedWidth))
+                .flatMap(selectedWidth -> loadVariant(assetId, selectedWidth));
+    }
+
+    public Mono<AssetContent> getOrGenerateBestMatchingVariant(
+            AssetId assetId,
+            Location location,
+            ContentType contentType,
+            int requestedWidth
+    ) {
+        return loadMetadata(assetId)
+                .map(metadata -> selectBestVariant(metadata.generatedWidths(), requestedWidth))
+                .flatMap(selectedWidth -> loadVariant(assetId, selectedWidth))
+                .switchIfEmpty(Mono.defer(() -> generateVariantsAndLoad(assetId, location, contentType, requestedWidth)));
+    }
+
+    private Mono<AssetContent> generateVariantsAndLoad(
+            AssetId assetId,
+            Location location,
+            ContentType contentType,
+            int requestedWidth
+    ) {
+        if (!ImageProcessor.isImageContentType(contentType.getValue())) {
+            return Mono.empty();
+        }
+
+        String assetKey = assetId.getValue();
+
+        Mono<List<Integer>> generationMono = loadOriginalBytes(assetId, location)
+                .flatMap(originalBytes -> Mono.fromCallable(() -> {
+                            ImageDimensions dimensions = ImageProcessor.readDimensions(originalBytes);
+                            return new OriginalImageData(originalBytes, dimensions);
+                        })
+                        .subscribeOn(Schedulers.boundedElastic()))
+                .flatMap(data -> generateAllVariantsAndReturnWidths(assetId, data))
+                .doFinally(signal -> inProgressGenerations.remove(assetKey))
+                .onErrorResume(IOException.class, e -> {
+                    log.warn("Failed to generate variants for asset {}: {}", assetId, e.getMessage());
+                    return Mono.empty();
+                })
+                .cache();
+
+        Mono<Void> voidMono = generationMono.then();
+        Mono<Void> previous = inProgressGenerations.putIfAbsent(assetKey, voidMono);
+        if (previous != null) {
+            return previous.then(loadMetadata(assetId)
+                    .map(metadata -> selectBestVariant(metadata.generatedWidths(), requestedWidth))
+                    .flatMap(selectedWidth -> loadVariant(assetId, selectedWidth)));
+        }
+
+        return generationMono
                 .map(widths -> selectBestVariant(widths, requestedWidth))
                 .flatMap(selectedWidth -> loadVariant(assetId, selectedWidth));
     }
 
+    private Mono<List<Integer>> generateAllVariantsAndReturnWidths(AssetId assetId, OriginalImageData data) {
+        List<Integer> applicableWidths = computeApplicableWidths(data.dimensions.getWidth());
+
+        return Flux.fromIterable(applicableWidths)
+                .flatMap(targetWidth -> generateAndStoreVariant(assetId, data.bytes, targetWidth))
+                .then(storeMetadata(assetId, data.dimensions.getWidth(), applicableWidths))
+                .thenReturn(applicableWidths);
+    }
+
     public Mono<Void> removeVariants(AssetId assetId, Location location) {
-        return loadOriginalWidth(assetId)
-                .map(this::computeApplicableWidths)
+        return loadMetadata(assetId)
+                .map(VariantMetadata::generatedWidths)
                 .onErrorResume(e -> {
                     log.debug("Could not read variant metadata for removal, trying standard widths: {}", e.getMessage());
                     return Mono.just(VariantWidths.ALL);
@@ -86,31 +185,47 @@ public class ImageVariantService {
                 });
     }
 
-    private Mono<Void> generateAllVariants(AssetId assetId, OriginalImageData data) {
-        List<Integer> applicableWidths = computeApplicableWidths(data.dimensions.getWidth());
-
-        return Flux.fromIterable(applicableWidths)
-                .flatMap(targetWidth -> generateAndStoreVariant(assetId, data.bytes, targetWidth))
-                .then()
-                .then(storeMetadata(assetId, data.dimensions.getWidth()));
-    }
-
-    private Mono<Void> storeMetadata(AssetId assetId, int originalWidth) {
+    private Mono<Void> storeMetadata(AssetId assetId, int originalWidth, List<Integer> generatedWidths) {
         Location metadataLoc = metadataLocation(assetId);
-        byte[] metadataBytes = String.valueOf(originalWidth).getBytes();
-        Flux<DataBuffer> buffers = Flux.just(DefaultDataBufferFactory.sharedInstance.wrap(metadataBytes));
-        return storageService.store(assetId, metadataLoc, buffers);
+        VariantMetadata metadata = VariantMetadata.of(originalWidth, generatedWidths);
+        try {
+            byte[] metadataBytes = JSON_MAPPER.writeValueAsBytes(metadata);
+            Flux<DataBuffer> buffers = Flux.just(DefaultDataBufferFactory.sharedInstance.wrap(metadataBytes));
+            return storageService.store(assetId, metadataLoc, buffers);
+        } catch (JacksonException e) {
+            return Mono.error(new RuntimeException("Failed to serialize variant metadata", e));
+        }
     }
 
-    private Mono<Integer> loadOriginalWidth(AssetId assetId) {
+    private Mono<VariantMetadata> loadMetadata(AssetId assetId) {
         Location metadataLoc = metadataLocation(assetId);
         return DataBufferUtils.join(storageService.load(assetId, metadataLoc))
-                .map(buffer -> {
+                .flatMap(buffer -> {
                     byte[] bytes = new byte[buffer.readableByteCount()];
                     buffer.read(bytes);
                     DataBufferUtils.release(buffer);
-                    return Integer.parseInt(new String(bytes).trim());
+                    return parseMetadata(bytes);
                 });
+    }
+
+    private Mono<VariantMetadata> parseMetadata(byte[] bytes) {
+        String content = new String(bytes, StandardCharsets.UTF_8).trim();
+
+        if (content.startsWith("{")) {
+            try {
+                return Mono.just(JSON_MAPPER.readValue(content, VariantMetadata.class));
+            } catch (JacksonException e) {
+                return Mono.error(new RuntimeException("Failed to parse variant metadata JSON", e));
+            }
+        }
+
+        try {
+            int originalWidth = Integer.parseInt(content);
+            List<Integer> widths = computeApplicableWidths(originalWidth);
+            return Mono.just(VariantMetadata.of(originalWidth, widths));
+        } catch (NumberFormatException e) {
+            return Mono.error(new RuntimeException("Failed to parse legacy variant metadata", e));
+        }
     }
 
     private Location metadataLocation(AssetId assetId) {
@@ -144,11 +259,6 @@ public class ImageVariantService {
                     Flux<DataBuffer> buffers = Flux.just(DefaultDataBufferFactory.sharedInstance.wrap(variantBytes));
                     return storageService.store(assetId, variantLoc, buffers);
                 });
-    }
-
-    private Mono<List<Integer>> findExistingVariantWidths(AssetId assetId) {
-        return loadOriginalWidth(assetId)
-                .map(this::computeApplicableWidths);
     }
 
     private int selectBestVariant(List<Integer> availableWidths, int requestedWidth) {
