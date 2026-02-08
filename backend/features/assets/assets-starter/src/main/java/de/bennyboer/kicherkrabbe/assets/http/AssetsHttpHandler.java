@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.assets.AssetsModule;
 import de.bennyboer.kicherkrabbe.assets.http.responses.UploadAssetResponse;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
@@ -66,9 +67,25 @@ public class AssetsHttpHandler {
 
     public Mono<ServerResponse> getAssetContent(ServerRequest request) {
         String assetId = request.pathVariable("assetId");
+        @Nullable Integer width = request.queryParam("width")
+                .map(w -> {
+                    try {
+                        int parsed = Integer.parseInt(w);
+                        if (parsed <= 0) {
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Width must be positive");
+                        }
+                        if (parsed > 4096) {
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Width must not exceed 4096");
+                        }
+                        return parsed;
+                    } catch (NumberFormatException e) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid width parameter");
+                    }
+                })
+                .orElse(null);
 
         return toAgent(request)
-                .flatMap(agent -> module.getAssetContent(assetId, agent))
+                .flatMap(agent -> module.getAssetContent(assetId, width, agent))
                 .flatMap(content -> ServerResponse.ok()
                         .contentType(MediaType.parseMediaType(content.getContentType().getValue()))
                         .body(content.getBuffers(), DataBuffer.class))

@@ -6,6 +6,8 @@ import org.springframework.core.io.buffer.DataBuffer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 public interface StorageService {
 
     Mono<Void> store(AssetId assetId, Location location, Flux<DataBuffer> content);
@@ -13,5 +15,9 @@ public interface StorageService {
     Flux<DataBuffer> load(AssetId assetId, Location location);
 
     Mono<Void> remove(AssetId assetId, Location location);
+
+    Mono<Boolean> exists(AssetId assetId, Location location);
+
+    Mono<List<String>> listByPrefix(String prefix);
 
 }

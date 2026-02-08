@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.assets;
 
+import de.bennyboer.kicherkrabbe.assets.image.ImageVariantService;
 import de.bennyboer.kicherkrabbe.assets.samples.SampleAsset;
 import de.bennyboer.kicherkrabbe.assets.storage.StorageService;
 import de.bennyboer.kicherkrabbe.assets.storage.file.FileStorageService;
@@ -9,6 +10,9 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublish
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
+import jakarta.annotation.Nullable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -16,41 +20,48 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Clock;
 
 public class AssetsModuleTest {
 
-    private final AssetService assetService = new AssetService(
-            new InMemoryEventSourcingRepo(),
-            new LoggingEventPublisher(),
-            Clock.systemUTC()
-    );
+    @TempDir
+    Path tempDir;
 
-    private final PermissionsService permissionsService = new PermissionsService(
-            new InMemoryPermissionsRepo(),
-            event -> Mono.empty()
-    );
+    private AssetService assetService;
+
+    private PermissionsService permissionsService;
 
     private StorageService storageService;
 
-    {
-        try {
-            storageService = new FileStorageService(
-                    Files.createTempDirectory("kicherkrabbe-test-assets")
-            );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private ImageVariantService imageVariantService;
+
+    private AssetsModule module;
+
+    @BeforeEach
+    void setUp() {
+        assetService = new AssetService(
+                new InMemoryEventSourcingRepo(),
+                new LoggingEventPublisher(),
+                Clock.systemUTC()
+        );
+
+        permissionsService = new PermissionsService(
+                new InMemoryPermissionsRepo(),
+                ignored -> Mono.empty()
+        );
+
+        storageService = new FileStorageService(tempDir);
+        imageVariantService = new ImageVariantService(storageService);
+
+        var config = new AssetsModuleConfig();
+        module = config.assetsModule(
+                assetService,
+                permissionsService,
+                storageService,
+                imageVariantService
+        );
     }
-
-    private final AssetsModuleConfig config = new AssetsModuleConfig();
-
-    private final AssetsModule module = config.assetsModule(
-            assetService,
-            permissionsService,
-            storageService
-    );
 
     public void allowUserToCreateAssets(String userId) {
         module.allowUserToCreateAssets(userId).block();
@@ -82,7 +93,11 @@ public class AssetsModuleTest {
     }
 
     public byte[] getAssetContent(String assetId, Agent agent) {
-        Flux<DataBuffer> buffers$ = module.getAssetContent(assetId, agent).flatMapMany(AssetContent::getBuffers);
+        return getAssetContent(assetId, null, agent);
+    }
+
+    public byte[] getAssetContent(String assetId, @Nullable Integer width, Agent agent) {
+        Flux<DataBuffer> buffers$ = module.getAssetContent(assetId, width, agent).flatMapMany(AssetContent::getBuffers);
         DataBuffer buffer = DataBufferUtils.join(buffers$).block();
 
         if (buffer == null) {
@@ -94,6 +109,10 @@ public class AssetsModuleTest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public AssetContent getAssetContentWithMetadata(String assetId, Integer width, Agent agent) {
+        return module.getAssetContent(assetId, width, agent).block();
     }
 
     public void allowAnonymousUsersToReadAsset(String assetId) {

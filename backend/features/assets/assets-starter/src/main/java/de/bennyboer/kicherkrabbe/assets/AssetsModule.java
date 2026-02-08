@@ -1,5 +1,7 @@
 package de.bennyboer.kicherkrabbe.assets;
 
+import de.bennyboer.kicherkrabbe.assets.image.ImageProcessor;
+import de.bennyboer.kicherkrabbe.assets.image.ImageVariantService;
 import de.bennyboer.kicherkrabbe.assets.storage.StorageService;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
@@ -25,16 +27,32 @@ public class AssetsModule {
 
     private final StorageService storageService;
 
+    private final ImageVariantService imageVariantService;
+
     public Mono<AssetContent> getAssetContent(String assetId, Agent agent) {
+        return getAssetContent(assetId, null, agent);
+    }
+
+    public Mono<AssetContent> getAssetContent(String assetId, @Nullable Integer width, Agent agent) {
         var id = AssetId.of(assetId);
 
         return assertAgentIsAllowedTo(agent, READ, id)
-                .then(assetService.get(id)
-                        .map(asset -> {
-                            Flux<DataBuffer> buffers$ = storageService.load(id, asset.getLocation());
+                .then(assetService.get(id))
+                .flatMap(asset -> {
+                    if (width == null || !ImageProcessor.isImageContentType(asset.getContentType().getValue())) {
+                        Flux<DataBuffer> buffers$ = storageService.load(id, asset.getLocation());
+                        return Mono.just(AssetContent.of(asset.getContentType(), buffers$));
+                    }
 
-                            return AssetContent.of(asset.getContentType(), buffers$);
-                        }));
+                    return imageVariantService.variantsExist(id, asset.getLocation())
+                            .flatMap(exist -> {
+                                if (!exist) {
+                                    return imageVariantService.generateVariants(id, asset.getLocation(), asset.getContentType())
+                                            .then(imageVariantService.loadBestMatchingVariant(id, asset.getLocation(), width));
+                                }
+                                return imageVariantService.loadBestMatchingVariant(id, asset.getLocation(), width);
+                            });
+                });
     }
 
     @Transactional(propagation = MANDATORY)
@@ -55,8 +73,14 @@ public class AssetsModule {
 
         return assertAgentIsAllowedTo(agent, DELETE, id)
                 .then(assetService.getOrThrow(id))
-                .delayUntil(asset -> assetService.delete(id, Version.of(version), agent))
-                .delayUntil(asset -> storageService.remove(id, asset.getLocation()))
+                .delayUntil(ignored -> assetService.delete(id, Version.of(version), agent))
+                .delayUntil(asset -> {
+                    if (ImageProcessor.isImageContentType(asset.getContentType().getValue())) {
+                        return imageVariantService.removeVariants(id, asset.getLocation())
+                                .then(storageService.remove(id, asset.getLocation()));
+                    }
+                    return storageService.remove(id, asset.getLocation());
+                })
                 .then();
     }
 

@@ -29,6 +29,7 @@ public class QueryAssetContentHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return a successful response
         when(module.getAssetContent(
                 eq("ASSET_ID"),
+                eq(null),
                 eq(Agent.user(AgentId.of("USER_ID")))
         )).thenReturn(Mono.just(AssetContent.of(ContentType.of("image/jpeg"), buffers$)));
 
@@ -58,6 +59,7 @@ public class QueryAssetContentHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return a successful response
         when(module.getAssetContent(
                 eq("ASSET_ID"),
+                eq(null),
                 eq(Agent.anonymous())
         )).thenReturn(Mono.just(AssetContent.of(ContentType.of("image/jpeg"), buffers$)));
 
@@ -97,6 +99,7 @@ public class QueryAssetContentHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return a successful response
         when(module.getAssetContent(
                 eq("ASSET_ID"),
+                eq(null),
                 eq(Agent.user(AgentId.of("USER_ID")))
         )).thenReturn(Mono.empty());
 
@@ -108,6 +111,80 @@ public class QueryAssetContentHttpHandlerTest extends HttpHandlerTest {
 
         // then: the response is unauthorized
         exchange.expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void shouldPassWidthParameterToModule() {
+        // given: having a valid token for a user
+        var token = createTokenForUser("USER_ID");
+
+        // and: some data buffers to return
+        var data = "Hello, World!";
+        Flux<DataBuffer> buffers$ = Flux.just(DefaultDataBufferFactory.sharedInstance.wrap(data.getBytes(UTF_8)));
+
+        // and: the module is configured to return a successful response
+        when(module.getAssetContent(
+                eq("ASSET_ID"),
+                eq(500),
+                eq(Agent.user(AgentId.of("USER_ID")))
+        )).thenReturn(Mono.just(AssetContent.of(ContentType.of("image/webp"), buffers$)));
+
+        // when: posting the request with width parameter
+        var exchange = client.get()
+                .uri("/assets/ASSET_ID/content?width=500")
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        // then: the response is successful
+        exchange.expectStatus().isOk();
+
+        // and: the content type is image/webp
+        exchange.expectHeader().contentType("image/webp");
+    }
+
+    @Test
+    void shouldRejectNegativeWidthParameter() {
+        // given: having a valid token for a user
+        var token = createTokenForUser("USER_ID");
+
+        // when: posting the request with negative width
+        var exchange = client.get()
+                .uri("/assets/ASSET_ID/content?width=-100")
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        // then: the response is bad request
+        exchange.expectStatus().isBadRequest();
+    }
+
+    @Test
+    void shouldRejectZeroWidthParameter() {
+        // given: having a valid token for a user
+        var token = createTokenForUser("USER_ID");
+
+        // when: posting the request with zero width
+        var exchange = client.get()
+                .uri("/assets/ASSET_ID/content?width=0")
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        // then: the response is bad request
+        exchange.expectStatus().isBadRequest();
+    }
+
+    @Test
+    void shouldRejectNonNumericWidthParameter() {
+        // given: having a valid token for a user
+        var token = createTokenForUser("USER_ID");
+
+        // when: posting the request with non-numeric width
+        var exchange = client.get()
+                .uri("/assets/ASSET_ID/content?width=abc")
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        // then: the response is bad request
+        exchange.expectStatus().isBadRequest();
     }
 
 }

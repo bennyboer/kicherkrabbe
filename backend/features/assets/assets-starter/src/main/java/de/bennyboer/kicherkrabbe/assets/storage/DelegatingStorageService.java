@@ -7,6 +7,8 @@ import org.springframework.core.io.buffer.DataBuffer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @AllArgsConstructor
 public class DelegatingStorageService implements StorageService {
 
@@ -31,6 +33,18 @@ public class DelegatingStorageService implements StorageService {
         return switch (location.getType()) {
             case FILE -> fileStorageService.remove(assetId, location);
         };
+    }
+
+    @Override
+    public Mono<Boolean> exists(AssetId assetId, Location location) {
+        return switch (location.getType()) {
+            case FILE -> fileStorageService.exists(assetId, location);
+        };
+    }
+
+    @Override
+    public Mono<List<String>> listByPrefix(String prefix) {
+        return fileStorageService.listByPrefix(prefix);
     }
 
 }

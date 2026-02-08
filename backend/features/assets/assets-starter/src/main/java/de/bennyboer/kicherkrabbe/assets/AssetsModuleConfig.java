@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.assets;
 
 import de.bennyboer.kicherkrabbe.assets.http.AssetsHttpConfig;
+import de.bennyboer.kicherkrabbe.assets.image.ImageVariantService;
 import de.bennyboer.kicherkrabbe.assets.messaging.AssetsMessaging;
 import de.bennyboer.kicherkrabbe.assets.storage.DelegatingStorageService;
 import de.bennyboer.kicherkrabbe.assets.storage.StorageService;
@@ -34,12 +35,18 @@ public class AssetsModuleConfig {
     }
 
     @Bean
+    public ImageVariantService imageVariantService(StorageService storageService) {
+        return new ImageVariantService(storageService);
+    }
+
+    @Bean
     public AssetsModule assetsModule(
             AssetService assetService,
             @Qualifier("assetsPermissionsService") PermissionsService permissionsService,
-            StorageService storageService
+            StorageService storageService,
+            ImageVariantService imageVariantService
     ) {
-        return new AssetsModule(assetService, permissionsService, storageService);
+        return new AssetsModule(assetService, permissionsService, storageService, imageVariantService);
     }
 
 }
