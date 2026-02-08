@@ -2,6 +2,7 @@ package de.bennyboer.kicherkrabbe.assets.image;
 
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 import tools.jackson.databind.json.JsonMapper;
 import de.bennyboer.kicherkrabbe.assets.*;
 import de.bennyboer.kicherkrabbe.assets.storage.StorageService;
@@ -35,6 +36,7 @@ public class ImageVariantService {
         this.storageService = storageService;
     }
 
+    @JsonSerialize
     @JsonDeserialize
     record VariantMetadata(int version, int originalWidth, List<Integer> generatedWidths) {
         static VariantMetadata of(int originalWidth, List<Integer> generatedWidths) {
@@ -115,33 +117,8 @@ public class ImageVariantService {
             return Mono.empty();
         }
 
-        String assetKey = assetId.getValue();
-
-        Mono<List<Integer>> generationMono = loadOriginalBytes(assetId, location)
-                .flatMap(originalBytes -> Mono.fromCallable(() -> {
-                            ImageDimensions dimensions = ImageProcessor.readDimensions(originalBytes);
-                            return new OriginalImageData(originalBytes, dimensions);
-                        })
-                        .subscribeOn(Schedulers.boundedElastic()))
-                .flatMap(data -> generateAllVariantsAndReturnWidths(assetId, data))
-                .doFinally(signal -> inProgressGenerations.remove(assetKey))
-                .onErrorResume(IOException.class, e -> {
-                    log.warn("Failed to generate variants for asset {}: {}", assetId, e.getMessage());
-                    return Mono.empty();
-                })
-                .cache();
-
-        Mono<Void> voidMono = generationMono.then();
-        Mono<Void> previous = inProgressGenerations.putIfAbsent(assetKey, voidMono);
-        if (previous != null) {
-            return previous.then(loadMetadata(assetId)
-                    .map(metadata -> selectBestVariant(metadata.generatedWidths(), requestedWidth))
-                    .flatMap(selectedWidth -> loadVariant(assetId, selectedWidth)));
-        }
-
-        return generationMono
-                .map(widths -> selectBestVariant(widths, requestedWidth))
-                .flatMap(selectedWidth -> loadVariant(assetId, selectedWidth));
+        return doGenerateVariants(assetId, location)
+                .then(loadBestMatchingVariant(assetId, location, requestedWidth));
     }
 
     private Mono<List<Integer>> generateAllVariantsAndReturnWidths(AssetId assetId, OriginalImageData data) {

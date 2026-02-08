@@ -34,6 +34,7 @@ export interface ProductStructuredData {
 
 const SITE_URL = "https://kicherkrabbe.com";
 const API_URL = "https://api.kicherkrabbe.com";
+const OG_IMAGE_WIDTH = 1536;
 const DEFAULT_TITLE = "Kicherkrabbe | Handmade Kinderkleidung aus Bayern";
 const DEFAULT_DESCRIPTION =
 	"Handgefertigte Kinderkleidung aus Bayern. Individuelle Kleidungsstücke für Babys und Kinder in Größen 56-116.";
@@ -93,7 +94,7 @@ export class SeoService {
 	}
 
 	setProductImage(imageId: string): void {
-		const imageUrl = `${API_URL}/assets/${imageId}/content?width=1536`;
+		const imageUrl = `${API_URL}/assets/${imageId}/content?width=${OG_IMAGE_WIDTH}`;
 		this.updateOrCreateMeta("og:image", imageUrl, "property");
 	}
 
