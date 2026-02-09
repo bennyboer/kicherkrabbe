@@ -10,3 +10,6 @@ http:
         browserXssFilter: true
         referrerPolicy: strict-origin-when-cross-origin
         permissionsPolicy: "geolocation=(), microphone=(), camera=()"
+    compress:
+      compress:
+        minResponseBodyBytes: 1024
