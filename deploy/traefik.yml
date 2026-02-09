@@ -8,7 +8,7 @@ providers:
     network: traefik-public
   file:
     filename: /etc/traefik/dynamic.yml
-    watch: false
+    watch: true
 
 entryPoints:
   web:
