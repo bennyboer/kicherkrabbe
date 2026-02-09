@@ -8,6 +8,7 @@ import {
 import {
 	provideClientHydration,
 	withEventReplay,
+	withHttpTransferCacheOptions,
 } from "@angular/platform-browser";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { provideRouter, withInMemoryScrolling } from "@angular/router";
@@ -37,7 +38,7 @@ export const appConfig: ApplicationConfig = {
 				},
 			},
 		}),
-		provideClientHydration(withEventReplay()),
+		provideClientHydration(withEventReplay(), withHttpTransferCacheOptions({})),
 		MessageService,
 		{
 			provide: IMAGE_LOADER,
