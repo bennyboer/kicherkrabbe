@@ -2,7 +2,19 @@ import { RenderMode, type ServerRoute } from "@angular/ssr";
 
 export const serverRoutes: ServerRoute[] = [
 	{
+		path: "",
+		renderMode: RenderMode.Server,
+	},
+	{
+		path: "patterns",
+		renderMode: RenderMode.Server,
+	},
+	{
 		path: "patterns/:id",
+		renderMode: RenderMode.Server,
+	},
+	{
+		path: "fabrics",
 		renderMode: RenderMode.Server,
 	},
 	{
@@ -10,20 +22,8 @@ export const serverRoutes: ServerRoute[] = [
 		renderMode: RenderMode.Server,
 	},
 	{
-		path: "",
-		renderMode: RenderMode.Prerender,
-	},
-	{
-		path: "patterns",
-		renderMode: RenderMode.Prerender,
-	},
-	{
-		path: "fabrics",
-		renderMode: RenderMode.Prerender,
-	},
-	{
 		path: "contact",
-		renderMode: RenderMode.Prerender,
+		renderMode: RenderMode.Server,
 	},
 	{
 		path: "contact/sent",
@@ -31,10 +31,6 @@ export const serverRoutes: ServerRoute[] = [
 	},
 	{
 		path: "landing/hochzeit",
-		renderMode: RenderMode.Prerender,
-	},
-	{
-		path: "landing/besondere-anlaesse",
 		renderMode: RenderMode.Prerender,
 	},
 	{

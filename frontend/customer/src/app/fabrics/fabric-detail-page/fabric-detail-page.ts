@@ -1,4 +1,5 @@
 import { AsyncPipe } from "@angular/common";
+import { FormsModule } from "@angular/forms";
 import {
 	ChangeDetectionStrategy,
 	Component,
@@ -13,6 +14,7 @@ import { Divider } from "primeng/divider";
 import { Image } from "primeng/image";
 import { ProgressSpinner } from "primeng/progressspinner";
 import { Tag } from "primeng/tag";
+import { ToggleButton } from "primeng/togglebutton";
 import { BehaviorSubject, combineLatest, forkJoin, map, Subject, switchMap, takeUntil } from "rxjs";
 import { SeoService } from "../../services/seo.service";
 import { Breadcrumbs, type BreadcrumbItem, ColorSwatch } from "../../shared";
@@ -25,7 +27,7 @@ import type { Color, FabricType, Topic } from "../model";
 	templateUrl: "./fabric-detail-page.html",
 	styleUrl: "./fabric-detail-page.scss",
 	standalone: true,
-	imports: [AsyncPipe, RouterLink, Button, ProgressSpinner, Tag, Divider, Image, ColorSwatch, Breadcrumbs],
+	imports: [AsyncPipe, FormsModule, RouterLink, Button, ProgressSpinner, Tag, Divider, Image, ToggleButton, ColorSwatch, Breadcrumbs],
 	providers: [MessageService],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -44,6 +46,7 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 
 	readonly loading$ = new BehaviorSubject<boolean>(true);
 	readonly breadcrumbs$ = new BehaviorSubject<BreadcrumbItem[]>([]);
+	readonly showTiled$ = new BehaviorSubject<boolean>(false);
 
 	readonly fabricData$ = combineLatest([
 		this.fabric$,
@@ -108,6 +111,7 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 		this.allFabricTypes$.complete();
 		this.loading$.complete();
 		this.breadcrumbs$.complete();
+		this.showTiled$.complete();
 		this.seoService.clearStructuredData();
 	}
 
