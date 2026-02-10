@@ -118,7 +118,7 @@ services:
         - "traefik.http.routers.app.rule=Host(`api.${DOMAIN}`)"
         - "traefik.http.routers.app.entrypoints=websecure"
         - "traefik.http.routers.app.tls.certresolver=letsencrypt"
-        - "traefik.http.routers.app.middlewares=security-headers@file,compress@file"
+        - "traefik.http.routers.app.middlewares=rate-limit-api@file,security-headers@file,compress@file"
         - "traefik.http.services.app.loadbalancer.server.port=8080"
       update_config:
         parallelism: 1
@@ -143,12 +143,12 @@ services:
         - "traefik.http.routers.customer.rule=Host(`${DOMAIN}`)"
         - "traefik.http.routers.customer.entrypoints=websecure"
         - "traefik.http.routers.customer.tls.certresolver=letsencrypt"
-        - "traefik.http.routers.customer.middlewares=security-headers@file,compress@file"
+        - "traefik.http.routers.customer.middlewares=rate-limit-frontend@file,security-headers@file,compress@file"
         - "traefik.http.services.customer.loadbalancer.server.port=4000"
         - "traefik.http.routers.customer-www.rule=Host(`www.${DOMAIN}`)"
         - "traefik.http.routers.customer-www.entrypoints=websecure"
         - "traefik.http.routers.customer-www.tls.certresolver=letsencrypt"
-        - "traefik.http.routers.customer-www.middlewares=security-headers@file,compress@file,www-redirect@swarm"
+        - "traefik.http.routers.customer-www.middlewares=rate-limit-frontend@file,security-headers@file,compress@file,www-redirect@swarm"
         - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://www\\.(.+)"
         - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://$${1}"
         - "traefik.http.middlewares.www-redirect.redirectregex.permanent=true"
@@ -172,7 +172,7 @@ services:
         - "traefik.http.routers.management.rule=Host(`manage.${DOMAIN}`)"
         - "traefik.http.routers.management.entrypoints=websecure"
         - "traefik.http.routers.management.tls.certresolver=letsencrypt"
-        - "traefik.http.routers.management.middlewares=security-headers@file,compress@file"
+        - "traefik.http.routers.management.middlewares=rate-limit-frontend@file,security-headers@file,compress@file"
         - "traefik.http.services.management.loadbalancer.server.port=4200"
       update_config:
         parallelism: 1

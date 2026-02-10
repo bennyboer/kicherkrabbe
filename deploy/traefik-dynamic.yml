@@ -13,3 +13,19 @@ http:
     compress:
       compress:
         minResponseBodyBytes: 1024
+    rate-limit-api:
+      rateLimit:
+        average: 30
+        burst: 50
+        period: 1s
+        sourceCriterion:
+          ipStrategy:
+            depth: 0
+    rate-limit-frontend:
+      rateLimit:
+        average: 100
+        burst: 200
+        period: 1s
+        sourceCriterion:
+          ipStrategy:
+            depth: 0
