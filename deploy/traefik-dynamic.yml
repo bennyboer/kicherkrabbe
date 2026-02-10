@@ -10,7 +10,7 @@ http:
         browserXssFilter: true
         referrerPolicy: strict-origin-when-cross-origin
         permissionsPolicy: "geolocation=(), microphone=(), camera=()"
-        contentSecurityPolicyReportOnly: "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https://api.kicherkrabbe.com; connect-src 'self' https://api.kicherkrabbe.com; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; upgrade-insecure-requests"
+        contentSecurityPolicyReportOnly: "default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https://api.kicherkrabbe.com; connect-src 'self' https://api.kicherkrabbe.com; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; upgrade-insecure-requests"
     compress:
       compress:
         minResponseBodyBytes: 1024
