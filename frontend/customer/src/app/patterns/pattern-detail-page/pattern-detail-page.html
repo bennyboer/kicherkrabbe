@@ -4,7 +4,7 @@
 		<div class="loading-container">
 			<p-progressspinner strokeWidth="4" />
 		</div>
-	} @else if (state.pattern; as pattern) {
+	} @else if (state?.pattern; as pattern) {
 		<app-breadcrumbs [items]="(breadcrumbs$ | async) ?? []" />
 
 		<div class="content-grid">
