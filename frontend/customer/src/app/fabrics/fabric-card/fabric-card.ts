@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, Input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
 import { NgOptimizedImage } from "@angular/common";
-import { Router } from "@angular/router";
 import { Card } from "primeng/card";
 import { Fabric } from "../fabric";
 
@@ -13,12 +12,6 @@ import { Fabric } from "../fabric";
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FabricCard {
-	private readonly router = inject(Router);
-
 	@Input({ required: true })
 	fabric!: Fabric;
-
-	navigateToDetails(): void {
-		this.router.navigate(["/fabrics", this.fabric.alias]);
-	}
 }

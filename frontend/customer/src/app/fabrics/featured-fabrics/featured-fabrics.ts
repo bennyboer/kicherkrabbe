@@ -1,5 +1,6 @@
 import { AsyncPipe, isPlatformBrowser } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, PLATFORM_ID } from "@angular/core";
+import { RouterLink } from "@angular/router";
 import { BehaviorSubject, map } from "rxjs";
 import { Carousel } from "primeng/carousel";
 import { SeedService } from "../../services/seed.service";
@@ -17,7 +18,7 @@ export type FabricCarouselItem =
 	templateUrl: "./featured-fabrics.html",
 	styleUrl: "./featured-fabrics.scss",
 	standalone: true,
-	imports: [AsyncPipe, FabricCard, ShowMoreCard, Carousel],
+	imports: [AsyncPipe, RouterLink, FabricCard, ShowMoreCard, Carousel],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeaturedFabrics implements OnInit, OnDestroy {

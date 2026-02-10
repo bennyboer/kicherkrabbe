@@ -13,7 +13,7 @@ import { Divider } from "primeng/divider";
 import { Image } from "primeng/image";
 import { ProgressSpinner } from "primeng/progressspinner";
 import { QuillViewComponent } from "ngx-quill";
-import { BehaviorSubject, combineLatest, map, Subject, switchMap, takeUntil } from "rxjs";
+import { BehaviorSubject, Subject, switchMap, takeUntil } from "rxjs";
 import { SeoService } from "../../services/seo.service";
 import { Breadcrumbs, type BreadcrumbItem } from "../../shared";
 import type { Pattern, PricedSizeRange } from "../pattern";
@@ -45,14 +45,12 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 	private readonly seoService = inject(SeoService);
 	private readonly destroy$ = new Subject<void>();
 
-	private readonly pattern$ = new BehaviorSubject<Pattern | null>(null);
-	private readonly loading$ = new BehaviorSubject<boolean>(true);
+	readonly state$ = new BehaviorSubject<{ loading: boolean; pattern: Pattern | null }>({
+		loading: true,
+		pattern: null,
+	});
 	readonly selectedImageIndex$ = new BehaviorSubject<number>(0);
 	readonly breadcrumbs$ = new BehaviorSubject<BreadcrumbItem[]>([]);
-
-	readonly state$ = combineLatest([this.loading$, this.pattern$]).pipe(
-		map(([loading, pattern]) => ({ loading, pattern }))
-	);
 
 	ngOnInit(): void {
 		this.route.paramMap
@@ -62,21 +60,19 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 					if (!id) {
 						throw new Error("Pattern ID is required");
 					}
-					this.pattern$.next(null);
-					this.loading$.next(true);
+					this.state$.next({ loading: true, pattern: null });
 					return this.patternsService.getPattern(id);
 				}),
 				takeUntil(this.destroy$)
 			)
 			.subscribe({
 				next: (pattern) => {
-					this.pattern$.next(pattern);
+					this.state$.next({ loading: false, pattern });
 					this.selectedImageIndex$.next(0);
-					this.loading$.next(false);
 					this.updateSeo(pattern);
 				},
 				error: () => {
-					this.loading$.next(false);
+					this.state$.next({ loading: false, pattern: null });
 					this.messageService.add({
 						severity: "error",
 						summary: "Fehler",
@@ -89,8 +85,7 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 	ngOnDestroy(): void {
 		this.destroy$.next();
 		this.destroy$.complete();
-		this.pattern$.complete();
-		this.loading$.complete();
+		this.state$.complete();
 		this.selectedImageIndex$.complete();
 		this.breadcrumbs$.complete();
 		this.seoService.clearStructuredData();

@@ -1,5 +1,6 @@
 import { AsyncPipe, isPlatformBrowser } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, PLATFORM_ID } from "@angular/core";
+import { RouterLink } from "@angular/router";
 import { BehaviorSubject, map } from "rxjs";
 import { Carousel } from "primeng/carousel";
 import { SeedService } from "../../services/seed.service";
@@ -17,7 +18,7 @@ export type PatternCarouselItem =
 	templateUrl: "./featured-patterns.html",
 	styleUrl: "./featured-patterns.scss",
 	standalone: true,
-	imports: [AsyncPipe, PatternCard, ShowMoreCard, Carousel],
+	imports: [AsyncPipe, RouterLink, PatternCard, ShowMoreCard, Carousel],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeaturedPatterns implements OnInit, OnDestroy {

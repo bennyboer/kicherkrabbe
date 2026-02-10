@@ -15,7 +15,7 @@ import { Image } from "primeng/image";
 import { ProgressSpinner } from "primeng/progressspinner";
 import { Tag } from "primeng/tag";
 import { ToggleButton } from "primeng/togglebutton";
-import { BehaviorSubject, combineLatest, forkJoin, map, Subject, switchMap, takeUntil } from "rxjs";
+import { BehaviorSubject, combineLatest, forkJoin, map, Observable, Subject, switchMap, takeUntil } from "rxjs";
 import { SeoService } from "../../services/seo.service";
 import { Breadcrumbs, type BreadcrumbItem, ColorSwatch } from "../../shared";
 import type { Fabric } from "../fabric";
@@ -39,23 +39,24 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 	private readonly seoService = inject(SeoService);
 	private readonly destroy$ = new Subject<void>();
 
-	private readonly fabric$ = new BehaviorSubject<Fabric | null>(null);
+	private readonly fabricState$ = new BehaviorSubject<{ loading: boolean; fabric: Fabric | null }>({
+		loading: true,
+		fabric: null,
+	});
 	private readonly allColors$ = new BehaviorSubject<Color[]>([]);
 	private readonly allTopics$ = new BehaviorSubject<Topic[]>([]);
 	private readonly allFabricTypes$ = new BehaviorSubject<FabricType[]>([]);
 
-	private readonly loading$ = new BehaviorSubject<boolean>(true);
 	readonly breadcrumbs$ = new BehaviorSubject<BreadcrumbItem[]>([]);
 	readonly showTiled$ = new BehaviorSubject<boolean>(false);
 
-	readonly state$ = combineLatest([
-		this.loading$,
-		this.fabric$,
+	readonly state$: Observable<{ loading: boolean; data: { fabric: Fabric; colors: Color[]; topics: Topic[]; fabricTypeAvailabilities: { type: FabricType; inStock: boolean }[] } | null }> = combineLatest([
+		this.fabricState$,
 		this.allColors$,
 		this.allTopics$,
 		this.allFabricTypes$,
 	]).pipe(
-		map(([loading, fabric, allColors, allTopics, allFabricTypes]) => {
+		map(([{ loading, fabric }, allColors, allTopics, allFabricTypes]) => {
 			if (!fabric) return { loading, data: null };
 
 			const colors = allColors.filter((c) => fabric.colorIds.includes(c.id));
@@ -81,20 +82,18 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 					if (!id) {
 						throw new Error("Fabric ID is required");
 					}
-					this.fabric$.next(null);
-					this.loading$.next(true);
+					this.fabricState$.next({ loading: true, fabric: null });
 					return this.fabricsService.getFabric(id);
 				}),
 				takeUntil(this.destroy$)
 			)
 			.subscribe({
 				next: (fabric) => {
-					this.fabric$.next(fabric);
-					this.loading$.next(false);
+					this.fabricState$.next({ loading: false, fabric });
 					this.updateSeo(fabric);
 				},
 				error: () => {
-					this.loading$.next(false);
+					this.fabricState$.next({ loading: false, fabric: null });
 					this.messageService.add({
 						severity: "error",
 						summary: "Fehler",
@@ -107,11 +106,10 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 	ngOnDestroy(): void {
 		this.destroy$.next();
 		this.destroy$.complete();
-		this.fabric$.complete();
+		this.fabricState$.complete();
 		this.allColors$.complete();
 		this.allTopics$.complete();
 		this.allFabricTypes$.complete();
-		this.loading$.complete();
 		this.breadcrumbs$.complete();
 		this.showTiled$.complete();
 		this.seoService.clearStructuredData();

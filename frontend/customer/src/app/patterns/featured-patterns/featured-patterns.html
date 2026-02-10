@@ -12,7 +12,9 @@
 				<div class="carousel-item">
 					@if (item.type === "pattern") {
 						@defer (on viewport) {
-							<app-pattern-card [pattern]="item.pattern"></app-pattern-card>
+							<a [routerLink]="['/patterns', item.pattern.alias]" class="product-link">
+								<app-pattern-card [pattern]="item.pattern"></app-pattern-card>
+							</a>
 						} @placeholder {
 							<div class="card-placeholder"></div>
 						}
