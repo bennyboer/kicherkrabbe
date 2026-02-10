@@ -80,6 +80,7 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 					if (!id) {
 						throw new Error("Fabric ID is required");
 					}
+					this.fabric$.next(null);
 					this.loading$.next(true);
 					return this.fabricsService.getFabric(id);
 				}),

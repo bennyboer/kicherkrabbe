@@ -58,6 +58,7 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 					if (!id) {
 						throw new Error("Pattern ID is required");
 					}
+					this.pattern$.next(null);
 					this.loading$.next(true);
 					return this.patternsService.getPattern(id);
 				}),
