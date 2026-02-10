@@ -44,18 +44,19 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 	private readonly allTopics$ = new BehaviorSubject<Topic[]>([]);
 	private readonly allFabricTypes$ = new BehaviorSubject<FabricType[]>([]);
 
-	readonly loading$ = new BehaviorSubject<boolean>(true);
+	private readonly loading$ = new BehaviorSubject<boolean>(true);
 	readonly breadcrumbs$ = new BehaviorSubject<BreadcrumbItem[]>([]);
 	readonly showTiled$ = new BehaviorSubject<boolean>(false);
 
-	readonly fabricData$ = combineLatest([
+	readonly state$ = combineLatest([
+		this.loading$,
 		this.fabric$,
 		this.allColors$,
 		this.allTopics$,
 		this.allFabricTypes$,
 	]).pipe(
-		map(([fabric, allColors, allTopics, allFabricTypes]) => {
-			if (!fabric) return null;
+		map(([loading, fabric, allColors, allTopics, allFabricTypes]) => {
+			if (!fabric) return { loading, data: null };
 
 			const colors = allColors.filter((c) => fabric.colorIds.includes(c.id));
 			const topics = allTopics.filter((t) => fabric.topicIds.includes(t.id));
@@ -66,7 +67,7 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 				})
 				.filter((ta): ta is { type: FabricType; inStock: boolean } => ta !== null);
 
-			return { fabric, colors, topics, fabricTypeAvailabilities };
+			return { loading, data: { fabric, colors, topics, fabricTypeAvailabilities } };
 		})
 	);
 

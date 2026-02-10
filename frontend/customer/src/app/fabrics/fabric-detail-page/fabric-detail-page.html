@@ -1,9 +1,10 @@
 <div class="fabric-detail-page">
-	@if ((loading$ | async) !== false) {
+	@let state = (state$ | async);
+	@if (!state || state.loading) {
 		<div class="loading-container">
 			<p-progressspinner strokeWidth="4" />
 		</div>
-	} @else if (fabricData$ | async; as data) {
+	} @else if (state.data; as data) {
 		<app-breadcrumbs [items]="(breadcrumbs$ | async) ?? []" />
 
 		<div class="content-grid">

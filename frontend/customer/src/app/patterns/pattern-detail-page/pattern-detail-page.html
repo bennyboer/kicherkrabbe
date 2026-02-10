@@ -1,9 +1,10 @@
 <div class="pattern-detail-page">
-	@if ((loading$ | async) !== false) {
+	@let state = (state$ | async);
+	@if (!state || state.loading) {
 		<div class="loading-container">
 			<p-progressspinner strokeWidth="4" />
 		</div>
-	} @else if (pattern$ | async; as pattern) {
+	} @else if (state.pattern; as pattern) {
 		<app-breadcrumbs [items]="(breadcrumbs$ | async) ?? []" />
 
 		<div class="content-grid">

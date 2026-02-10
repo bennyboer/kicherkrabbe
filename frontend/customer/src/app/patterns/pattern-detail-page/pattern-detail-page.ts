@@ -13,7 +13,7 @@ import { Divider } from "primeng/divider";
 import { Image } from "primeng/image";
 import { ProgressSpinner } from "primeng/progressspinner";
 import { QuillViewComponent } from "ngx-quill";
-import { BehaviorSubject, Subject, switchMap, takeUntil } from "rxjs";
+import { BehaviorSubject, combineLatest, map, Subject, switchMap, takeUntil } from "rxjs";
 import { SeoService } from "../../services/seo.service";
 import { Breadcrumbs, type BreadcrumbItem } from "../../shared";
 import type { Pattern, PricedSizeRange } from "../pattern";
@@ -45,10 +45,14 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 	private readonly seoService = inject(SeoService);
 	private readonly destroy$ = new Subject<void>();
 
-	readonly pattern$ = new BehaviorSubject<Pattern | null>(null);
-	readonly loading$ = new BehaviorSubject<boolean>(true);
+	private readonly pattern$ = new BehaviorSubject<Pattern | null>(null);
+	private readonly loading$ = new BehaviorSubject<boolean>(true);
 	readonly selectedImageIndex$ = new BehaviorSubject<number>(0);
 	readonly breadcrumbs$ = new BehaviorSubject<BreadcrumbItem[]>([]);
+
+	readonly state$ = combineLatest([this.loading$, this.pattern$]).pipe(
+		map(([loading, pattern]) => ({ loading, pattern }))
+	);
 
 	ngOnInit(): void {
 		this.route.paramMap
