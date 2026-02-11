@@ -22,6 +22,14 @@ img {
 		flex: 2;
 		display: flex;
 		overflow: hidden;
+		position: relative;
+
+		a {
+			display: block;
+			width: 100%;
+			height: 100%;
+			position: relative;
+		}
 	}
 
 	.right-images {
@@ -34,6 +42,14 @@ img {
 		.bottom-image {
 			flex: 1;
 			overflow: hidden;
+			position: relative;
+
+			a {
+				display: block;
+				width: 100%;
+				height: 100%;
+				position: relative;
+			}
 		}
 	}
 }
