@@ -11,6 +11,7 @@ dependencies {
     implementation project(':features:credentials:credentials-starter')
     implementation project(':features:fabric-types:fabric-types-starter')
     implementation project(':features:fabrics:fabrics-starter')
+    implementation project(':features:highlights:highlights-starter')
     implementation project(':features:inquiries:inquiries-starter')
     implementation project(':features:mailbox:mailbox-starter')
     implementation project(':features:mailing:mailing-starter')
