@@ -1,0 +1,45 @@
+<div class="action-bar">
+  <app-button routerLink="create">
+    <span class="icon-button">
+      <span class="material-icons">add</span>
+      <span> Neues Highlight </span>
+    </span>
+  </app-button>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (highlightsLoaded$ | async) {
+  @if (highlights$ | async; as highlights) {
+    @if (highlights.length === 0) {
+      <app-note level="info">Es konnten keine Highlights gefunden werden.</app-note>
+    } @else {
+      <ul class="highlights-list">
+        @for (highlight of highlights; track highlight.id) {
+          <li [routerLink]="highlight.id">
+            <div class="thumbnail">
+              <img [src]="getImageUrl(highlight.imageId)" alt="Highlight" />
+            </div>
+            <span class="details">
+              <span class="status">
+                @if (highlight.published) {
+                  <span class="badge published">Veröffentlicht</span>
+                } @else {
+                  <span class="badge draft">Entwurf</span>
+                }
+                <span class="sort-order">Sortierung: {{ highlight.sortOrder }}</span>
+              </span>
+              <span class="links-count">
+                {{ highlight.links.length }} Link(s)
+              </span>
+              <span class="created-at">
+                Erstellt am {{ highlight.createdAt | date: "dd.MM.yyyy" }} um
+                {{ highlight.createdAt | date: "HH:mm" }} Uhr
+              </span>
+            </span>
+          </li>
+        }
+      </ul>
+    }
+  }
+}

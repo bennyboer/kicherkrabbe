@@ -1,0 +1,86 @@
+:host {
+  display: block;
+  padding: 16px 8px;
+  width: 600px;
+  height: 500px;
+}
+
+input {
+  width: 100%;
+}
+
+table.links-table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 16px;
+
+  thead {
+    th {
+      user-select: none;
+      padding: 8px 16px;
+      font-weight: normal;
+      font-size: 0.8em;
+      color: rgba(var(--text-rgb), 0.7);
+      border-bottom: 4px solid var(--background-low-contrast);
+
+      &.name {
+        text-align: left;
+      }
+
+      &.type {
+        text-align: center;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      cursor: pointer;
+      vertical-align: middle;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: var(--background-low-contrast);
+      }
+
+      &:last-child {
+        td {
+          border-bottom: none;
+        }
+      }
+
+      &.already-added {
+        cursor: not-allowed;
+        color: rgba(var(--text-rgb), 0.5);
+      }
+    }
+  }
+
+  td {
+    padding: 16px 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid var(--background-low-contrast);
+
+    &.name {
+      text-align: left;
+    }
+
+    &.type {
+      text-align: center;
+    }
+  }
+}
+
+.already-added-note {
+  font-size: 12px;
+}
+
+@media only screen and (max-width: 1000px) {
+  :host {
+    width: auto;
+    height: auto;
+  }
+}
