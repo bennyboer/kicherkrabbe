@@ -6,9 +6,11 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublish
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.highlights.api.requests.RemoveLinkFromLookupRequest;
 import de.bennyboer.kicherkrabbe.highlights.api.requests.UpdateLinkInLookupRequest;
+import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.highlights.persistence.lookup.HighlightLookupRepo;
 import de.bennyboer.kicherkrabbe.highlights.persistence.lookup.inmemory.InMemoryHighlightLookupRepo;
 import de.bennyboer.kicherkrabbe.highlights.persistence.lookup.links.LinkLookupRepo;
+import de.bennyboer.kicherkrabbe.highlights.persistence.lookup.links.LookupLink;
 import de.bennyboer.kicherkrabbe.highlights.persistence.lookup.links.inmemory.InMemoryLinkLookupRepo;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
@@ -72,7 +74,11 @@ public class HighlightsModuleTest {
     }
 
     public long addLink(String highlightId, long version, LinkType linkType, String linkId, String linkName, Agent agent) {
-        var updatedVersion = module.addLink(highlightId, version, linkType, linkId, linkName, agent).block();
+        var link = Link.of(linkType, LinkId.of(linkId), LinkName.of(linkName));
+        var lookupLink = LookupLink.create(link, Version.zero());
+        linkLookupRepo.update(lookupLink).block();
+
+        var updatedVersion = module.addLink(highlightId, version, linkType, linkId, agent).block();
 
         module.updateHighlightInLookup(highlightId).block();
 

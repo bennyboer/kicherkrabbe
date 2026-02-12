@@ -116,7 +116,7 @@ export class AddLinkDialog implements OnInit, OnDestroy {
     this.data.highlight.ifSomeOrElse(
       (highlight) =>
         this.highlightsService
-          .addLink(highlight.id, highlight.version, linkOption.type, linkOption.id, linkOption.name)
+          .addLink(highlight.id, highlight.version, linkOption.type, linkOption.id)
           .pipe(
             first(),
             finalize(() => this.addingLink$.next(false)),

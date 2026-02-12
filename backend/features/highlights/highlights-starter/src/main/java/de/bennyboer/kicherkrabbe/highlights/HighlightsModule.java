@@ -128,12 +128,13 @@ public class HighlightsModule {
     }
 
     @Transactional(propagation = MANDATORY)
-    public Mono<Long> addLink(String highlightId, long version, LinkType linkType, String linkId, String linkName, Agent agent) {
+    public Mono<Long> addLink(String highlightId, long version, LinkType linkType, String linkId, Agent agent) {
         var id = HighlightId.of(highlightId);
-        var link = Link.of(linkType, LinkId.of(linkId), LinkName.of(linkName));
+        var internalLinkId = LinkId.of(linkId);
 
         return assertAgentIsAllowedTo(agent, ADD_LINK, id)
-                .then(highlightService.addLink(id, Version.of(version), link, agent))
+                .then(linkLookupRepo.findOne(linkType, internalLinkId))
+                .flatMap(link -> highlightService.addLink(id, Version.of(version), link, agent))
                 .map(Version::getValue);
     }
 
@@ -400,7 +401,7 @@ public class HighlightsModule {
     }
 
     private String toLookupLinkId(LinkType type, LinkId linkId) {
-        return type.name() + "_" + linkId.getValue();
+        return type.name() + "-" + linkId.getValue();
     }
 
     private Mono<Void> assertAgentIsAllowedTo(Agent agent, Action action) {
