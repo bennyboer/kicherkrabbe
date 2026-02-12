@@ -49,7 +49,7 @@ public class HighlightsHttpConfig {
 
     @Bean
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> highlightsAuthorizeExchangeSpecCustomizer() {
-        return exchanges -> exchanges.pathMatchers("/api/highlights/published").permitAll();
+        return exchanges -> exchanges.pathMatchers("/highlights/published").permitAll();
     }
 
 }
