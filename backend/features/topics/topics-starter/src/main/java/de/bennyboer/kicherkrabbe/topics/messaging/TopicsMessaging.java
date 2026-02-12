@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class TopicsMessaging {
 
-    @Bean
+    @Bean("topics_onUserCreatedAllowUserToCreateTopics")
     public EventListener onUserCreatedAllowUserToCreateTopics(
             EventListenerFactory factory,
             TopicsModule module
@@ -31,7 +31,7 @@ public class TopicsMessaging {
         );
     }
 
-    @Bean
+    @Bean("topics_onUserDeletedRemoveTopicsPermissionsForUser")
     public EventListener onUserDeletedRemoveTopicsPermissionsForUser(
             EventListenerFactory factory,
             TopicsModule module
@@ -48,7 +48,7 @@ public class TopicsMessaging {
         );
     }
 
-    @Bean
+    @Bean("topics_onTopicCreatedUpdateLookup")
     public EventListener onTopicCreatedUpdateLookup(
             EventListenerFactory factory,
             TopicsModule module
@@ -65,7 +65,7 @@ public class TopicsMessaging {
         );
     }
 
-    @Bean
+    @Bean("topics_onTopicUpdatedUpdateLookup")
     public EventListener onTopicUpdatedUpdateLookup(
             EventListenerFactory factory,
             TopicsModule module
@@ -82,7 +82,7 @@ public class TopicsMessaging {
         );
     }
 
-    @Bean
+    @Bean("topics_onTopicDeletedRemoveTopicFromLookup")
     public EventListener onTopicDeletedRemoveTopicFromLookup(
             EventListenerFactory factory,
             TopicsModule module
@@ -99,7 +99,7 @@ public class TopicsMessaging {
         );
     }
 
-    @Bean
+    @Bean("topics_onTopicCreatedAllowUserToManageTopic")
     public EventListener onTopicCreatedAllowUserToManageTopic(
             EventListenerFactory factory,
             TopicsModule module
@@ -122,7 +122,7 @@ public class TopicsMessaging {
         );
     }
 
-    @Bean
+    @Bean("topics_onTopicDeletedRemovePermissionsForTopic")
     public EventListener onTopicDeletedRemovePermissionsForTopic(
             EventListenerFactory factory,
             TopicsModule module

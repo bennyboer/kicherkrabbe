@@ -21,7 +21,7 @@ import java.util.Optional;
 @Configuration
 public class TelegramMessaging {
 
-    @Bean
+    @Bean("telegram_onUserCreatedAddPermissionToReadAndManageTelegramSettingsMsgListener")
     public EventListener onUserCreatedAddPermissionToReadAndManageTelegramSettingsMsgListener(
             EventListenerFactory factory,
             TelegramModule module
@@ -38,7 +38,7 @@ public class TelegramMessaging {
         );
     }
 
-    @Bean
+    @Bean("telegram_onUserDeletedRemoveTelegramPermissionsMsgListener")
     public EventListener onUserDeletedRemoveTelegramPermissionsMsgListener(
             EventListenerFactory factory,
             TelegramModule module
@@ -55,7 +55,7 @@ public class TelegramMessaging {
         );
     }
 
-    @Bean
+    @Bean("telegram_onNotificationSentSendTelegramMessageViaBotMsgListener")
     public EventListener onNotificationSentSendTelegramMessageViaBotMsgListener(
             EventListenerFactory factory,
             TelegramModule module

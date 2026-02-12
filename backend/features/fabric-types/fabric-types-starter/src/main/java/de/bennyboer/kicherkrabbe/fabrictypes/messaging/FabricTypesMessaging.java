@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class FabricTypesMessaging {
 
-    @Bean
+    @Bean("fabricTypes_onUserCreatedAllowUserToCreateFabricTypes")
     public EventListener onUserCreatedAllowUserToCreateFabricTypes(
             EventListenerFactory factory,
             FabricTypesModule module
@@ -31,7 +31,7 @@ public class FabricTypesMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabricTypes_onUserDeletedRemoveFabricTypePermissionsForUser")
     public EventListener onUserDeletedRemoveFabricTypePermissionsForUser(
             EventListenerFactory factory,
             FabricTypesModule module
@@ -48,7 +48,7 @@ public class FabricTypesMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabricTypes_onFabricTypeCreatedUpdateLookup")
     public EventListener onFabricTypeCreatedUpdateLookup(
             EventListenerFactory factory,
             FabricTypesModule module
@@ -65,7 +65,7 @@ public class FabricTypesMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabricTypes_onFabricTypeUpdatedUpdateLookup")
     public EventListener onFabricTypeUpdatedUpdateLookup(
             EventListenerFactory factory,
             FabricTypesModule module
@@ -82,7 +82,7 @@ public class FabricTypesMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabricTypes_onFabricTypeDeletedRemoveFabricTypeFromLookup")
     public EventListener onFabricTypeDeletedRemoveFabricTypeFromLookup(
             EventListenerFactory factory,
             FabricTypesModule module
@@ -99,7 +99,7 @@ public class FabricTypesMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabricTypes_onFabricTypeCreatedAllowUserToManageFabricType")
     public EventListener onFabricTypeCreatedAllowUserToManageFabricType(
             EventListenerFactory factory,
             FabricTypesModule module
@@ -122,7 +122,7 @@ public class FabricTypesMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabricTypes_onFabricTypeDeletedRemovePermissionsForFabricType")
     public EventListener onFabricTypeDeletedRemovePermissionsForFabricType(
             EventListenerFactory factory,
             FabricTypesModule module

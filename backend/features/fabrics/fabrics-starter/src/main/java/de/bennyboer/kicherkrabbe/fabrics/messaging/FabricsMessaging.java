@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class FabricsMessaging {
 
-    @Bean
+    @Bean("fabrics_onUserCreatedAllowUserToCreateFabrics")
     public EventListener onUserCreatedAllowUserToCreateFabrics(
             EventListenerFactory factory,
             FabricsModule module
@@ -31,7 +31,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onUserDeletedRemoveFabricsPermissionsForUser")
     public EventListener onUserDeletedRemoveFabricsPermissionsForUser(
             EventListenerFactory factory,
             FabricsModule module
@@ -48,7 +48,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onFabricCreatedOrUpdatedUpdateLookup")
     public EventListener onFabricCreatedOrUpdatedUpdateLookup(
             EventListenerFactory factory,
             FabricsModule module
@@ -68,7 +68,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onFabricDeletedRemoveFromLookup")
     public EventListener onFabricDeletedRemoveFromLookup(
             EventListenerFactory factory,
             FabricsModule module
@@ -85,7 +85,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onFabricCreatedAllowUserToManageFabric")
     public EventListener onFabricCreatedAllowUserToManageFabric(
             EventListenerFactory factory,
             FabricsModule module
@@ -103,7 +103,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onFabricDeletedRemovePermissionsOnFabric")
     public EventListener onFabricDeletedRemovePermissionsOnFabric(
             EventListenerFactory factory,
             FabricsModule module
@@ -120,7 +120,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onFabricPublishedAllowAnonymousAndSystemUsersToReadPublishedFabric")
     public EventListener onFabricPublishedAllowAnonymousAndSystemUsersToReadPublishedFabric(
             EventListenerFactory factory,
             FabricsModule module
@@ -137,7 +137,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onFabricUnpublishedDisallowAnonymousAndSystemUsersToReadPublishedFabric")
     public EventListener onFabricUnpublishedDisallowAnonymousAndSystemUsersToReadPublishedFabric(
             EventListenerFactory factory,
             FabricsModule module
@@ -154,7 +154,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onFabricFeaturedAllowAnonymousAndSystemUsersToReadFeaturedFabric")
     public EventListener onFabricFeaturedAllowAnonymousAndSystemUsersToReadFeaturedFabric(
             EventListenerFactory factory,
             FabricsModule module
@@ -171,7 +171,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onFabricUnfeaturedDisallowAnonymousAndSystemUsersToReadFeaturedFabric")
     public EventListener onFabricUnfeaturedDisallowAnonymousAndSystemUsersToReadFeaturedFabric(
             EventListenerFactory factory,
             FabricsModule module
@@ -188,7 +188,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onFabricTypeDeletedRemoveFabricTypeFromFabrics")
     public EventListener onFabricTypeDeletedRemoveFabricTypeFromFabrics(
             EventListenerFactory factory,
             FabricsModule module
@@ -205,7 +205,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onTopicDeletedRemoveTopicFromFabrics")
     public EventListener onTopicDeletedRemoveTopicFromFabrics(
             EventListenerFactory factory,
             FabricsModule module
@@ -222,7 +222,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onColorDeletedRemoveColorFromFabrics")
     public EventListener onColorDeletedRemoveColorFromFabrics(
             EventListenerFactory factory,
             FabricsModule module
@@ -239,7 +239,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onTopicCreatedMarkTopicAsAvailable")
     public EventListener onTopicCreatedMarkTopicAsAvailable(
             EventListenerFactory factory,
             FabricsModule module
@@ -257,7 +257,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onTopicUpdatedMarkTopicAsAvailable")
     public EventListener onTopicUpdatedMarkTopicAsAvailable(
             EventListenerFactory factory,
             FabricsModule module
@@ -275,7 +275,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onTopicDeletedMarkTopicAsUnavailable")
     public EventListener onTopicDeletedMarkTopicAsUnavailable(
             EventListenerFactory factory,
             FabricsModule module
@@ -292,7 +292,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onColorCreatedMarkColorAsAvailable")
     public EventListener onColorCreatedMarkColorAsAvailable(
             EventListenerFactory factory,
             FabricsModule module
@@ -313,7 +313,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onColorUpdatedMarkColorAsAvailable")
     public EventListener onColorUpdatedMarkColorAsAvailable(
             EventListenerFactory factory,
             FabricsModule module
@@ -334,7 +334,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onColorDeletedMarkColorAsUnavailable")
     public EventListener onColorDeletedMarkColorAsUnavailable(
             EventListenerFactory factory,
             FabricsModule module
@@ -351,7 +351,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onFabricTypeCreatedMarkFabricTypeAsAvailable")
     public EventListener onFabricTypeCreatedMarkFabricTypeAsAvailable(
             EventListenerFactory factory,
             FabricsModule module
@@ -369,7 +369,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onFabricTypeUpdatedMarkFabricTypeAsAvailable")
     public EventListener onFabricTypeUpdatedMarkFabricTypeAsAvailable(
             EventListenerFactory factory,
             FabricsModule module
@@ -387,7 +387,7 @@ public class FabricsMessaging {
         );
     }
 
-    @Bean
+    @Bean("fabrics_onFabricTypeDeletedMarkFabricTypeAsUnavailable")
     public EventListener onFabricTypeDeletedMarkFabricTypeAsUnavailable(
             EventListenerFactory factory,
             FabricsModule module

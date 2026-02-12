@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UsersMessaging {
 
-    @Bean
+    @Bean("users_onUserCreatedUpdateLookupMsgListener")
     public EventListener onUserCreatedUpdateLookupMsgListener(
             EventListenerFactory factory,
             UsersModule module
@@ -30,7 +30,7 @@ public class UsersMessaging {
         );
     }
 
-    @Bean
+    @Bean("users_onUserCreatedAddPermissionsMsgListener")
     public EventListener onUserCreatedAddPermissionsMsgListener(
             EventListenerFactory factory,
             UsersModule module
@@ -49,7 +49,7 @@ public class UsersMessaging {
         );
     }
 
-    @Bean
+    @Bean("users_onUserDeletedUpdateLookupMsgListener")
     public EventListener onUserDeletedUpdateLookupMsgListener(
             EventListenerFactory factory,
             UsersModule module
@@ -68,7 +68,7 @@ public class UsersMessaging {
         );
     }
 
-    @Bean
+    @Bean("users_onUserDeletedRemoveUserPermissionsMsgListener")
     public EventListener onUserDeletedRemoveUserPermissionsMsgListener(
             EventListenerFactory factory,
             UsersModule module

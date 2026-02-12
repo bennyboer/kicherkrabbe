@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class PatternsMessaging {
 
-    @Bean
+    @Bean("patterns_onUserCreatedAllowUserToCreatePatterns")
     public EventListener onUserCreatedAllowUserToCreatePatterns(
             EventListenerFactory factory,
             PatternsModule module
@@ -29,7 +29,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onUserDeletedRemovePatternsPermissionsForUser")
     public EventListener onUserDeletedRemovePatternsPermissionsForUser(
             EventListenerFactory factory,
             PatternsModule module
@@ -46,7 +46,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onPatternCreatedOrUpdatedUpdateLookup")
     public EventListener onPatternCreatedOrUpdatedUpdateLookup(
             EventListenerFactory factory,
             PatternsModule module
@@ -66,7 +66,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onPatternDeletedRemoveFromLookup")
     public EventListener onPatternDeletedRemoveFromLookup(
             EventListenerFactory factory,
             PatternsModule module
@@ -83,7 +83,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onPatternCreatedAllowUserToManagePattern")
     public EventListener onPatternCreatedAllowUserToManagePattern(
             EventListenerFactory factory,
             PatternsModule module
@@ -101,7 +101,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onPatternDeletedRemovePermissionsOnPattern")
     public EventListener onPatternDeletedRemovePermissionsOnPattern(
             EventListenerFactory factory,
             PatternsModule module
@@ -118,7 +118,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onPatternPublishedAllowAnonymousAndSystemUsersToReadPublishedPattern")
     public EventListener onPatternPublishedAllowAnonymousAndSystemUsersToReadPublishedPattern(
             EventListenerFactory factory,
             PatternsModule module
@@ -135,7 +135,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onPatternUnpublishedDisallowAnonymousAndSystemUsersToReadPublishedPattern")
     public EventListener onPatternUnpublishedDisallowAnonymousAndSystemUsersToReadPublishedPattern(
             EventListenerFactory factory,
             PatternsModule module
@@ -152,7 +152,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onPatternFeaturedAllowAnonymousAndSystemUsersToReadFeaturedPattern")
     public EventListener onPatternFeaturedAllowAnonymousAndSystemUsersToReadFeaturedPattern(
             EventListenerFactory factory,
             PatternsModule module
@@ -169,7 +169,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onPatternUnfeaturedDisallowAnonymousAndSystemUsersToReadFeaturedPattern")
     public EventListener onPatternUnfeaturedDisallowAnonymousAndSystemUsersToReadFeaturedPattern(
             EventListenerFactory factory,
             PatternsModule module
@@ -186,7 +186,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onCategoryDeletedRemoveCategoryFromPatterns")
     public EventListener onCategoryDeletedRemoveCategoryFromPatterns(
             EventListenerFactory factory,
             PatternsModule module
@@ -203,7 +203,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onCategoryCreatedMarkCategoryAsAvailable")
     public EventListener onCategoryCreatedMarkCategoryAsAvailable(
             EventListenerFactory factory,
             PatternsModule module
@@ -221,7 +221,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onCategoryRenamedMarkCategoryAsAvailable")
     public EventListener onCategoryRenamedMarkCategoryAsAvailable(
             EventListenerFactory factory,
             PatternsModule module
@@ -239,7 +239,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onCategoryRegroupedMarkCategoryAsAvailable")
     public EventListener onCategoryRegroupedMarkCategoryAsAvailable(
             EventListenerFactory factory,
             PatternsModule module
@@ -261,7 +261,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onCategoryRegroupedToNonClothingCategoryMarkCategoryAsUnavailable")
     public EventListener onCategoryRegroupedToNonClothingCategoryMarkCategoryAsUnavailable(
             EventListenerFactory factory,
             PatternsModule module
@@ -282,7 +282,7 @@ public class PatternsMessaging {
         );
     }
 
-    @Bean
+    @Bean("patterns_onCategoryDeletedMarkCategoryAsUnavailable")
     public EventListener onCategoryDeletedMarkCategoryAsUnavailable(
             EventListenerFactory factory,
             PatternsModule module

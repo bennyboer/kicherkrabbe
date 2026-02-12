@@ -18,18 +18,19 @@ img {
 	padding: 2rem;
 	box-sizing: border-box;
 
+	.left-image,
+	.top-image,
+	.bottom-image {
+		&.clickable {
+			cursor: pointer;
+		}
+	}
+
 	.left-image {
 		flex: 2;
 		display: flex;
 		overflow: hidden;
 		position: relative;
-
-		a {
-			display: block;
-			width: 100%;
-			height: 100%;
-			position: relative;
-		}
 	}
 
 	.right-images {
@@ -43,13 +44,28 @@ img {
 			flex: 1;
 			overflow: hidden;
 			position: relative;
+		}
+	}
+}
 
-			a {
-				display: block;
-				width: 100%;
-				height: 100%;
-				position: relative;
-			}
+.link-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	min-width: 150px;
+
+	.link-item {
+		background: none;
+		border: none;
+		padding: 0.75rem 1rem;
+		text-align: left;
+		cursor: pointer;
+		border-radius: 4px;
+		font-size: 1rem;
+		transition: background-color 0.2s;
+
+		&:hover {
+			background-color: var(--p-surface-100);
 		}
 	}
 }

@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ColorsMessaging {
 
-    @Bean
+    @Bean("colors_onUserCreatedAddPermissionToCreateColorsMsgListener")
     public EventListener onUserCreatedAddPermissionToCreateColorsMsgListener(
             EventListenerFactory factory,
             ColorsModule module
@@ -28,7 +28,7 @@ public class ColorsMessaging {
         );
     }
 
-    @Bean
+    @Bean("colors_onUserDeletedRemoveColorPermissionsMsgListener")
     public EventListener onUserDeletedRemoveColorPermissionsMsgListener(
             EventListenerFactory factory,
             ColorsModule module
@@ -45,7 +45,7 @@ public class ColorsMessaging {
         );
     }
 
-    @Bean
+    @Bean("colors_onColorCreatedUpdateLookupMsgListener")
     public EventListener onColorCreatedUpdateLookupMsgListener(
             EventListenerFactory factory,
             ColorsModule module
@@ -62,7 +62,7 @@ public class ColorsMessaging {
         );
     }
 
-    @Bean
+    @Bean("colors_onColorUpdatedUpdateLookupMsgListener")
     public EventListener onColorUpdatedUpdateLookupMsgListener(
             EventListenerFactory factory,
             ColorsModule module
@@ -79,7 +79,7 @@ public class ColorsMessaging {
         );
     }
 
-    @Bean
+    @Bean("colors_onColorDeletedRemoveFromLookupMsgListener")
     public EventListener onColorDeletedRemoveFromLookupMsgListener(
             EventListenerFactory factory,
             ColorsModule module
@@ -96,7 +96,7 @@ public class ColorsMessaging {
         );
     }
 
-    @Bean
+    @Bean("colors_onColorCreatedAllowCreatorToManageColorMsgListener")
     public EventListener onColorCreatedAllowCreatorToManageColorMsgListener(
             EventListenerFactory factory,
             ColorsModule module
@@ -114,7 +114,7 @@ public class ColorsMessaging {
         );
     }
 
-    @Bean
+    @Bean("colors_onColorDeletedRemovePermissionsForColorMsgListener")
     public EventListener onColorDeletedRemovePermissionsForColorMsgListener(
             EventListenerFactory factory,
             ColorsModule module

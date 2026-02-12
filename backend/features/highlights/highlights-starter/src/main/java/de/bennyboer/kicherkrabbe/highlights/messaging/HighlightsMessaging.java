@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class HighlightsMessaging {
 
-    @Bean
+    @Bean("highlights_onUserCreatedAllowUserToCreateHighlightsAndReadLinks")
     public EventListener onUserCreatedAllowUserToCreateHighlightsAndReadLinks(
             EventListenerFactory factory,
             HighlightsModule module
@@ -35,7 +35,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onUserDeletedRemoveHighlightsPermissionsForUser")
     public EventListener onUserDeletedRemoveHighlightsPermissionsForUser(
             EventListenerFactory factory,
             HighlightsModule module
@@ -52,7 +52,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onHighlightCreatedUpdateLookup")
     public EventListener onHighlightCreatedUpdateLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -69,7 +69,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onHighlightImageUpdatedUpdateLookup")
     public EventListener onHighlightImageUpdatedUpdateLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -86,7 +86,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onHighlightLinkAddedUpdateLookup")
     public EventListener onHighlightLinkAddedUpdateLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -103,7 +103,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onHighlightLinkUpdatedUpdateLookup")
     public EventListener onHighlightLinkUpdatedUpdateLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -120,7 +120,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onHighlightLinkRemovedUpdateLookup")
     public EventListener onHighlightLinkRemovedUpdateLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -137,7 +137,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onHighlightPublishedUpdateLookup")
     public EventListener onHighlightPublishedUpdateLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -154,7 +154,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onHighlightUnpublishedUpdateLookup")
     public EventListener onHighlightUnpublishedUpdateLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -171,7 +171,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onHighlightSortOrderUpdatedUpdateLookup")
     public EventListener onHighlightSortOrderUpdatedUpdateLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -188,7 +188,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onHighlightDeletedRemoveHighlightFromLookup")
     public EventListener onHighlightDeletedRemoveHighlightFromLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -205,7 +205,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onHighlightCreatedAllowUserToManageHighlight")
     public EventListener onHighlightCreatedAllowUserToManageHighlight(
             EventListenerFactory factory,
             HighlightsModule module
@@ -228,7 +228,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onHighlightDeletedRemovePermissionsForHighlight")
     public EventListener onHighlightDeletedRemovePermissionsForHighlight(
             EventListenerFactory factory,
             HighlightsModule module
@@ -245,7 +245,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onPatternCreatedUpdateLinkInLookup")
     public EventListener onPatternCreatedUpdateLinkInLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -269,7 +269,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onPatternRenamedUpdateLinkInLookup")
     public EventListener onPatternRenamedUpdateLinkInLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -293,7 +293,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onPatternDeletedRemoveLinkFromLookup")
     public EventListener onPatternDeletedRemoveLinkFromLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -313,7 +313,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onFabricCreatedUpdateLinkInLookup")
     public EventListener onFabricCreatedUpdateLinkInLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -337,7 +337,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onFabricRenamedUpdateLinkInLookup")
     public EventListener onFabricRenamedUpdateLinkInLookup(
             EventListenerFactory factory,
             HighlightsModule module
@@ -361,7 +361,7 @@ public class HighlightsMessaging {
         );
     }
 
-    @Bean
+    @Bean("highlights_onFabricDeletedRemoveLinkFromLookup")
     public EventListener onFabricDeletedRemoveLinkFromLookup(
             EventListenerFactory factory,
             HighlightsModule module

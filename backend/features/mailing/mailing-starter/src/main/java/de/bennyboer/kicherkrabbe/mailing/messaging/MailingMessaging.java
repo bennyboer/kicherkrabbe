@@ -23,7 +23,7 @@ import java.util.Set;
 @Configuration
 public class MailingMessaging {
 
-    @Bean
+    @Bean("mailing_onUserCreatedAddPermissionToReadAndManageMailingSettingsMsgListener")
     public EventListener onUserCreatedAddPermissionToReadAndManageMailingSettingsMsgListener(
             EventListenerFactory factory,
             MailingModule module
@@ -40,7 +40,7 @@ public class MailingMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailing_onUserDeletedRemoveMailingPermissionsMsgListener")
     public EventListener onUserDeletedRemoveMailingPermissionsMsgListener(
             EventListenerFactory factory,
             MailingModule module
@@ -57,7 +57,7 @@ public class MailingMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailing_onMailingMailSentUpdateMailInLookupMsgListener")
     public EventListener onMailingMailSentUpdateMailInLookupMsgListener(
             EventListenerFactory factory,
             MailingModule module
@@ -74,7 +74,7 @@ public class MailingMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailing_onMailingMailDeletedRemoveMailFromLookupMsgListener")
     public EventListener onMailingMailDeletedRemoveMailFromLookupMsgListener(
             EventListenerFactory factory,
             MailingModule module
@@ -91,7 +91,7 @@ public class MailingMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailing_onMailingMailSentAllowSystemUserToDeleteMailingMailMsgListener")
     public EventListener onMailingMailSentAllowSystemUserToDeleteMailingMailMsgListener(
             EventListenerFactory factory,
             MailingModule module
@@ -108,7 +108,7 @@ public class MailingMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailing_onMailingMailDeletedRemovePermissionsMsgListener")
     public EventListener onMailingMailDeletedRemovePermissionsMsgListener(
             EventListenerFactory factory,
             MailingModule module
@@ -125,7 +125,7 @@ public class MailingMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailing_onMailingMailSentAllowUsersThatAreAllowedToReadToReadMailMsgListener")
     public EventListener onMailingMailSentAllowUsersThatAreAllowedToReadToReadMailMsgListener(
             EventListenerFactory factory,
             MailingModule module
@@ -142,7 +142,7 @@ public class MailingMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailing_onMailingMailSentSendMailViaMailingServiceMsgListener")
     public EventListener onMailingMailSentSendMailViaMailingServiceMsgListener(
             EventListenerFactory factory,
             MailingModule module
@@ -159,7 +159,7 @@ public class MailingMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailing_onNotificationSentSendMailMsgListener")
     public EventListener onNotificationSentSendMailMsgListener(
             EventListenerFactory factory,
             MailingModule module

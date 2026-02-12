@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class CategoriesMessaging {
 
-    @Bean
+    @Bean("categories_onUserCreatedAllowUserToCreateCategories")
     public EventListener onUserCreatedAllowUserToCreateCategories(
             EventListenerFactory factory,
             CategoriesModule module
@@ -31,7 +31,7 @@ public class CategoriesMessaging {
         );
     }
 
-    @Bean
+    @Bean("categories_onUserDeletedRemoveCategoriesPermissionsForUser")
     public EventListener onUserDeletedRemoveCategoriesPermissionsForUser(
             EventListenerFactory factory,
             CategoriesModule module
@@ -48,7 +48,7 @@ public class CategoriesMessaging {
         );
     }
 
-    @Bean
+    @Bean("categories_onCategoryCreatedUpdateLookup")
     public EventListener onCategoryCreatedUpdateLookup(
             EventListenerFactory factory,
             CategoriesModule module
@@ -65,7 +65,7 @@ public class CategoriesMessaging {
         );
     }
 
-    @Bean
+    @Bean("categories_onCategoryRenamedUpdateLookup")
     public EventListener onCategoryRenamedUpdateLookup(
             EventListenerFactory factory,
             CategoriesModule module
@@ -82,7 +82,7 @@ public class CategoriesMessaging {
         );
     }
 
-    @Bean
+    @Bean("categories_onCategoryRegroupedUpdateLookup")
     public EventListener onCategoryRegroupedUpdateLookup(
             EventListenerFactory factory,
             CategoriesModule module
@@ -99,7 +99,7 @@ public class CategoriesMessaging {
         );
     }
 
-    @Bean
+    @Bean("categories_onCategoryDeletedRemoveCategoryFromLookup")
     public EventListener onCategoryDeletedRemoveCategoryFromLookup(
             EventListenerFactory factory,
             CategoriesModule module
@@ -116,7 +116,7 @@ public class CategoriesMessaging {
         );
     }
 
-    @Bean
+    @Bean("categories_onCategoryCreatedAllowUserToManageCategory")
     public EventListener onCategoryCreatedAllowUserToManageCategory(
             EventListenerFactory factory,
             CategoriesModule module
@@ -139,7 +139,7 @@ public class CategoriesMessaging {
         );
     }
 
-    @Bean
+    @Bean("categories_onCategoryDeletedRemovePermissionsForCategory")
     public EventListener onCategoryDeletedRemovePermissionsForCategory(
             EventListenerFactory factory,
             CategoriesModule module

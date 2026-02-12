@@ -18,7 +18,7 @@ import java.util.Map;
 @Configuration
 public class MailboxMessaging {
 
-    @Bean
+    @Bean("mailbox_onUserCreatedAddPermissionToReadAndManageMailsMsgListener")
     public EventListener onUserCreatedAddPermissionToReadAndManageMailsMsgListener(
             EventListenerFactory factory,
             MailboxModule module
@@ -35,7 +35,7 @@ public class MailboxMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailbox_onUserDeletedRemoveMailPermissionsMsgListener")
     public EventListener onUserDeletedRemoveMailPermissionsMsgListener(
             EventListenerFactory factory,
             MailboxModule module
@@ -52,7 +52,7 @@ public class MailboxMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailbox_onMailReceivedUpdateLookupMsgListener")
     public EventListener onMailReceivedUpdateLookupMsgListener(
             EventListenerFactory factory,
             MailboxModule module
@@ -69,7 +69,7 @@ public class MailboxMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailbox_onMailMarkedAsReadUpdateLookupMsgListener")
     public EventListener onMailMarkedAsReadUpdateLookupMsgListener(
             EventListenerFactory factory,
             MailboxModule module
@@ -86,7 +86,7 @@ public class MailboxMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailbox_onMailMarkedAsUnreadUpdateLookupMsgListener")
     public EventListener onMailMarkedAsUnreadUpdateLookupMsgListener(
             EventListenerFactory factory,
             MailboxModule module
@@ -103,7 +103,7 @@ public class MailboxMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailbox_onMailDeletedRemoveFromLookupMsgListener")
     public EventListener onMailDeletedRemoveFromLookupMsgListener(
             EventListenerFactory factory,
             MailboxModule module
@@ -120,7 +120,7 @@ public class MailboxMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailbox_onMailDeletedRemovePermissionsMsgListener")
     public EventListener onMailDeletedRemovePermissionsMsgListener(
             EventListenerFactory factory,
             MailboxModule module
@@ -137,7 +137,7 @@ public class MailboxMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailbox_onMailReceivedAllowUsersToManageMailMsgListener")
     public EventListener onMailReceivedAllowUsersToManageMailMsgListener(
             EventListenerFactory factory,
             MailboxModule module
@@ -154,7 +154,7 @@ public class MailboxMessaging {
         );
     }
 
-    @Bean
+    @Bean("mailbox_onInquirySentReceiveMailMsgListener")
     public EventListener onInquirySentReceiveMailMsgListener(
             EventListenerFactory factory,
             MailboxModule module

@@ -1,63 +1,53 @@
 @if (highlights$ | async; as highlights) {
   <div class="highlights-container">
     @if (highlights[0]; as left) {
-      <div class="left-image">
-        @if (left.link; as link) {
-          <a [routerLink]="link">
-            @if (left.usesImageLoader) {
-              <img [ngSrc]="left.imageUrl" alt="Highlight" fill priority />
-            } @else {
-              <img [src]="left.imageUrl" alt="Highlight" />
-            }
-          </a>
+      <div
+        class="left-image"
+        [class.clickable]="left.links.length > 0"
+        (click)="onHighlightClick($event, left)"
+      >
+        @if (left.usesImageLoader) {
+          <img [ngSrc]="left.imageUrl" alt="Highlight" fill priority />
         } @else {
-          @if (left.usesImageLoader) {
-            <img [ngSrc]="left.imageUrl" alt="Highlight" fill priority />
-          } @else {
-            <img [src]="left.imageUrl" alt="Highlight" />
-          }
+          <img [src]="left.imageUrl" alt="Highlight" />
         }
       </div>
     }
     <div class="right-images">
       @if (highlights[1]; as rightTop) {
-        <div class="top-image">
-          @if (rightTop.link; as link) {
-            <a [routerLink]="link">
-              @if (rightTop.usesImageLoader) {
-                <img [ngSrc]="rightTop.imageUrl" alt="Highlight" fill priority />
-              } @else {
-                <img [src]="rightTop.imageUrl" alt="Highlight" />
-              }
-            </a>
+        <div
+          class="top-image"
+          [class.clickable]="rightTop.links.length > 0"
+          (click)="onHighlightClick($event, rightTop)"
+        >
+          @if (rightTop.usesImageLoader) {
+            <img [ngSrc]="rightTop.imageUrl" alt="Highlight" fill priority />
           } @else {
-            @if (rightTop.usesImageLoader) {
-              <img [ngSrc]="rightTop.imageUrl" alt="Highlight" fill priority />
-            } @else {
-              <img [src]="rightTop.imageUrl" alt="Highlight" />
-            }
+            <img [src]="rightTop.imageUrl" alt="Highlight" />
           }
         </div>
       }
       @if (highlights[2]; as rightBottom) {
-        <div class="bottom-image">
-          @if (rightBottom.link; as link) {
-            <a [routerLink]="link">
-              @if (rightBottom.usesImageLoader) {
-                <img [ngSrc]="rightBottom.imageUrl" alt="Highlight" fill />
-              } @else {
-                <img [src]="rightBottom.imageUrl" alt="Highlight" />
-              }
-            </a>
+        <div
+          class="bottom-image"
+          [class.clickable]="rightBottom.links.length > 0"
+          (click)="onHighlightClick($event, rightBottom)"
+        >
+          @if (rightBottom.usesImageLoader) {
+            <img [ngSrc]="rightBottom.imageUrl" alt="Highlight" fill />
           } @else {
-            @if (rightBottom.usesImageLoader) {
-              <img [ngSrc]="rightBottom.imageUrl" alt="Highlight" fill />
-            } @else {
-              <img [src]="rightBottom.imageUrl" alt="Highlight" />
-            }
+            <img [src]="rightBottom.imageUrl" alt="Highlight" />
           }
         </div>
       }
     </div>
   </div>
+
+  <p-popover #popover>
+    <div class="link-list">
+      @for (link of popoverLinks(); track link.route) {
+        <button class="link-item" (click)="onLinkClick(link)">{{ link.name }}</button>
+      }
+    </div>
+  </p-popover>
 }

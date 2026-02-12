@@ -1,13 +1,19 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 import { AsyncPipe, NgOptimizedImage } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
-import { HighlightsService, LinkType, PublishedHighlight } from './highlights.service';
+import { Popover } from 'primeng/popover';
+import { HighlightsService, Link, LinkType, PublishedHighlight } from './highlights.service';
+
+interface DisplayLink {
+  name: string;
+  route: string;
+}
 
 interface DisplayHighlight {
   imageUrl: string;
-  link: string | null;
+  links: DisplayLink[];
   usesImageLoader: boolean;
 }
 
@@ -22,17 +28,41 @@ const FALLBACK_IMAGES: string[] = [
   templateUrl: './highlights.html',
   styleUrl: './highlights.scss',
   standalone: true,
-  imports: [AsyncPipe, NgOptimizedImage, RouterLink],
+  imports: [AsyncPipe, NgOptimizedImage, Popover],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HighlightsComponent {
   private readonly highlightsService = inject(HighlightsService);
+  private readonly router = inject(Router);
+
+  private readonly popover = viewChild.required<Popover>('popover');
 
   readonly highlights$: Observable<DisplayHighlight[]> = this.highlightsService.getPublished().pipe(
     catchError(() => of([])),
     map((highlights) => this.toDisplayHighlights(highlights)),
     shareReplay(1)
   );
+
+  readonly popoverLinks = signal<DisplayLink[]>([]);
+
+  onHighlightClick(event: MouseEvent, highlight: DisplayHighlight): void {
+    if (highlight.links.length === 0) {
+      return;
+    }
+
+    if (highlight.links.length === 1) {
+      this.router.navigate([highlight.links[0].route]);
+      return;
+    }
+
+    this.popoverLinks.set(highlight.links);
+    this.popover().toggle(event);
+  }
+
+  onLinkClick(link: DisplayLink): void {
+    this.popover().hide();
+    this.router.navigate([link.route]);
+  }
 
   private toDisplayHighlights(highlights: PublishedHighlight[]): DisplayHighlight[] {
     const result: DisplayHighlight[] = [];
@@ -41,13 +71,13 @@ export class HighlightsComponent {
       if (i < highlights.length) {
         result.push({
           imageUrl: highlights[i].imageId,
-          link: this.getHighlightLink(highlights[i]),
+          links: this.toDisplayLinks(highlights[i].links),
           usesImageLoader: true,
         });
       } else {
         result.push({
           imageUrl: FALLBACK_IMAGES[i],
-          link: null,
+          links: [],
           usesImageLoader: false,
         });
       }
@@ -56,18 +86,24 @@ export class HighlightsComponent {
     return result;
   }
 
-  private getHighlightLink(highlight: PublishedHighlight): string | null {
-    if (highlight.links.length === 0) {
-      return null;
-    }
+  private toDisplayLinks(links: Link[]): DisplayLink[] {
+    return links
+      .map((link) => {
+        const route = this.getLinkRoute(link);
+        if (!route) {
+          return null;
+        }
+        return { name: link.name, route };
+      })
+      .filter((link): link is DisplayLink => link !== null);
+  }
 
-    const firstLink = highlight.links[0];
-    if (firstLink.type === LinkType.PATTERN) {
-      return `/patterns/${firstLink.id}`;
-    } else if (firstLink.type === LinkType.FABRIC) {
-      return `/fabrics/${firstLink.id}`;
+  private getLinkRoute(link: Link): string | null {
+    if (link.type === LinkType.PATTERN) {
+      return `/patterns/${link.id}`;
+    } else if (link.type === LinkType.FABRIC) {
+      return `/fabrics/${link.id}`;
     }
-
     return null;
   }
 }
