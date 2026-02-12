@@ -223,12 +223,25 @@ public class HighlightsModule {
                                 ).map(updatedVersion -> highlight.getId()))));
     }
 
-    public Mono<Void> removeLinkFromLookup(RemoveLinkFromLookupRequest req, Agent agent) {
+    public Flux<String> removeLinkFromLookup(RemoveLinkFromLookupRequest req, Agent agent) {
         LinkType linkType = LinkTypeTransformer.toDomain(req.linkType);
         LinkId linkId = LinkId.of(req.linkId);
 
         return assertAgentIsAllowedToOnLinks(agent, DELETE)
-                .then(linkLookupRepo.remove(linkType, linkId));
+                .then(linkLookupRepo.remove(linkType, linkId))
+                .thenMany(removeLinkFromHighlights(linkType, linkId, agent))
+                .map(HighlightId::getValue);
+    }
+
+    private Flux<HighlightId> removeLinkFromHighlights(LinkType type, LinkId linkId, Agent agent) {
+        return highlightLookupRepo.findByLink(type, linkId)
+                .concatMap(highlight -> highlightService.removeLink(
+                        highlight.getId(),
+                        highlight.getVersion(),
+                        type,
+                        linkId,
+                        agent
+                ).map(updatedVersion -> highlight.getId()));
     }
 
     public Mono<Void> allowUserToCreateHighlightsAndReadLinks(String userId) {

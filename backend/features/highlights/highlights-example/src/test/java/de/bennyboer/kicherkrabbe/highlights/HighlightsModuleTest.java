@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.highlights.api.requests.RemoveLinkFromLookupRequest;
 import de.bennyboer.kicherkrabbe.highlights.api.requests.UpdateLinkInLookupRequest;
 import de.bennyboer.kicherkrabbe.highlights.persistence.lookup.HighlightLookupRepo;
 import de.bennyboer.kicherkrabbe.highlights.persistence.lookup.inmemory.InMemoryHighlightLookupRepo;
@@ -139,6 +140,20 @@ public class HighlightsModuleTest {
         module.initialize().block();
 
         List<String> updatedHighlightIds = module.updateLinkInLookup(request, Agent.system())
+                .collectList()
+                .block();
+
+        for (String highlightId : updatedHighlightIds) {
+            module.updateHighlightInLookup(highlightId).block();
+        }
+
+        return updatedHighlightIds;
+    }
+
+    public List<String> removeLinkFromLookup(RemoveLinkFromLookupRequest request) {
+        module.initialize().block();
+
+        List<String> updatedHighlightIds = module.removeLinkFromLookup(request, Agent.system())
                 .collectList()
                 .block();
 
