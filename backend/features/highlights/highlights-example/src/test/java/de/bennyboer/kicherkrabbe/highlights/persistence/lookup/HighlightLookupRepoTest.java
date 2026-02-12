@@ -1,7 +1,10 @@
 package de.bennyboer.kicherkrabbe.highlights.persistence.lookup;
 
-import de.bennyboer.kicherkrabbe.eventsourcing.Version;
-import de.bennyboer.kicherkrabbe.highlights.*;
+import de.bennyboer.kicherkrabbe.highlights.HighlightId;
+import de.bennyboer.kicherkrabbe.highlights.LinkId;
+import de.bennyboer.kicherkrabbe.highlights.LinkType;
+import de.bennyboer.kicherkrabbe.highlights.samples.SampleLink;
+import de.bennyboer.kicherkrabbe.highlights.samples.SampleLookupHighlight;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,17 +26,14 @@ public abstract class HighlightLookupRepoTest {
 
     @Test
     void shouldUpdateHighlight() {
-        var highlight = LookupHighlight.of(
-                HighlightId.create(),
-                Version.zero(),
-                ImageId.of("IMAGE_ID"),
-                Links.of(Set.of(
-                        Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern"))
-                )),
-                false,
-                100L,
-                Instant.parse("2024-12-10T12:30:00.000Z")
-        );
+        var highlight = SampleLookupHighlight.builder()
+                .link(SampleLink.builder()
+                        .type(LinkType.PATTERN)
+                        .id("PATTERN_ID")
+                        .name("Pattern")
+                        .build())
+                .build()
+                .toValue();
 
         update(highlight);
 
@@ -43,24 +43,16 @@ public abstract class HighlightLookupRepoTest {
 
     @Test
     void shouldRemoveHighlight() {
-        var highlight1 = LookupHighlight.of(
-                HighlightId.create(),
-                Version.zero(),
-                ImageId.of("IMAGE_ID_1"),
-                Links.of(Set.of()),
-                false,
-                100L,
-                Instant.parse("2024-12-10T12:30:00.000Z")
-        );
-        var highlight2 = LookupHighlight.of(
-                HighlightId.create(),
-                Version.zero(),
-                ImageId.of("IMAGE_ID_2"),
-                Links.of(Set.of()),
-                false,
-                200L,
-                Instant.parse("2024-12-10T13:30:00.000Z")
-        );
+        var highlight1 = SampleLookupHighlight.builder()
+                .imageId("IMAGE_ID_1")
+                .build()
+                .toValue();
+        var highlight2 = SampleLookupHighlight.builder()
+                .imageId("IMAGE_ID_2")
+                .sortOrder(200L)
+                .createdAt(Instant.parse("2024-12-10T13:30:00.000Z"))
+                .build()
+                .toValue();
         update(highlight1);
         update(highlight2);
 
@@ -72,33 +64,25 @@ public abstract class HighlightLookupRepoTest {
 
     @Test
     void shouldFindPublishedHighlights() {
-        var highlight1 = LookupHighlight.of(
-                HighlightId.create(),
-                Version.zero(),
-                ImageId.of("IMAGE_ID_1"),
-                Links.of(Set.of()),
-                true,
-                200L,
-                Instant.parse("2024-12-10T12:30:00.000Z")
-        );
-        var highlight2 = LookupHighlight.of(
-                HighlightId.create(),
-                Version.zero(),
-                ImageId.of("IMAGE_ID_2"),
-                Links.of(Set.of()),
-                false,
-                100L,
-                Instant.parse("2024-12-10T13:30:00.000Z")
-        );
-        var highlight3 = LookupHighlight.of(
-                HighlightId.create(),
-                Version.zero(),
-                ImageId.of("IMAGE_ID_3"),
-                Links.of(Set.of()),
-                true,
-                50L,
-                Instant.parse("2024-12-10T14:30:00.000Z")
-        );
+        var highlight1 = SampleLookupHighlight.builder()
+                .imageId("IMAGE_ID_1")
+                .published(true)
+                .sortOrder(200L)
+                .build()
+                .toValue();
+        var highlight2 = SampleLookupHighlight.builder()
+                .imageId("IMAGE_ID_2")
+                .published(false)
+                .createdAt(Instant.parse("2024-12-10T13:30:00.000Z"))
+                .build()
+                .toValue();
+        var highlight3 = SampleLookupHighlight.builder()
+                .imageId("IMAGE_ID_3")
+                .published(true)
+                .sortOrder(50L)
+                .createdAt(Instant.parse("2024-12-10T14:30:00.000Z"))
+                .build()
+                .toValue();
         update(highlight1);
         update(highlight2);
         update(highlight3);
@@ -112,33 +96,22 @@ public abstract class HighlightLookupRepoTest {
 
     @Test
     void shouldFindAllHighlightsWithPaging() {
-        var highlight1 = LookupHighlight.of(
-                HighlightId.create(),
-                Version.zero(),
-                ImageId.of("IMAGE_ID_1"),
-                Links.of(Set.of()),
-                false,
-                100L,
-                Instant.parse("2024-12-10T12:30:00.000Z")
-        );
-        var highlight2 = LookupHighlight.of(
-                HighlightId.create(),
-                Version.zero(),
-                ImageId.of("IMAGE_ID_2"),
-                Links.of(Set.of()),
-                false,
-                50L,
-                Instant.parse("2024-12-10T13:30:00.000Z")
-        );
-        var highlight3 = LookupHighlight.of(
-                HighlightId.create(),
-                Version.zero(),
-                ImageId.of("IMAGE_ID_3"),
-                Links.of(Set.of()),
-                false,
-                150L,
-                Instant.parse("2024-12-10T14:30:00.000Z")
-        );
+        var highlight1 = SampleLookupHighlight.builder()
+                .imageId("IMAGE_ID_1")
+                .build()
+                .toValue();
+        var highlight2 = SampleLookupHighlight.builder()
+                .imageId("IMAGE_ID_2")
+                .sortOrder(50L)
+                .createdAt(Instant.parse("2024-12-10T13:30:00.000Z"))
+                .build()
+                .toValue();
+        var highlight3 = SampleLookupHighlight.builder()
+                .imageId("IMAGE_ID_3")
+                .sortOrder(150L)
+                .createdAt(Instant.parse("2024-12-10T14:30:00.000Z"))
+                .build()
+                .toValue();
         update(highlight1);
         update(highlight2);
         update(highlight3);
@@ -162,29 +135,31 @@ public abstract class HighlightLookupRepoTest {
 
     @Test
     void shouldFindHighlightsByLink() {
-        var highlight1 = LookupHighlight.of(
-                HighlightId.create(),
-                Version.zero(),
-                ImageId.of("IMAGE_ID_1"),
-                Links.of(Set.of(
-                        Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
-                        Link.of(LinkType.FABRIC, LinkId.of("FABRIC_ID"), LinkName.of("Fabric"))
-                )),
-                false,
-                100L,
-                Instant.parse("2024-12-10T12:30:00.000Z")
-        );
-        var highlight2 = LookupHighlight.of(
-                HighlightId.create(),
-                Version.zero(),
-                ImageId.of("IMAGE_ID_2"),
-                Links.of(Set.of(
-                        Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern"))
-                )),
-                false,
-                200L,
-                Instant.parse("2024-12-10T13:30:00.000Z")
-        );
+        var highlight1 = SampleLookupHighlight.builder()
+                .imageId("IMAGE_ID_1")
+                .link(SampleLink.builder()
+                        .type(LinkType.PATTERN)
+                        .id("PATTERN_ID")
+                        .name("Pattern")
+                        .build())
+                .link(SampleLink.builder()
+                        .type(LinkType.FABRIC)
+                        .id("FABRIC_ID")
+                        .name("Fabric")
+                        .build())
+                .build()
+                .toValue();
+        var highlight2 = SampleLookupHighlight.builder()
+                .imageId("IMAGE_ID_2")
+                .link(SampleLink.builder()
+                        .type(LinkType.PATTERN)
+                        .id("PATTERN_ID")
+                        .name("Pattern")
+                        .build())
+                .sortOrder(200L)
+                .createdAt(Instant.parse("2024-12-10T13:30:00.000Z"))
+                .build()
+                .toValue();
         update(highlight1);
         update(highlight2);
 
