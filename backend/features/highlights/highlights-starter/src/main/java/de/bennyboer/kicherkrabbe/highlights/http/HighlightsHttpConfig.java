@@ -9,7 +9,11 @@ import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static org.springframework.web.reactive.function.server.RequestPredicates.*;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.web.reactive.function.server.RequestPredicates.DELETE;
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
+import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
+import static org.springframework.web.reactive.function.server.RequestPredicates.path;
 import static org.springframework.web.reactive.function.server.RouterFunctions.nest;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
@@ -49,7 +53,7 @@ public class HighlightsHttpConfig {
 
     @Bean
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> highlightsAuthorizeExchangeSpecCustomizer() {
-        return exchanges -> exchanges.pathMatchers("/highlights/published").permitAll();
+        return exchanges -> exchanges.pathMatchers(GET, "/highlights/published").permitAll();
     }
 
 }
