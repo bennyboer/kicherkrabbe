@@ -1,0 +1,52 @@
+<h3>Neues Highlight erstellen</h3>
+
+<div class="form">
+  <div class="form-field">
+    <label>Bild</label>
+    <div class="image-edit-container">
+      @if (currentImageId$ | async; as imageId) {
+        <div class="image-container">
+          <img [src]="getImageUrl(imageId)" alt="Highlight Bild" />
+          <button class="clear-image-btn" (click)="clearImage()">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+      } @else {
+        <app-image-upload (uploaded)="onImageUploaded($event)"></app-image-upload>
+      }
+    </div>
+  </div>
+
+  <div class="form-field">
+    <label for="sortOrder">Sortierung</label>
+    <input
+      #sortOrder
+      id="sortOrder"
+      type="number"
+      [class.error]="sortOrderError$ | async"
+      value="0"
+      (input)="updateSortOrder(sortOrder.value)" />
+    <span class="hint">Niedrigere Werte werden zuerst angezeigt</span>
+    @if (sortOrderError$ | async) {
+      <span class="error">Bitte gib eine gültige Sortierung ein</span>
+    }
+  </div>
+</div>
+
+<div class="actions">
+  <span>
+    <app-button routerLink="..">Abbrechen</app-button>
+  </span>
+  <span>
+    <app-button [disabled]="cannotSubmit$ | async" (click)="create()" color="primary">
+      @if (creating$ | async) {
+        <span class="loading-button-text">
+          <app-loading-spinner size="16"></app-loading-spinner>
+          <span>Erstellt...</span>
+        </span>
+      } @else {
+        Erstellen
+      }
+    </app-button>
+  </span>
+</div>

@@ -1,0 +1,39 @@
+<div class="filters">
+  <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)" />
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (linksLoaded$ | async) {
+  @if (filteredLinks$ | async; as links) {
+    @if (links.length === 0) {
+      <app-note level="info">Keine Links gefunden.</app-note>
+    } @else {
+      <table class="links-table">
+        <colgroup>
+          <col span="1" style="width: auto" />
+          <col span="1" style="width: 200px" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="name">Name</th>
+            <th class="type">Art</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (link of links; track link.id + link.type) {
+            <tr [class.already-added]="isAlreadyAdded(link)" (click)="addLink(link)">
+              <td class="name" [title]="link.name">
+                {{ link.name }}
+                @if (isAlreadyAdded(link)) {
+                  <span class="already-added-note">(bereits verlinkt)</span>
+                }
+              </td>
+              <td class="type">{{ getLinkTypeLabel(link.type) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+}
