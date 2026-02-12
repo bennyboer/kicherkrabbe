@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.highlights.api.LinkDTO;
 import de.bennyboer.kicherkrabbe.highlights.api.LinkTypeDTO;
+import de.bennyboer.kicherkrabbe.highlights.api.requests.RemoveLinkFromLookupRequest;
 import de.bennyboer.kicherkrabbe.highlights.api.requests.UpdateLinkInLookupRequest;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,7 @@ public class UpdateLinkInLookupTest extends HighlightsModuleTest {
 
     @Test
     void shouldUpdateLinkInHighlightsWhenLinkIsRenamed() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId1 = createHighlight("IMAGE_ID_1", 0L, agent);
@@ -49,7 +50,7 @@ public class UpdateLinkInLookupTest extends HighlightsModuleTest {
 
     @Test
     void shouldNotUpdateHighlightsWithoutMatchingLink() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId1 = createHighlight("IMAGE_ID_1", 0L, agent);
@@ -76,7 +77,7 @@ public class UpdateLinkInLookupTest extends HighlightsModuleTest {
 
     @Test
     void shouldUpdateOnlyMatchingLinkType() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);
@@ -101,6 +102,60 @@ public class UpdateLinkInLookupTest extends HighlightsModuleTest {
 
         assertThat(patternLink.getName().getValue()).isEqualTo("Updated Pattern");
         assertThat(fabricLink.getName().getValue()).isEqualTo("Fabric");
+    }
+
+    @Test
+    void shouldCleanupLinkInHighlightsOnRemoval() {
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        String highlightId1 = createHighlight("IMAGE_ID_1", 0L, agent);
+        String highlightId2 = createHighlight("IMAGE_ID_2", 1L, agent);
+
+        addLink(highlightId1, 0L, LinkType.PATTERN, "PATTERN_ID", "Pattern", agent);
+        addLink(highlightId2, 0L, LinkType.PATTERN, "PATTERN_ID", "Pattern", agent);
+
+        var highlight1 = getHighlight(highlightId1, agent);
+        var highlight2 = getHighlight(highlightId2, agent);
+        assertThat(highlight1.getLinks().getLinks()).hasSize(1);
+        assertThat(highlight2.getLinks().getLinks()).hasSize(1);
+
+        var request = new RemoveLinkFromLookupRequest();
+        request.linkType = LinkTypeDTO.PATTERN;
+        request.linkId = "PATTERN_ID";
+        List<String> updatedHighlightIds = removeLinkFromLookup(request);
+
+        assertThat(updatedHighlightIds).containsExactlyInAnyOrder(highlightId1, highlightId2);
+
+        highlight1 = getHighlight(highlightId1, agent);
+        highlight2 = getHighlight(highlightId2, agent);
+        assertThat(highlight1.getLinks().getLinks()).isEmpty();
+        assertThat(highlight2.getLinks().getLinks()).isEmpty();
+    }
+
+    @Test
+    void shouldOnlyRemoveMatchingLinkFromHighlights() {
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        String highlightId = createHighlight("IMAGE_ID", 0L, agent);
+
+        addLink(highlightId, 0L, LinkType.PATTERN, "PATTERN_ID", "Pattern", agent);
+        addLink(highlightId, 1L, LinkType.FABRIC, "FABRIC_ID", "Fabric", agent);
+
+        var highlight = getHighlight(highlightId, agent);
+        assertThat(highlight.getLinks().getLinks()).hasSize(2);
+
+        var request = new RemoveLinkFromLookupRequest();
+        request.linkType = LinkTypeDTO.PATTERN;
+        request.linkId = "PATTERN_ID";
+        removeLinkFromLookup(request);
+
+        highlight = getHighlight(highlightId, agent);
+        assertThat(highlight.getLinks().getLinks()).hasSize(1);
+        var remainingLink = highlight.getLinks().getLinks().iterator().next();
+        assertThat(remainingLink.getType()).isEqualTo(LinkType.FABRIC);
+        assertThat(remainingLink.getId().getValue()).isEqualTo("FABRIC_ID");
     }
 
 }

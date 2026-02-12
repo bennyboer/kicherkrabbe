@@ -18,6 +18,4 @@ public class AddLinkToHighlightRequest {
 
     String linkId;
 
-    String linkName;
-
 }

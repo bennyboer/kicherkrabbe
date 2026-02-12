@@ -4,10 +4,13 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.highlights.api.requests.RemoveLinkFromLookupRequest;
 import de.bennyboer.kicherkrabbe.highlights.api.requests.UpdateLinkInLookupRequest;
+import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.highlights.persistence.lookup.HighlightLookupRepo;
 import de.bennyboer.kicherkrabbe.highlights.persistence.lookup.inmemory.InMemoryHighlightLookupRepo;
 import de.bennyboer.kicherkrabbe.highlights.persistence.lookup.links.LinkLookupRepo;
+import de.bennyboer.kicherkrabbe.highlights.persistence.lookup.links.LookupLink;
 import de.bennyboer.kicherkrabbe.highlights.persistence.lookup.links.inmemory.InMemoryLinkLookupRepo;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
@@ -47,8 +50,8 @@ public class HighlightsModuleTest {
             transactionManager
     );
 
-    public void allowUserToCreateHighlights(String userId) {
-        module.allowUserToCreateHighlights(userId).block();
+    public void allowUserToCreateHighlightsAndReadLinks(String userId) {
+        module.allowUserToCreateHighlightsAndReadLinks(userId).block();
     }
 
     public String createHighlight(String imageId, long sortOrder, Agent agent) {
@@ -71,7 +74,11 @@ public class HighlightsModuleTest {
     }
 
     public long addLink(String highlightId, long version, LinkType linkType, String linkId, String linkName, Agent agent) {
-        var updatedVersion = module.addLink(highlightId, version, linkType, linkId, linkName, agent).block();
+        var link = Link.of(linkType, LinkId.of(linkId), LinkName.of(linkName));
+        var lookupLink = LookupLink.create(link, Version.zero());
+        linkLookupRepo.update(lookupLink).block();
+
+        var updatedVersion = module.addLink(highlightId, version, linkType, linkId, agent).block();
 
         module.updateHighlightInLookup(highlightId).block();
 
@@ -139,6 +146,20 @@ public class HighlightsModuleTest {
         module.initialize().block();
 
         List<String> updatedHighlightIds = module.updateLinkInLookup(request, Agent.system())
+                .collectList()
+                .block();
+
+        for (String highlightId : updatedHighlightIds) {
+            module.updateHighlightInLookup(highlightId).block();
+        }
+
+        return updatedHighlightIds;
+    }
+
+    public List<String> removeLinkFromLookup(RemoveLinkFromLookupRequest request) {
+        module.initialize().block();
+
+        List<String> updatedHighlightIds = module.removeLinkFromLookup(request, Agent.system())
                 .collectList()
                 .block();
 

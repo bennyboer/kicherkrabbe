@@ -308,7 +308,7 @@ public class HighlightsMessaging {
                     var request = new RemoveLinkFromLookupRequest();
                     request.linkType = LinkTypeDTO.PATTERN;
                     request.linkId = patternId;
-                    return module.removeLinkFromLookup(request, Agent.system());
+                    return module.removeLinkFromLookup(request, Agent.system()).then();
                 }
         );
     }
@@ -376,7 +376,7 @@ public class HighlightsMessaging {
                     var request = new RemoveLinkFromLookupRequest();
                     request.linkType = LinkTypeDTO.FABRIC;
                     request.linkId = fabricId;
-                    return module.removeLinkFromLookup(request, Agent.system());
+                    return module.removeLinkFromLookup(request, Agent.system()).then();
                 }
         );
     }

@@ -52,7 +52,7 @@ public class HighlightsMessagingTest extends EventListenerTest {
         when(module.removePermissionsForHighlight(any())).thenReturn(Mono.empty());
         when(module.allowUserToManageHighlight(any(), any())).thenReturn(Mono.empty());
         when(module.updateLinkInLookup(any(), any())).thenReturn(Flux.empty());
-        when(module.removeLinkFromLookup(any(), any())).thenReturn(Mono.empty());
+        when(module.removeLinkFromLookup(any(), any())).thenReturn(Flux.empty());
     }
 
     @Test

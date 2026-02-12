@@ -12,7 +12,7 @@ public class UpdateImageTest extends HighlightsModuleTest {
 
     @Test
     void shouldUpdateImage() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);
@@ -26,7 +26,7 @@ public class UpdateImageTest extends HighlightsModuleTest {
 
     @Test
     void shouldNotUpdateImageWhenUserIsNotAllowed() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);

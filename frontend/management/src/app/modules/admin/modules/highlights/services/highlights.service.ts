@@ -50,7 +50,6 @@ interface AddLinkRequest {
   version: number;
   linkType: string;
   linkId: string;
-  linkName: string;
 }
 
 interface AddLinkResponse {
@@ -147,8 +146,8 @@ export class HighlightsService {
       .pipe(map((response) => response.version));
   }
 
-  addLink(id: HighlightId, version: number, linkType: LinkType, linkId: string, linkName: string): Observable<number> {
-    const request: AddLinkRequest = { version, linkType, linkId, linkName };
+  addLink(id: HighlightId, version: number, linkType: LinkType, linkId: string): Observable<number> {
+    const request: AddLinkRequest = { version, linkType, linkId };
 
     return this.http
       .post<AddLinkResponse>(`${environment.apiUrl}/highlights/${id}/links/add`, request)

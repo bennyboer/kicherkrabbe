@@ -128,12 +128,13 @@ public class HighlightsModule {
     }
 
     @Transactional(propagation = MANDATORY)
-    public Mono<Long> addLink(String highlightId, long version, LinkType linkType, String linkId, String linkName, Agent agent) {
+    public Mono<Long> addLink(String highlightId, long version, LinkType linkType, String linkId, Agent agent) {
         var id = HighlightId.of(highlightId);
-        var link = Link.of(linkType, LinkId.of(linkId), LinkName.of(linkName));
+        var internalLinkId = LinkId.of(linkId);
 
         return assertAgentIsAllowedTo(agent, ADD_LINK, id)
-                .then(highlightService.addLink(id, Version.of(version), link, agent))
+                .then(linkLookupRepo.findOne(linkType, internalLinkId))
+                .flatMap(link -> highlightService.addLink(id, Version.of(version), link, agent))
                 .map(Version::getValue);
     }
 
@@ -223,12 +224,25 @@ public class HighlightsModule {
                                 ).map(updatedVersion -> highlight.getId()))));
     }
 
-    public Mono<Void> removeLinkFromLookup(RemoveLinkFromLookupRequest req, Agent agent) {
+    public Flux<String> removeLinkFromLookup(RemoveLinkFromLookupRequest req, Agent agent) {
         LinkType linkType = LinkTypeTransformer.toDomain(req.linkType);
         LinkId linkId = LinkId.of(req.linkId);
 
         return assertAgentIsAllowedToOnLinks(agent, DELETE)
-                .then(linkLookupRepo.remove(linkType, linkId));
+                .then(linkLookupRepo.remove(linkType, linkId))
+                .thenMany(removeLinkFromHighlights(linkType, linkId, agent))
+                .map(HighlightId::getValue);
+    }
+
+    private Flux<HighlightId> removeLinkFromHighlights(LinkType type, LinkId linkId, Agent agent) {
+        return highlightLookupRepo.findByLink(type, linkId)
+                .concatMap(highlight -> highlightService.removeLink(
+                        highlight.getId(),
+                        highlight.getVersion(),
+                        type,
+                        linkId,
+                        agent
+                ).map(updatedVersion -> highlight.getId()));
     }
 
     public Mono<Void> allowUserToCreateHighlightsAndReadLinks(String userId) {
@@ -249,11 +263,6 @@ public class HighlightsModule {
                 createPermission,
                 readLinksPermission
         );
-    }
-
-    @Deprecated
-    public Mono<Void> allowUserToCreateHighlights(String userId) {
-        return allowUserToCreateHighlightsAndReadLinks(userId);
     }
 
     public Mono<Void> removePermissionsForUser(String userId) {
@@ -392,7 +401,7 @@ public class HighlightsModule {
     }
 
     private String toLookupLinkId(LinkType type, LinkId linkId) {
-        return type.name() + "_" + linkId.getValue();
+        return type.name() + "-" + linkId.getValue();
     }
 
     private Mono<Void> assertAgentIsAllowedTo(Agent agent, Action action) {

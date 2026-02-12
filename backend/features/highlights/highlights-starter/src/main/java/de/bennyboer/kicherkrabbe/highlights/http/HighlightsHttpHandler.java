@@ -173,7 +173,6 @@ public class HighlightsHttpHandler {
                         req.version,
                         LinkTypeTransformer.toDomain(req.linkType),
                         req.linkId,
-                        req.linkName,
                         agent
                 )))
                 .map(version -> {
