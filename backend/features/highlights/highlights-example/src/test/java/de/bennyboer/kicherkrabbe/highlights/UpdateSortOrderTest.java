@@ -12,7 +12,7 @@ public class UpdateSortOrderTest extends HighlightsModuleTest {
 
     @Test
     void shouldUpdateSortOrder() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);
@@ -26,7 +26,7 @@ public class UpdateSortOrderTest extends HighlightsModuleTest {
 
     @Test
     void shouldNotUpdateSortOrderWhenUserIsNotAllowed() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);

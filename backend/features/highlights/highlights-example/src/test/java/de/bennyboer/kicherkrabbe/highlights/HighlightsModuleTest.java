@@ -48,8 +48,8 @@ public class HighlightsModuleTest {
             transactionManager
     );
 
-    public void allowUserToCreateHighlights(String userId) {
-        module.allowUserToCreateHighlights(userId).block();
+    public void allowUserToCreateHighlightsAndReadLinks(String userId) {
+        module.allowUserToCreateHighlightsAndReadLinks(userId).block();
     }
 
     public String createHighlight(String imageId, long sortOrder, Agent agent) {

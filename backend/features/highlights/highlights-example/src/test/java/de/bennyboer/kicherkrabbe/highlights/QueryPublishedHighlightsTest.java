@@ -10,7 +10,7 @@ public class QueryPublishedHighlightsTest extends HighlightsModuleTest {
 
     @Test
     void shouldReturnOnlyPublishedHighlights() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlight1 = createHighlight("IMAGE_1", 100L, agent);
@@ -28,7 +28,7 @@ public class QueryPublishedHighlightsTest extends HighlightsModuleTest {
 
     @Test
     void shouldReturnPublishedHighlightsOrderedBySortOrder() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlight1 = createHighlight("IMAGE_1", 300L, agent);
@@ -48,7 +48,7 @@ public class QueryPublishedHighlightsTest extends HighlightsModuleTest {
 
     @Test
     void shouldReturnEmptyListWhenNoHighlightsArePublished() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         createHighlight("IMAGE_1", 100L, agent);

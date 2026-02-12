@@ -12,7 +12,7 @@ public class RemoveLinkTest extends HighlightsModuleTest {
 
     @Test
     void shouldRemoveLink() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);
@@ -27,7 +27,7 @@ public class RemoveLinkTest extends HighlightsModuleTest {
 
     @Test
     void shouldNotRemoveLinkWhenUserIsNotAllowed() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);

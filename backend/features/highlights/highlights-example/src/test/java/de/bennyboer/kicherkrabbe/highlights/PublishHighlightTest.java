@@ -13,7 +13,7 @@ public class PublishHighlightTest extends HighlightsModuleTest {
 
     @Test
     void shouldPublishHighlight() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);
@@ -27,7 +27,7 @@ public class PublishHighlightTest extends HighlightsModuleTest {
 
     @Test
     void shouldNotPublishAlreadyPublishedHighlight() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);
@@ -40,7 +40,7 @@ public class PublishHighlightTest extends HighlightsModuleTest {
 
     @Test
     void shouldNotPublishHighlightWhenUserIsNotAllowed() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);

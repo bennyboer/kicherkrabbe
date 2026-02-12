@@ -16,7 +16,7 @@ public class UpdateLinkInLookupTest extends HighlightsModuleTest {
 
     @Test
     void shouldUpdateLinkInHighlightsWhenLinkIsRenamed() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId1 = createHighlight("IMAGE_ID_1", 0L, agent);
@@ -50,7 +50,7 @@ public class UpdateLinkInLookupTest extends HighlightsModuleTest {
 
     @Test
     void shouldNotUpdateHighlightsWithoutMatchingLink() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId1 = createHighlight("IMAGE_ID_1", 0L, agent);
@@ -77,7 +77,7 @@ public class UpdateLinkInLookupTest extends HighlightsModuleTest {
 
     @Test
     void shouldUpdateOnlyMatchingLinkType() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);
@@ -106,7 +106,7 @@ public class UpdateLinkInLookupTest extends HighlightsModuleTest {
 
     @Test
     void shouldCleanupLinkInHighlightsOnRemoval() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId1 = createHighlight("IMAGE_ID_1", 0L, agent);
@@ -135,7 +135,7 @@ public class UpdateLinkInLookupTest extends HighlightsModuleTest {
 
     @Test
     void shouldOnlyRemoveMatchingLinkFromHighlights() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);

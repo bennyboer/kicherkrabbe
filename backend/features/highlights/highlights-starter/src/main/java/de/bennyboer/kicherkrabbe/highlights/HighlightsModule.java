@@ -264,11 +264,6 @@ public class HighlightsModule {
         );
     }
 
-    @Deprecated
-    public Mono<Void> allowUserToCreateHighlights(String userId) {
-        return allowUserToCreateHighlightsAndReadLinks(userId);
-    }
-
     public Mono<Void> removePermissionsForUser(String userId) {
         var holder = Holder.user(HolderId.of(userId));
 

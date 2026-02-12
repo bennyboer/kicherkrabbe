@@ -12,7 +12,7 @@ public class CreateHighlightTest extends HighlightsModuleTest {
 
     @Test
     void shouldCreateHighlightAsUser() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 100L, agent);
@@ -34,7 +34,7 @@ public class CreateHighlightTest extends HighlightsModuleTest {
 
     @Test
     void shouldCreateMultipleHighlights() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         createHighlight("IMAGE_1", 0L, agent);

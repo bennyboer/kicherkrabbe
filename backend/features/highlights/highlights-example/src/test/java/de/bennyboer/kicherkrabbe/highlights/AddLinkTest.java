@@ -12,7 +12,7 @@ public class AddLinkTest extends HighlightsModuleTest {
 
     @Test
     void shouldAddLink() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);
@@ -30,7 +30,7 @@ public class AddLinkTest extends HighlightsModuleTest {
 
     @Test
     void shouldAddMultipleLinks() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);
@@ -45,7 +45,7 @@ public class AddLinkTest extends HighlightsModuleTest {
 
     @Test
     void shouldNotAddLinkWhenUserIsNotAllowed() {
-        allowUserToCreateHighlights("USER_ID");
+        allowUserToCreateHighlightsAndReadLinks("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String highlightId = createHighlight("IMAGE_ID", 0L, agent);
