@@ -130,3 +130,8 @@ include('features:mailing:mailing-example')
 include('features:products:products-core')
 include('features:products:products-starter')
 include('features:products:products-example')
+
+// Highlights
+include('features:highlights:highlights-core')
+include('features:highlights:highlights-starter')
+include('features:highlights:highlights-example')

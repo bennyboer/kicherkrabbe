@@ -89,6 +89,11 @@ const PRODUCTS = ManagementItem.of({
   route: 'products',
 });
 
+const HIGHLIGHTS = ManagementItem.of({
+  label: 'Highlights',
+  route: 'highlights',
+});
+
 const ESSENTIAL_MANAGEMENT_ITEMS = [
   TOPICS,
   FABRIC_TYPES,
@@ -102,6 +107,7 @@ const ESSENTIAL_MANAGEMENT_ITEMS = [
   TELEGRAM,
   MAILING,
   PRODUCTS,
+  HIGHLIGHTS,
 ].sort((a, b) => a.label.localeCompare(b.label));
 const MANAGEMENT_ITEMS = [DASHBOARD, ...ESSENTIAL_MANAGEMENT_ITEMS];
 

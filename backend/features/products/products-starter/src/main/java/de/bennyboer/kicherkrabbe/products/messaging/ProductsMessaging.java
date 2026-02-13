@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class ProductsMessaging {
 
-    @Bean
+    @Bean("products_onUserCreatedAddPermissionToCreateProductsAndReadLinksMsgListener")
     public EventListener onUserCreatedAddPermissionToCreateProductsAndReadLinksMsgListener(
             EventListenerFactory factory,
             ProductsModule module
@@ -34,7 +34,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onUserDeletedRemovePermissionsForUserMsgListener")
     public EventListener onUserDeletedRemovePermissionsForUserMsgListener(
             EventListenerFactory factory,
             ProductsModule module
@@ -51,7 +51,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onProductCreatedUpdateProductLookupMsgListener")
     public EventListener onProductCreatedUpdateProductLookupMsgListener(
             EventListenerFactory factory,
             ProductsModule module
@@ -68,7 +68,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onProductLinkAddedUpdateProductLookupMsgListener")
     public EventListener onProductLinkAddedUpdateProductLookupMsgListener(
             EventListenerFactory factory,
             ProductsModule module
@@ -85,7 +85,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onProductLinkRemovedUpdateProductLookupMsgListener")
     public EventListener onProductLinkRemovedUpdateProductLookupMsgListener(
             EventListenerFactory factory,
             ProductsModule module
@@ -102,7 +102,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onProductLinkUpdatedUpdateProductLookupMsgListener")
     public EventListener onProductLinkUpdatedUpdateProductLookupMsgListener(
             EventListenerFactory factory,
             ProductsModule module
@@ -119,7 +119,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onProductImagesUpdatedUpdateProductLookupMsgListener")
     public EventListener onProductImagesUpdatedUpdateProductLookupMsgListener(
             EventListenerFactory factory,
             ProductsModule module
@@ -136,7 +136,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onProductFabricCompositionUpdatedUpdateProductLookupMsgListener")
     public EventListener onProductFabricCompositionUpdatedUpdateProductLookupMsgListener(
             EventListenerFactory factory,
             ProductsModule module
@@ -153,7 +153,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onProductNotesUpdatedUpdateProductLookupMsgListener")
     public EventListener onProductNotesUpdatedUpdateProductLookupMsgListener(
             EventListenerFactory factory,
             ProductsModule module
@@ -170,7 +170,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onProductProducedAtUpdatedUpdateProductLookupMsgListener")
     public EventListener onProductProducedAtUpdatedUpdateProductLookupMsgListener(
             EventListenerFactory factory,
             ProductsModule module
@@ -187,7 +187,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onProductDeletedRemoveProductFromLookupMsgListener")
     public EventListener onProductDeletedRemoveProductFromLookupMsgListener(
             EventListenerFactory factory,
             ProductsModule module
@@ -204,7 +204,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onProductDeletedRemovePermissionsForProductMsgListener")
     public EventListener onProductDeletedRemovePermissionsForProductMsgListener(
             EventListenerFactory factory,
             ProductsModule module
@@ -221,7 +221,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onProductCreatedAllowUserToReadAndManageProductMsgListener")
     public EventListener onProductCreatedAllowUserToReadAndManageProductMsgListener(
             EventListenerFactory factory,
             ProductsModule module
@@ -242,7 +242,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onPatternCreatedUpdateLinkInLookup")
     public EventListener onPatternCreatedUpdateLinkInLookup(
             EventListenerFactory factory,
             ProductsModule module
@@ -266,7 +266,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onPatternRenamedUpdateLinkInLookup")
     public EventListener onPatternRenamedUpdateLinkInLookup(
             EventListenerFactory factory,
             ProductsModule module
@@ -290,7 +290,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onPatternDeletedRemoveLinkFromLookup")
     public EventListener onPatternDeletedRemoveLinkFromLookup(
             EventListenerFactory factory,
             ProductsModule module
@@ -310,7 +310,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onFabricCreatedUpdateLinkInLookup")
     public EventListener onFabricCreatedUpdateLinkInLookup(
             EventListenerFactory factory,
             ProductsModule module
@@ -334,7 +334,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onFabricRenamedUpdateLinkInLookup")
     public EventListener onFabricRenamedUpdateLinkInLookup(
             EventListenerFactory factory,
             ProductsModule module
@@ -358,7 +358,7 @@ public class ProductsMessaging {
         );
     }
 
-    @Bean
+    @Bean("products_onFabricDeletedRemoveLinkFromLookup")
     public EventListener onFabricDeletedRemoveLinkFromLookup(
             EventListenerFactory factory,
             ProductsModule module

@@ -1,0 +1,159 @@
+<div class="action-bar">
+  <app-button routerLink="..">
+    <span class="icon-button">
+      <span class="material-icons">chevron_left</span>
+      <span>Zurück</span>
+    </span>
+  </app-button>
+
+  <app-button routerLink="delete" color="warn">
+    <span class="icon-button">
+      <span class="material-icons">delete</span>
+      <span>Löschen</span>
+    </span>
+  </app-button>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (highlightLoaded$ | async) {
+  @if (highlight$ | async | ifSome; as highlight) {
+    <div class="highlight-details">
+      <div class="highlight-detail">
+        <label>
+          Bild
+          <app-button [size]="ButtonSize.SMALL" (click)="startEditingImage()">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="highlight-image">
+          @if (editingImage$ | async) {
+            <div class="edit-image-container">
+              @if (updatingImage$ | async) {
+                <div class="loading-container">
+                  <app-loading-spinner size="32"></app-loading-spinner>
+                </div>
+              } @else {
+                <app-image-upload keepOriginalWidth [watermark]="false" [exportQuality]="1" (uploaded)="onImageUploaded(highlight, $event)"></app-image-upload>
+              }
+              <app-button (click)="cancelEditingImage()">Abbrechen</app-button>
+            </div>
+          } @else {
+            <div class="image-container">
+              <img [src]="getImageUrl(highlight.imageId)" alt="Highlight Bild" />
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="highlight-detail">
+        <label>Status</label>
+        <div class="status-container">
+          @if (highlight.published) {
+            <span class="badge published">Veröffentlicht</span>
+          } @else {
+            <span class="badge draft">Entwurf</span>
+          }
+          <app-button [size]="ButtonSize.SMALL" [disabled]="publishing$ | async" (click)="togglePublish(highlight)">
+            @if (publishing$ | async) {
+              <app-loading-spinner size="16"></app-loading-spinner>
+            } @else {
+              @if (highlight.published) {
+                Zurückziehen
+              } @else {
+                Veröffentlichen
+              }
+            }
+          </app-button>
+        </div>
+      </div>
+
+      <div class="highlight-detail">
+        <label>
+          Sortierung
+          @if (!(editingSortOrder$ | async)) {
+            <app-button [size]="ButtonSize.SMALL" (click)="startEditingSortOrder(highlight)">
+              <span class="icon-button">
+                <span class="material-icons">edit</span>
+              </span>
+            </app-button>
+          }
+        </label>
+        @if (editingSortOrder$ | async) {
+          <div class="edit-sort-order">
+            <input
+              #sortOrderInput
+              type="number"
+              [value]="sortOrderValue$ | async"
+              (input)="updateSortOrderValue(sortOrderInput.value)" />
+            <app-button (click)="saveSortOrder(highlight)" [disabled]="updatingSortOrder$ | async" color="primary">
+              @if (updatingSortOrder$ | async) {
+                <app-loading-spinner size="16"></app-loading-spinner>
+              } @else {
+                Speichern
+              }
+            </app-button>
+            <app-button (click)="cancelEditingSortOrder()">Abbrechen</app-button>
+          </div>
+        } @else {
+          <span class="sort-order-value">{{ highlight.sortOrder }}</span>
+        }
+      </div>
+
+      <div class="highlight-detail">
+        <label>
+          Links
+          <app-button [size]="ButtonSize.SMALL" (click)="addLink(highlight)">
+            <span class="icon-button">
+              <span class="material-icons">add</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="highlight-links">
+          @if (highlight.links.length > 0) {
+            <ul class="highlight-links-list">
+              @for (link of highlight.links; track link.id) {
+                <li>
+                  <a [routerLink]="link.toHref()">
+                    <span>
+                      <strong>{{ link.type.label }}</strong
+                      >: {{ link.name }}
+                    </span>
+                    <span class="actions">
+                      <app-button
+                        color="warn"
+                        [size]="ButtonSize.SMALL"
+                        [disabled]="(removingLinkId$ | async) === link.id"
+                        (click)="removeLink($event, highlight, link)">
+                        @if ((removingLinkId$ | async) === link.id) {
+                          <app-loading-spinner size="16"></app-loading-spinner>
+                        } @else {
+                          <span class="icon-button">
+                            <span class="material-icons">delete</span>
+                          </span>
+                        }
+                      </app-button>
+                    </span>
+                  </a>
+                </li>
+              }
+            </ul>
+          } @else {
+            <app-note>Keine Links vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="highlight-detail">
+        <label>Erstellt am</label>
+        <span class="highlight-created-at"
+          >{{ highlight.createdAt | date: "dd.MM.yyyy" }} um {{ highlight.createdAt | date: "HH:mm" }}</span
+        >
+      </div>
+    </div>
+  } @else {
+    <app-note level="warn"> Dieses Highlight konnte nicht gefunden werden. </app-note>
+  }
+}

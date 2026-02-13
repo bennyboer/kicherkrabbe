@@ -1,13 +1,53 @@
-<div class="highlights-container">
-	<div class="left-image">
-		<img src="images/highlights/left.jpg" alt="Main highlight" />
-	</div>
-	<div class="right-images">
-		<div class="top-image">
-			<img src="images/highlights/right-top.jpg" alt="Top right highlight" />
-		</div>
-		<div class="bottom-image">
-			<img src="images/highlights/right-bottom.jpg" alt="Bottom right highlight" />
-		</div>
-	</div>
-</div>
+@if (highlights$ | async; as highlights) {
+  <div class="highlights-container">
+    @if (highlights[0]; as left) {
+      <div
+        class="left-image"
+        [class.clickable]="left.links.length > 0"
+        (click)="onHighlightClick($event, left)"
+      >
+        @if (left.usesImageLoader) {
+          <img [ngSrc]="left.imageUrl" alt="Highlight" fill priority />
+        } @else {
+          <img [src]="left.imageUrl" alt="Highlight" />
+        }
+      </div>
+    }
+    <div class="right-images">
+      @if (highlights[1]; as rightTop) {
+        <div
+          class="top-image"
+          [class.clickable]="rightTop.links.length > 0"
+          (click)="onHighlightClick($event, rightTop)"
+        >
+          @if (rightTop.usesImageLoader) {
+            <img [ngSrc]="rightTop.imageUrl" alt="Highlight" fill priority />
+          } @else {
+            <img [src]="rightTop.imageUrl" alt="Highlight" />
+          }
+        </div>
+      }
+      @if (highlights[2]; as rightBottom) {
+        <div
+          class="bottom-image"
+          [class.clickable]="rightBottom.links.length > 0"
+          (click)="onHighlightClick($event, rightBottom)"
+        >
+          @if (rightBottom.usesImageLoader) {
+            <img [ngSrc]="rightBottom.imageUrl" alt="Highlight" fill />
+          } @else {
+            <img [src]="rightBottom.imageUrl" alt="Highlight" />
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <p-popover #popover appendTo="body">
+    <div class="link-list">
+      @for (link of popoverLinks(); track link.route) {
+        <button class="link-item" (click)="onLinkClick(link)">{{ link.name }}</button>
+      }
+    </div>
+  </p-popover>
+}

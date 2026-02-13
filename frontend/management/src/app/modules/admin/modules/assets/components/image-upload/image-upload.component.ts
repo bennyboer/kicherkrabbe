@@ -51,6 +51,9 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   desiredWidth: number = 768;
 
   @Input({ transform: booleanAttribute })
+  keepOriginalWidth: boolean = false;
+
+  @Input({ transform: booleanAttribute })
   watermark: boolean = true;
 
   @Input()
@@ -335,14 +338,15 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
     return new Observable<Blob>((observer) => {
       const aspectRatio = image.naturalWidth / image.naturalHeight;
       const resultCanvas = document.createElement('canvas');
-      const desiredHeight = this.desiredWidth / aspectRatio;
+      const width = this.keepOriginalWidth ? image.naturalWidth : this.desiredWidth;
+      const height = width / aspectRatio;
       this.drawImageAndWatermark(
         resultCanvas,
         image,
         blackWatermark,
         whiteWatermark,
-        this.desiredWidth,
-        desiredHeight,
+        width,
+        height,
         1,
       );
       const dataUrl = resultCanvas.toDataURL('image/jpeg', this.exportQuality);

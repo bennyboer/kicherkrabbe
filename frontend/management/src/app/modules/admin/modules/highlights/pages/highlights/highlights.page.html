@@ -1,0 +1,60 @@
+<div class="action-bar">
+  <div class="left-actions"></div>
+  <div class="right-actions">
+    <app-button routerLink="create">
+      <span class="icon-button">
+        <span class="material-icons">add</span>
+        <span>Neues Highlight</span>
+      </span>
+    </app-button>
+  </div>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (highlightsLoaded$ | async) {
+  @if (highlights$ | async; as highlights) {
+    @if (highlights.length === 0) {
+      <app-note level="info">Keine Highlights vorhanden.</app-note>
+    } @else {
+      <table class="highlights-table">
+        <colgroup>
+          <col class="image" span="1" style="width: 96px" />
+          <col class="status" span="1" style="width: auto" />
+          <col class="sort-order" span="1" style="width: 120px" />
+          <col class="created-at" span="1" style="width: 140px" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="image"></th>
+            <th class="status">Status</th>
+            <th class="sort-order">Sortierung</th>
+            <th class="created-at">Erstellt</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (highlight of highlights; track highlight.id) {
+            <a class="table-row" [routerLink]="highlight.id">
+              <td class="image">
+                <img [src]="getImageUrl(highlight.imageId)" width="64" height="64" />
+              </td>
+              <td class="status">
+                @if (highlight.published) {
+                  <span class="badge published">Veröffentlicht</span>
+                } @else {
+                  <span class="badge draft">Entwurf</span>
+                }
+              </td>
+              <td class="sort-order">
+                {{ highlight.sortOrder }}
+              </td>
+              <td class="created-at" [title]="highlight.createdAt | date: 'full'">
+                {{ highlight.createdAt | date: "short" }}
+              </td>
+            </a>
+          }
+        </tbody>
+      </table>
+    }
+  }
+}

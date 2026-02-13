@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class NotificationsMessaging {
 
-    @Bean
+    @Bean("notifications_onUserCreatedAddPermissionToReadNotificationsAndManageSettingsMsgListener")
     public EventListener onUserCreatedAddPermissionToReadNotificationsAndManageSettingsMsgListener(
             EventListenerFactory factory,
             NotificationsModule module
@@ -38,7 +38,7 @@ public class NotificationsMessaging {
         );
     }
 
-    @Bean
+    @Bean("notifications_onUserDeletedRemoveNotificationsPermissionsMsgListener")
     public EventListener onUserDeletedRemoveNotificationsPermissionsMsgListener(
             EventListenerFactory factory,
             NotificationsModule module
@@ -55,7 +55,7 @@ public class NotificationsMessaging {
         );
     }
 
-    @Bean
+    @Bean("notifications_onNotificationSentUpdateLookupMsgListener")
     public EventListener onNotificationSentUpdateLookupMsgListener(
             EventListenerFactory factory,
             NotificationsModule module
@@ -72,7 +72,7 @@ public class NotificationsMessaging {
         );
     }
 
-    @Bean
+    @Bean("notifications_onNotificationDeletedRemoveFromLookupMsgListener")
     public EventListener onNotificationDeletedRemoveFromLookupMsgListener(
             EventListenerFactory factory,
             NotificationsModule module
@@ -89,7 +89,7 @@ public class NotificationsMessaging {
         );
     }
 
-    @Bean
+    @Bean("notifications_onNotificationSentAllowSystemUserToDeleteNotification")
     public EventListener onNotificationSentAllowSystemUserToDeleteNotification(
             EventListenerFactory factory,
             NotificationsModule module
@@ -106,7 +106,7 @@ public class NotificationsMessaging {
         );
     }
 
-    @Bean
+    @Bean("notifications_onNotificationDeletedRemovePermissionsMsgListener")
     public EventListener onNotificationDeletedRemovePermissionsMsgListener(
             EventListenerFactory factory,
             NotificationsModule module
@@ -123,7 +123,7 @@ public class NotificationsMessaging {
         );
     }
 
-    @Bean
+    @Bean("notifications_onMailReceivedSendSystemNotificationMsgListener")
     public EventListener onMailReceivedSendSystemNotificationMsgListener(
             EventListenerFactory factory,
             NotificationsModule module

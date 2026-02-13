@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AssetsMessaging {
 
-    @Bean
+    @Bean("assets_onUserCreatedAllowUserToCreateAssets")
     public EventListener onUserCreatedAllowUserToCreateAssets(
             EventListenerFactory factory,
             AssetsModule module
@@ -28,7 +28,7 @@ public class AssetsMessaging {
         );
     }
 
-    @Bean
+    @Bean("assets_onUserDeletedRemoveAssetsPermissionsForUser")
     public EventListener onUserDeletedRemoveAssetsPermissionsForUser(
             EventListenerFactory factory,
             AssetsModule module
@@ -45,7 +45,7 @@ public class AssetsMessaging {
         );
     }
 
-    @Bean
+    @Bean("assets_onAssetCreatedAllowUserToManageAsset")
     public EventListener onAssetCreatedAllowUserToManageAsset(
             EventListenerFactory factory,
             AssetsModule module
@@ -63,7 +63,7 @@ public class AssetsMessaging {
         );
     }
 
-    @Bean
+    @Bean("assets_onAssetDeletedRemovePermissionsForAsset")
     public EventListener onAssetDeletedRemovePermissionsForAsset(
             EventListenerFactory factory,
             AssetsModule module
@@ -80,7 +80,7 @@ public class AssetsMessaging {
         );
     }
 
-    @Bean
+    @Bean("assets_onAssetCreatedAllowAnonymousUsersToReadAsset")
     public EventListener onAssetCreatedAllowAnonymousUsersToReadAsset(
             EventListenerFactory factory,
             AssetsModule module
@@ -97,7 +97,7 @@ public class AssetsMessaging {
         );
     }
 
-    @Bean
+    @Bean("assets_onAssetDeletedDisallowAnonymousUsersToReadAsset")
     public EventListener onAssetDeletedDisallowAnonymousUsersToReadAsset(
             EventListenerFactory factory,
             AssetsModule module

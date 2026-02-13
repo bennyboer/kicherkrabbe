@@ -15,7 +15,7 @@ import java.util.Map;
 @Configuration
 public class InquiriesMessaging {
 
-    @Bean
+    @Bean("inquiries_onUserCreatedAddPermissionToManageInquiriesMsgListener")
     public EventListener onUserCreatedAddPermissionToManageInquiriesMsgListener(
             EventListenerFactory factory,
             InquiriesModule module
@@ -32,7 +32,7 @@ public class InquiriesMessaging {
         );
     }
 
-    @Bean
+    @Bean("inquiries_onUserDeletedRemoveInquiriesPermissionsMsgListener")
     public EventListener onUserDeletedRemoveInquiriesPermissionsMsgListener(
             EventListenerFactory factory,
             InquiriesModule module
@@ -49,7 +49,7 @@ public class InquiriesMessaging {
         );
     }
 
-    @Bean
+    @Bean("inquiries_onInquirySentUpdateLookupMsgListener")
     public EventListener onInquirySentUpdateLookupMsgListener(
             EventListenerFactory factory,
             InquiriesModule module
@@ -66,7 +66,7 @@ public class InquiriesMessaging {
         );
     }
 
-    @Bean
+    @Bean("inquiries_onInquiryDeletedRemoveFromLookupMsgListener")
     public EventListener onInquiryDeletedRemoveFromLookupMsgListener(
             EventListenerFactory factory,
             InquiriesModule module
@@ -83,7 +83,7 @@ public class InquiriesMessaging {
         );
     }
 
-    @Bean
+    @Bean("inquiries_onInquiryDeletedRemovePermissionsMsgListener")
     public EventListener onInquiryDeletedRemovePermissionsMsgListener(
             EventListenerFactory factory,
             InquiriesModule module
@@ -100,7 +100,7 @@ public class InquiriesMessaging {
         );
     }
 
-    @Bean
+    @Bean("inquiries_onInquirySentAllowSystemUserToReadAndDeleteMsgListener")
     public EventListener onInquirySentAllowSystemUserToReadAndDeleteMsgListener(
             EventListenerFactory factory,
             InquiriesModule module
@@ -117,7 +117,7 @@ public class InquiriesMessaging {
         );
     }
 
-    @Bean
+    @Bean("inquiries_onMailDeletedDeleteInquiryMsgListener")
     public EventListener onMailDeletedDeleteInquiryMsgListener(
             EventListenerFactory factory,
             InquiriesModule module

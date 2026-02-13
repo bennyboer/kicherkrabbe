@@ -45,6 +45,8 @@ section {
 	display: flex;
 	justify-content: flex-end;
 	margin-right: 10%;
+	position: relative;
+	z-index: 1;
 }
 
 @media (max-width: 1280px) {

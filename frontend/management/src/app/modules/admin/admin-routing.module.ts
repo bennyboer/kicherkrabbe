@@ -90,6 +90,11 @@ const routes: Routes = [
         title: 'Produkte',
         loadChildren: () => import('./modules/products/products.module').then((m) => m.ProductsModule),
       },
+      {
+        path: 'highlights',
+        title: 'Highlights',
+        loadChildren: () => import('./modules/highlights/highlights.module').then((m) => m.HighlightsModule),
+      },
     ],
   },
   {

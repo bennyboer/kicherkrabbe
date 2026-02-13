@@ -18,10 +18,19 @@ img {
 	padding: 2rem;
 	box-sizing: border-box;
 
+	.left-image,
+	.top-image,
+	.bottom-image {
+		&.clickable {
+			cursor: pointer;
+		}
+	}
+
 	.left-image {
 		flex: 2;
 		display: flex;
 		overflow: hidden;
+		position: relative;
 	}
 
 	.right-images {
@@ -34,6 +43,31 @@ img {
 		.bottom-image {
 			flex: 1;
 			overflow: hidden;
+			position: relative;
+		}
+	}
+}
+
+.link-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	min-width: 150px;
+
+	.link-item {
+		background: transparent;
+		border: none;
+		padding: 0.75rem 1rem;
+		text-align: left;
+		cursor: pointer;
+		border-radius: 4px;
+		font-size: 1rem;
+		font-family: inherit;
+		color: var(--p-popover-color);
+		transition: background-color 0.2s;
+
+		&:hover {
+			background-color: var(--p-surface-100);
 		}
 	}
 }

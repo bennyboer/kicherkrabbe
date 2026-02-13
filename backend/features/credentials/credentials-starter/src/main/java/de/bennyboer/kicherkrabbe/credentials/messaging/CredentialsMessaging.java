@@ -16,7 +16,7 @@ import static java.util.UUID.randomUUID;
 @Configuration
 public class CredentialsMessaging {
 
-    @Bean
+    @Bean("credentials_onCredentialsCreatedUpdateLookupMsgListener")
     public EventListener onCredentialsCreatedUpdateLookupMsgListener(
             EventListenerFactory factory,
             CredentialsModule module
@@ -35,7 +35,7 @@ public class CredentialsMessaging {
         );
     }
 
-    @Bean
+    @Bean("credentials_onCredentialsCreatedAddPermissionsMsgListener")
     public EventListener onCredentialsCreatedAddPermissionsMsgListener(
             EventListenerFactory factory,
             CredentialsModule module
@@ -57,7 +57,7 @@ public class CredentialsMessaging {
         );
     }
 
-    @Bean
+    @Bean("credentials_onCredentialsDeletedUpdateLookupMsgListener")
     public EventListener onCredentialsDeletedUpdateLookupMsgListener(
             EventListenerFactory factory,
             CredentialsModule module
@@ -76,7 +76,7 @@ public class CredentialsMessaging {
         );
     }
 
-    @Bean
+    @Bean("credentials_onCredentialsDeletedRemovePermissionsMsgListener")
     public EventListener onCredentialsDeletedRemovePermissionsMsgListener(
             EventListenerFactory factory,
             CredentialsModule module
@@ -95,7 +95,7 @@ public class CredentialsMessaging {
         );
     }
 
-    @Bean
+    @Bean("credentials_onUserCreatedCreateCredentialsMsgListener")
     public EventListener onUserCreatedCreateCredentialsMsgListener(
             EventListenerFactory factory,
             CredentialsModule module
@@ -122,7 +122,7 @@ public class CredentialsMessaging {
         );
     }
 
-    @Bean
+    @Bean("credentials_onUserDeletedDeleteCredentialsMsgListener")
     public EventListener onUserDeletedDeleteCredentialsMsgListener(
             EventListenerFactory factory,
             CredentialsModule module
