@@ -3,10 +3,13 @@ package de.bennyboer.kicherkrabbe.auth.tokens;
 import reactor.core.publisher.Mono;
 
 import java.security.SecureRandom;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.UUID;
+
+import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 
 public class RefreshTokenService {
 
@@ -14,16 +17,25 @@ public class RefreshTokenService {
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final RefreshTokenRepo repo;
+    private final Clock clock;
+
+    public RefreshTokenService(RefreshTokenRepo repo, Clock clock) {
+        notNull(repo, "Refresh token repo must be given");
+        notNull(clock, "Clock must be given");
+
+        this.repo = repo;
+        this.clock = clock;
+    }
 
     public RefreshTokenService(RefreshTokenRepo repo) {
-        this.repo = repo;
+        this(repo, Clock.systemUTC());
     }
 
     public Mono<RefreshToken> generate(String userId) {
         return Mono.fromCallable(() -> {
-            String family = UUID.randomUUID().toString();
-            Instant now = Instant.now();
+            Instant now = clock.instant();
             Instant expiresAt = now.plus(REFRESH_TOKEN_LIFETIME);
+            String family = UUID.randomUUID().toString();
 
             return RefreshToken.of(
                     RefreshTokenId.create(),
@@ -38,23 +50,27 @@ public class RefreshTokenService {
     }
 
     public Mono<RefreshResult> refresh(String refreshTokenValue, TokenGenerator accessTokenGenerator) {
-        return repo.findByTokenValue(refreshTokenValue)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid refresh token")))
-                .flatMap(token -> {
-                    if (token.isExpired()) {
-                        return Mono.error(new IllegalArgumentException("Refresh token expired"));
+        return repo.markAsUsedIfNotAlready(refreshTokenValue)
+                .flatMap(marked -> {
+                    if (marked) {
+                        return repo.findByTokenValue(refreshTokenValue)
+                                .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid refresh token")))
+                                .flatMap(token -> {
+                                    if (token.isExpired(clock.instant())) {
+                                        return Mono.error(new IllegalArgumentException("Refresh token expired"));
+                                    }
+
+                                    return createRotatedToken(token)
+                                            .flatMap(newToken -> repo.save(newToken).thenReturn(newToken))
+                                            .flatMap(newToken -> generateAccessToken(accessTokenGenerator, token.getUserId())
+                                                    .map(accessToken -> RefreshResult.of(accessToken, newToken.getTokenValue())));
+                                });
                     }
 
-                    if (token.isUsed()) {
-                        return repo.revokeFamily(token.getFamily())
-                                .then(Mono.error(new IllegalArgumentException("Refresh token reuse detected")));
-                    }
-
-                    return repo.markAsUsed(token.getId())
-                            .then(createRotatedToken(token))
-                            .flatMap(newToken -> repo.save(newToken).thenReturn(newToken))
-                            .flatMap(newToken -> generateAccessToken(accessTokenGenerator, token.getUserId())
-                                    .map(accessToken -> RefreshResult.of(accessToken, newToken.getTokenValue())));
+                    return repo.findByTokenValue(refreshTokenValue)
+                            .<RefreshResult>flatMap(token -> repo.revokeFamily(token.getFamily())
+                                    .then(Mono.error(new IllegalArgumentException("Refresh token reuse detected"))))
+                            .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid refresh token")));
                 });
     }
 
@@ -75,7 +91,7 @@ public class RefreshTokenService {
                 oldToken.getFamily(),
                 false,
                 oldToken.getExpiresAt(),
-                Instant.now()
+                clock.instant()
         ));
     }
 

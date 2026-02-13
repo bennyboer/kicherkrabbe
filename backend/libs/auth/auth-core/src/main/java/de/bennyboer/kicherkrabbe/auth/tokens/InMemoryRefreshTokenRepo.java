@@ -20,21 +20,25 @@ public class InMemoryRefreshTokenRepo implements RefreshTokenRepo {
     }
 
     @Override
-    public Mono<Void> markAsUsed(RefreshTokenId id) {
-        return Mono.fromRunnable(() -> tokensByValue.replaceAll((key, token) -> {
-            if (token.getId().equals(id)) {
-                return RefreshToken.of(
-                        token.getId(),
-                        token.getTokenValue(),
-                        token.getUserId(),
-                        token.getFamily(),
-                        true,
-                        token.getExpiresAt(),
-                        token.getCreatedAt()
-                );
+    public Mono<Boolean> markAsUsedIfNotAlready(String tokenValue) {
+        return Mono.fromCallable(() -> {
+            var existing = tokensByValue.get(tokenValue);
+            if (existing == null || existing.isUsed()) {
+                return false;
             }
-            return token;
-        }));
+
+            var updated = RefreshToken.of(
+                    existing.getId(),
+                    existing.getTokenValue(),
+                    existing.getUserId(),
+                    existing.getFamily(),
+                    true,
+                    existing.getExpiresAt(),
+                    existing.getCreatedAt()
+            );
+
+            return tokensByValue.replace(tokenValue, existing, updated);
+        });
     }
 
     @Override

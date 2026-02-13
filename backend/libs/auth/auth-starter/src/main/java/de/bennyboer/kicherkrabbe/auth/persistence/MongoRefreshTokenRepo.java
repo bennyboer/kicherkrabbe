@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.auth.tokens.RefreshToken;
 import de.bennyboer.kicherkrabbe.auth.tokens.RefreshTokenId;
 import de.bennyboer.kicherkrabbe.auth.tokens.RefreshTokenRepo;
 import lombok.AllArgsConstructor;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -45,10 +46,14 @@ public class MongoRefreshTokenRepo implements RefreshTokenRepo {
     }
 
     @Override
-    public Mono<Void> markAsUsed(RefreshTokenId id) {
-        var query = Query.query(Criteria.where("_id").is(id.getValue()));
+    public Mono<Boolean> markAsUsedIfNotAlready(String tokenValue) {
+        var query = Query.query(Criteria.where("tokenValue").is(tokenValue).and("used").is(false));
         var update = new Update().set("used", true);
-        return template.updateFirst(query, update, COLLECTION_NAME).then();
+        var options = FindAndModifyOptions.options().returnNew(false);
+
+        return template.findAndModify(query, update, options, MongoRefreshToken.class, COLLECTION_NAME)
+                .map(doc -> true)
+                .defaultIfEmpty(false);
     }
 
     @Override

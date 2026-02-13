@@ -8,7 +8,7 @@ public interface RefreshTokenRepo {
 
     Mono<RefreshToken> findByTokenValue(String tokenValue);
 
-    Mono<Void> markAsUsed(RefreshTokenId id);
+    Mono<Boolean> markAsUsedIfNotAlready(String tokenValue);
 
     Mono<Void> revokeFamily(String family);
 

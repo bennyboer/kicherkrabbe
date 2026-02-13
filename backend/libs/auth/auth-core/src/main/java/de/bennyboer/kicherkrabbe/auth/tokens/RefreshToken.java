@@ -49,8 +49,8 @@ public class RefreshToken {
         return new RefreshToken(id, tokenValue, userId, family, used, expiresAt, createdAt);
     }
 
-    public boolean isExpired() {
-        return Instant.now().isAfter(expiresAt);
+    public boolean isExpired(Instant now) {
+        return now.isAfter(expiresAt);
     }
 
 }
