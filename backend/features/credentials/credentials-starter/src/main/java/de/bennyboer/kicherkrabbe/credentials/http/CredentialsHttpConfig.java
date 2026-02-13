@@ -29,6 +29,8 @@ public class CredentialsHttpConfig {
         return route()
                 .nest(path("/credentials"), () -> route()
                         .POST("/use", handler::useCredentials)
+                        .POST("/refresh", handler::refreshToken)
+                        .POST("/logout", handler::logout)
                         .build())
                 .build();
     }
@@ -36,7 +38,9 @@ public class CredentialsHttpConfig {
     @Bean
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> credentialsAuthorizeExchangeSpecCustomizer() {
         return exchanges -> exchanges
-                .pathMatchers(POST, "/credentials/use").permitAll();
+                .pathMatchers(POST, "/credentials/use").permitAll()
+                .pathMatchers(POST, "/credentials/refresh").permitAll()
+                .pathMatchers(POST, "/credentials/logout").permitAll();
     }
 
 }

@@ -1,6 +1,9 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
 import de.bennyboer.kicherkrabbe.auth.SecurityConfig;
+import de.bennyboer.kicherkrabbe.auth.persistence.MongoRefreshTokenRepo;
+import de.bennyboer.kicherkrabbe.auth.tokens.RefreshTokenRepo;
+import de.bennyboer.kicherkrabbe.auth.tokens.RefreshTokenService;
 import de.bennyboer.kicherkrabbe.auth.tokens.TokenGenerator;
 import de.bennyboer.kicherkrabbe.credentials.http.CredentialsHttpConfig;
 import de.bennyboer.kicherkrabbe.credentials.messaging.CredentialsMessaging;
@@ -30,11 +33,24 @@ public class CredentialsModuleConfig {
     }
 
     @Bean
+    public RefreshTokenRepo refreshTokenRepo(ReactiveMongoTemplate template) {
+        var repo = new MongoRefreshTokenRepo(template);
+        repo.initialize().subscribe();
+        return repo;
+    }
+
+    @Bean
+    public RefreshTokenService refreshTokenService(RefreshTokenRepo refreshTokenRepo) {
+        return new RefreshTokenService(refreshTokenRepo);
+    }
+
+    @Bean
     public CredentialsModule credentialsModule(
             CredentialsService credentialsService,
             CredentialsLookupRepo credentialsLookupRepo,
             @Qualifier("credentialsPermissionsService") PermissionsService permissionsService,
             TokenGenerator tokenGenerator,
+            RefreshTokenService refreshTokenService,
             ReactiveTransactionManager transactionManager
     ) {
         return new CredentialsModule(
@@ -42,6 +58,7 @@ public class CredentialsModuleConfig {
                 credentialsLookupRepo,
                 permissionsService,
                 tokenGenerator,
+                refreshTokenService,
                 transactionManager
         );
     }

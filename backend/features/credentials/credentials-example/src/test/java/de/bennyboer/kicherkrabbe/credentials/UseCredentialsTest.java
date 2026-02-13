@@ -21,6 +21,7 @@ public class UseCredentialsTest extends CredentialsModuleTest {
 
         // then: the result contains the token for the user
         assertThat(result.getToken()).isEqualTo("token-for-USER_ID");
+        assertThat(result.getRefreshToken()).isNotBlank();
     }
 
     @Test
@@ -53,6 +54,7 @@ public class UseCredentialsTest extends CredentialsModuleTest {
 
         // then: the result contains the token for the user
         assertThat(result.getToken()).isEqualTo("token-for-USER_ID");
+        assertThat(result.getRefreshToken()).isNotBlank();
     }
 
 }

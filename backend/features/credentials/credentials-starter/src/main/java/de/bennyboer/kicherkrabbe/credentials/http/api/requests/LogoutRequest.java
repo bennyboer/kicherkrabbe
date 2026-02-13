@@ -1,4 +1,4 @@
-package de.bennyboer.kicherkrabbe.credentials.http.api.responses;
+package de.bennyboer.kicherkrabbe.credentials.http.api.requests;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -9,9 +9,7 @@ import static lombok.AccessLevel.PUBLIC;
 @ToString
 @EqualsAndHashCode
 @FieldDefaults(level = PUBLIC)
-public class UseCredentialsResponse {
-
-    String token;
+public class LogoutRequest {
 
     String refreshToken;
 

@@ -1,7 +1,10 @@
 package de.bennyboer.kicherkrabbe.credentials.http;
 
 import de.bennyboer.kicherkrabbe.credentials.CredentialsModule;
+import de.bennyboer.kicherkrabbe.credentials.http.api.requests.LogoutRequest;
+import de.bennyboer.kicherkrabbe.credentials.http.api.requests.RefreshTokenRequest;
 import de.bennyboer.kicherkrabbe.credentials.http.api.requests.UseCredentialsRequest;
+import de.bennyboer.kicherkrabbe.credentials.http.api.responses.RefreshTokenResponse;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.ReactiveTransactionManager;
@@ -28,6 +31,27 @@ public class CredentialsHttpHandler {
                 .onErrorResume(e -> ServerResponse.status(UNAUTHORIZED).build())
                 .switchIfEmpty(ServerResponse.status(UNAUTHORIZED).build())
                 .as(transactionalOperator::transactional);
+    }
+
+    public Mono<ServerResponse> refreshToken(ServerRequest request) {
+        return request.bodyToMono(RefreshTokenRequest.class)
+                .flatMap(req -> module.refreshTokens(req.refreshToken))
+                .map(result -> {
+                    var response = new RefreshTokenResponse();
+                    response.token = result.getAccessToken();
+                    response.refreshToken = result.getRefreshToken();
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorResume(e -> ServerResponse.status(UNAUTHORIZED).build())
+                .switchIfEmpty(ServerResponse.status(UNAUTHORIZED).build());
+    }
+
+    public Mono<ServerResponse> logout(ServerRequest request) {
+        return request.bodyToMono(LogoutRequest.class)
+                .flatMap(req -> module.logout(req.refreshToken))
+                .then(ServerResponse.ok().build())
+                .onErrorResume(e -> ServerResponse.ok().build());
     }
 
 }
