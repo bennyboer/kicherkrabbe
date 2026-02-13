@@ -37,6 +37,8 @@ public class CredentialsModule {
 
     private final TokenGenerator tokenGenerator;
 
+    private final RefreshTokenService refreshTokenService;
+
     private final ReactiveTransactionManager transactionManager;
 
     private boolean isInitialized;
@@ -46,12 +48,14 @@ public class CredentialsModule {
             CredentialsLookupRepo credentialsLookupRepo,
             PermissionsService permissionsService,
             TokenGenerator tokenGenerator,
+            RefreshTokenService refreshTokenService,
             ReactiveTransactionManager transactionManager
     ) {
         this.credentialsService = credentialsService;
         this.credentialsLookupRepo = credentialsLookupRepo;
         this.permissionsService = permissionsService;
         this.tokenGenerator = tokenGenerator;
+        this.refreshTokenService = refreshTokenService;
         this.transactionManager = transactionManager;
     }
 
@@ -95,8 +99,25 @@ public class CredentialsModule {
     @Transactional(propagation = MANDATORY)
     public Mono<UseCredentialsResult> useCredentials(String name, String password, Agent agent) {
         return tryToUseCredentialsAndReturnCredentials(Name.of(name), Password.of(password), agent)
-                .flatMap(credentials -> generateAccessTokenForCredentialsUser(credentials.getUserId()))
-                .map(token -> UseCredentialsResult.of(token.getValue()));
+                .flatMap(credentials -> {
+                    String userId = credentials.getUserId().getValue();
+                    return generateAccessTokenForCredentialsUser(credentials.getUserId())
+                            .flatMap(token -> refreshTokenService.generate(userId)
+                                    .map(refreshToken -> UseCredentialsResult.of(
+                                            token.getValue(),
+                                            refreshToken.getTokenValue()
+                                    )));
+                });
+    }
+
+    @Transactional(propagation = MANDATORY)
+    public Mono<RefreshResult> refreshTokens(String refreshToken) {
+        return refreshTokenService.refresh(refreshToken, tokenGenerator);
+    }
+
+    @Transactional(propagation = MANDATORY)
+    public Mono<Void> logout(String refreshToken) {
+        return refreshTokenService.revokeFamily(refreshToken);
     }
 
     @Transactional(propagation = MANDATORY)
@@ -110,10 +131,11 @@ public class CredentialsModule {
 
     @Transactional(propagation = MANDATORY)
     public Flux<String> deleteCredentialsByUserId(String userId, Agent agent) {
-        return findCredentialsIdByUserId(UserId.of(userId))
-                .delayUntil(credentialsId -> assertAgentIsAllowedTo(agent, DELETE, credentialsId)
-                        .then(credentialsService.delete(credentialsId, Agent.system())))
-                .map(CredentialsId::getValue);
+        return refreshTokenService.revokeByUserId(userId)
+                .thenMany(findCredentialsIdByUserId(UserId.of(userId))
+                        .delayUntil(credentialsId -> assertAgentIsAllowedTo(agent, DELETE, credentialsId)
+                                .then(credentialsService.delete(credentialsId, Agent.system())))
+                        .map(CredentialsId::getValue));
     }
 
     public Mono<Void> updateCredentialsInLookup(String credentialsId) {
@@ -244,13 +266,17 @@ public class CredentialsModule {
     @AllArgsConstructor(access = PRIVATE)
     public static class UseCredentialsResult {
 
-        String token;
+        String accessToken;
 
-        public static UseCredentialsResult of(String token) {
-            notNull(token, "Token must be given");
-            check(!token.isBlank(), "Token must not be empty");
+        String refreshToken;
 
-            return new UseCredentialsResult(token);
+        public static UseCredentialsResult of(String accessToken, String refreshToken) {
+            notNull(accessToken, "Access token must be given");
+            check(!accessToken.isBlank(), "Access token must not be empty");
+            notNull(refreshToken, "Refresh token must be given");
+            check(!refreshToken.isBlank(), "Refresh token must not be empty");
+
+            return new UseCredentialsResult(accessToken, refreshToken);
         }
 
     }

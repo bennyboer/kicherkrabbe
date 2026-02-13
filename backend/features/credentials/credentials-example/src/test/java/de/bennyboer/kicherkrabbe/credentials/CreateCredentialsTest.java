@@ -18,7 +18,7 @@ public class CreateCredentialsTest extends CredentialsModuleTest {
 
         // then: the credentials can be used
         var result = useCredentials("TestName", "TestPassword", Agent.anonymous());
-        assertThat(result.getToken()).isEqualTo("token-for-USER_ID");
+        assertThat(result.getAccessToken()).isEqualTo("token-for-USER_ID");
     }
 
     @Test

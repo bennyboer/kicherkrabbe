@@ -24,7 +24,7 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
                 request.name,
                 request.password,
                 Agent.anonymous()
-        )).thenReturn(Mono.just(CredentialsModule.UseCredentialsResult.of("Token")));
+        )).thenReturn(Mono.just(CredentialsModule.UseCredentialsResult.of("AccessToken", "RefreshToken")));
 
         // when: using the credentials
         var exchange = client.post()
@@ -35,11 +35,12 @@ public class UseCredentialsHttpHandlerTest extends HttpHandlerTest {
         // then: the response is successful
         exchange.expectStatus().isOk();
 
-        // and: the response contains the token
+        // and: the response contains the token and refresh token
         var response = exchange.expectBody(UseCredentialsResponse.class)
                 .returnResult()
                 .getResponseBody();
-        assertThat(response.token).isEqualTo("Token");
+        assertThat(response.token).isEqualTo("AccessToken");
+        assertThat(response.refreshToken).isEqualTo("RefreshToken");
     }
 
     @Test

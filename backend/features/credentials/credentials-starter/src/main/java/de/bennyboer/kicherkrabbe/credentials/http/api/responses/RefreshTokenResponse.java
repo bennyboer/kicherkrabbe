@@ -9,7 +9,7 @@ import static lombok.AccessLevel.PUBLIC;
 @ToString
 @EqualsAndHashCode
 @FieldDefaults(level = PUBLIC)
-public class UseCredentialsResponse {
+public class RefreshTokenResponse {
 
     String token;
 

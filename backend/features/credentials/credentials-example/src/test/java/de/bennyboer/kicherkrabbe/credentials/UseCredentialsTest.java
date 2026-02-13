@@ -20,7 +20,8 @@ public class UseCredentialsTest extends CredentialsModuleTest {
         var result = useCredentials("TestName", "TestPassword", Agent.anonymous());
 
         // then: the result contains the token for the user
-        assertThat(result.getToken()).isEqualTo("token-for-USER_ID");
+        assertThat(result.getAccessToken()).isEqualTo("token-for-USER_ID");
+        assertThat(result.getRefreshToken()).isNotBlank();
     }
 
     @Test
@@ -52,7 +53,8 @@ public class UseCredentialsTest extends CredentialsModuleTest {
         var result = useCredentials("TestName", "TestPassword", Agent.user(AgentId.of("USER_ID")));
 
         // then: the result contains the token for the user
-        assertThat(result.getToken()).isEqualTo("token-for-USER_ID");
+        assertThat(result.getAccessToken()).isEqualTo("token-for-USER_ID");
+        assertThat(result.getRefreshToken()).isNotBlank();
     }
 
 }
