@@ -1,11 +1,42 @@
-export enum LinkType {
+import { validateProps } from '@kicherkrabbe/shared';
+
+export enum InternalLinkType {
   PATTERN = 'PATTERN',
   FABRIC = 'FABRIC',
 }
 
-export function toLinkType(value: string): LinkType {
-  if (Object.values(LinkType).includes(value as LinkType)) {
-    return value as LinkType;
+export class LinkType {
+  readonly internal: InternalLinkType;
+  readonly label: string;
+
+  private constructor(props: { internal: InternalLinkType; label: string }) {
+    validateProps(props);
+
+    this.internal = props.internal;
+    this.label = props.label;
   }
-  throw new Error(`Unknown link type: ${value}`);
+
+  static pattern(): LinkType {
+    return new LinkType({ internal: InternalLinkType.PATTERN, label: 'Schnitt' });
+  }
+
+  static fabric(): LinkType {
+    return new LinkType({ internal: InternalLinkType.FABRIC, label: 'Stoff' });
+  }
+}
+
+export const PATTERN = LinkType.pattern();
+export const FABRIC = LinkType.fabric();
+
+export const LINK_TYPES = [PATTERN, FABRIC];
+
+export function toLinkType(value: string): LinkType {
+  switch (value) {
+    case InternalLinkType.PATTERN:
+      return PATTERN;
+    case InternalLinkType.FABRIC:
+      return FABRIC;
+    default:
+      throw new Error(`Unknown link type: ${value}`);
+  }
 }

@@ -56,7 +56,18 @@ export class HighlightsComponent {
     }
 
     this.popoverLinks.set(highlight.links);
-    this.popover().toggle(event);
+
+    const popover = this.popover();
+    popover.show(event);
+
+    setTimeout(() => {
+      const popoverEl = document.querySelector('.p-popover') as HTMLElement;
+      if (popoverEl) {
+        const arrowOffset = 20;
+        popoverEl.style.left = `${event.pageX - arrowOffset}px`;
+        popoverEl.style.top = `${event.pageY}px`;
+      }
+    });
   }
 
   onLinkClick(link: DisplayLink): void {

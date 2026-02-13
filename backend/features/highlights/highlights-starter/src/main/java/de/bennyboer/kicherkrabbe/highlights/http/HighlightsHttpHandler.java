@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.highlights.HighlightDetails;
 import de.bennyboer.kicherkrabbe.highlights.HighlightsModule;
 import de.bennyboer.kicherkrabbe.highlights.HighlightsPage;
+import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import de.bennyboer.kicherkrabbe.highlights.api.HighlightChangeDTO;
 import de.bennyboer.kicherkrabbe.highlights.api.HighlightDTO;
 import de.bennyboer.kicherkrabbe.highlights.api.PublishedHighlightDTO;
@@ -58,7 +59,8 @@ public class HighlightsHttpHandler {
         return toAgent(request)
                 .flatMap(agent -> module.getHighlights(skip, limit, agent))
                 .map(this::toQueryHighlightsResponse)
-                .flatMap(response -> ServerResponse.ok().bodyValue(response));
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
     }
 
     public Mono<ServerResponse> getLinks(ServerRequest request) {
@@ -74,7 +76,8 @@ public class HighlightsHttpHandler {
 
         return toAgent(request)
                 .flatMap(agent -> module.getLinks(searchTerm, skip, limit, agent))
-                .flatMap(response -> ServerResponse.ok().bodyValue(response));
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
     }
 
     public Mono<ServerResponse> getHighlight(ServerRequest request) {
@@ -84,7 +87,8 @@ public class HighlightsHttpHandler {
                 .flatMap(agent -> module.getHighlight(highlightId, agent))
                 .map(this::toHighlightDTO)
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .switchIfEmpty(Mono.error(new ResponseStatusException(NOT_FOUND, "Highlight not found.")));
+                .switchIfEmpty(Mono.error(new ResponseStatusException(NOT_FOUND, "Highlight not found.")))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
     }
 
     public Mono<ServerResponse> getChanges(ServerRequest request) {
@@ -128,6 +132,7 @@ public class HighlightsHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -159,6 +164,7 @@ public class HighlightsHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -191,6 +197,7 @@ public class HighlightsHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -223,6 +230,7 @@ public class HighlightsHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -253,6 +261,7 @@ public class HighlightsHttpHandler {
                         "Highlight is already published",
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -283,6 +292,7 @@ public class HighlightsHttpHandler {
                         "Highlight is already unpublished",
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -314,6 +324,7 @@ public class HighlightsHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -338,6 +349,7 @@ public class HighlightsHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 

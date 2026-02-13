@@ -1,98 +1,158 @@
+:host {
+  display: block;
+}
+
 .action-bar {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem 0;
-}
+  justify-content: space-between;
+  gap: 12px;
 
-.icon-button {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.highlights-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  li {
+  & > .left-actions {
     display: flex;
     flex-direction: row;
+    gap: 12px;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    border-radius: 8px;
-    background-color: var(--kk-background-light);
-    cursor: pointer;
-    transition: background-color 0.2s;
+  }
+
+  & > .right-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75em;
+  font-weight: 500;
+
+  &.published {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+  }
+
+  &.draft {
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+  }
+}
+
+table.highlights-table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 16px;
+
+  a.table-row {
+    display: table-row;
+    text-decoration: none;
+    color: inherit;
+    vertical-align: middle;
+    transition: background-color 0.2s ease-out;
 
     &:hover {
-      background-color: var(--kk-background-light-hover);
+      background-color: var(--background-low-contrast);
     }
 
-    .thumbnail {
-      width: 100px;
-      height: 60px;
-      border-radius: 4px;
-      overflow: hidden;
-      flex-shrink: 0;
+    &:last-child {
+      td {
+        border-bottom: none;
+      }
+    }
+  }
 
-      img {
-        width: 100%;
-        height: 100%;
+  th {
+    user-select: none;
+    padding: 8px 16px;
+    font-weight: normal;
+    font-size: 0.8em;
+    color: rgba(var(--text-rgb), 0.7);
+    border-bottom: 4px solid var(--background-low-contrast);
+
+    &.image {
+      text-align: center;
+    }
+
+    &.status {
+      text-align: left;
+    }
+
+    &.sort-order {
+      text-align: center;
+    }
+
+    &.created-at {
+      text-align: right;
+    }
+  }
+
+  td {
+    cursor: pointer;
+    padding: 16px 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid var(--background-low-contrast);
+
+    &.image {
+      & > img {
         object-fit: cover;
+        border-radius: 4px;
       }
     }
 
-    .details {
-      display: flex;
+    &.sort-order {
+      text-align: center;
+    }
+
+    &.created-at {
+      font-size: 0.8em;
+      text-align: right;
+    }
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .action-bar {
+    flex-direction: column;
+    align-items: stretch;
+
+    & > .left-actions {
       flex-direction: column;
-      gap: 0.25rem;
-      flex: 1;
+      align-items: stretch;
+    }
 
-      .status {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 0.5rem;
+    & > .right-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
 
-        .badge {
-          padding: 0.25rem 0.5rem;
-          border-radius: 4px;
-          font-size: 0.75rem;
-          font-weight: 500;
-
-          &.published {
-            background-color: var(--kk-success-background);
-            color: var(--kk-success-text);
-          }
-
-          &.draft {
-            background-color: var(--kk-warning-background);
-            color: var(--kk-warning-text);
-          }
-        }
-
-        .sort-order {
-          font-size: 0.75rem;
-          color: var(--kk-text-muted);
-        }
+  table.highlights-table {
+    col {
+      &.created-at {
+        display: none;
       }
+    }
 
-      .links-count {
-        font-size: 0.875rem;
-        color: var(--kk-text-secondary);
+    thead {
+      display: none;
+    }
+
+    th {
+      &.created-at {
+        display: none;
       }
+    }
 
-      .created-at {
-        font-size: 0.75rem;
-        color: var(--kk-text-muted);
+    td {
+      &.created-at {
+        display: none;
       }
     }
   }

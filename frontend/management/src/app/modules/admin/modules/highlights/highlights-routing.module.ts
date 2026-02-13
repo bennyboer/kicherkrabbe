@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HighlightsPage, HighlightPage, CreatePage } from './pages';
+import { CreatePage, DeletePage, HighlightPage, HighlightsPage } from './pages';
 
 const routes: Routes = [
   {
@@ -12,8 +12,17 @@ const routes: Routes = [
     component: CreatePage,
   },
   {
-    path: ':id',
-    component: HighlightPage,
+    path: ':highlightId',
+    children: [
+      {
+        path: '',
+        component: HighlightPage,
+      },
+      {
+        path: 'delete',
+        component: DeletePage,
+      },
+    ],
   },
 ];
 

@@ -3,8 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, catchError, finalize, first, map, of, Subject, takeUntil } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { none, Option, some } from '@kicherkrabbe/shared';
-import { NotificationService } from '../../../../../shared';
-import { Highlight, Link, LinkType } from '../../model';
+import { ButtonSize, NotificationService } from '../../../../../shared';
+import { Highlight, Link } from '../../model';
 import { HighlightsService } from '../../services';
 import { environment } from '../../../../../../../environments';
 import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
@@ -35,14 +35,13 @@ export class HighlightPage implements OnInit, OnDestroy {
 
   protected readonly loading$ = this.loadingHighlight$.asObservable();
 
-  protected readonly LinkType = LinkType;
+  protected readonly ButtonSize = ButtonSize;
 
   private readonly destroy$ = new Subject<void>();
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly injector: Injector,
     private readonly highlightsService: HighlightsService,
     private readonly dialogService: DialogService,
     private readonly notificationService: NotificationService,
@@ -51,7 +50,7 @@ export class HighlightPage implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.params
       .pipe(
-        map((params) => params['id']),
+        map((params) => params['highlightId']),
         takeUntil(this.destroy$),
       )
       .subscribe((highlightId) => this.loadHighlight(highlightId));
@@ -274,8 +273,11 @@ export class HighlightPage implements OnInit, OnDestroy {
               existingLinks: highlight.links,
             }),
           },
+          {
+            provide: HighlightsService,
+            useValue: this.highlightsService,
+          },
         ],
-        parent: this.injector,
       }),
     });
 
@@ -288,7 +290,10 @@ export class HighlightPage implements OnInit, OnDestroy {
     });
   }
 
-  removeLink(highlight: Highlight, link: Link): void {
+  removeLink(event: Event, highlight: Highlight, link: Link): void {
+    event.stopPropagation();
+    event.preventDefault();
+
     this.removingLinkId$.next(link.id);
     this.highlightsService
       .removeLink(highlight.id, highlight.version, link.type, link.id)

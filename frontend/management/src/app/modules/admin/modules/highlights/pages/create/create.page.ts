@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { HighlightsService } from '../../services';
-import { BehaviorSubject, combineLatest, finalize, map, Observable, Subject, takeUntil } from 'rxjs';
-import { NotificationService } from '../../../../../shared';
+import { BehaviorSubject, combineLatest, delay, finalize, map, Observable, Subject, takeUntil } from 'rxjs';
+import { ButtonSize, NotificationService } from '../../../../../shared';
 import { ActivatedRoute, Router } from '@angular/router';
 import { none, Option, some } from '@kicherkrabbe/shared';
 import { environment } from '../../../../../../../environments';
@@ -33,6 +33,8 @@ export class CreatePage implements OnDestroy {
   protected readonly cannotSubmit$: Observable<boolean> = combineLatest([this.formValid$, this.creating$]).pipe(
     map(([formValid, creating]) => !formValid || creating),
   );
+
+  protected readonly ButtonSize = ButtonSize;
 
   private readonly destroy$: Subject<void> = new Subject<void>();
 
@@ -91,6 +93,7 @@ export class CreatePage implements OnDestroy {
         sortOrder,
       })
       .pipe(
+        delay(500),
         takeUntil(this.destroy$),
         finalize(() => this.creating$.next(false)),
       )

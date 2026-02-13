@@ -152,7 +152,7 @@ public class AssetsModule {
         return content
                 .map(DataBuffer::readableByteCount)
                 .reduce(0L, Long::sum)
-                .filter(size -> size <= 1024 * 1024 * 16)
+                .filter(size -> size <= 1024 * 1024 * 50)
                 .switchIfEmpty(Mono.error(new AssetTooLargeError()))
                 .then();
     }

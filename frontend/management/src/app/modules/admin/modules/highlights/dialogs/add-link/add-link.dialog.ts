@@ -75,7 +75,7 @@ export class AddLinkDialog implements OnInit, OnDestroy {
     private readonly highlightsService: HighlightsService,
     private readonly notificationService: NotificationService,
   ) {
-    this.data.existingLinks.forEach((link) => this.alreadyAddedLinkIdentifiers.add(`${link.type}-${link.id}`));
+    this.data.existingLinks.forEach((link) => this.alreadyAddedLinkIdentifiers.add(`${link.type.internal}-${link.id}`));
   }
 
   ngOnInit(): void {
@@ -94,7 +94,7 @@ export class AddLinkDialog implements OnInit, OnDestroy {
   }
 
   isAlreadyAdded(link: LinkOption): boolean {
-    return this.alreadyAddedLinkIdentifiers.has(`${link.type}-${link.id}`);
+    return this.alreadyAddedLinkIdentifiers.has(`${link.type.internal}-${link.id}`);
   }
 
   close(): void {
@@ -150,7 +150,7 @@ export class AddLinkDialog implements OnInit, OnDestroy {
   }
 
   getLinkTypeLabel(type: LinkType): string {
-    return type === LinkType.PATTERN ? 'Schnittmuster' : 'Stoff';
+    return type.label;
   }
 
   private loadAllLinks(): void {

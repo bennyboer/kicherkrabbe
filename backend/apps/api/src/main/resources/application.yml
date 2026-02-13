@@ -1,6 +1,8 @@
 spring:
   application:
     name: kicherkrabbe-server
+  codec:
+    max-in-memory-size: 50MB
   mongodb:
     uri: mongodb://localhost:27017/kicherkrabbe?replicaSet=rs0
   rabbitmq:

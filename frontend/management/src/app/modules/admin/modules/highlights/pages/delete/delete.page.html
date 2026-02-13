@@ -1,0 +1,28 @@
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (highlight$ | async; as highlight) {
+  <app-note level="warn">
+    Sie sind im Begriff dieses Highlight zu löschen. Hierbei handelt es sich um eine Aktion, die
+    <strong>nicht</strong> rückgängig gemacht werden kann.
+  </app-note>
+
+  <div class="actions">
+    <app-button routerLink="..">
+      <span class="icon-button">
+        <span class="material-icons">close</span>
+        <span>Abbrechen</span>
+      </span>
+    </app-button>
+
+    <app-button [disabled]="deleting$ | async" (click)="deleteHighlight(highlight)" color="warn">
+      @if (deleting$ | async) {
+        <span class="loading-button-text">
+          <app-loading-spinner size="16"></app-loading-spinner>
+          <span>Löscht...</span>
+        </span>
+      } @else {
+        Unwiderruflich löschen
+      }
+    </app-button>
+  </div>
+}

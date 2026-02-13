@@ -43,7 +43,7 @@
     </div>
   </div>
 
-  <p-popover #popover>
+  <p-popover #popover appendTo="body">
     <div class="link-list">
       @for (link of popoverLinks(); track link.route) {
         <button class="link-item" (click)="onLinkClick(link)">{{ link.name }}</button>

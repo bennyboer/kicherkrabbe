@@ -1,23 +1,29 @@
 <h3>Neues Highlight erstellen</h3>
 
-<div class="form">
-  <div class="form-field">
-    <label>Bild</label>
-    <div class="image-edit-container">
+<div class="highlight-details">
+  <div class="highlight-detail">
+    <label>
+      Bild
+      @if (currentImageId$ | async) {
+        <app-button [size]="ButtonSize.SMALL" [disabled]="creating$ | async" (click)="clearImage()">
+          <span class="icon-button">
+            <span class="material-icons">close</span>
+          </span>
+        </app-button>
+      }
+    </label>
+    <div class="highlight-image">
       @if (currentImageId$ | async; as imageId) {
         <div class="image-container">
           <img [src]="getImageUrl(imageId)" alt="Highlight Bild" />
-          <button class="clear-image-btn" (click)="clearImage()">
-            <span class="material-icons">close</span>
-          </button>
         </div>
       } @else {
-        <app-image-upload (uploaded)="onImageUploaded($event)"></app-image-upload>
+        <app-image-upload keepOriginalWidth [watermark]="false" [exportQuality]="1" (uploaded)="onImageUploaded($event)"></app-image-upload>
       }
     </div>
   </div>
 
-  <div class="form-field">
+  <div class="highlight-detail">
     <label for="sortOrder">Sortierung</label>
     <input
       #sortOrder
@@ -28,25 +34,28 @@
       (input)="updateSortOrder(sortOrder.value)" />
     <span class="hint">Niedrigere Werte werden zuerst angezeigt</span>
     @if (sortOrderError$ | async) {
-      <span class="error">Bitte gib eine gültige Sortierung ein</span>
+      <span class="error-text">Bitte gib eine gültige Sortierung ein</span>
     }
   </div>
 </div>
 
-<div class="actions">
-  <span>
-    <app-button routerLink="..">Abbrechen</app-button>
-  </span>
-  <span>
-    <app-button [disabled]="cannotSubmit$ | async" (click)="create()" color="primary">
-      @if (creating$ | async) {
-        <span class="loading-button-text">
-          <app-loading-spinner size="16"></app-loading-spinner>
-          <span>Erstellt...</span>
-        </span>
-      } @else {
-        Erstellen
-      }
-    </app-button>
-  </span>
+@if (!(hasImage$ | async)) {
+  <div class="error-container">
+    <app-note level="error">Ohne Bild kann das Highlight nicht erstellt werden.</app-note>
+  </div>
+}
+
+<div class="footer">
+  <app-button routerLink="..">Abbrechen</app-button>
+
+  <app-button color="primary" [disabled]="cannotSubmit$ | async" (click)="create()">
+    @if (creating$ | async) {
+      <span class="loading-button-text">
+        <app-loading-spinner size="16"></app-loading-spinner>
+        <span>Erstellt...</span>
+      </span>
+    } @else {
+      Erstellen
+    }
+  </app-button>
 </div>

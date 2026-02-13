@@ -1,1 +1,5 @@
-export { HighlightsService } from './highlights.service';
+import { HighlightsService } from './highlights.service';
+
+export { HighlightsService };
+
+export const SERVICES = [HighlightsService];

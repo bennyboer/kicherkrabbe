@@ -84,7 +84,7 @@ export class Highlight {
     return new Highlight({
       ...this,
       version,
-      links: this.links.filter((link) => !(link.type === type && link.id === id)),
+      links: this.links.filter((link) => !(link.type.internal === type.internal && link.id === id)),
     });
   }
 }

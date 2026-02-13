@@ -147,7 +147,7 @@ export class HighlightsService {
   }
 
   addLink(id: HighlightId, version: number, linkType: LinkType, linkId: string): Observable<number> {
-    const request: AddLinkRequest = { version, linkType, linkId };
+    const request: AddLinkRequest = { version, linkType: linkType.internal, linkId };
 
     return this.http
       .post<AddLinkResponse>(`${environment.apiUrl}/highlights/${id}/links/add`, request)
@@ -155,7 +155,7 @@ export class HighlightsService {
   }
 
   removeLink(id: HighlightId, version: number, linkType: LinkType, linkId: string): Observable<number> {
-    const request: RemoveLinkRequest = { version, linkType, linkId };
+    const request: RemoveLinkRequest = { version, linkType: linkType.internal, linkId };
 
     return this.http
       .post<RemoveLinkResponse>(`${environment.apiUrl}/highlights/${id}/links/remove`, request)

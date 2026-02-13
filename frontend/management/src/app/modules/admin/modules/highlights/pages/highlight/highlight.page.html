@@ -1,11 +1,62 @@
+<div class="action-bar">
+  <app-button routerLink="..">
+    <span class="icon-button">
+      <span class="material-icons">chevron_left</span>
+      <span>Zurück</span>
+    </span>
+  </app-button>
+
+  <app-button routerLink="delete" color="warn">
+    <span class="icon-button">
+      <span class="material-icons">delete</span>
+      <span>Löschen</span>
+    </span>
+  </app-button>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
 @if (highlightLoaded$ | async) {
-  @if (highlight$ | async; as highlightOption) {
-    @if (highlightOption.isSome()) {
-      @let highlight = highlightOption.orElseThrow();
-      <div class="highlight-header">
-        <h3>Highlight bearbeiten</h3>
-        <div class="actions">
-          <app-button (click)="togglePublish(highlight)" [disabled]="publishing$ | async">
+  @if (highlight$ | async | ifSome; as highlight) {
+    <div class="highlight-details">
+      <div class="highlight-detail">
+        <label>
+          Bild
+          <app-button [size]="ButtonSize.SMALL" (click)="startEditingImage()">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="highlight-image">
+          @if (editingImage$ | async) {
+            <div class="edit-image-container">
+              @if (updatingImage$ | async) {
+                <div class="loading-container">
+                  <app-loading-spinner size="32"></app-loading-spinner>
+                </div>
+              } @else {
+                <app-image-upload keepOriginalWidth [watermark]="false" [exportQuality]="1" (uploaded)="onImageUploaded(highlight, $event)"></app-image-upload>
+              }
+              <app-button (click)="cancelEditingImage()">Abbrechen</app-button>
+            </div>
+          } @else {
+            <div class="image-container">
+              <img [src]="getImageUrl(highlight.imageId)" alt="Highlight Bild" />
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="highlight-detail">
+        <label>Status</label>
+        <div class="status-container">
+          @if (highlight.published) {
+            <span class="badge published">Veröffentlicht</span>
+          } @else {
+            <span class="badge draft">Entwurf</span>
+          }
+          <app-button [size]="ButtonSize.SMALL" [disabled]="publishing$ | async" (click)="togglePublish(highlight)">
             @if (publishing$ | async) {
               <app-loading-spinner size="16"></app-loading-spinner>
             } @else {
@@ -16,126 +67,93 @@
               }
             }
           </app-button>
-          <app-button color="warn" (click)="delete(highlight)" [disabled]="deleting$ | async">
-            @if (deleting$ | async) {
-              <app-loading-spinner size="16"></app-loading-spinner>
-            } @else {
-              Löschen
-            }
-          </app-button>
         </div>
       </div>
 
-      <div class="highlight-details">
-        <div class="image-section">
-          <div class="section-header">
-            <h4>Bild</h4>
-            @if (!(editingImage$ | async)) {
-              <button class="edit-btn" (click)="startEditingImage()">
+      <div class="highlight-detail">
+        <label>
+          Sortierung
+          @if (!(editingSortOrder$ | async)) {
+            <app-button [size]="ButtonSize.SMALL" (click)="startEditingSortOrder(highlight)">
+              <span class="icon-button">
                 <span class="material-icons">edit</span>
-              </button>
-            }
-          </div>
-          @if (editingImage$ | async) {
-            <div class="edit-image-container">
-              @if (updatingImage$ | async) {
-                <app-loading-spinner size="32"></app-loading-spinner>
-              } @else {
-                <app-image-upload (uploaded)="onImageUploaded(highlight, $event)"></app-image-upload>
-              }
-              <app-button (click)="cancelEditingImage()">Abbrechen</app-button>
-            </div>
-          } @else {
-            <div class="image-container">
-              <img [src]="getImageUrl(highlight.imageId)" alt="Highlight Bild" />
-            </div>
+              </span>
+            </app-button>
           }
-        </div>
-
-        <div class="info-section">
-          <div class="info-row">
-            <span class="label">Status:</span>
-            <span class="value">
-              @if (highlight.published) {
-                <span class="badge published">Veröffentlicht</span>
+        </label>
+        @if (editingSortOrder$ | async) {
+          <div class="edit-sort-order">
+            <input
+              #sortOrderInput
+              type="number"
+              [value]="sortOrderValue$ | async"
+              (input)="updateSortOrderValue(sortOrderInput.value)" />
+            <app-button (click)="saveSortOrder(highlight)" [disabled]="updatingSortOrder$ | async" color="primary">
+              @if (updatingSortOrder$ | async) {
+                <app-loading-spinner size="16"></app-loading-spinner>
               } @else {
-                <span class="badge draft">Entwurf</span>
+                Speichern
               }
-            </span>
+            </app-button>
+            <app-button (click)="cancelEditingSortOrder()">Abbrechen</app-button>
           </div>
+        } @else {
+          <span class="sort-order-value">{{ highlight.sortOrder }}</span>
+        }
+      </div>
 
-          <div class="info-row">
-            <span class="label">Sortierung:</span>
-            @if (editingSortOrder$ | async) {
-              <span class="value edit-sort-order">
-                <input
-                  #sortOrderInput
-                  type="number"
-                  [value]="sortOrderValue$ | async"
-                  (input)="updateSortOrderValue(sortOrderInput.value)" />
-                <app-button (click)="saveSortOrder(highlight)" [disabled]="updatingSortOrder$ | async" color="primary">
-                  @if (updatingSortOrder$ | async) {
-                    <app-loading-spinner size="16"></app-loading-spinner>
-                  } @else {
-                    Speichern
-                  }
-                </app-button>
-                <app-button (click)="cancelEditingSortOrder()">Abbrechen</app-button>
-              </span>
-            } @else {
-              <span class="value">
-                {{ highlight.sortOrder }}
-                <button class="edit-btn inline" (click)="startEditingSortOrder(highlight)">
-                  <span class="material-icons">edit</span>
-                </button>
-              </span>
-            }
-          </div>
-
-          <div class="info-row">
-            <span class="label">Erstellt am:</span>
-            <span class="value">{{ highlight.createdAt | date: "dd.MM.yyyy HH:mm" }} Uhr</span>
-          </div>
-        </div>
-
-        <div class="links-section">
-          <div class="section-header">
-            <h4>Links ({{ highlight.links.length }})</h4>
-            <button class="edit-btn" (click)="addLink(highlight)">
+      <div class="highlight-detail">
+        <label>
+          Links
+          <app-button [size]="ButtonSize.SMALL" (click)="addLink(highlight)">
+            <span class="icon-button">
               <span class="material-icons">add</span>
-            </button>
-          </div>
-
-          @if (highlight.links.length === 0) {
-            <app-note level="info">Keine Links vorhanden.</app-note>
-          } @else {
-            <ul class="links-list">
+            </span>
+          </app-button>
+        </label>
+        <div class="highlight-links">
+          @if (highlight.links.length > 0) {
+            <ul class="highlight-links-list">
               @for (link of highlight.links; track link.id) {
                 <li>
-                  <span class="link-type">{{ link.type === LinkType.PATTERN ? 'Schnittmuster' : 'Stoff' }}</span>
-                  <span class="link-name">{{ link.name }}</span>
-                  <button
-                    class="remove-link-btn"
-                    (click)="removeLink(highlight, link)"
-                    [disabled]="(removingLinkId$ | async) === link.id">
-                    @if ((removingLinkId$ | async) === link.id) {
-                      <app-loading-spinner size="16"></app-loading-spinner>
-                    } @else {
-                      <span class="material-icons">close</span>
-                    }
-                  </button>
+                  <a [routerLink]="link.toHref()">
+                    <span>
+                      <strong>{{ link.type.label }}</strong
+                      >: {{ link.name }}
+                    </span>
+                    <span class="actions">
+                      <app-button
+                        color="warn"
+                        [size]="ButtonSize.SMALL"
+                        [disabled]="(removingLinkId$ | async) === link.id"
+                        (click)="removeLink($event, highlight, link)">
+                        @if ((removingLinkId$ | async) === link.id) {
+                          <app-loading-spinner size="16"></app-loading-spinner>
+                        } @else {
+                          <span class="icon-button">
+                            <span class="material-icons">delete</span>
+                          </span>
+                        }
+                      </app-button>
+                    </span>
+                  </a>
                 </li>
               }
             </ul>
+          } @else {
+            <app-note>Keine Links vorhanden</app-note>
           }
         </div>
       </div>
 
-      <div class="back-action">
-        <app-button routerLink="..">Zurück zur Übersicht</app-button>
+      <div class="highlight-detail">
+        <label>Erstellt am</label>
+        <span class="highlight-created-at"
+          >{{ highlight.createdAt | date: "dd.MM.yyyy" }} um {{ highlight.createdAt | date: "HH:mm" }}</span
+        >
       </div>
-    }
+    </div>
+  } @else {
+    <app-note level="warn"> Dieses Highlight konnte nicht gefunden werden. </app-note>
   }
-} @else {
-  <app-loading-bar [visible]="loading$ | async"></app-loading-bar>
 }
