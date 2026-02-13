@@ -22,7 +22,7 @@ public class JWTTokenGenerator implements TokenGenerator {
     }
 
     private Token generateToken(TokenPayload payload) {
-        Instant expiresAt = Instant.now().plus(24, ChronoUnit.HOURS);
+        Instant expiresAt = Instant.now().plus(15, ChronoUnit.MINUTES);
         String token = JWT.create()
                 .withIssuer("server")
                 .withSubject(payload.getOwner().getId().getValue())
