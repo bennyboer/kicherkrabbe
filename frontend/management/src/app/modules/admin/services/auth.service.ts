@@ -1,20 +1,10 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
-import { BehaviorSubject, catchError, map, Observable, of, Subject, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, catchError, finalize, map, Observable, of, shareReplay, Subject, take, takeUntil } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments';
 import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 
-interface UseCredentialsRequest {
-  name: string;
-  password: string;
-}
-
-interface UseCredentialsResponse {
-  token: string;
-  refreshToken: string;
-}
-
-interface RefreshTokenResponse {
+interface AuthTokenResponse {
   token: string;
   refreshToken: string;
 }
@@ -23,9 +13,10 @@ interface RefreshTokenResponse {
 export class AdminAuthService implements OnDestroy {
   private readonly token$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());
   private readonly refreshToken$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());
+  private readonly initialized$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
   private refreshTimerId: ReturnType<typeof setTimeout> | null = null;
-  private refreshInProgress = false;
+  private refreshInFlight$: Observable<boolean> | null = null;
 
   constructor(
     private readonly http: HttpClient,
@@ -40,6 +31,7 @@ export class AdminAuthService implements OnDestroy {
     this.cancelRefreshTimer();
     this.token$.complete();
     this.refreshToken$.complete();
+    this.initialized$.complete();
 
     this.destroy$.next();
     this.destroy$.complete();
@@ -57,8 +49,12 @@ export class AdminAuthService implements OnDestroy {
     return this.getToken().pipe(map((token) => token.isSome()));
   }
 
+  isInitialized(): Observable<boolean> {
+    return this.initialized$.asObservable();
+  }
+
   logout(): void {
-    const refreshTokenValue = this.refreshToken$.value.map((rt: string) => rt).orElse('');
+    const refreshTokenValue = this.refreshToken$.value.orElse('');
     if (refreshTokenValue) {
       this.http
         .post(`${environment.apiUrl}/credentials/logout`, { refreshToken: refreshTokenValue })
@@ -70,52 +66,47 @@ export class AdminAuthService implements OnDestroy {
   }
 
   login(username: string, password: string): Observable<boolean> {
-    const request: UseCredentialsRequest = { name: username, password };
-
-    return this.http.post<UseCredentialsResponse>(`${environment.apiUrl}/credentials/use`, request).pipe(
-      map((response) => {
-        this.token$.next(some(response.token));
-        this.refreshToken$.next(some(response.refreshToken));
-        this.scheduleProactiveRefresh(response.token);
-        return true;
-      }),
-    );
+    return this.http
+      .post<AuthTokenResponse>(`${environment.apiUrl}/credentials/use`, { name: username, password })
+      .pipe(map((response) => this.handleTokenResponse(response)));
   }
 
   refreshAccessToken(): Observable<boolean> {
-    const refreshTokenValue = this.refreshToken$.value.map((rt: string) => rt).orElse('');
+    if (this.refreshInFlight$) {
+      return this.refreshInFlight$;
+    }
+
+    const refreshTokenValue = this.refreshToken$.value.orElse('');
     if (!refreshTokenValue) {
       return of(false);
     }
 
-    this.refreshInProgress = true;
-
-    return this.http
-      .post<RefreshTokenResponse>(`${environment.apiUrl}/credentials/refresh`, { refreshToken: refreshTokenValue })
+    this.refreshInFlight$ = this.http
+      .post<AuthTokenResponse>(`${environment.apiUrl}/credentials/refresh`, { refreshToken: refreshTokenValue })
       .pipe(
-        map((response) => {
-          this.token$.next(some(response.token));
-          this.refreshToken$.next(some(response.refreshToken));
-          this.scheduleProactiveRefresh(response.token);
-          return true;
-        }),
+        map((response) => this.handleTokenResponse(response)),
         catchError(() => {
           this.clearAuth();
           return of(false);
         }),
-        tap(() => (this.refreshInProgress = false)),
+        finalize(() => (this.refreshInFlight$ = null)),
+        shareReplay(1),
       );
+
+    return this.refreshInFlight$;
   }
 
-  isRefreshInProgress(): boolean {
-    return this.refreshInProgress;
+  private handleTokenResponse(response: AuthTokenResponse): boolean {
+    this.token$.next(some(response.token));
+    this.refreshToken$.next(some(response.refreshToken));
+    this.scheduleProactiveRefresh(response.token);
+    return true;
   }
 
   private clearAuth(): void {
     this.cancelRefreshTimer();
     this.token$.next(none());
     this.refreshToken$.next(none());
-    localStorage.removeItem('admin.auth.token');
   }
 
   private tryToRestoreToken(): void {
@@ -124,10 +115,12 @@ export class AdminAuthService implements OnDestroy {
     refreshToken.ifSomeOrElse(
       (rt) => {
         this.refreshToken$.next(some(rt));
-        this.refreshAccessToken().subscribe();
+        this.refreshAccessToken()
+          .pipe(take(1))
+          .subscribe(() => this.initialized$.next(true));
       },
       () => {
-        localStorage.removeItem('admin.auth.token');
+        this.initialized$.next(true);
       },
     );
   }

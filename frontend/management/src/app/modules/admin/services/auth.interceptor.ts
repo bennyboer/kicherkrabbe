@@ -1,13 +1,15 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AdminAuthService } from './auth.service';
-import { BehaviorSubject, catchError, EMPTY, filter, Observable, switchMap, take, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, EMPTY, filter, finalize, Observable, switchMap, take, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../../../environments';
 import { NotificationService } from '../../shared';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private refreshing = false;
+  private authFailureHandled = false;
   private readonly refreshResult$: BehaviorSubject<boolean | null> = new BehaviorSubject<boolean | null>(null);
 
   constructor(
@@ -54,11 +56,11 @@ export class AuthInterceptor implements HttpInterceptor {
   private handle401(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!this.refreshing) {
       this.refreshing = true;
+      this.authFailureHandled = false;
       this.refreshResult$.next(null);
 
       return this.authService.refreshAccessToken().pipe(
         switchMap((success) => {
-          this.refreshing = false;
           this.refreshResult$.next(success);
 
           if (success) {
@@ -67,6 +69,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
           return this.handleAuthFailure();
         }),
+        finalize(() => (this.refreshing = false)),
       );
     }
 
@@ -77,12 +80,17 @@ export class AuthInterceptor implements HttpInterceptor {
         if (success) {
           return next.handle(this.addToken(req));
         }
-        return this.handleAuthFailure();
+        return EMPTY;
       }),
     );
   }
 
   private handleAuthFailure(): Observable<never> {
+    if (this.authFailureHandled) {
+      return EMPTY;
+    }
+    this.authFailureHandled = true;
+
     this.authService.logout();
     this.notificationService.publish({
       message: 'Ihre Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an.',
@@ -98,6 +106,6 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   private isRefreshOrLogoutUrl(url: string): boolean {
-    return url.includes('/credentials/refresh') || url.includes('/credentials/logout');
+    return url.startsWith(`${environment.apiUrl}/credentials/refresh`) || url.startsWith(`${environment.apiUrl}/credentials/logout`);
   }
 }

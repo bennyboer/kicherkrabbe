@@ -2,7 +2,7 @@ import { inject, NgModule } from '@angular/core';
 import { Router, RouterModule, Routes } from '@angular/router';
 import { LoginPage } from './pages';
 import { AdminAuthService } from './services';
-import { map } from 'rxjs';
+import { filter, map, switchMap, take } from 'rxjs';
 import { ContainerComponent } from './components';
 
 const routes: Routes = [
@@ -14,7 +14,10 @@ const routes: Routes = [
         const authService = inject(AdminAuthService);
         const router = inject(Router);
 
-        return authService.isLoggedIn().pipe(
+        return authService.isInitialized().pipe(
+          filter((initialized) => initialized),
+          take(1),
+          switchMap(() => authService.isLoggedIn()),
           map((loggedIn) => {
             if (!loggedIn) {
               return router.parseUrl('/login');
