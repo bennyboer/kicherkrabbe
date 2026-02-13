@@ -44,7 +44,7 @@ public class CredentialsModuleTest {
 
     private final RefreshTokenRepo refreshTokenRepo = new InMemoryRefreshTokenRepo();
 
-    private final RefreshTokenService refreshTokenService = new RefreshTokenService(refreshTokenRepo);
+    private final RefreshTokenService refreshTokenService = new RefreshTokenService(refreshTokenRepo, clock);
 
     private final PermissionsRepo permissionsRepo = new InMemoryPermissionsRepo();
 

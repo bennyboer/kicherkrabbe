@@ -110,10 +110,12 @@ public class CredentialsModule {
                 });
     }
 
+    @Transactional(propagation = MANDATORY)
     public Mono<RefreshResult> refreshTokens(String refreshToken) {
         return refreshTokenService.refresh(refreshToken, tokenGenerator);
     }
 
+    @Transactional(propagation = MANDATORY)
     public Mono<Void> logout(String refreshToken) {
         return refreshTokenService.revokeFamily(refreshToken);
     }
@@ -264,17 +266,17 @@ public class CredentialsModule {
     @AllArgsConstructor(access = PRIVATE)
     public static class UseCredentialsResult {
 
-        String token;
+        String accessToken;
 
         String refreshToken;
 
-        public static UseCredentialsResult of(String token, String refreshToken) {
-            notNull(token, "Token must be given");
-            check(!token.isBlank(), "Token must not be empty");
+        public static UseCredentialsResult of(String accessToken, String refreshToken) {
+            notNull(accessToken, "Access token must be given");
+            check(!accessToken.isBlank(), "Access token must not be empty");
             notNull(refreshToken, "Refresh token must be given");
             check(!refreshToken.isBlank(), "Refresh token must not be empty");
 
-            return new UseCredentialsResult(token, refreshToken);
+            return new UseCredentialsResult(accessToken, refreshToken);
         }
 
     }

@@ -35,7 +35,7 @@ public class CredentialsModuleConfig {
     @Bean
     public RefreshTokenRepo refreshTokenRepo(ReactiveMongoTemplate template) {
         var repo = new MongoRefreshTokenRepo(template);
-        repo.initialize().subscribe();
+        repo.initialize().block();
         return repo;
     }
 

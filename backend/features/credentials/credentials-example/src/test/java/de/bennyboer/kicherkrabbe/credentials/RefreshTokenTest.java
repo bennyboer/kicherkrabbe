@@ -3,6 +3,8 @@ package de.bennyboer.kicherkrabbe.credentials;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -46,6 +48,17 @@ public class RefreshTokenTest extends CredentialsModuleTest {
         // when: refreshing with an invalid token; then: an error is raised
         assertThatThrownBy(() -> refreshTokens("invalid-token"))
                 .hasMessageContaining("Invalid refresh token");
+    }
+
+    @Test
+    void shouldFailWithExpiredRefreshToken() {
+        createCredentials("TestName", "TestPassword", "USER_ID", Agent.system());
+        var loginResult = useCredentials("TestName", "TestPassword", Agent.anonymous());
+
+        clock.add(Duration.ofDays(8));
+
+        assertThatThrownBy(() -> refreshTokens(loginResult.getRefreshToken()))
+                .hasMessageContaining("Refresh token expired");
     }
 
     @Test
