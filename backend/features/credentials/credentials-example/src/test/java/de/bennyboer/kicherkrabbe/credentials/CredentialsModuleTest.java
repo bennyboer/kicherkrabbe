@@ -1,8 +1,7 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
 import de.bennyboer.kicherkrabbe.auth.password.PasswordEncoder;
-import de.bennyboer.kicherkrabbe.auth.tokens.Token;
-import de.bennyboer.kicherkrabbe.auth.tokens.TokenGenerator;
+import de.bennyboer.kicherkrabbe.auth.tokens.*;
 import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.credentials.samples.SampleCredentials;
 import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.inmemory.InMemoryCredentialsLookupRepo;
@@ -43,6 +42,10 @@ public class CredentialsModuleTest {
                     .getId()
                     .getValue())));
 
+    private final RefreshTokenRepo refreshTokenRepo = new InMemoryRefreshTokenRepo();
+
+    private final RefreshTokenService refreshTokenService = new RefreshTokenService(refreshTokenRepo, clock);
+
     private final PermissionsRepo permissionsRepo = new InMemoryPermissionsRepo();
 
     private final PermissionsService permissionsService = new PermissionsService(
@@ -57,6 +60,7 @@ public class CredentialsModuleTest {
             credentialsLookupRepo,
             permissionsService,
             tokenGenerator,
+            refreshTokenService,
             transactionManager
     );
 
@@ -85,6 +89,14 @@ public class CredentialsModuleTest {
 
     public CredentialsModule.UseCredentialsResult useCredentials(String name, String password, Agent agent) {
         return module.useCredentials(name, password, agent).block();
+    }
+
+    public RefreshResult refreshTokens(String refreshToken) {
+        return module.refreshTokens(refreshToken).block();
+    }
+
+    public void logout(String refreshToken) {
+        module.logout(refreshToken).block();
     }
 
     public void deleteCredentials(String credentialsId, long version, Agent agent) {

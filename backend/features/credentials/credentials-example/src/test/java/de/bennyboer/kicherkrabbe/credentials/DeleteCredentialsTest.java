@@ -86,6 +86,17 @@ public class DeleteCredentialsTest extends CredentialsModuleTest {
     }
 
     @Test
+    void shouldRevokeRefreshTokensWhenDeletingCredentialsByUserId() {
+        createCredentials("TestName", "TestPassword", "USER_ID", Agent.system());
+        var loginResult = useCredentials("TestName", "TestPassword", Agent.anonymous());
+
+        deleteCredentialsByUserId("USER_ID", Agent.system());
+
+        assertThatThrownBy(() -> refreshTokens(loginResult.getRefreshToken()))
+                .hasMessageContaining("Invalid refresh token");
+    }
+
+    @Test
     void shouldNotBeAbleToDeleteCredentialsByUserIdAsUser() {
         // given: some credentials
         createCredentials("TestName", "TestPassword", "USER_ID", Agent.system());
