@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import de.bennyboer.kicherkrabbe.credentials.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.credentials.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.credentials.use.InvalidCredentialsUsedOrUserLockedError;

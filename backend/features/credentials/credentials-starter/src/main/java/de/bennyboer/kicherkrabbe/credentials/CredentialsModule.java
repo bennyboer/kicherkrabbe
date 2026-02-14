@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
 import de.bennyboer.kicherkrabbe.auth.tokens.*;
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import de.bennyboer.kicherkrabbe.credentials.create.NameAlreadyTakenError;
 import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.LookupCredentials;
@@ -95,8 +96,27 @@ public class CredentialsModule {
     @Transactional(propagation = MANDATORY)
     public Mono<UseCredentialsResult> useCredentials(String name, String password, Agent agent) {
         return tryToUseCredentialsAndReturnCredentials(Name.of(name), Password.of(password), agent)
+<<<<<<< Updated upstream
                 .flatMap(credentials -> generateAccessTokenForCredentialsUser(credentials.getUserId()))
                 .map(token -> UseCredentialsResult.of(token.getValue()));
+=======
+                .flatMap(credentials -> generateAccessTokenForCredentialsUser(credentials.getUserId())
+                        .flatMap(token -> refreshTokenService.generate(credentials.getUserId())
+                                .map(refreshToken -> UseCredentialsResult.of(
+                                        token.getValue(),
+                                        refreshToken.getTokenValue().getValue()
+                                ))));
+    }
+
+    @Transactional(propagation = MANDATORY)
+    public Mono<RefreshResult> refreshTokens(String refreshToken) {
+        return refreshTokenService.refresh(refreshToken, tokenGenerator);
+    }
+
+    @Transactional(propagation = MANDATORY)
+    public Mono<Void> logout(String refreshToken) {
+        return refreshTokenService.revokeFamily(refreshToken);
+>>>>>>> Stashed changes
     }
 
     @Transactional(propagation = MANDATORY)
@@ -110,10 +130,18 @@ public class CredentialsModule {
 
     @Transactional(propagation = MANDATORY)
     public Flux<String> deleteCredentialsByUserId(String userId, Agent agent) {
+<<<<<<< Updated upstream
         return findCredentialsIdByUserId(UserId.of(userId))
                 .delayUntil(credentialsId -> assertAgentIsAllowedTo(agent, DELETE, credentialsId)
                         .then(credentialsService.delete(credentialsId, Agent.system())))
                 .map(CredentialsId::getValue);
+=======
+        return refreshTokenService.revokeByUserId(UserId.of(userId))
+                .thenMany(findCredentialsIdByUserId(UserId.of(userId))
+                        .delayUntil(credentialsId -> assertAgentIsAllowedTo(agent, DELETE, credentialsId)
+                                .then(credentialsService.delete(credentialsId, Agent.system())))
+                        .map(CredentialsId::getValue));
+>>>>>>> Stashed changes
     }
 
     public Mono<Void> updateCredentialsInLookup(String credentialsId) {

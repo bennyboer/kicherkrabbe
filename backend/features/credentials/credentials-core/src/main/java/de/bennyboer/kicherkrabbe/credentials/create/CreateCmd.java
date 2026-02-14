@@ -2,7 +2,7 @@ package de.bennyboer.kicherkrabbe.credentials.create;
 
 import de.bennyboer.kicherkrabbe.credentials.Password;
 import de.bennyboer.kicherkrabbe.credentials.Name;
-import de.bennyboer.kicherkrabbe.credentials.UserId;
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
 import lombok.AllArgsConstructor;
 import lombok.Value;

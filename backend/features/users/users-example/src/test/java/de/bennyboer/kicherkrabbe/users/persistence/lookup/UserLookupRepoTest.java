@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.users.persistence.lookup;
 
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import de.bennyboer.kicherkrabbe.users.*;
 import de.bennyboer.kicherkrabbe.users.samples.SampleLookupUser;
 import org.junit.jupiter.api.BeforeEach;

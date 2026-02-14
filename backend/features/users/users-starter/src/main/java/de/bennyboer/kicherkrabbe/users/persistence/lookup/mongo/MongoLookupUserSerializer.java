@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.users.persistence.lookup.mongo;
 
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.ReadModelSerializer;
 import de.bennyboer.kicherkrabbe.users.*;

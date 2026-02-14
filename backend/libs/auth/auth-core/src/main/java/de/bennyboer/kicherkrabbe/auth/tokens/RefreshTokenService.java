@@ -1,20 +1,17 @@
 package de.bennyboer.kicherkrabbe.auth.tokens;
 
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import reactor.core.publisher.Mono;
 
-import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.UUID;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 
 public class RefreshTokenService {
 
     private static final Duration REFRESH_TOKEN_LIFETIME = Duration.ofDays(7);
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final RefreshTokenRepo repo;
     private final Clock clock;
@@ -31,17 +28,16 @@ public class RefreshTokenService {
         this(repo, Clock.systemUTC());
     }
 
-    public Mono<RefreshToken> generate(String userId) {
+    public Mono<RefreshToken> generate(UserId userId) {
         return Mono.fromCallable(() -> {
             Instant now = clock.instant();
             Instant expiresAt = now.plus(REFRESH_TOKEN_LIFETIME);
-            String family = UUID.randomUUID().toString();
 
             return RefreshToken.of(
                     RefreshTokenId.create(),
-                    generateTokenValue(),
+                    TokenValue.create(),
                     userId,
-                    family,
+                    TokenFamilyId.create(),
                     false,
                     expiresAt,
                     now
@@ -50,10 +46,12 @@ public class RefreshTokenService {
     }
 
     public Mono<RefreshResult> refresh(String refreshTokenValue, TokenGenerator accessTokenGenerator) {
-        return repo.markAsUsedIfNotAlready(refreshTokenValue)
+        var tokenValue = TokenValue.of(refreshTokenValue);
+
+        return repo.markAsUsedIfNotAlready(tokenValue)
                 .flatMap(marked -> {
                     if (marked) {
-                        return repo.findByTokenValue(refreshTokenValue)
+                        return repo.findByTokenValue(tokenValue)
                                 .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid refresh token")))
                                 .flatMap(token -> {
                                     if (token.isExpired(clock.instant())) {
@@ -61,13 +59,13 @@ public class RefreshTokenService {
                                     }
 
                                     return createRotatedToken(token)
-                                            .flatMap(newToken -> repo.save(newToken).thenReturn(newToken))
+                                            .delayUntil(repo::save)
                                             .flatMap(newToken -> generateAccessToken(accessTokenGenerator, token.getUserId())
-                                                    .map(accessToken -> RefreshResult.of(accessToken, newToken.getTokenValue())));
+                                                    .map(accessToken -> RefreshResult.of(accessToken, newToken.getTokenValue().getValue())));
                                 });
                     }
 
-                    return repo.findByTokenValue(refreshTokenValue)
+                    return repo.findByTokenValue(tokenValue)
                             .<RefreshResult>flatMap(token -> repo.revokeFamily(token.getFamily())
                                     .then(Mono.error(new IllegalArgumentException("Refresh token reuse detected"))))
                             .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid refresh token")));
@@ -75,18 +73,18 @@ public class RefreshTokenService {
     }
 
     public Mono<Void> revokeFamily(String refreshTokenValue) {
-        return repo.findByTokenValue(refreshTokenValue)
+        return repo.findByTokenValue(TokenValue.of(refreshTokenValue))
                 .flatMap(token -> repo.revokeFamily(token.getFamily()));
     }
 
-    public Mono<Void> revokeByUserId(String userId) {
+    public Mono<Void> revokeByUserId(UserId userId) {
         return repo.revokeByUserId(userId);
     }
 
     private Mono<RefreshToken> createRotatedToken(RefreshToken oldToken) {
         return Mono.fromCallable(() -> RefreshToken.of(
                 RefreshTokenId.create(),
-                generateTokenValue(),
+                TokenValue.create(),
                 oldToken.getUserId(),
                 oldToken.getFamily(),
                 false,
@@ -95,16 +93,11 @@ public class RefreshTokenService {
         ));
     }
 
-    private Mono<String> generateAccessToken(TokenGenerator tokenGenerator, String userId) {
-        Owner owner = Owner.of(OwnerId.of(userId));
-        TokenPayload payload = TokenPayload.of(owner);
+    private Mono<String> generateAccessToken(TokenGenerator tokenGenerator, UserId userId) {
+        var owner = Owner.of(OwnerId.of(userId.getValue()));
+        var payload = TokenPayload.of(owner);
+        
         return tokenGenerator.generate(payload).map(Token::getValue);
-    }
-
-    private static String generateTokenValue() {
-        byte[] bytes = new byte[32];
-        SECURE_RANDOM.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
 }

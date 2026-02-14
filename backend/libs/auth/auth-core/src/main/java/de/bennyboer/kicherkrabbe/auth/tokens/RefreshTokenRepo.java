@@ -1,17 +1,18 @@
 package de.bennyboer.kicherkrabbe.auth.tokens;
 
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import reactor.core.publisher.Mono;
 
 public interface RefreshTokenRepo {
 
     Mono<Void> save(RefreshToken token);
 
-    Mono<RefreshToken> findByTokenValue(String tokenValue);
+    Mono<RefreshToken> findByTokenValue(TokenValue tokenValue);
 
-    Mono<Boolean> markAsUsedIfNotAlready(String tokenValue);
+    Mono<Boolean> markAsUsedIfNotAlready(TokenValue tokenValue);
 
-    Mono<Void> revokeFamily(String family);
+    Mono<Void> revokeFamily(TokenFamilyId family);
 
-    Mono<Void> revokeByUserId(String userId);
+    Mono<Void> revokeByUserId(UserId userId);
 
 }

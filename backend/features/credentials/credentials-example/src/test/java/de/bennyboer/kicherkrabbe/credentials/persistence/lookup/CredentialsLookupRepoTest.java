@@ -2,7 +2,7 @@ package de.bennyboer.kicherkrabbe.credentials.persistence.lookup;
 
 import de.bennyboer.kicherkrabbe.credentials.CredentialsId;
 import de.bennyboer.kicherkrabbe.credentials.Name;
-import de.bennyboer.kicherkrabbe.credentials.UserId;
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import de.bennyboer.kicherkrabbe.credentials.samples.SampleLookupCredentials;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import org.junit.jupiter.api.BeforeEach;

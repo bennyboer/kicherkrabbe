@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.auth.tokens;
 
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -7,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryRefreshTokenRepo implements RefreshTokenRepo {
 
-    private final Map<String, RefreshToken> tokensByValue = new ConcurrentHashMap<>();
+    private final Map<TokenValue, RefreshToken> tokensByValue = new ConcurrentHashMap<>();
 
     @Override
     public Mono<Void> save(RefreshToken token) {
@@ -15,12 +16,12 @@ public class InMemoryRefreshTokenRepo implements RefreshTokenRepo {
     }
 
     @Override
-    public Mono<RefreshToken> findByTokenValue(String tokenValue) {
+    public Mono<RefreshToken> findByTokenValue(TokenValue tokenValue) {
         return Mono.justOrEmpty(tokensByValue.get(tokenValue));
     }
 
     @Override
-    public Mono<Boolean> markAsUsedIfNotAlready(String tokenValue) {
+    public Mono<Boolean> markAsUsedIfNotAlready(TokenValue tokenValue) {
         return Mono.fromCallable(() -> {
             var existing = tokensByValue.get(tokenValue);
             if (existing == null || existing.isUsed()) {
@@ -42,13 +43,13 @@ public class InMemoryRefreshTokenRepo implements RefreshTokenRepo {
     }
 
     @Override
-    public Mono<Void> revokeFamily(String family) {
+    public Mono<Void> revokeFamily(TokenFamilyId family) {
         return Mono.fromRunnable(() ->
                 tokensByValue.entrySet().removeIf(entry -> entry.getValue().getFamily().equals(family)));
     }
 
     @Override
-    public Mono<Void> revokeByUserId(String userId) {
+    public Mono<Void> revokeByUserId(UserId userId) {
         return Mono.fromRunnable(() ->
                 tokensByValue.entrySet().removeIf(entry -> entry.getValue().getUserId().equals(userId)));
     }

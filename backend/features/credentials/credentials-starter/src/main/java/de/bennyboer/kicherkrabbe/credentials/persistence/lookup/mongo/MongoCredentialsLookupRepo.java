@@ -2,7 +2,7 @@ package de.bennyboer.kicherkrabbe.credentials.persistence.lookup.mongo;
 
 import de.bennyboer.kicherkrabbe.credentials.CredentialsId;
 import de.bennyboer.kicherkrabbe.credentials.Name;
-import de.bennyboer.kicherkrabbe.credentials.UserId;
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.LookupCredentials;
 import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.MongoEventSourcingReadModelRepo;

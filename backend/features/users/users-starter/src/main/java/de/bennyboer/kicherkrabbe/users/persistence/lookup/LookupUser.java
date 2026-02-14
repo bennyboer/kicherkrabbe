@@ -4,7 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
 import de.bennyboer.kicherkrabbe.users.FullName;
 import de.bennyboer.kicherkrabbe.users.Mail;
-import de.bennyboer.kicherkrabbe.users.UserId;
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
