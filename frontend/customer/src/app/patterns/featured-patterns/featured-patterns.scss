@@ -1,3 +1,15 @@
+.product-link {
+	text-decoration: none;
+	color: inherit;
+	display: flex;
+
+	@media (hover: hover) {
+		&:hover {
+			opacity: 0.9;
+		}
+	}
+}
+
 .carousel-item {
 	padding: 1rem 0.5rem;
 	height: 100%;

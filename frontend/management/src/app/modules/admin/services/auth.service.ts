@@ -1,8 +1,20 @@
-import { Injectable, NgZone, OnDestroy } from '@angular/core';
-import { BehaviorSubject, catchError, finalize, map, Observable, of, shareReplay, Subject, take, takeUntil } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments';
-import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
+import {Injectable, NgZone, OnDestroy} from '@angular/core';
+import {
+  BehaviorSubject,
+  catchError,
+  finalize,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  skip,
+  Subject,
+  take,
+  takeUntil
+} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {environment} from '../../../../environments';
+import {none, Option, some, someOrNone} from '@kicherkrabbe/shared';
 
 interface AuthTokenResponse {
   token: string;
@@ -24,7 +36,7 @@ export class AdminAuthService implements OnDestroy {
   ) {
     this.tryToRestoreToken();
 
-    this.refreshToken$.pipe(takeUntil(this.destroy$)).subscribe((token) => this.updateRefreshTokenInStorage(token));
+    this.refreshToken$.pipe(skip(1), takeUntil(this.destroy$)).subscribe((token) => this.updateRefreshTokenInStorage(token));
   }
 
   ngOnDestroy(): void {
@@ -57,7 +69,7 @@ export class AdminAuthService implements OnDestroy {
     const refreshTokenValue = this.refreshToken$.value.orElse('');
     if (refreshTokenValue) {
       this.http
-        .post(`${environment.apiUrl}/credentials/logout`, { refreshToken: refreshTokenValue })
+        .post(`${environment.apiUrl}/credentials/logout`, {refreshToken: refreshTokenValue})
         .pipe(catchError(() => of(null)))
         .subscribe();
     }
@@ -67,7 +79,7 @@ export class AdminAuthService implements OnDestroy {
 
   login(username: string, password: string): Observable<boolean> {
     return this.http
-      .post<AuthTokenResponse>(`${environment.apiUrl}/credentials/use`, { name: username, password })
+      .post<AuthTokenResponse>(`${environment.apiUrl}/credentials/use`, {name: username, password})
       .pipe(map((response) => this.handleTokenResponse(response)));
   }
 
@@ -82,7 +94,7 @@ export class AdminAuthService implements OnDestroy {
     }
 
     this.refreshInFlight$ = this.http
-      .post<AuthTokenResponse>(`${environment.apiUrl}/credentials/refresh`, { refreshToken: refreshTokenValue })
+      .post<AuthTokenResponse>(`${environment.apiUrl}/credentials/refresh`, {refreshToken: refreshTokenValue})
       .pipe(
         map((response) => this.handleTokenResponse(response)),
         catchError(() => {

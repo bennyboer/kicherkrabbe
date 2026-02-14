@@ -1,5 +1,5 @@
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, Injector} from '@angular/core';
 import {AdminAuthService} from './auth.service';
 import {BehaviorSubject, catchError, EMPTY, filter, finalize, Observable, switchMap, take, throwError} from 'rxjs';
 import {Router} from '@angular/router';
@@ -12,9 +12,10 @@ export class AuthInterceptor implements HttpInterceptor {
   private refreshing = false;
   private authFailureHandled = false;
   private readonly refreshResult$ = new BehaviorSubject<Option<boolean>>(none());
+  private authService: AdminAuthService | null = null;
 
   constructor(
-    private readonly authService: AdminAuthService,
+    private readonly injector: Injector,
     private readonly notificationService: NotificationService,
     private readonly router: Router,
   ) {
@@ -38,12 +39,19 @@ export class AuthInterceptor implements HttpInterceptor {
     );
   }
 
+  private getAuthService(): AdminAuthService {
+    if (!this.authService) {
+      this.authService = this.injector.get(AdminAuthService);
+    }
+    return this.authService;
+  }
+
   private addToken(req: HttpRequest<any>): HttpRequest<any> {
     if (this.isRefreshOrLogoutUrl(req.url)) {
       return req;
     }
 
-    const tokenOpt = this.authService.getCurrentToken();
+    const tokenOpt = this.getAuthService().getCurrentToken();
     return tokenOpt
       .map((token: string) =>
         req.clone({
@@ -61,7 +69,7 @@ export class AuthInterceptor implements HttpInterceptor {
       this.authFailureHandled = false;
       this.refreshResult$.next(none());
 
-      return this.authService.refreshAccessToken().pipe(
+      return this.getAuthService().refreshAccessToken().pipe(
         switchMap((success) => {
           this.refreshResult$.next(some(success));
 
@@ -93,7 +101,7 @@ export class AuthInterceptor implements HttpInterceptor {
     }
     this.authFailureHandled = true;
 
-    this.authService.logout();
+    this.getAuthService().logout();
     this.notificationService.publish({
       message: 'Ihre Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an.',
       type: 'error',

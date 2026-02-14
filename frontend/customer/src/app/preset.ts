@@ -115,6 +115,26 @@ export const customerPreset = definePreset(Aura, {
 			separator: {
 				color: "{text.muted.color}",
 			},
+			colorScheme: {
+				light: {
+					item: {
+						color: "{surface.600}",
+						hoverColor: "{primary.color}",
+					},
+					separator: {
+						color: "{surface.600}",
+					},
+				},
+				dark: {
+					item: {
+						color: "{surface.600}",
+						hoverColor: "{primary.color}",
+					},
+					separator: {
+						color: "{surface.600}",
+					},
+				},
+			},
 		},
 		card: {
 			root: {
