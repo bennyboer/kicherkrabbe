@@ -1,22 +1,24 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { AdminAuthService } from './auth.service';
-import { BehaviorSubject, catchError, EMPTY, filter, finalize, Observable, switchMap, take, throwError } from 'rxjs';
-import { Router } from '@angular/router';
-import { environment } from '../../../../environments';
-import { NotificationService } from '../../shared';
+import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {AdminAuthService} from './auth.service';
+import {BehaviorSubject, catchError, EMPTY, filter, finalize, Observable, switchMap, take, throwError} from 'rxjs';
+import {Router} from '@angular/router';
+import {environment} from '../../../../environments';
+import {none, Option, some} from '@kicherkrabbe/shared';
+import {NotificationService} from '../../shared';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private refreshing = false;
   private authFailureHandled = false;
-  private readonly refreshResult$: BehaviorSubject<boolean | null> = new BehaviorSubject<boolean | null>(null);
+  private readonly refreshResult$ = new BehaviorSubject<Option<boolean>>(none());
 
   constructor(
     private readonly authService: AdminAuthService,
     private readonly notificationService: NotificationService,
     private readonly router: Router,
-  ) {}
+  ) {
+  }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const authReq = this.addToken(req);
@@ -57,11 +59,11 @@ export class AuthInterceptor implements HttpInterceptor {
     if (!this.refreshing) {
       this.refreshing = true;
       this.authFailureHandled = false;
-      this.refreshResult$.next(null);
+      this.refreshResult$.next(none());
 
       return this.authService.refreshAccessToken().pipe(
         switchMap((success) => {
-          this.refreshResult$.next(success);
+          this.refreshResult$.next(some(success));
 
           if (success) {
             return next.handle(this.addToken(req));
@@ -74,10 +76,10 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     return this.refreshResult$.pipe(
-      filter((result) => result !== null),
+      filter((result) => result.isSome()),
       take(1),
-      switchMap((success) => {
-        if (success) {
+      switchMap((result) => {
+        if (result.orElse(false)) {
           return next.handle(this.addToken(req));
         }
         return EMPTY;

@@ -1,11 +1,11 @@
 package de.bennyboer.kicherkrabbe.auth.tokens;
 
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.time.Instant;
 
-import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -15,11 +15,11 @@ public class RefreshToken {
 
     RefreshTokenId id;
 
-    String tokenValue;
+    TokenValue tokenValue;
 
-    String userId;
+    UserId userId;
 
-    String family;
+    TokenFamilyId family;
 
     boolean used;
 
@@ -29,20 +29,17 @@ public class RefreshToken {
 
     public static RefreshToken of(
             RefreshTokenId id,
-            String tokenValue,
-            String userId,
-            String family,
+            TokenValue tokenValue,
+            UserId userId,
+            TokenFamilyId family,
             boolean used,
             Instant expiresAt,
             Instant createdAt
     ) {
         notNull(id, "Refresh token ID must be given");
         notNull(tokenValue, "Token value must be given");
-        check(!tokenValue.isBlank(), "Token value must not be blank");
         notNull(userId, "User ID must be given");
-        check(!userId.isBlank(), "User ID must not be blank");
         notNull(family, "Family must be given");
-        check(!family.isBlank(), "Family must not be blank");
         notNull(expiresAt, "Expiry must be given");
         notNull(createdAt, "Creation time must be given");
 

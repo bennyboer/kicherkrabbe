@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
 import de.bennyboer.kicherkrabbe.auth.tokens.*;
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import de.bennyboer.kicherkrabbe.credentials.create.NameAlreadyTakenError;
 import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.CredentialsLookupRepo;
 import de.bennyboer.kicherkrabbe.credentials.persistence.lookup.LookupCredentials;
@@ -99,15 +100,12 @@ public class CredentialsModule {
     @Transactional(propagation = MANDATORY)
     public Mono<UseCredentialsResult> useCredentials(String name, String password, Agent agent) {
         return tryToUseCredentialsAndReturnCredentials(Name.of(name), Password.of(password), agent)
-                .flatMap(credentials -> {
-                    String userId = credentials.getUserId().getValue();
-                    return generateAccessTokenForCredentialsUser(credentials.getUserId())
-                            .flatMap(token -> refreshTokenService.generate(userId)
-                                    .map(refreshToken -> UseCredentialsResult.of(
-                                            token.getValue(),
-                                            refreshToken.getTokenValue()
-                                    )));
-                });
+                .flatMap(credentials -> generateAccessTokenForCredentialsUser(credentials.getUserId())
+                        .flatMap(token -> refreshTokenService.generate(credentials.getUserId())
+                                .map(refreshToken -> UseCredentialsResult.of(
+                                        token.getValue(),
+                                        refreshToken.getTokenValue().getValue()
+                                ))));
     }
 
     @Transactional(propagation = MANDATORY)
@@ -131,7 +129,7 @@ public class CredentialsModule {
 
     @Transactional(propagation = MANDATORY)
     public Flux<String> deleteCredentialsByUserId(String userId, Agent agent) {
-        return refreshTokenService.revokeByUserId(userId)
+        return refreshTokenService.revokeByUserId(UserId.of(userId))
                 .thenMany(findCredentialsIdByUserId(UserId.of(userId))
                         .delayUntil(credentialsId -> assertAgentIsAllowedTo(agent, DELETE, credentialsId)
                                 .then(credentialsService.delete(credentialsId, Agent.system())))
@@ -216,7 +214,7 @@ public class CredentialsModule {
 
     private Mono<Void> assertNameNotAlreadyTaken(Name name) {
         return findCredentialsIdByName(name)
-                .flatMap(credentialsId -> Mono.error(new NameAlreadyTakenError(name.getValue())));
+                .flatMap(ignored -> Mono.error(new NameAlreadyTakenError(name.getValue())));
     }
 
     private Mono<Void> assertAgentIsAllowedTo(Agent agent, Action action) {

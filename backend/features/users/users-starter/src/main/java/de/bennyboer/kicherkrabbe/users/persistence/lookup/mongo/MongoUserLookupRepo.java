@@ -2,7 +2,7 @@ package de.bennyboer.kicherkrabbe.users.persistence.lookup.mongo;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.MongoEventSourcingReadModelRepo;
 import de.bennyboer.kicherkrabbe.users.Mail;
-import de.bennyboer.kicherkrabbe.users.UserId;
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import de.bennyboer.kicherkrabbe.users.persistence.lookup.LookupUser;
 import de.bennyboer.kicherkrabbe.users.persistence.lookup.UserLookupRepo;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;

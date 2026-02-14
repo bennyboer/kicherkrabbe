@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.users;
 
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;

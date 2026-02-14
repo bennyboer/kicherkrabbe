@@ -1,8 +1,7 @@
 package de.bennyboer.kicherkrabbe.auth.persistence;
 
-import de.bennyboer.kicherkrabbe.auth.tokens.RefreshToken;
-import de.bennyboer.kicherkrabbe.auth.tokens.RefreshTokenId;
-import de.bennyboer.kicherkrabbe.auth.tokens.RefreshTokenRepo;
+import de.bennyboer.kicherkrabbe.auth.tokens.*;
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -39,15 +38,15 @@ public class MongoRefreshTokenRepo implements RefreshTokenRepo {
     }
 
     @Override
-    public Mono<RefreshToken> findByTokenValue(String tokenValue) {
-        var query = Query.query(Criteria.where("tokenValue").is(tokenValue));
+    public Mono<RefreshToken> findByTokenValue(TokenValue tokenValue) {
+        var query = Query.query(Criteria.where("tokenValue").is(tokenValue.getValue()));
         return template.findOne(query, MongoRefreshToken.class, COLLECTION_NAME)
                 .map(this::fromMongo);
     }
 
     @Override
-    public Mono<Boolean> markAsUsedIfNotAlready(String tokenValue) {
-        var query = Query.query(Criteria.where("tokenValue").is(tokenValue).and("used").is(false));
+    public Mono<Boolean> markAsUsedIfNotAlready(TokenValue tokenValue) {
+        var query = Query.query(Criteria.where("tokenValue").is(tokenValue.getValue()).and("used").is(false));
         var update = new Update().set("used", true);
         var options = FindAndModifyOptions.options().returnNew(false);
 
@@ -57,23 +56,23 @@ public class MongoRefreshTokenRepo implements RefreshTokenRepo {
     }
 
     @Override
-    public Mono<Void> revokeFamily(String family) {
-        var query = Query.query(Criteria.where("family").is(family));
+    public Mono<Void> revokeFamily(TokenFamilyId family) {
+        var query = Query.query(Criteria.where("family").is(family.getValue()));
         return template.remove(query, COLLECTION_NAME).then();
     }
 
     @Override
-    public Mono<Void> revokeByUserId(String userId) {
-        var query = Query.query(Criteria.where("userId").is(userId));
+    public Mono<Void> revokeByUserId(UserId userId) {
+        var query = Query.query(Criteria.where("userId").is(userId.getValue()));
         return template.remove(query, COLLECTION_NAME).then();
     }
 
     private MongoRefreshToken toMongo(RefreshToken token) {
         var doc = new MongoRefreshToken();
         doc.id = token.getId().getValue();
-        doc.tokenValue = token.getTokenValue();
-        doc.userId = token.getUserId();
-        doc.family = token.getFamily();
+        doc.tokenValue = token.getTokenValue().getValue();
+        doc.userId = token.getUserId().getValue();
+        doc.family = token.getFamily().getValue();
         doc.used = token.isUsed();
         doc.expiresAt = token.getExpiresAt();
         doc.createdAt = token.getCreatedAt();
@@ -83,9 +82,9 @@ public class MongoRefreshTokenRepo implements RefreshTokenRepo {
     private RefreshToken fromMongo(MongoRefreshToken doc) {
         return RefreshToken.of(
                 RefreshTokenId.of(doc.id),
-                doc.tokenValue,
-                doc.userId,
-                doc.family,
+                TokenValue.of(doc.tokenValue),
+                UserId.of(doc.userId),
+                TokenFamilyId.of(doc.family),
                 doc.used,
                 doc.expiresAt,
                 doc.createdAt

@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.credentials;
 
 import de.bennyboer.kicherkrabbe.auth.password.PasswordEncoder;
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import de.bennyboer.kicherkrabbe.credentials.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.credentials.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.credentials.delete.DeleteCmd;

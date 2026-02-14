@@ -33,7 +33,7 @@ public class UploadAssetTest extends AssetsModuleTest {
     @Test
     void shouldRaiseErrorWhenPayloadIsTooLarge() {
         // given: a file to upload that is too large
-        var content = new byte[1024 * 1024 * 17];
+        var content = new byte[1024 * 1024 * 51];
 
         // and: the user is allowed to upload assets
         allowUserToCreateAssets("USER_ID");

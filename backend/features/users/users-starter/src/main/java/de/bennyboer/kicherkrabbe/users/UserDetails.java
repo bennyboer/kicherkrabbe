@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.users;
 
+import de.bennyboer.kicherkrabbe.commons.UserId;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
