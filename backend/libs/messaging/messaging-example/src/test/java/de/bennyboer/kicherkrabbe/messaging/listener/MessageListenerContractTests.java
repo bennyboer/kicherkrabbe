@@ -136,6 +136,32 @@ abstract class MessageListenerContractTests {
     }
 
     @Test
+    void shouldSupportHashWildcardRoutingKeys() throws InterruptedException {
+        var exchange = ExchangeTarget.of("contract-test-exchange-hash-wildcard");
+        var listenerRoutingKey = RoutingKey.parse("events.#");
+
+        var receivedMessages = Collections.synchronizedList(new ArrayList<Message>());
+        var latch = new CountDownLatch(3);
+
+        var listener = factory.createListener(exchange, listenerRoutingKey, "contract-hash-wildcard-listener", message -> {
+            receivedMessages.add(message);
+            latch.countDown();
+            return Mono.empty();
+        });
+        listeners.add(listener);
+        listener.start();
+
+        send(exchange, RoutingKey.parse("events.user.created"), Map.of("type", "user-created"));
+        send(exchange, RoutingKey.parse("events.order.item.added"), Map.of("type", "order-item-added"));
+        send(exchange, RoutingKey.parse("events.deleted"), Map.of("type", "deleted"));
+
+        boolean received = latch.await(10, TimeUnit.SECONDS);
+
+        assertThat(received).isTrue();
+        assertThat(receivedMessages).hasSize(3);
+    }
+
+    @Test
     void shouldReceiveMessageViaTransientListener() throws InterruptedException {
         var exchange = ExchangeTarget.of("contract-test-exchange-transient");
         var routingKey = RoutingKey.parse("test.transient.key");

@@ -1,14 +1,16 @@
 package de.bennyboer.kicherkrabbe.messaging.testing;
 
 import de.bennyboer.kicherkrabbe.messaging.listener.AcknowledgableMessage;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.amqp.core.Message;
 import reactor.core.publisher.Mono;
 
-public class NoOpAcknowledgableMessage extends AcknowledgableMessage {
+@Getter
+@AllArgsConstructor
+public class NoOpAcknowledgableMessage implements AcknowledgableMessage {
 
-    public NoOpAcknowledgableMessage(Message message) {
-        super(message, null);
-    }
+    private final Message message;
 
     @Override
     public Mono<Void> ack() {

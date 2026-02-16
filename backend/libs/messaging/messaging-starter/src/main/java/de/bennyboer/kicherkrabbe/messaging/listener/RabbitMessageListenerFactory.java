@@ -147,7 +147,7 @@ public class RabbitMessageListenerFactory implements MessageListenerFactory {
         container.setPrefetchCount(DEFAULT_PREFETCH_COUNT);
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         container.setMessageListener((ChannelAwareMessageListener) (message, channel) -> {
-            var ackMessage = new AcknowledgableMessage(message, channel);
+            var ackMessage = new RabbitAcknowledgableMessage(message, channel);
             var result = sink.tryEmitNext(ackMessage);
             if (result.isFailure()) {
                 log.warn("Failed to emit message to sink (result: {}), nacking for requeue", result);
