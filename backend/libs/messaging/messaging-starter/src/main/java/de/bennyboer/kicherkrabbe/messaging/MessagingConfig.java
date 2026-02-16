@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInbox;
 import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInboxConfig;
 import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerContainerManager;
 import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
+import de.bennyboer.kicherkrabbe.messaging.listener.RabbitMessageListenerFactory;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutboxConfig;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -71,7 +72,7 @@ public class MessagingConfig {
             MessagingInbox inbox,
             MessageListenerContainerManager containerManager
     ) {
-        return new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
+        return new RabbitMessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
     }
 
 }

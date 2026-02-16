@@ -3,7 +3,6 @@ package de.bennyboer.kicherkrabbe.messaging.listener;
 import de.bennyboer.kicherkrabbe.messaging.inbox.IncomingMessageId;
 import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInbox;
 import de.bennyboer.kicherkrabbe.messaging.inbox.persistence.IncomingMessageAlreadySeenException;
-import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory.AcknowledgableMessage;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;

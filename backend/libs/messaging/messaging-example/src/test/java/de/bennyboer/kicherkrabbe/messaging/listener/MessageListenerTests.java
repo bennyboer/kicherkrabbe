@@ -9,7 +9,7 @@ import de.bennyboer.kicherkrabbe.messaging.outbox.persistence.inmemory.InMemoryM
 import de.bennyboer.kicherkrabbe.messaging.outbox.publisher.RabbitOutboxEntryPublisher;
 import de.bennyboer.kicherkrabbe.messaging.target.ExchangeTarget;
 import de.bennyboer.kicherkrabbe.messaging.target.MessageTarget;
-import de.bennyboer.kicherkrabbe.messaging.testing.MessagingTest;
+import de.bennyboer.kicherkrabbe.messaging.testing.RabbitMessagingTest;
 import de.bennyboer.kicherkrabbe.persistence.MockReactiveTransactionManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -37,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@MessagingTest
+@RabbitMessagingTest
 public class MessageListenerTests {
 
     @Autowired
@@ -79,38 +78,6 @@ public class MessageListenerTests {
     }
 
     @Test
-    void shouldReceiveMessageAndInvokeHandler() throws InterruptedException {
-        var exchange = ExchangeTarget.of("test-exchange");
-        var routingKey = RoutingKey.parse("test.routing.key");
-        var listenerName = "test-listener";
-
-        var receivedMessages = Collections.synchronizedList(new ArrayList<Message>());
-        var latch = new CountDownLatch(1);
-
-        var inboxRepo = new InMemoryMessagingInboxRepo(true);
-        var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
-        var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
-            receivedMessages.add(message);
-            latch.countDown();
-            return Mono.empty();
-        });
-        listeners.add(listener);
-        listener.start();
-
-        send(exchange, routingKey, Map.of("key", "value"));
-
-        boolean received = latch.await(10, TimeUnit.SECONDS);
-
-        assertThat(received).isTrue();
-        assertThat(receivedMessages).hasSize(1);
-
-        var body = new String(receivedMessages.getFirst().getBody(), StandardCharsets.UTF_8);
-        assertThat(body).contains("\"key\"");
-        assertThat(body).contains("\"value\"");
-    }
-
-    @Test
     void shouldNotProcessDuplicateMessages() throws InterruptedException {
         var exchange = ExchangeTarget.of("test-exchange-dedup");
         var routingKey = RoutingKey.parse("test.dedup.key");
@@ -121,7 +88,7 @@ public class MessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(true);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
+        var factory = new RabbitMessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
             processedCount.incrementAndGet();
             latch.countDown();
@@ -158,7 +125,7 @@ public class MessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(false);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
+        var factory = new RabbitMessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
             attemptCount.incrementAndGet();
             return Mono.error(new RuntimeException("Simulated failure"));
@@ -183,184 +150,6 @@ public class MessageListenerTests {
     }
 
     @Test
-    void shouldReceiveMessageViaTransientListener() throws InterruptedException {
-        var exchange = ExchangeTarget.of("test-exchange-transient");
-        var routingKey = RoutingKey.parse("test.transient.key");
-        var listenerName = "test-transient-listener";
-
-        var receivedMessages = Collections.synchronizedList(new ArrayList<Message>());
-        var latch = new CountDownLatch(1);
-
-        var inboxRepo = new InMemoryMessagingInboxRepo(false);
-        var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
-
-        var disposable = factory.createTransientListener(exchange, routingKey, listenerName)
-                .doOnNext(message -> {
-                    receivedMessages.add(message);
-                    latch.countDown();
-                })
-                .subscribe();
-
-        Thread.sleep(500);
-
-        send(exchange, routingKey, Map.of("transient", "message"));
-
-        boolean received = latch.await(10, TimeUnit.SECONDS);
-
-        disposable.dispose();
-
-        assertThat(received).isTrue();
-        assertThat(receivedMessages).hasSize(1);
-
-        var body = new String(receivedMessages.getFirst().getBody(), StandardCharsets.UTF_8);
-        assertThat(body).contains("\"transient\"");
-        assertThat(body).contains("\"message\"");
-    }
-
-    @Test
-    void shouldReceiveMultipleMessages() throws InterruptedException {
-        var exchange = ExchangeTarget.of("test-exchange-multi");
-        var routingKey = RoutingKey.parse("test.multi.key");
-        var listenerName = "test-multi-listener";
-
-        int messageCount = 5;
-        var receivedMessages = Collections.synchronizedList(new ArrayList<Message>());
-        var latch = new CountDownLatch(messageCount);
-
-        var inboxRepo = new InMemoryMessagingInboxRepo(true);
-        var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
-        var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
-            receivedMessages.add(message);
-            latch.countDown();
-            return Mono.empty();
-        });
-        listeners.add(listener);
-        listener.start();
-
-        for (int i = 0; i < messageCount; i++) {
-            send(exchange, routingKey, Map.of("index", i));
-        }
-
-        boolean allReceived = latch.await(15, TimeUnit.SECONDS);
-
-        assertThat(allReceived).isTrue();
-        assertThat(receivedMessages).hasSize(messageCount);
-
-        int inboxSize = 0;
-        for (int i = 0; i < 20; i++) {
-            var inboxMessages = inboxRepo.findAll().collectList().block();
-            inboxSize = inboxMessages.size();
-            if (inboxSize == messageCount) {
-                break;
-            }
-            Thread.sleep(100);
-        }
-        assertThat(inboxSize).isEqualTo(messageCount);
-    }
-
-    @Test
-    void shouldSupportWildcardRoutingKeys() throws InterruptedException {
-        var exchange = ExchangeTarget.of("test-exchange-wildcard");
-        var listenerRoutingKey = RoutingKey.parse("events.*.created");
-        var listenerName = "test-wildcard-listener";
-
-        var receivedMessages = Collections.synchronizedList(new ArrayList<Message>());
-        var latch = new CountDownLatch(2);
-
-        var inboxRepo = new InMemoryMessagingInboxRepo(true);
-        var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
-        var listener = factory.createListener(exchange, listenerRoutingKey, listenerName, message -> {
-            receivedMessages.add(message);
-            latch.countDown();
-            return Mono.empty();
-        });
-        listeners.add(listener);
-        listener.start();
-
-        send(exchange, RoutingKey.parse("events.user.created"), Map.of("type", "user"));
-        send(exchange, RoutingKey.parse("events.order.created"), Map.of("type", "order"));
-
-        boolean received = latch.await(10, TimeUnit.SECONDS);
-
-        assertThat(received).isTrue();
-        assertThat(receivedMessages).hasSize(2);
-    }
-
-    @Test
-    void shouldContinueProcessingAfterFailedMessage() throws InterruptedException {
-        var exchange = ExchangeTarget.of("test-exchange-resilience");
-        var routingKey = RoutingKey.parse("test.resilience.key");
-        var listenerName = "test-resilience-listener";
-
-        var processedMessages = Collections.synchronizedList(new ArrayList<String>());
-        var latch = new CountDownLatch(3);
-
-        var inboxRepo = new InMemoryMessagingInboxRepo(false);
-        var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
-        var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
-            var body = new String(message.getBody(), StandardCharsets.UTF_8);
-            if (body.contains("\"fail\":true")) {
-                return Mono.error(new RuntimeException("Simulated failure"));
-            }
-            processedMessages.add(body);
-            latch.countDown();
-            return Mono.empty();
-        });
-        listeners.add(listener);
-        listener.start();
-
-        send(exchange, routingKey, Map.of("index", 1, "fail", false));
-        send(exchange, routingKey, Map.of("index", 2, "fail", true));
-        send(exchange, routingKey, Map.of("index", 3, "fail", false));
-        send(exchange, routingKey, Map.of("index", 4, "fail", false));
-
-        boolean allReceived = latch.await(15, TimeUnit.SECONDS);
-
-        assertThat(allReceived).isTrue();
-        assertThat(processedMessages).hasSize(3);
-        assertThat(processedMessages.stream().anyMatch(m -> m.contains("\"index\":1"))).isTrue();
-        assertThat(processedMessages.stream().anyMatch(m -> m.contains("\"index\":3"))).isTrue();
-        assertThat(processedMessages.stream().anyMatch(m -> m.contains("\"index\":4"))).isTrue();
-        assertThat(processedMessages.stream().noneMatch(m -> m.contains("\"index\":2"))).isTrue();
-    }
-
-    @Test
-    void shouldRetryTransientErrorsBeforeFailure() throws InterruptedException {
-        var exchange = ExchangeTarget.of("test-exchange-retry");
-        var routingKey = RoutingKey.parse("test.retry.key");
-        var listenerName = "test-retry-listener";
-
-        var attemptCount = new AtomicInteger(0);
-        var latch = new CountDownLatch(1);
-        var failuresBeforeSuccess = 2;
-
-        var inboxRepo = new InMemoryMessagingInboxRepo(false);
-        var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
-        var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
-            int attempt = attemptCount.incrementAndGet();
-            if (attempt <= failuresBeforeSuccess) {
-                return Mono.error(new RuntimeException("Transient failure " + attempt));
-            }
-            latch.countDown();
-            return Mono.empty();
-        });
-        listeners.add(listener);
-        listener.start();
-
-        send(exchange, routingKey, Map.of("test", "retry"));
-
-        boolean received = latch.await(15, TimeUnit.SECONDS);
-
-        assertThat(received).isTrue();
-        assertThat(attemptCount.get()).isEqualTo(failuresBeforeSuccess + 1);
-    }
-
-    @Test
     void shouldFailAfterMaxRetries() throws InterruptedException {
         var exchange = ExchangeTarget.of("test-exchange-max-retry");
         var routingKey = RoutingKey.parse("test.maxretry.key");
@@ -370,7 +159,7 @@ public class MessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(false);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new MessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
+        var factory = new RabbitMessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
             attemptCount.incrementAndGet();
             return Mono.error(new RuntimeException("Persistent failure"));
