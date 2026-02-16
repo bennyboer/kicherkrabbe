@@ -1,11 +1,9 @@
 package de.bennyboer.kicherkrabbe.messaging.testing;
 
-import com.rabbitmq.client.Channel;
 import de.bennyboer.kicherkrabbe.messaging.listener.AcknowledgableMessage;
 import org.springframework.amqp.core.Message;
 import reactor.core.publisher.Sinks;
 
-import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -18,22 +16,14 @@ public class InMemoryMessageBus {
     }
 
     public void publish(String exchange, String routingKey, Message message) {
-        Channel noopChannel = (Channel) Proxy.newProxyInstance(
-                Channel.class.getClassLoader(),
-                new Class<?>[]{Channel.class},
-                (proxy, method, args) -> {
-                    if (method.getName().equals("toString")) {
-                        return "NoopChannel";
-                    }
-                    return null;
-                }
-        );
-
-        var ackMessage = new AcknowledgableMessage(message, noopChannel);
+        var ackMessage = new NoOpAcknowledgableMessage(message);
 
         for (var listener : listeners) {
             if (listener.exchange().equals(exchange) && matchesRoutingKey(listener.routingKeyPattern(), routingKey)) {
-                listener.sink().tryEmitNext(ackMessage);
+                var result = listener.sink().tryEmitNext(ackMessage);
+                if (result == Sinks.EmitResult.FAIL_TERMINATED || result == Sinks.EmitResult.FAIL_CANCELLED) {
+                    listeners.remove(listener);
+                }
             }
         }
     }

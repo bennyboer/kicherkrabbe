@@ -95,7 +95,7 @@ public class RabbitMessageListenerFactory implements MessageListenerFactory {
         return createAutoAckMessageFlux(queueName);
     }
 
-    public MessageListenerQueues setupQueuesAndBindings(
+    private MessageListenerQueues setupQueuesAndBindings(
             ExchangeTarget exchange,
             RoutingKey routingKey,
             String listenerName

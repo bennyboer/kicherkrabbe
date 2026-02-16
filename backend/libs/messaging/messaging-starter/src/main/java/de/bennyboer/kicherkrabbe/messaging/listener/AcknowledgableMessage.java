@@ -1,17 +1,19 @@
 package de.bennyboer.kicherkrabbe.messaging.listener;
 
 import com.rabbitmq.client.Channel;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.amqp.core.Message;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-@Value
+@Getter
+@AllArgsConstructor
 public class AcknowledgableMessage {
 
-    Message message;
+    private final Message message;
 
-    Channel channel;
+    private final Channel channel;
 
     public Mono<Void> ack() {
         return Mono.fromRunnable(() -> {

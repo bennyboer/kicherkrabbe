@@ -48,16 +48,20 @@ public class InMemoryMessagingOutboxRepo implements MessagingOutboxRepo {
     }
 
     @Override
-    public Mono<Void> lockNextPublishableEntries(MessagingOutboxEntryLock lock, int maxEntries, Clock clock) {
-        return findAll()
+    public synchronized Mono<Void> lockNextPublishableEntries(MessagingOutboxEntryLock lock, int maxEntries, Clock clock) {
+        var publishable = new ArrayList<>(entries.values()).stream()
                 .filter(entry -> entry.getLockedAt().isEmpty()
                         && entry.getFailedAt().isEmpty()
                         && entry.getAcknowledgedAt().isEmpty())
-                .sort(Comparator.comparing(MessagingOutboxEntry::getCreatedAt))
-                .take(maxEntries)
-                .map(entry -> entry.lock(lock, clock))
-                .doOnNext(entry -> this.entries.put(entry.getId(), entry))
-                .then();
+                .sorted(Comparator.comparing(MessagingOutboxEntry::getCreatedAt))
+                .limit(maxEntries)
+                .toList();
+
+        for (var entry : publishable) {
+            this.entries.put(entry.getId(), entry.lock(lock, clock));
+        }
+
+        return Mono.empty();
     }
 
     @Override
