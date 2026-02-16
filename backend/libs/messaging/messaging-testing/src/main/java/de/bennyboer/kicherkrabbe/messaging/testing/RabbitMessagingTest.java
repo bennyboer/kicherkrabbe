@@ -13,7 +13,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(TYPE)
 @Retention(RUNTIME)
 @ExtendWith({SpringExtension.class})
-@ContextConfiguration(classes = InMemoryMessagingTestConfig.class)
-public @interface MessagingTest {
+@ContextConfiguration(classes = MessagingTestConfig.class)
+public @interface RabbitMessagingTest {
 
 }
