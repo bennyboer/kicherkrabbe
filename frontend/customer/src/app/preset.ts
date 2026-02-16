@@ -260,6 +260,21 @@ export const customerPreset = definePreset(Aura, {
 				},
 			},
 		},
+		panel: {
+			colorScheme: {
+				dark: {
+					root: {
+						background: "{surface.100}",
+						borderColor: "{surface.200}",
+						color: "{surface.900}",
+					},
+					header: {
+						background: "{surface.100}",
+						color: "{surface.900}",
+					},
+				},
+			},
+		},
 		popover: {
 			colorScheme: {
 				light: {

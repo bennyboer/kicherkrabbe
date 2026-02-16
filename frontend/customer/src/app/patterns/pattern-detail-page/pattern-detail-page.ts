@@ -11,6 +11,7 @@ import { MessageService } from "primeng/api";
 import { Button } from "primeng/button";
 import { Divider } from "primeng/divider";
 import { Image } from "primeng/image";
+import { Panel } from "primeng/panel";
 import { ProgressSpinner } from "primeng/progressspinner";
 import { QuillViewComponent } from "ngx-quill";
 import { BehaviorSubject, Subject, switchMap, takeUntil } from "rxjs";
@@ -31,6 +32,7 @@ import { PatternsService } from "../patterns.service";
 		ProgressSpinner,
 		Divider,
 		Image,
+		Panel,
 		QuillViewComponent,
 		Breadcrumbs,
 	],
