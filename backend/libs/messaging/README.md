@@ -43,6 +43,27 @@ Idempotent message processing via deduplication:
 - Parses RabbitMQ messages as domain events with metadata (aggregate ID/type, version, agent, timestamp)
 - Supports listening to all events or specific event names via wildcard routing keys
 
+#### Typed Event Listeners
+
+Typed overloads on `EventListenerFactory` deserialize the event payload into a record automatically, removing the need for manual `Map` casting:
+
+```java
+record PatternCreatedEvent(String name) {}
+
+factory.createEventListenerForEvent(
+        "products.pattern-created-update-link",
+        AggregateType.of("PATTERN"),
+        EventName.of("CREATED"),
+        PatternCreatedEvent.class,
+        (metadata, event) -> {
+            String name = event.name();
+            return module.doSomething(metadata.getAggregateId().getValue(), name);
+        }
+);
+```
+
+Records with a subset of fields work — unknown properties in the payload are ignored.
+
 ## Testing
 
 ### Default: In-Memory (`@MessagingTest`)

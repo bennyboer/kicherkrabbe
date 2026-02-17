@@ -45,6 +45,20 @@ public class EventListenerFactory {
         return createEventListener(name, aggregateType, null, handler);
     }
 
+    public <T> EventListener createEventListenerForAllEvents(
+            String name,
+            AggregateType aggregateType,
+            Class<T> eventType,
+            TypedEventListenerHandler<T> handler
+    ) {
+        notNull(name, "Name must be given");
+        notNull(aggregateType, "Aggregate type must be given");
+        notNull(eventType, "Event type must be given");
+        notNull(handler, "Handler must be given");
+
+        return createEventListener(name, aggregateType, null, toUntypedHandler(eventType, handler));
+    }
+
     public Flux<HandleableEvent> createTransientEventListenerForAllEvents(String name, AggregateType aggregateType) {
         notNull(name, "Name must be given");
         notNull(aggregateType, "Aggregate type must be given");
@@ -64,6 +78,22 @@ public class EventListenerFactory {
         notNull(handler, "Handler must be given");
 
         return createEventListener(name, aggregateType, eventName, handler);
+    }
+
+    public <T> EventListener createEventListenerForEvent(
+            String name,
+            AggregateType aggregateType,
+            EventName eventName,
+            Class<T> eventType,
+            TypedEventListenerHandler<T> handler
+    ) {
+        notNull(name, "Name must be given");
+        notNull(aggregateType, "Aggregate type must be given");
+        notNull(eventName, "Event name must be given");
+        notNull(eventType, "Event type must be given");
+        notNull(handler, "Handler must be given");
+
+        return createEventListener(name, aggregateType, eventName, toUntypedHandler(eventType, handler));
     }
 
     public Flux<HandleableEvent> createTransientEventListenerForEvent(
@@ -159,6 +189,13 @@ public class EventListenerFactory {
         } catch (JacksonException e) {
             return Mono.error(e);
         }
+    }
+
+    private <T> EventListenerHandler toUntypedHandler(Class<T> eventType, TypedEventListenerHandler<T> handler) {
+        return handleableEvent -> {
+            T typedEvent = jsonMapper.convertValue(handleableEvent.getEvent(), eventType);
+            return handler.handle(handleableEvent.getMetadata(), typedEvent);
+        };
     }
 
 }
