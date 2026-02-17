@@ -1,0 +1,40 @@
+<div class="content">
+  @if (uploadActive$ | async) {
+    <div class="upload-area">
+      <app-image-upload
+        [multiple]="data.multiple"
+        [watermark]="data.watermark"
+        (uploaded)="onImagesUploaded($event)">
+      </app-image-upload>
+      <div class="upload-cancel">
+        <app-button (click)="cancelUpload()">Abbrechen</app-button>
+      </div>
+    </div>
+  } @else {
+    <div class="upload-toggle">
+      <app-button (click)="activateUpload()">
+        <span class="icon-button">
+          <span class="material-icons">upload</span>
+          <span>Neue Datei hochladen</span>
+        </span>
+      </app-button>
+    </div>
+  }
+
+  <div class="browser-area">
+    <app-asset-browser
+      #browser
+      mode="select"
+      [multiple]="data.multiple"
+      [initialContentTypes]="data.initialContentTypes"
+      (assetSelected)="onAssetSelected($event)">
+    </app-asset-browser>
+  </div>
+</div>
+
+<div class="footer">
+  <app-button (click)="cancel()">Abbrechen</app-button>
+  @if (data.multiple) {
+    <app-button color="primary" (click)="confirmSelection()">Auswählen</app-button>
+  }
+</div>

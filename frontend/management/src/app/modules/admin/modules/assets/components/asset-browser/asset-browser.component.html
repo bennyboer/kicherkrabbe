@@ -1,0 +1,102 @@
+<div class="controls">
+  <div class="search-row">
+    <input
+      #search
+      type="text"
+      placeholder="Nach Verwendung suchen..."
+      (input)="updateSearch(search.value)" />
+  </div>
+  <div class="filter-row">
+    <app-dropdown
+      label="Sortierung"
+      [items]="sortItems"
+      [selected]="['CREATED_AT_DESC']"
+      [showSelectionIndicator]="true"
+      [useRadioButtonForSingleSelection]="true"
+      (selectionChanged)="onSortChanged($event)">
+      <ng-template let-item>
+        <span>{{ item.label }}</span>
+      </ng-template>
+    </app-dropdown>
+
+    @if (availableContentTypes$ | async; as contentTypes) {
+      @if (contentTypes.length > 0) {
+        <app-dropdown
+          label="Dateityp"
+          [items]="toContentTypeItems(contentTypes)"
+          [multiple]="true"
+          [showSelectionIndicator]="true"
+          [selected]="getContentTypeFilterArray() | async"
+          (selectionChanged)="onContentTypeFilterChanged($event)">
+          <ng-template let-item>
+            <span>{{ item.label }}</span>
+          </ng-template>
+        </app-dropdown>
+      }
+    }
+  </div>
+</div>
+
+<div class="asset-grid-container" #scrollContainer (scroll)="onScroll($event)">
+  @if (assets$ | async; as assets) {
+    @if (assets.length === 0 && !(loading$ | async)) {
+      <div class="empty-state">
+        <span class="material-icons">image</span>
+        <span>Keine Dateien gefunden.</span>
+      </div>
+    } @else {
+      <div class="asset-grid">
+        @for (asset of assets; track asset.id) {
+          <div
+            class="asset-card"
+            [class.selected]="isSelected(asset.id) | async"
+            [class.selectable]="mode === 'select'"
+            (click)="onAssetClick(asset)"
+            [title]="getReferenceSummary(asset)">
+            <div class="asset-image">
+              <img [src]="getImageUrl(asset.id)" loading="lazy" />
+              @if ((isSelected(asset.id) | async) && mode === 'select') {
+                <div class="selection-overlay">
+                  <span class="material-icons">check_circle</span>
+                </div>
+              }
+            </div>
+            <div class="asset-info">
+              <span class="file-size">{{ formatFileSize(asset.fileSize) }}</span>
+              <span class="content-type">{{ asset.contentType }}</span>
+              @if (mode === 'manage') {
+                <div class="asset-actions">
+                  <span class="reference-count" [title]="getReferenceSummary(asset)">
+                    <span class="material-icons">link</span>
+                    {{ asset.references.length }}
+                  </span>
+                  @if (asset.references.length === 0) {
+                    @if (isDeleting(asset.id) | async) {
+                      <app-loading-spinner size="16"></app-loading-spinner>
+                    } @else {
+                      <span class="delete-button material-icons" (click)="deleteAsset(asset); $event.stopPropagation()">
+                        delete
+                      </span>
+                    }
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (loading$ | async) {
+      <div class="loading">
+        <app-loading-spinner size="32"></app-loading-spinner>
+      </div>
+    }
+
+    @if ((hasMore() | async) && !(loading$ | async)) {
+      <div class="load-more">
+        <app-button (click)="loadMore()">Mehr laden</app-button>
+      </div>
+    }
+  }
+</div>
