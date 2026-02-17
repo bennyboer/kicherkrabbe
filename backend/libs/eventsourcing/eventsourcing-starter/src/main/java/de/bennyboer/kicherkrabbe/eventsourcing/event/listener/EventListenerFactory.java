@@ -192,10 +192,10 @@ public class EventListenerFactory {
     }
 
     private <T> EventListenerHandler toUntypedHandler(Class<T> eventType, TypedEventListenerHandler<T> handler) {
-        return handleableEvent -> {
+        return handleableEvent -> Mono.defer(() -> {
             T typedEvent = jsonMapper.convertValue(handleableEvent.getEvent(), eventType);
             return handler.handle(handleableEvent.getMetadata(), typedEvent);
-        };
+        });
     }
 
 }

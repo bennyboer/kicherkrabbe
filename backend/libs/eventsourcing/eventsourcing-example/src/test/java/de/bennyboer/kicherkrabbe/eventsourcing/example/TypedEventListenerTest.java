@@ -213,6 +213,22 @@ public class TypedEventListenerTest extends EventListenerTest {
     }
 
     @Test
+    void shouldNotCallHandlerWhenPayloadHasIncompatibleType() {
+        send(
+                AggregateType.of("SAMPLE"),
+                AggregateId.of("SAMPLE_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("name", 123, "size", "not-a-number")
+        );
+
+        verify(fullEventHandler, after(2000).never()).handle(any(), any());
+    }
+
+    @Test
     void shouldWorkWithAllEventsListener() {
         send(
                 AggregateType.of("ALL_SAMPLE"),
