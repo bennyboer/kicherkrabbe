@@ -13,10 +13,14 @@ import de.bennyboer.kicherkrabbe.mailbox.api.requests.ReceiveMailRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Map;
-
 @Configuration
 public class MailboxMessaging {
+
+    record InquirySentEvent(Sender sender, String subject, String message) {
+    }
+
+    record Sender(String name, String mail, String phone) {
+    }
 
     @Bean("mailbox_onUserCreatedAddPermissionToReadAndManageMailsMsgListener")
     public EventListener onUserCreatedAddPermissionToReadAndManageMailsMsgListener(
@@ -163,31 +167,24 @@ public class MailboxMessaging {
                 "mailbox.inquiry-sent-receive-mail",
                 AggregateType.of("INQUIRY"),
                 EventName.of("SENT"),
-                (event) -> {
-                    String inquiryId = event.getMetadata().getAggregateId().getValue();
-
-                    Map<String, Object> payload = event.getEvent();
-                    Map<String, Object> senderPayload = (Map<String, Object>) payload.get("sender");
-                    String senderName = (String) senderPayload.get("name");
-                    String senderMail = (String) senderPayload.get("mail");
-                    String senderPhone = (String) senderPayload.get("phone");
-                    String subject = (String) payload.get("subject");
-                    String content = (String) payload.get("message");
+                InquirySentEvent.class,
+                (metadata, event) -> {
+                    String inquiryId = metadata.getAggregateId().getValue();
 
                     var origin = new OriginDTO();
                     origin.type = OriginTypeDTO.INQUIRY;
                     origin.id = inquiryId;
 
                     var sender = new SenderDTO();
-                    sender.name = senderName;
-                    sender.mail = senderMail;
-                    sender.phone = senderPhone;
+                    sender.name = event.sender().name();
+                    sender.mail = event.sender().mail();
+                    sender.phone = event.sender().phone();
 
                     var receiveRequest = new ReceiveMailRequest();
                     receiveRequest.origin = origin;
                     receiveRequest.sender = sender;
-                    receiveRequest.subject = subject;
-                    receiveRequest.content = content;
+                    receiveRequest.subject = event.subject();
+                    receiveRequest.content = event.message();
 
                     return module.receiveMail(receiveRequest, Agent.system()).then();
                 }

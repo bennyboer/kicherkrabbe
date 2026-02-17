@@ -10,10 +10,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
-
 @Configuration
 public class InquiriesMessaging {
+
+    record MailDeletedEvent(Origin origin) {
+    }
+
+    record Origin(String type, String id) {
+    }
 
     @Bean("inquiries_onUserCreatedAddPermissionToManageInquiriesMsgListener")
     public EventListener onUserCreatedAddPermissionToManageInquiriesMsgListener(
@@ -126,16 +130,14 @@ public class InquiriesMessaging {
                 "inquiries.mail-deleted-delete-inquiry",
                 AggregateType.of("MAIL"),
                 EventName.of("DELETED"),
-                (event) -> {
-                    Map<String, Object> origin = (Map<String, Object>) event.getEvent().get("origin");
-                    String originType = (String) origin.getOrDefault("type", "");
-                    if (!originType.equals("INQUIRY")) {
+                MailDeletedEvent.class,
+                (metadata, event) -> {
+                    var origin = event.origin();
+                    if (origin == null || !"INQUIRY".equals(origin.type())) {
                         return Mono.empty();
                     }
 
-                    String inquiryId = (String) origin.get("id");
-
-                    return module.deleteInquiry(inquiryId, Agent.system());
+                    return module.deleteInquiry(origin.id(), Agent.system());
                 }
         );
     }

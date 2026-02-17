@@ -12,6 +12,12 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class PatternsMessaging {
 
+    record CategoryEvent(String name) {
+    }
+
+    record CategoryRegroupedEvent(String name, String group) {
+    }
+
     @Bean("patterns_onUserCreatedAllowUserToCreatePatterns")
     public EventListener onUserCreatedAllowUserToCreatePatterns(
             EventListenerFactory factory,
@@ -212,11 +218,11 @@ public class PatternsMessaging {
                 "patterns.category-created-mark-category-as-available",
                 AggregateType.of("CATEGORY"),
                 EventName.of("CREATED"),
-                (event) -> {
-                    String categoryId = event.getMetadata().getAggregateId().getValue();
-                    String name = event.getEvent().get("name").toString();
+                CategoryEvent.class,
+                (metadata, event) -> {
+                    String categoryId = metadata.getAggregateId().getValue();
 
-                    return module.markCategoryAsAvailable(categoryId, name);
+                    return module.markCategoryAsAvailable(categoryId, event.name());
                 }
         );
     }
@@ -230,11 +236,11 @@ public class PatternsMessaging {
                 "patterns.category-renamed-mark-category-as-available",
                 AggregateType.of("CATEGORY"),
                 EventName.of("RENAMED"),
-                (event) -> {
-                    String categoryId = event.getMetadata().getAggregateId().getValue();
-                    String name = event.getEvent().get("name").toString();
+                CategoryEvent.class,
+                (metadata, event) -> {
+                    String categoryId = metadata.getAggregateId().getValue();
 
-                    return module.markCategoryAsAvailable(categoryId, name);
+                    return module.markCategoryAsAvailable(categoryId, event.name());
                 }
         );
     }
@@ -248,15 +254,14 @@ public class PatternsMessaging {
                 "patterns.category-regrouped-mark-category-as-available",
                 AggregateType.of("CATEGORY"),
                 EventName.of("REGROUPED"),
-                (event) -> {
-                    String categoryId = event.getMetadata().getAggregateId().getValue();
-                    String name = event.getEvent().get("name").toString();
-                    String group = event.getEvent().get("group").toString();
-                    if (!group.equals("CLOTHING")) {
+                CategoryRegroupedEvent.class,
+                (metadata, event) -> {
+                    if (!"CLOTHING".equals(event.group())) {
                         return Mono.empty();
                     }
 
-                    return module.markCategoryAsAvailable(categoryId, name);
+                    String categoryId = metadata.getAggregateId().getValue();
+                    return module.markCategoryAsAvailable(categoryId, event.name());
                 }
         );
     }
@@ -270,13 +275,13 @@ public class PatternsMessaging {
                 "patterns.category-regrouped-to-non-clothing-mark-category-as-unavailable",
                 AggregateType.of("CATEGORY"),
                 EventName.of("REGROUPED"),
-                (event) -> {
-                    String categoryId = event.getMetadata().getAggregateId().getValue();
-                    String group = event.getEvent().get("group").toString();
-                    if (group.equals("CLOTHING")) {
+                CategoryRegroupedEvent.class,
+                (metadata, event) -> {
+                    if ("CLOTHING".equals(event.group())) {
                         return Mono.empty();
                     }
 
+                    String categoryId = metadata.getAggregateId().getValue();
                     return module.markCategoryAsUnavailable(categoryId);
                 }
         );

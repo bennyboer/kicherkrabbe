@@ -16,6 +16,12 @@ import static java.util.UUID.randomUUID;
 @Configuration
 public class CredentialsMessaging {
 
+    record CredentialsCreatedEvent(String userId) {
+    }
+
+    record UserCreatedEvent(String mail) {
+    }
+
     @Bean("credentials_onCredentialsCreatedUpdateLookupMsgListener")
     public EventListener onCredentialsCreatedUpdateLookupMsgListener(
             EventListenerFactory factory,
@@ -44,13 +50,10 @@ public class CredentialsMessaging {
                 "credentials.credentials-created-add-permissions",
                 AggregateType.of("CREDENTIALS"),
                 EventName.of("CREATED"),
-                (event) -> {
-                    String credentialsId = event.getMetadata()
-                            .getAggregateId()
-                            .getValue();
-                    String userId = event.getEvent()
-                            .get("userId")
-                            .toString();
+                CredentialsCreatedEvent.class,
+                (metadata, event) -> {
+                    String credentialsId = metadata.getAggregateId().getValue();
+                    String userId = event.userId();
 
                     return module.addPermissions(credentialsId, userId);
                 }
@@ -104,13 +107,10 @@ public class CredentialsMessaging {
                 "credentials.user-created-create-credentials",
                 AggregateType.of("USER"),
                 EventName.of("CREATED"),
-                (event) -> {
-                    String userId = event.getMetadata()
-                            .getAggregateId()
-                            .getValue();
-                    String mail = event.getEvent()
-                            .get("mail")
-                            .toString();
+                UserCreatedEvent.class,
+                (metadata, event) -> {
+                    String userId = metadata.getAggregateId().getValue();
+                    String mail = event.mail();
                     String initialPassword = randomUUID().toString();
 
                     if (mail.equals("default@kicherkrabbe.com")) {

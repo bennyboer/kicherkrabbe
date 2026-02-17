@@ -18,6 +18,9 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class HighlightsMessaging {
 
+    record NamedEvent(String name) {
+    }
+
     @Bean("highlights_onUserCreatedAllowUserToCreateHighlightsAndReadLinks")
     public EventListener onUserCreatedAllowUserToCreateHighlightsAndReadLinks(
             EventListenerFactory factory,
@@ -254,15 +257,16 @@ public class HighlightsMessaging {
                 "highlights.pattern-created-update-link-in-lookup",
                 AggregateType.of("PATTERN"),
                 EventName.of("CREATED"),
-                (event) -> {
-                    String patternId = event.getMetadata().getAggregateId().getValue();
-                    long version = event.getMetadata().getAggregateVersion().getValue();
+                NamedEvent.class,
+                (metadata, event) -> {
+                    String patternId = metadata.getAggregateId().getValue();
+                    long version = metadata.getAggregateVersion().getValue();
 
                     var request = new UpdateLinkInLookupRequest();
                     request.link = new LinkDTO();
                     request.link.type = LinkTypeDTO.PATTERN;
                     request.link.id = patternId;
-                    request.link.name = (String) event.getEvent().get("name");
+                    request.link.name = event.name();
                     request.version = version;
                     return module.updateLinkInLookup(request, Agent.system()).then();
                 }
@@ -278,15 +282,16 @@ public class HighlightsMessaging {
                 "highlights.pattern-renamed-update-link-in-lookup",
                 AggregateType.of("PATTERN"),
                 EventName.of("RENAMED"),
-                (event) -> {
-                    String patternId = event.getMetadata().getAggregateId().getValue();
-                    long version = event.getMetadata().getAggregateVersion().getValue();
+                NamedEvent.class,
+                (metadata, event) -> {
+                    String patternId = metadata.getAggregateId().getValue();
+                    long version = metadata.getAggregateVersion().getValue();
 
                     var request = new UpdateLinkInLookupRequest();
                     request.link = new LinkDTO();
                     request.link.type = LinkTypeDTO.PATTERN;
                     request.link.id = patternId;
-                    request.link.name = (String) event.getEvent().get("name");
+                    request.link.name = event.name();
                     request.version = version;
                     return module.updateLinkInLookup(request, Agent.system()).then();
                 }
@@ -322,15 +327,16 @@ public class HighlightsMessaging {
                 "highlights.fabric-created-update-link-in-lookup",
                 AggregateType.of("FABRIC"),
                 EventName.of("CREATED"),
-                (event) -> {
-                    String fabricId = event.getMetadata().getAggregateId().getValue();
-                    long version = event.getMetadata().getAggregateVersion().getValue();
+                NamedEvent.class,
+                (metadata, event) -> {
+                    String fabricId = metadata.getAggregateId().getValue();
+                    long version = metadata.getAggregateVersion().getValue();
 
                     var request = new UpdateLinkInLookupRequest();
                     request.link = new LinkDTO();
                     request.link.type = LinkTypeDTO.FABRIC;
                     request.link.id = fabricId;
-                    request.link.name = (String) event.getEvent().get("name");
+                    request.link.name = event.name();
                     request.version = version;
                     return module.updateLinkInLookup(request, Agent.system()).then();
                 }
@@ -346,15 +352,16 @@ public class HighlightsMessaging {
                 "highlights.fabric-renamed-update-link-in-lookup",
                 AggregateType.of("FABRIC"),
                 EventName.of("RENAMED"),
-                (event) -> {
-                    String fabricId = event.getMetadata().getAggregateId().getValue();
-                    long version = event.getMetadata().getAggregateVersion().getValue();
+                NamedEvent.class,
+                (metadata, event) -> {
+                    String fabricId = metadata.getAggregateId().getValue();
+                    long version = metadata.getAggregateVersion().getValue();
 
                     var request = new UpdateLinkInLookupRequest();
                     request.link = new LinkDTO();
                     request.link.type = LinkTypeDTO.FABRIC;
                     request.link.id = fabricId;
-                    request.link.name = (String) event.getEvent().get("name");
+                    request.link.name = event.name();
                     request.version = version;
                     return module.updateLinkInLookup(request, Agent.system()).then();
                 }

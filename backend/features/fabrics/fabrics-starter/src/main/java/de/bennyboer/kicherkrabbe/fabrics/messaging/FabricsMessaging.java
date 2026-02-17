@@ -14,6 +14,15 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class FabricsMessaging {
 
+    record TopicEvent(String name) {
+    }
+
+    record ColorEvent(String name, int red, int green, int blue) {
+    }
+
+    record FabricTypeEvent(String name) {
+    }
+
     @Bean("fabrics_onUserCreatedAllowUserToCreateFabrics")
     public EventListener onUserCreatedAllowUserToCreateFabrics(
             EventListenerFactory factory,
@@ -248,11 +257,11 @@ public class FabricsMessaging {
                 "fabrics.topic-created-mark-topic-as-available",
                 AggregateType.of("TOPIC"),
                 EventName.of("CREATED"),
-                (event) -> {
-                    String topicId = event.getMetadata().getAggregateId().getValue();
-                    String name = event.getEvent().get("name").toString();
+                TopicEvent.class,
+                (metadata, event) -> {
+                    String topicId = metadata.getAggregateId().getValue();
 
-                    return module.markTopicAsAvailable(topicId, name);
+                    return module.markTopicAsAvailable(topicId, event.name());
                 }
         );
     }
@@ -266,11 +275,11 @@ public class FabricsMessaging {
                 "fabrics.topic-updated-mark-topic-as-available",
                 AggregateType.of("TOPIC"),
                 EventName.of("UPDATED"),
-                (event) -> {
-                    String topicId = event.getMetadata().getAggregateId().getValue();
-                    String name = event.getEvent().get("name").toString();
+                TopicEvent.class,
+                (metadata, event) -> {
+                    String topicId = metadata.getAggregateId().getValue();
 
-                    return module.markTopicAsAvailable(topicId, name);
+                    return module.markTopicAsAvailable(topicId, event.name());
                 }
         );
     }
@@ -301,14 +310,11 @@ public class FabricsMessaging {
                 "fabrics.color-created-mark-color-as-available",
                 AggregateType.of("COLOR"),
                 EventName.of("CREATED"),
-                (event) -> {
-                    String colorId = event.getMetadata().getAggregateId().getValue();
-                    String name = event.getEvent().get("name").toString();
-                    int red = (int) event.getEvent().get("red");
-                    int green = (int) event.getEvent().get("green");
-                    int blue = (int) event.getEvent().get("blue");
+                ColorEvent.class,
+                (metadata, event) -> {
+                    String colorId = metadata.getAggregateId().getValue();
 
-                    return module.markColorAsAvailable(colorId, name, red, green, blue);
+                    return module.markColorAsAvailable(colorId, event.name(), event.red(), event.green(), event.blue());
                 }
         );
     }
@@ -322,14 +328,11 @@ public class FabricsMessaging {
                 "fabrics.color-updated-mark-color-as-available",
                 AggregateType.of("COLOR"),
                 EventName.of("UPDATED"),
-                (event) -> {
-                    String colorId = event.getMetadata().getAggregateId().getValue();
-                    String name = event.getEvent().get("name").toString();
-                    int red = (int) event.getEvent().get("red");
-                    int green = (int) event.getEvent().get("green");
-                    int blue = (int) event.getEvent().get("blue");
+                ColorEvent.class,
+                (metadata, event) -> {
+                    String colorId = metadata.getAggregateId().getValue();
 
-                    return module.markColorAsAvailable(colorId, name, red, green, blue);
+                    return module.markColorAsAvailable(colorId, event.name(), event.red(), event.green(), event.blue());
                 }
         );
     }
@@ -360,11 +363,11 @@ public class FabricsMessaging {
                 "fabrics.fabric-type-created-mark-fabric-type-as-available",
                 AggregateType.of("FABRIC_TYPE"),
                 EventName.of("CREATED"),
-                (event) -> {
-                    String fabricTypeId = event.getMetadata().getAggregateId().getValue();
-                    String name = event.getEvent().get("name").toString();
+                FabricTypeEvent.class,
+                (metadata, event) -> {
+                    String fabricTypeId = metadata.getAggregateId().getValue();
 
-                    return module.markFabricTypeAsAvailable(fabricTypeId, name);
+                    return module.markFabricTypeAsAvailable(fabricTypeId, event.name());
                 }
         );
     }
@@ -378,11 +381,11 @@ public class FabricsMessaging {
                 "fabrics.fabric-type-updated-mark-fabric-type-as-available",
                 AggregateType.of("FABRIC_TYPE"),
                 EventName.of("UPDATED"),
-                (event) -> {
-                    String fabricTypeId = event.getMetadata().getAggregateId().getValue();
-                    String name = event.getEvent().get("name").toString();
+                FabricTypeEvent.class,
+                (metadata, event) -> {
+                    String fabricTypeId = metadata.getAggregateId().getValue();
 
-                    return module.markFabricTypeAsAvailable(fabricTypeId, name);
+                    return module.markFabricTypeAsAvailable(fabricTypeId, event.name());
                 }
         );
     }

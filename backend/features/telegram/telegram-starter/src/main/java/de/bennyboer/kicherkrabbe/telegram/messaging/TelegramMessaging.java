@@ -21,6 +21,17 @@ import java.util.Optional;
 @Configuration
 public class TelegramMessaging {
 
+    record NotificationSentEvent(
+            List<Map<String, Object>> channels,
+            String title,
+            String message,
+            Origin origin
+    ) {
+    }
+
+    record Origin(String type, String id) {
+    }
+
     @Bean("telegram_onUserCreatedAddPermissionToReadAndManageTelegramSettingsMsgListener")
     public EventListener onUserCreatedAddPermissionToReadAndManageTelegramSettingsMsgListener(
             EventListenerFactory factory,
@@ -64,10 +75,9 @@ public class TelegramMessaging {
                 "telegram.notification-sent-send-message-via-bot",
                 AggregateType.of("NOTIFICATION"),
                 EventName.of("SENT"),
-                (event) -> {
-                    Map<String, Object> payload = event.getEvent();
-                    List<Map<String, Object>> channels = (List<Map<String, Object>>) payload.get("channels");
-                    Map<String, Object> telegramChannel = channels.stream()
+                NotificationSentEvent.class,
+                (metadata, event) -> {
+                    Map<String, Object> telegramChannel = event.channels().stream()
                             .filter(channel -> "TELEGRAM".equals(channel.get("type")))
                             .findFirst()
                             .orElse(null);
@@ -76,21 +86,15 @@ public class TelegramMessaging {
                     }
 
                     String chatId = (String) ((Map<String, Object>) telegramChannel.get("telegram")).get("chatId");
-                    String title = (String) payload.get("title");
-                    String message = (String) payload.get("message");
-
-                    Map<String, Object> origin = (Map<String, Object>) payload.get("origin");
-                    String originType = (String) origin.get("type");
-                    String originId = (String) origin.get("id");
 
                     var request = new SendMessageViaBotRequest();
                     request.chatId = chatId;
                     request.text = """
                             <em>System-Benachrichtigung</em>: <strong>%s</strong>
                             %s
-                            """.formatted(title, message);
+                            """.formatted(event.title(), event.message());
 
-                    getOriginUrl(originType, originId).ifPresent(url -> {
+                    getOriginUrl(event.origin().type(), event.origin().id()).ifPresent(url -> {
                         request.text += """
                                 <a href="%s">Jetzt ansehen</a>
                                 """.formatted(url, url);

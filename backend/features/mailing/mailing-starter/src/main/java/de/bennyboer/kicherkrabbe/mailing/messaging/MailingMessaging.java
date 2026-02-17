@@ -23,6 +23,17 @@ import java.util.Set;
 @Configuration
 public class MailingMessaging {
 
+    record NotificationSentEvent(
+            List<Map<String, Object>> channels,
+            String title,
+            String message,
+            Origin origin
+    ) {
+    }
+
+    record Origin(String type, String id) {
+    }
+
     @Bean("mailing_onUserCreatedAddPermissionToReadAndManageMailingSettingsMsgListener")
     public EventListener onUserCreatedAddPermissionToReadAndManageMailingSettingsMsgListener(
             EventListenerFactory factory,
@@ -168,10 +179,9 @@ public class MailingMessaging {
                 "mailing.notification-sent-send-mail",
                 AggregateType.of("NOTIFICATION"),
                 EventName.of("SENT"),
-                (event) -> {
-                    Map<String, Object> payload = event.getEvent();
-                    List<Map<String, Object>> channels = (List<Map<String, Object>>) payload.get("channels");
-                    Map<String, Object> emailChannel = channels.stream()
+                NotificationSentEvent.class,
+                (metadata, event) -> {
+                    Map<String, Object> emailChannel = event.channels().stream()
                             .filter(channel -> "EMAIL".equals(channel.get("type")))
                             .findFirst()
                             .orElse(null);
@@ -180,12 +190,6 @@ public class MailingMessaging {
                     }
 
                     String mail = (String) emailChannel.get("mail");
-                    String title = (String) payload.get("title");
-                    String message = (String) payload.get("message");
-
-                    Map<String, Object> origin = (Map<String, Object>) payload.get("origin");
-                    String originType = (String) origin.get("type");
-                    String originId = (String) origin.get("id");
 
                     var receiver = new ReceiverDTO();
                     receiver.mail = mail;
@@ -194,10 +198,10 @@ public class MailingMessaging {
                     request.sender = new SenderDTO();
                     request.sender.mail = "no-reply@kicherkrabbe.com";
                     request.receivers = Set.of(receiver);
-                    request.subject = "System-Benachrichtigung: %s".formatted(title);
-                    request.text = message;
+                    request.subject = "System-Benachrichtigung: %s".formatted(event.title());
+                    request.text = event.message();
 
-                    getOriginUrl(originType, originId).ifPresent(url -> {
+                    getOriginUrl(event.origin().type(), event.origin().id()).ifPresent(url -> {
                         request.text += ": %s".formatted(url);
                     });
 
