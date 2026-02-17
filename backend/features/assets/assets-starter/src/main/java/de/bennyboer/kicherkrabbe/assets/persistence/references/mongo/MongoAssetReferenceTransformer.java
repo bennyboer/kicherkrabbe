@@ -1,9 +1,9 @@
 package de.bennyboer.kicherkrabbe.assets.persistence.references.mongo;
 
 import de.bennyboer.kicherkrabbe.assets.AssetId;
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReference;
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReferenceResourceType;
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetResourceId;
+import de.bennyboer.kicherkrabbe.assets.AssetReference;
+import de.bennyboer.kicherkrabbe.assets.AssetReferenceResourceType;
+import de.bennyboer.kicherkrabbe.assets.AssetResourceId;
 
 public class MongoAssetReferenceTransformer {
 

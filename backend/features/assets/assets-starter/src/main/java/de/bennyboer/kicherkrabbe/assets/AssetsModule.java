@@ -2,10 +2,7 @@ package de.bennyboer.kicherkrabbe.assets;
 
 import de.bennyboer.kicherkrabbe.assets.image.ImageProcessor;
 import de.bennyboer.kicherkrabbe.assets.image.ImageVariantService;
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReference;
 import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReferenceRepo;
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReferenceResourceType;
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetResourceId;
 import de.bennyboer.kicherkrabbe.assets.storage.StorageService;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;

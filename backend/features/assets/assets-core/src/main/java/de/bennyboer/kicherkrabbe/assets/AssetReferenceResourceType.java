@@ -1,4 +1,4 @@
-package de.bennyboer.kicherkrabbe.assets.persistence.references;
+package de.bennyboer.kicherkrabbe.assets;
 
 public enum AssetReferenceResourceType {
 

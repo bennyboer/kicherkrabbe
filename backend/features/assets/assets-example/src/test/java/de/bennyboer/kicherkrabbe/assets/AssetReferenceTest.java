@@ -1,8 +1,5 @@
 package de.bennyboer.kicherkrabbe.assets;
 
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReference;
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReferenceResourceType;
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetResourceId;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;

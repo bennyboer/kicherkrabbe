@@ -1,10 +1,10 @@
 package de.bennyboer.kicherkrabbe.assets.persistence.references.mongo;
 
 import de.bennyboer.kicherkrabbe.assets.AssetId;
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReference;
+import de.bennyboer.kicherkrabbe.assets.AssetReference;
+import de.bennyboer.kicherkrabbe.assets.AssetReferenceResourceType;
+import de.bennyboer.kicherkrabbe.assets.AssetResourceId;
 import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReferenceRepo;
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReferenceResourceType;
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetResourceId;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.query.Criteria;

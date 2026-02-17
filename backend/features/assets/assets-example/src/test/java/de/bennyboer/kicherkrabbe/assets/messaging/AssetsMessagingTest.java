@@ -2,8 +2,8 @@ package de.bennyboer.kicherkrabbe.assets.messaging;
 
 import de.bennyboer.kicherkrabbe.assets.AssetId;
 import de.bennyboer.kicherkrabbe.assets.AssetsModule;
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReferenceResourceType;
-import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetResourceId;
+import de.bennyboer.kicherkrabbe.assets.AssetReferenceResourceType;
+import de.bennyboer.kicherkrabbe.assets.AssetResourceId;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;

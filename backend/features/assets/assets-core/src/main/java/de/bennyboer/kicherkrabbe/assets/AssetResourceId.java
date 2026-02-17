@@ -1,4 +1,4 @@
-package de.bennyboer.kicherkrabbe.assets.persistence.references;
+package de.bennyboer.kicherkrabbe.assets;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
