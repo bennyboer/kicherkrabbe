@@ -15,6 +15,9 @@ public class PatternsMessaging {
     record CategoryEvent(String name) {
     }
 
+    record CategoryCreatedEvent(String name, String group) {
+    }
+
     record CategoryRegroupedEvent(String name, String group) {
     }
 
@@ -218,10 +221,13 @@ public class PatternsMessaging {
                 "patterns.category-created-mark-category-as-available",
                 AggregateType.of("CATEGORY"),
                 EventName.of("CREATED"),
-                CategoryEvent.class,
+                CategoryCreatedEvent.class,
                 (metadata, event) -> {
-                    String categoryId = metadata.getAggregateId().getValue();
+                    if (!"CLOTHING".equals(event.group())) {
+                        return Mono.empty();
+                    }
 
+                    String categoryId = metadata.getAggregateId().getValue();
                     return module.markCategoryAsAvailable(categoryId, event.name());
                 }
         );

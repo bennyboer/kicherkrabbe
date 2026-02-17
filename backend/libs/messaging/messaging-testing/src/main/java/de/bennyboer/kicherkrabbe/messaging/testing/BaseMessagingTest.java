@@ -5,11 +5,14 @@ import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutboxEntry;
 import de.bennyboer.kicherkrabbe.messaging.target.ExchangeTarget;
 import de.bennyboer.kicherkrabbe.messaging.target.MessageTarget;
+import jakarta.annotation.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.util.Map;
 
 @MessagingTest
@@ -18,6 +21,10 @@ public abstract class BaseMessagingTest {
     private final MessagingOutbox outbox;
 
     private final ReactiveTransactionManager transactionManager;
+
+    @Nullable
+    @Autowired(required = false)
+    private InMemoryMessageBus messageBus;
 
     public BaseMessagingTest(
             MessagingOutbox outbox,
@@ -39,10 +46,20 @@ public abstract class BaseMessagingTest {
         );
         var transactionalOperator = TransactionalOperator.create(transactionManager);
 
-        outbox.insert(entry)
-                .as(transactionalOperator::transactional)
-                .subscribeOn(Schedulers.boundedElastic())
-                .subscribe();
+        if (messageBus != null) {
+            outbox.insert(entry)
+                    .as(transactionalOperator::transactional)
+                    .then(outbox.publishNextUnpublishedEntries())
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .block(Duration.ofSeconds(5));
+
+            messageBus.awaitIdle(Duration.ofSeconds(5));
+        } else {
+            outbox.insert(entry)
+                    .as(transactionalOperator::transactional)
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .subscribe();
+        }
     }
 
 }

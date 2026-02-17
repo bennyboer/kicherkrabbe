@@ -50,6 +50,7 @@ public class NotificationsMessagingTest extends EventListenerTest {
         when(module.removeNotificationFromLookup(any())).thenReturn(Mono.empty());
         when(module.removePermissionsForNotification(any())).thenReturn(Mono.empty());
         when(module.sendNotification(any(), any())).thenReturn(Mono.empty());
+        when(module.allowSystemUserToDeleteNotification(any())).thenReturn(Mono.empty());
     }
 
     @Test

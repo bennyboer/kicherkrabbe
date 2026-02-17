@@ -50,6 +50,8 @@ public class FabricsMessagingTest extends EventListenerTest {
         when(module.removePermissionsOnFabric(anyString())).thenReturn(Mono.empty());
         when(module.allowAnonymousAndSystemUsersToReadPublishedFabric(anyString())).thenReturn(Mono.empty());
         when(module.disallowAnonymousAndSystemUsersToReadPublishedFabric(anyString())).thenReturn(Mono.empty());
+        when(module.allowAnonymousAndSystemUsersToReadFeaturedFabric(anyString())).thenReturn(Mono.empty());
+        when(module.disallowAnonymousAndSystemUsersToReadFeaturedFabric(anyString())).thenReturn(Mono.empty());
         when(module.removeFabricTypeFromFabrics(anyString(), any())).thenReturn(Flux.empty());
         when(module.removeTopicFromFabrics(anyString(), any())).thenReturn(Flux.empty());
         when(module.removeColorFromFabrics(anyString(), any())).thenReturn(Flux.empty());

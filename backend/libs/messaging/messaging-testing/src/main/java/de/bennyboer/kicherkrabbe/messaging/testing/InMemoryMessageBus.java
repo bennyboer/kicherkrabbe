@@ -4,27 +4,71 @@ import de.bennyboer.kicherkrabbe.messaging.listener.AcknowledgableMessage;
 import org.springframework.amqp.core.Message;
 import reactor.core.publisher.Sinks;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 public class InMemoryMessageBus {
 
     private final List<RegisteredListener> listeners = new CopyOnWriteArrayList<>();
+    private final AtomicInteger inFlight = new AtomicInteger(0);
+    private final ReentrantLock lock = new ReentrantLock();
+    private final Condition idle = lock.newCondition();
 
     public void register(String exchange, String routingKeyPattern, Sinks.Many<AcknowledgableMessage> sink) {
         listeners.add(new RegisteredListener(exchange, routingKeyPattern, sink));
     }
 
     public void publish(String exchange, String routingKey, Message message) {
-        var ackMessage = new NoOpAcknowledgableMessage(message);
-
         for (var listener : listeners) {
             if (listener.exchange().equals(exchange) && matchesRoutingKey(listener.routingKeyPattern(), routingKey)) {
+                inFlight.incrementAndGet();
+                var ackMessage = new NoOpAcknowledgableMessage(message, this);
                 var result = listener.sink().tryEmitNext(ackMessage);
                 if (result == Sinks.EmitResult.FAIL_TERMINATED || result == Sinks.EmitResult.FAIL_CANCELLED) {
+                    messageHandled();
                     listeners.remove(listener);
                 }
             }
+        }
+    }
+
+    void messageHandled() {
+        if (inFlight.decrementAndGet() == 0) {
+            lock.lock();
+            try {
+                idle.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+    public void awaitIdle(Duration timeout) {
+        if (inFlight.get() == 0) {
+            return;
+        }
+
+        long deadline = System.nanoTime() + timeout.toNanos();
+        lock.lock();
+        try {
+            while (inFlight.get() > 0) {
+                long remaining = deadline - System.nanoTime();
+                if (remaining <= 0) {
+                    throw new RuntimeException("Timed out waiting for in-flight messages to complete");
+                }
+                idle.await(remaining, NANOSECONDS);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } finally {
+            lock.unlock();
         }
     }
 

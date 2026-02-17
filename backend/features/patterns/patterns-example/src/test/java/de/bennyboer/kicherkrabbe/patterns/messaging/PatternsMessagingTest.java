@@ -49,6 +49,8 @@ public class PatternsMessagingTest extends EventListenerTest {
         when(module.removePermissionsOnPattern(anyString())).thenReturn(Mono.empty());
         when(module.allowAnonymousAndSystemUsersToReadPublishedPattern(anyString())).thenReturn(Mono.empty());
         when(module.disallowAnonymousAndSystemUsersToReadPublishedPattern(anyString())).thenReturn(Mono.empty());
+        when(module.allowAnonymousAndSystemUsersToReadFeaturedPattern(anyString())).thenReturn(Mono.empty());
+        when(module.disallowAnonymousAndSystemUsersToReadFeaturedPattern(anyString())).thenReturn(Mono.empty());
         when(module.removeCategoryFromPatterns(anyString(), any())).thenReturn(Flux.empty());
         when(module.markCategoryAsAvailable(anyString(), anyString())).thenReturn(Mono.empty());
         when(module.markCategoryAsUnavailable(anyString())).thenReturn(Mono.empty());
@@ -489,7 +491,7 @@ public class PatternsMessagingTest extends EventListenerTest {
         );
 
         // then: the category is not marked as available
-        verify(module, timeout(10000).times(0)).markCategoryAsAvailable(anyString(), anyString());
+        verify(module, after(2000).never()).markCategoryAsAvailable(anyString(), anyString());
     }
 
     @Test

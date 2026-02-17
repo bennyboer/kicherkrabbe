@@ -49,6 +49,7 @@ public class MailboxMessagingTest extends EventListenerTest {
         when(module.removeMailFromLookup(any())).thenReturn(Mono.empty());
         when(module.removePermissionsForUser(any())).thenReturn(Mono.empty());
         when(module.removePermissionsForMail(any())).thenReturn(Mono.empty());
+        when(module.receiveMail(any(), any())).thenReturn(Mono.empty());
     }
 
     @Test
