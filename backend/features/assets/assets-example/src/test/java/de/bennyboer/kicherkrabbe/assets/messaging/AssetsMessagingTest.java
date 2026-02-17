@@ -1,6 +1,9 @@
 package de.bennyboer.kicherkrabbe.assets.messaging;
 
+import de.bennyboer.kicherkrabbe.assets.AssetId;
 import de.bennyboer.kicherkrabbe.assets.AssetsModule;
+import de.bennyboer.kicherkrabbe.assets.AssetReferenceResourceType;
+import de.bennyboer.kicherkrabbe.assets.AssetResourceId;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
@@ -18,8 +21,11 @@ import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -45,6 +51,8 @@ public class AssetsMessagingTest extends EventListenerTest {
         when(module.removePermissionsOnAsset(anyString())).thenReturn(Mono.empty());
         when(module.allowAnonymousUsersToReadAsset(anyString())).thenReturn(Mono.empty());
         when(module.disallowAnonymousUsersToReadAsset(anyString())).thenReturn(Mono.empty());
+        when(module.updateAssetReferences(any(), any(), any())).thenReturn(Mono.empty());
+        when(module.removeAssetReferencesByResource(any(), any())).thenReturn(Mono.empty());
     }
 
     @Test
@@ -153,6 +161,242 @@ public class AssetsMessagingTest extends EventListenerTest {
 
         // then: anonymous users are disallowed to read the asset
         verify(module, timeout(5000).times(1)).disallowAnonymousUsersToReadAsset(eq("ASSET_ID"));
+    }
+
+    @Test
+    void shouldUpdateAssetReferencesOnFabricCreated() {
+        send(
+                AggregateType.of("FABRIC"),
+                AggregateId.of("FABRIC_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("image", "ASSET_1")
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetReferences(
+                eq(AssetReferenceResourceType.FABRIC),
+                eq(AssetResourceId.of("FABRIC_ID")),
+                eq(Set.of(AssetId.of("ASSET_1")))
+        );
+    }
+
+    @Test
+    void shouldUpdateAssetReferencesOnFabricImageUpdated() {
+        send(
+                AggregateType.of("FABRIC"),
+                AggregateId.of("FABRIC_ID"),
+                Version.of(2),
+                EventName.of("IMAGE_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("image", "ASSET_2")
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetReferences(
+                eq(AssetReferenceResourceType.FABRIC),
+                eq(AssetResourceId.of("FABRIC_ID")),
+                eq(Set.of(AssetId.of("ASSET_2")))
+        );
+    }
+
+    @Test
+    void shouldRemoveAssetReferencesOnFabricDeleted() {
+        send(
+                AggregateType.of("FABRIC"),
+                AggregateId.of("FABRIC_ID"),
+                Version.of(3),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        verify(module, timeout(5000).times(1)).removeAssetReferencesByResource(
+                eq(AssetReferenceResourceType.FABRIC),
+                eq(AssetResourceId.of("FABRIC_ID"))
+        );
+    }
+
+    @Test
+    void shouldUpdateAssetReferencesOnPatternCreated() {
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("images", List.of("ASSET_1", "ASSET_2"))
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetReferences(
+                eq(AssetReferenceResourceType.PATTERN),
+                eq(AssetResourceId.of("PATTERN_ID")),
+                eq(Set.of(AssetId.of("ASSET_1"), AssetId.of("ASSET_2")))
+        );
+    }
+
+    @Test
+    void shouldUpdateAssetReferencesOnPatternImagesUpdated() {
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(2),
+                EventName.of("IMAGES_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("images", List.of("ASSET_3"))
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetReferences(
+                eq(AssetReferenceResourceType.PATTERN),
+                eq(AssetResourceId.of("PATTERN_ID")),
+                eq(Set.of(AssetId.of("ASSET_3")))
+        );
+    }
+
+    @Test
+    void shouldRemoveAssetReferencesOnPatternDeleted() {
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(3),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        verify(module, timeout(5000).times(1)).removeAssetReferencesByResource(
+                eq(AssetReferenceResourceType.PATTERN),
+                eq(AssetResourceId.of("PATTERN_ID"))
+        );
+    }
+
+    @Test
+    void shouldUpdateAssetReferencesOnProductCreated() {
+        send(
+                AggregateType.of("PRODUCT"),
+                AggregateId.of("PRODUCT_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("images", List.of("ASSET_1"))
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetReferences(
+                eq(AssetReferenceResourceType.PRODUCT),
+                eq(AssetResourceId.of("PRODUCT_ID")),
+                eq(Set.of(AssetId.of("ASSET_1")))
+        );
+    }
+
+    @Test
+    void shouldUpdateAssetReferencesOnProductImagesUpdated() {
+        send(
+                AggregateType.of("PRODUCT"),
+                AggregateId.of("PRODUCT_ID"),
+                Version.of(2),
+                EventName.of("IMAGES_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("images", List.of("ASSET_2", "ASSET_3"))
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetReferences(
+                eq(AssetReferenceResourceType.PRODUCT),
+                eq(AssetResourceId.of("PRODUCT_ID")),
+                eq(Set.of(AssetId.of("ASSET_2"), AssetId.of("ASSET_3")))
+        );
+    }
+
+    @Test
+    void shouldRemoveAssetReferencesOnProductDeleted() {
+        send(
+                AggregateType.of("PRODUCT"),
+                AggregateId.of("PRODUCT_ID"),
+                Version.of(3),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        verify(module, timeout(5000).times(1)).removeAssetReferencesByResource(
+                eq(AssetReferenceResourceType.PRODUCT),
+                eq(AssetResourceId.of("PRODUCT_ID"))
+        );
+    }
+
+    @Test
+    void shouldUpdateAssetReferencesOnHighlightCreated() {
+        send(
+                AggregateType.of("HIGHLIGHT"),
+                AggregateId.of("HIGHLIGHT_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("imageId", "ASSET_1")
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetReferences(
+                eq(AssetReferenceResourceType.HIGHLIGHT),
+                eq(AssetResourceId.of("HIGHLIGHT_ID")),
+                eq(Set.of(AssetId.of("ASSET_1")))
+        );
+    }
+
+    @Test
+    void shouldUpdateAssetReferencesOnHighlightImageUpdated() {
+        send(
+                AggregateType.of("HIGHLIGHT"),
+                AggregateId.of("HIGHLIGHT_ID"),
+                Version.of(2),
+                EventName.of("IMAGE_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("imageId", "ASSET_2")
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetReferences(
+                eq(AssetReferenceResourceType.HIGHLIGHT),
+                eq(AssetResourceId.of("HIGHLIGHT_ID")),
+                eq(Set.of(AssetId.of("ASSET_2")))
+        );
+    }
+
+    @Test
+    void shouldRemoveAssetReferencesOnHighlightDeleted() {
+        send(
+                AggregateType.of("HIGHLIGHT"),
+                AggregateId.of("HIGHLIGHT_ID"),
+                Version.of(3),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        verify(module, timeout(5000).times(1)).removeAssetReferencesByResource(
+                eq(AssetReferenceResourceType.HIGHLIGHT),
+                eq(AssetResourceId.of("HIGHLIGHT_ID"))
+        );
     }
 
 }

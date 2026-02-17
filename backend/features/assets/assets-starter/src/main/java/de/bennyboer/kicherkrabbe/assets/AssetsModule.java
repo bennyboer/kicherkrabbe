@@ -2,6 +2,7 @@ package de.bennyboer.kicherkrabbe.assets;
 
 import de.bennyboer.kicherkrabbe.assets.image.ImageProcessor;
 import de.bennyboer.kicherkrabbe.assets.image.ImageVariantService;
+import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReferenceRepo;
 import de.bennyboer.kicherkrabbe.assets.storage.StorageService;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.assets.Actions.*;
 import static org.springframework.transaction.annotation.Propagation.MANDATORY;
@@ -28,6 +30,8 @@ public class AssetsModule {
     private final StorageService storageService;
 
     private final ImageVariantService imageVariantService;
+
+    private final AssetReferenceRepo assetReferenceRepo;
 
     public Mono<AssetContent> getAssetContent(String assetId, Agent agent) {
         return getAssetContent(assetId, null, agent);
@@ -146,6 +150,32 @@ public class AssetsModule {
                 readPermission,
                 deletePermission
         );
+    }
+
+    @Transactional(propagation = MANDATORY)
+    public Mono<Void> updateAssetReferences(
+            AssetReferenceResourceType resourceType,
+            AssetResourceId resourceId,
+            Set<AssetId> assetIds
+    ) {
+        return assetReferenceRepo.removeByResource(resourceType, resourceId)
+                .thenMany(Flux.fromIterable(assetIds)
+                        .flatMap(assetId -> assetReferenceRepo.upsert(
+                                AssetReference.of(assetId, resourceType, resourceId)
+                        )))
+                .then();
+    }
+
+    @Transactional(propagation = MANDATORY)
+    public Mono<Void> removeAssetReferencesByResource(
+            AssetReferenceResourceType resourceType,
+            AssetResourceId resourceId
+    ) {
+        return assetReferenceRepo.removeByResource(resourceType, resourceId);
+    }
+
+    public Flux<AssetReference> findAssetReferences(AssetId assetId) {
+        return assetReferenceRepo.findByAssetId(assetId);
     }
 
     private Mono<Void> assertContentIsNotTooLarge(Flux<DataBuffer> content) {

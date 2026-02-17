@@ -1,6 +1,8 @@
 package de.bennyboer.kicherkrabbe.assets;
 
 import de.bennyboer.kicherkrabbe.assets.image.ImageVariantService;
+import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReferenceRepo;
+import de.bennyboer.kicherkrabbe.assets.persistence.references.inmemory.InMemoryAssetReferenceRepo;
 import de.bennyboer.kicherkrabbe.assets.samples.SampleAsset;
 import de.bennyboer.kicherkrabbe.assets.storage.StorageService;
 import de.bennyboer.kicherkrabbe.assets.storage.file.FileStorageService;
@@ -22,6 +24,9 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Clock;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class AssetsModuleTest {
 
@@ -35,6 +40,8 @@ public class AssetsModuleTest {
     private StorageService storageService;
 
     private ImageVariantService imageVariantService;
+
+    private AssetReferenceRepo assetReferenceRepo;
 
     private AssetsModule module;
 
@@ -53,13 +60,15 @@ public class AssetsModuleTest {
 
         storageService = new FileStorageService(tempDir);
         imageVariantService = new ImageVariantService(storageService);
+        assetReferenceRepo = new InMemoryAssetReferenceRepo();
 
         var config = new AssetsModuleConfig();
         module = config.assetsModule(
                 assetService,
                 permissionsService,
                 storageService,
-                imageVariantService
+                imageVariantService,
+                assetReferenceRepo
         );
     }
 
@@ -117,6 +126,19 @@ public class AssetsModuleTest {
 
     public void allowAnonymousUsersToReadAsset(String assetId) {
         module.allowAnonymousUsersToReadAsset(assetId).block();
+    }
+
+    public void updateAssetReferences(AssetReferenceResourceType resourceType, String resourceId, Set<String> assetIds) {
+        Set<AssetId> ids = assetIds.stream().map(AssetId::of).collect(Collectors.toSet());
+        module.updateAssetReferences(resourceType, AssetResourceId.of(resourceId), ids).block();
+    }
+
+    public void removeAssetReferencesByResource(AssetReferenceResourceType resourceType, String resourceId) {
+        module.removeAssetReferencesByResource(resourceType, AssetResourceId.of(resourceId)).block();
+    }
+
+    public List<AssetReference> findAssetReferences(String assetId) {
+        return module.findAssetReferences(AssetId.of(assetId)).collectList().block();
     }
 
     private void allowUserToManageAsset(String assetId, String userId) {
