@@ -5,6 +5,8 @@ import de.bennyboer.kicherkrabbe.assets.AssetReference;
 import de.bennyboer.kicherkrabbe.assets.AssetReferenceResourceType;
 import de.bennyboer.kicherkrabbe.assets.AssetResourceId;
 
+import java.util.Optional;
+
 public class MongoAssetReferenceTransformer {
 
     public static MongoAssetReference toMongo(AssetReference reference) {
@@ -16,6 +18,7 @@ public class MongoAssetReferenceTransformer {
         result.assetId = reference.getAssetId().getValue();
         result.resourceType = reference.getResourceType().name();
         result.resourceId = reference.getResourceId().getValue();
+        result.resourceName = reference.getResourceName();
 
         return result;
     }
@@ -24,7 +27,8 @@ public class MongoAssetReferenceTransformer {
         return AssetReference.of(
                 AssetId.of(mongo.assetId),
                 AssetReferenceResourceType.valueOf(mongo.resourceType),
-                AssetResourceId.of(mongo.resourceId)
+                AssetResourceId.of(mongo.resourceId),
+                Optional.ofNullable(mongo.resourceName).orElse("")
         );
     }
 

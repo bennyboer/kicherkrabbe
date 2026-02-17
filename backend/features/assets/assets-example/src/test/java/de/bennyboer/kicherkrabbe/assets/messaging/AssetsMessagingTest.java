@@ -51,13 +51,16 @@ public class AssetsMessagingTest extends EventListenerTest {
         when(module.removePermissionsOnAsset(anyString())).thenReturn(Mono.empty());
         when(module.allowAnonymousUsersToReadAsset(anyString())).thenReturn(Mono.empty());
         when(module.disallowAnonymousUsersToReadAsset(anyString())).thenReturn(Mono.empty());
+        when(module.updateAssetInLookup(anyString())).thenReturn(Mono.empty());
+        when(module.removeAssetFromLookup(anyString())).thenReturn(Mono.empty());
         when(module.updateAssetReferences(any(), any(), any())).thenReturn(Mono.empty());
+        when(module.updateAssetReferences(any(), any(), any(), any())).thenReturn(Mono.empty());
+        when(module.updateResourceNameInReferences(any(), any(), anyString())).thenReturn(Mono.empty());
         when(module.removeAssetReferencesByResource(any(), any())).thenReturn(Mono.empty());
     }
 
     @Test
     void shouldAllowUserToCreateAssetsOnUserCreated() {
-        // when: a user created event is published
         send(
                 AggregateType.of("USER"),
                 AggregateId.of("USER_ID"),
@@ -69,13 +72,11 @@ public class AssetsMessagingTest extends EventListenerTest {
                 Map.of()
         );
 
-        // then: the user is allowed to create assets
         verify(module, timeout(5000).times(1)).allowUserToCreateAssets(eq("USER_ID"));
     }
 
     @Test
     void shouldRemovePermissionsForUserOnUserDeleted() {
-        // when: a user deleted event is published
         send(
                 AggregateType.of("USER"),
                 AggregateId.of("USER_ID"),
@@ -87,13 +88,11 @@ public class AssetsMessagingTest extends EventListenerTest {
                 Map.of()
         );
 
-        // then: the users permissions are removed
         verify(module, timeout(5000).times(1)).removePermissionsForUser(eq("USER_ID"));
     }
 
     @Test
     void shouldAllowUserToManageAssetOnAssetCreated() {
-        // when: an asset created event is published
         send(
                 AggregateType.of("ASSET"),
                 AggregateId.of("ASSET_ID"),
@@ -105,13 +104,27 @@ public class AssetsMessagingTest extends EventListenerTest {
                 Map.of()
         );
 
-        // then: the user is allowed to manage the asset
         verify(module, timeout(5000).times(1)).allowUserToManageAsset(eq("ASSET_ID"), eq("USER_ID"));
     }
 
     @Test
+    void shouldUpdateLookupOnAssetCreated() {
+        send(
+                AggregateType.of("ASSET"),
+                AggregateId.of("ASSET_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.user(AgentId.of("USER_ID")),
+                Instant.now(),
+                Map.of()
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetInLookup(eq("ASSET_ID"));
+    }
+
+    @Test
     void shouldRemovePermissionsForAssetOnAssetDeleted() {
-        // when: an asset deleted event is published
         send(
                 AggregateType.of("ASSET"),
                 AggregateId.of("ASSET_ID"),
@@ -123,13 +136,27 @@ public class AssetsMessagingTest extends EventListenerTest {
                 Map.of()
         );
 
-        // then: the assets permissions are removed
         verify(module, timeout(5000).times(1)).removePermissionsOnAsset(eq("ASSET_ID"));
     }
 
     @Test
+    void shouldRemoveLookupOnAssetDeleted() {
+        send(
+                AggregateType.of("ASSET"),
+                AggregateId.of("ASSET_ID"),
+                Version.of(1),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        verify(module, timeout(5000).times(1)).removeAssetFromLookup(eq("ASSET_ID"));
+    }
+
+    @Test
     void shouldAllowAnonymousUsersToReadAssetOnAssetCreated() {
-        // when: an asset created event is published
         send(
                 AggregateType.of("ASSET"),
                 AggregateId.of("ASSET_ID"),
@@ -141,13 +168,11 @@ public class AssetsMessagingTest extends EventListenerTest {
                 Map.of()
         );
 
-        // then: anonymous users are allowed to read the asset
         verify(module, timeout(5000).times(1)).allowAnonymousUsersToReadAsset(eq("ASSET_ID"));
     }
 
     @Test
     void shouldDisallowAnonymousUsersToReadAssetOnAssetDeleted() {
-        // when: an asset deleted event is published
         send(
                 AggregateType.of("ASSET"),
                 AggregateId.of("ASSET_ID"),
@@ -159,7 +184,6 @@ public class AssetsMessagingTest extends EventListenerTest {
                 Map.of()
         );
 
-        // then: anonymous users are disallowed to read the asset
         verify(module, timeout(5000).times(1)).disallowAnonymousUsersToReadAsset(eq("ASSET_ID"));
     }
 
@@ -173,13 +197,14 @@ public class AssetsMessagingTest extends EventListenerTest {
                 Version.zero(),
                 Agent.system(),
                 Instant.now(),
-                Map.of("image", "ASSET_1")
+                Map.of("image", "ASSET_1", "name", "Blumentraum")
         );
 
         verify(module, timeout(5000).times(1)).updateAssetReferences(
                 eq(AssetReferenceResourceType.FABRIC),
                 eq(AssetResourceId.of("FABRIC_ID")),
-                eq(Set.of(AssetId.of("ASSET_1")))
+                eq(Set.of(AssetId.of("ASSET_1"))),
+                eq("Blumentraum")
         );
     }
 
@@ -200,6 +225,26 @@ public class AssetsMessagingTest extends EventListenerTest {
                 eq(AssetReferenceResourceType.FABRIC),
                 eq(AssetResourceId.of("FABRIC_ID")),
                 eq(Set.of(AssetId.of("ASSET_2")))
+        );
+    }
+
+    @Test
+    void shouldUpdateResourceNameOnFabricRenamed() {
+        send(
+                AggregateType.of("FABRIC"),
+                AggregateId.of("FABRIC_ID"),
+                Version.of(3),
+                EventName.of("RENAMED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("name", "New Fabric Name")
+        );
+
+        verify(module, timeout(5000).times(1)).updateResourceNameInReferences(
+                eq(AssetReferenceResourceType.FABRIC),
+                eq(AssetResourceId.of("FABRIC_ID")),
+                eq("New Fabric Name")
         );
     }
 
@@ -232,13 +277,14 @@ public class AssetsMessagingTest extends EventListenerTest {
                 Version.zero(),
                 Agent.system(),
                 Instant.now(),
-                Map.of("images", List.of("ASSET_1", "ASSET_2"))
+                Map.of("images", List.of("ASSET_1", "ASSET_2"), "name", "Babyshirt")
         );
 
         verify(module, timeout(5000).times(1)).updateAssetReferences(
                 eq(AssetReferenceResourceType.PATTERN),
                 eq(AssetResourceId.of("PATTERN_ID")),
-                eq(Set.of(AssetId.of("ASSET_1"), AssetId.of("ASSET_2")))
+                eq(Set.of(AssetId.of("ASSET_1"), AssetId.of("ASSET_2"))),
+                eq("Babyshirt")
         );
     }
 
@@ -259,6 +305,26 @@ public class AssetsMessagingTest extends EventListenerTest {
                 eq(AssetReferenceResourceType.PATTERN),
                 eq(AssetResourceId.of("PATTERN_ID")),
                 eq(Set.of(AssetId.of("ASSET_3")))
+        );
+    }
+
+    @Test
+    void shouldUpdateResourceNameOnPatternRenamed() {
+        send(
+                AggregateType.of("PATTERN"),
+                AggregateId.of("PATTERN_ID"),
+                Version.of(3),
+                EventName.of("RENAMED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("name", "New Pattern Name")
+        );
+
+        verify(module, timeout(5000).times(1)).updateResourceNameInReferences(
+                eq(AssetReferenceResourceType.PATTERN),
+                eq(AssetResourceId.of("PATTERN_ID")),
+                eq("New Pattern Name")
         );
     }
 
@@ -291,13 +357,14 @@ public class AssetsMessagingTest extends EventListenerTest {
                 Version.zero(),
                 Agent.system(),
                 Instant.now(),
-                Map.of("images", List.of("ASSET_1"))
+                Map.of("images", List.of("ASSET_1"), "number", "P-001")
         );
 
         verify(module, timeout(5000).times(1)).updateAssetReferences(
                 eq(AssetReferenceResourceType.PRODUCT),
                 eq(AssetResourceId.of("PRODUCT_ID")),
-                eq(Set.of(AssetId.of("ASSET_1")))
+                eq(Set.of(AssetId.of("ASSET_1"))),
+                eq("P-001")
         );
     }
 
@@ -350,13 +417,14 @@ public class AssetsMessagingTest extends EventListenerTest {
                 Version.zero(),
                 Agent.system(),
                 Instant.now(),
-                Map.of("imageId", "ASSET_1")
+                Map.of("imageId", "ASSET_1", "sortOrder", 0)
         );
 
         verify(module, timeout(5000).times(1)).updateAssetReferences(
                 eq(AssetReferenceResourceType.HIGHLIGHT),
                 eq(AssetResourceId.of("HIGHLIGHT_ID")),
-                eq(Set.of(AssetId.of("ASSET_1")))
+                eq(Set.of(AssetId.of("ASSET_1"))),
+                eq("")
         );
     }
 

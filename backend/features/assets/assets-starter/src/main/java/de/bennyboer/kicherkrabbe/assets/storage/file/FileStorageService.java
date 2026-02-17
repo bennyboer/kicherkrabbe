@@ -94,6 +94,15 @@ public class FileStorageService implements StorageService {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
+    @Override
+    public Mono<Long> getSize(AssetId assetId, Location location) {
+        FileName fileName = location.getFileName().orElseThrow();
+        Path path = resolveSafePath(fileName);
+
+        return Mono.fromCallable(() -> Files.size(path))
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
     private Path resolveSafePath(FileName fileName) {
         Path absoluteRootPath = rootPath.toAbsolutePath();
         Path path = absoluteRootPath.resolve(fileName.getValue()).normalize();

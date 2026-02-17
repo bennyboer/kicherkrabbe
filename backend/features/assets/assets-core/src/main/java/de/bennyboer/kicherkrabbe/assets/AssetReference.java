@@ -16,12 +16,24 @@ public class AssetReference {
 
     AssetResourceId resourceId;
 
-    public static AssetReference of(AssetId assetId, AssetReferenceResourceType resourceType, AssetResourceId resourceId) {
+    String resourceName;
+
+    public static AssetReference of(
+            AssetId assetId,
+            AssetReferenceResourceType resourceType,
+            AssetResourceId resourceId,
+            String resourceName
+    ) {
         notNull(assetId, "Asset ID must be given");
         notNull(resourceType, "Resource type must be given");
         notNull(resourceId, "Resource ID must be given");
+        notNull(resourceName, "Resource name must be given");
 
-        return new AssetReference(assetId, resourceType, resourceId);
+        return new AssetReference(assetId, resourceType, resourceId, resourceName);
+    }
+
+    public static AssetReference of(AssetId assetId, AssetReferenceResourceType resourceType, AssetResourceId resourceId) {
+        return of(assetId, resourceType, resourceId, "");
     }
 
 }

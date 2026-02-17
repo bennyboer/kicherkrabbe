@@ -1,6 +1,8 @@
 package de.bennyboer.kicherkrabbe.assets;
 
 import de.bennyboer.kicherkrabbe.assets.image.ImageVariantService;
+import de.bennyboer.kicherkrabbe.assets.persistence.lookup.AssetLookupRepo;
+import de.bennyboer.kicherkrabbe.assets.persistence.lookup.inmemory.InMemoryAssetLookupRepo;
 import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReferenceRepo;
 import de.bennyboer.kicherkrabbe.assets.persistence.references.inmemory.InMemoryAssetReferenceRepo;
 import de.bennyboer.kicherkrabbe.assets.samples.SampleAsset;
@@ -43,6 +45,8 @@ public class AssetsModuleTest {
 
     private AssetReferenceRepo assetReferenceRepo;
 
+    private AssetLookupRepo assetLookupRepo;
+
     private AssetsModule module;
 
     @BeforeEach
@@ -61,6 +65,7 @@ public class AssetsModuleTest {
         storageService = new FileStorageService(tempDir);
         imageVariantService = new ImageVariantService(storageService);
         assetReferenceRepo = new InMemoryAssetReferenceRepo();
+        assetLookupRepo = new InMemoryAssetLookupRepo();
 
         var config = new AssetsModuleConfig();
         module = config.assetsModule(
@@ -68,7 +73,8 @@ public class AssetsModuleTest {
                 permissionsService,
                 storageService,
                 imageVariantService,
-                assetReferenceRepo
+                assetReferenceRepo,
+                assetLookupRepo
         );
     }
 
@@ -85,6 +91,7 @@ public class AssetsModuleTest {
             allowUserToManageAsset(assetId, agent.getId().getValue());
         }
         allowAnonymousUsersToReadAsset(assetId);
+        updateAssetInLookup(assetId);
 
         return assetId;
     }
@@ -99,6 +106,7 @@ public class AssetsModuleTest {
 
     public void deleteAsset(String assetId, long version, Agent agent) {
         module.deleteAsset(assetId, version, agent).block();
+        removeAssetFromLookup(assetId);
     }
 
     public byte[] getAssetContent(String assetId, Agent agent) {
@@ -124,13 +132,51 @@ public class AssetsModuleTest {
         return module.getAssetContent(assetId, width, agent).block();
     }
 
+    public AssetsPage getAssets(
+            String searchTerm,
+            Set<String> contentTypes,
+            String sortProperty,
+            String sortDirection,
+            long skip,
+            long limit,
+            Agent agent
+    ) {
+        return module.getAssets(searchTerm, contentTypes, sortProperty, sortDirection, skip, limit, agent).block();
+    }
+
+    public AssetsPage getAssets(long skip, long limit, Agent agent) {
+        return getAssets(null, Set.of(), null, null, skip, limit, agent);
+    }
+
+    public List<String> getContentTypes(Agent agent) {
+        return module.getContentTypes(agent).block();
+    }
+
     public void allowAnonymousUsersToReadAsset(String assetId) {
         module.allowAnonymousUsersToReadAsset(assetId).block();
+    }
+
+    public void updateAssetReferences(
+            AssetReferenceResourceType resourceType,
+            String resourceId,
+            Set<String> assetIds,
+            String resourceName
+    ) {
+        Set<AssetId> ids = assetIds.stream().map(AssetId::of).collect(Collectors.toSet());
+        module.updateAssetReferences(resourceType, AssetResourceId.of(resourceId), ids, resourceName).block();
     }
 
     public void updateAssetReferences(AssetReferenceResourceType resourceType, String resourceId, Set<String> assetIds) {
         Set<AssetId> ids = assetIds.stream().map(AssetId::of).collect(Collectors.toSet());
         module.updateAssetReferences(resourceType, AssetResourceId.of(resourceId), ids).block();
+    }
+
+    public void updateResourceNameInReferences(
+            AssetReferenceResourceType resourceType,
+            String resourceId,
+            String resourceName
+    ) {
+        module.updateResourceNameInReferences(resourceType, AssetResourceId.of(resourceId), resourceName).block();
     }
 
     public void removeAssetReferencesByResource(AssetReferenceResourceType resourceType, String resourceId) {
@@ -143,6 +189,14 @@ public class AssetsModuleTest {
 
     private void allowUserToManageAsset(String assetId, String userId) {
         module.allowUserToManageAsset(assetId, userId).block();
+    }
+
+    private void updateAssetInLookup(String assetId) {
+        module.updateAssetInLookup(assetId).block();
+    }
+
+    private void removeAssetFromLookup(String assetId) {
+        module.removeAssetFromLookup(assetId).block();
     }
 
 }

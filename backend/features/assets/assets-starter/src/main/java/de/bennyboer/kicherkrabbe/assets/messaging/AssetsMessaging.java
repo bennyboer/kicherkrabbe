@@ -18,19 +18,25 @@ import java.util.stream.Collectors;
 @Configuration
 public class AssetsMessaging {
 
-    record FabricCreatedEvent(String image) {
+    record FabricCreatedEvent(String image, String name) {
     }
 
     record FabricImageUpdatedEvent(String image) {
     }
 
-    record PatternCreatedEvent(List<String> images) {
+    record FabricRenamedEvent(String name) {
+    }
+
+    record PatternCreatedEvent(List<String> images, String name) {
     }
 
     record PatternImagesUpdatedEvent(List<String> images) {
     }
 
-    record ProductCreatedEvent(List<String> images) {
+    record PatternRenamedEvent(String name) {
+    }
+
+    record ProductCreatedEvent(List<String> images, String number) {
     }
 
     record ProductImagesUpdatedEvent(List<String> images) {
@@ -94,6 +100,23 @@ public class AssetsMessaging {
         );
     }
 
+    @Bean("assets_onAssetCreatedUpdateLookup")
+    public EventListener onAssetCreatedUpdateLookup(
+            EventListenerFactory factory,
+            AssetsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "assets.asset-created-update-lookup",
+                AggregateType.of("ASSET"),
+                EventName.of("CREATED"),
+                (event) -> {
+                    String assetId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.updateAssetInLookup(assetId);
+                }
+        );
+    }
+
     @Bean("assets_onAssetDeletedRemovePermissionsForAsset")
     public EventListener onAssetDeletedRemovePermissionsForAsset(
             EventListenerFactory factory,
@@ -107,6 +130,23 @@ public class AssetsMessaging {
                     String assetId = event.getMetadata().getAggregateId().getValue();
 
                     return module.removePermissionsOnAsset(assetId);
+                }
+        );
+    }
+
+    @Bean("assets_onAssetDeletedRemoveLookup")
+    public EventListener onAssetDeletedRemoveLookup(
+            EventListenerFactory factory,
+            AssetsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "assets.asset-deleted-remove-lookup",
+                AggregateType.of("ASSET"),
+                EventName.of("DELETED"),
+                (event) -> {
+                    String assetId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.removeAssetFromLookup(assetId);
                 }
         );
     }
@@ -161,7 +201,8 @@ public class AssetsMessaging {
                     return module.updateAssetReferences(
                             AssetReferenceResourceType.FABRIC,
                             AssetResourceId.of(fabricId),
-                            Set.of(AssetId.of(event.image()))
+                            Set.of(AssetId.of(event.image())),
+                            event.name()
                     );
                 }
         );
@@ -184,6 +225,28 @@ public class AssetsMessaging {
                             AssetReferenceResourceType.FABRIC,
                             AssetResourceId.of(fabricId),
                             Set.of(AssetId.of(event.image()))
+                    );
+                }
+        );
+    }
+
+    @Bean("assets_onFabricRenamedUpdateResourceName")
+    public EventListener onFabricRenamedUpdateResourceName(
+            EventListenerFactory factory,
+            AssetsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "assets.fabric-renamed-update-resource-name",
+                AggregateType.of("FABRIC"),
+                EventName.of("RENAMED"),
+                FabricRenamedEvent.class,
+                (metadata, event) -> {
+                    String fabricId = metadata.getAggregateId().getValue();
+
+                    return module.updateResourceNameInReferences(
+                            AssetReferenceResourceType.FABRIC,
+                            AssetResourceId.of(fabricId),
+                            event.name()
                     );
                 }
         );
@@ -225,7 +288,8 @@ public class AssetsMessaging {
                     return module.updateAssetReferences(
                             AssetReferenceResourceType.PATTERN,
                             AssetResourceId.of(patternId),
-                            toAssetIds(event.images())
+                            toAssetIds(event.images()),
+                            event.name()
                     );
                 }
         );
@@ -248,6 +312,28 @@ public class AssetsMessaging {
                             AssetReferenceResourceType.PATTERN,
                             AssetResourceId.of(patternId),
                             toAssetIds(event.images())
+                    );
+                }
+        );
+    }
+
+    @Bean("assets_onPatternRenamedUpdateResourceName")
+    public EventListener onPatternRenamedUpdateResourceName(
+            EventListenerFactory factory,
+            AssetsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "assets.pattern-renamed-update-resource-name",
+                AggregateType.of("PATTERN"),
+                EventName.of("RENAMED"),
+                PatternRenamedEvent.class,
+                (metadata, event) -> {
+                    String patternId = metadata.getAggregateId().getValue();
+
+                    return module.updateResourceNameInReferences(
+                            AssetReferenceResourceType.PATTERN,
+                            AssetResourceId.of(patternId),
+                            event.name()
                     );
                 }
         );
@@ -289,7 +375,8 @@ public class AssetsMessaging {
                     return module.updateAssetReferences(
                             AssetReferenceResourceType.PRODUCT,
                             AssetResourceId.of(productId),
-                            toAssetIds(event.images())
+                            toAssetIds(event.images()),
+                            event.number()
                     );
                 }
         );
@@ -353,7 +440,8 @@ public class AssetsMessaging {
                     return module.updateAssetReferences(
                             AssetReferenceResourceType.HIGHLIGHT,
                             AssetResourceId.of(highlightId),
-                            Set.of(AssetId.of(event.imageId()))
+                            Set.of(AssetId.of(event.imageId())),
+                            ""
                     );
                 }
         );
