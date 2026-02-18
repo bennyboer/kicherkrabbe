@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  Injector,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -14,6 +15,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FabricColor, FabricTopic, FabricType, FabricTypeAvailability } from '../../model';
 import { environment } from '../../../../../../../environments';
 import { none, Option, some } from '@kicherkrabbe/shared';
+import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
+import {
+  AssetSelectDialog,
+  AssetSelectDialogData,
+  AssetSelectDialogResult,
+} from '../../../assets/dialogs';
+import { AssetsService } from '../../../assets/services/assets.service';
 
 @Component({
   selector: 'app-create-fabric-page',
@@ -44,6 +52,8 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
   constructor(
     private readonly fabricsService: FabricsService,
     private readonly notificationService: NotificationService,
+    private readonly dialogService: DialogService,
+    private readonly assetsService: AssetsService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
   ) {}
@@ -157,8 +167,33 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     return this.canCreateFabric().pipe(map((canCreate) => !canCreate));
   }
 
-  onImageUploaded(imageIds: string[]): void {
-    this.imageId$.next(some(imageIds[0]));
+  selectImage(): void {
+    const dialog = Dialog.create<AssetSelectDialogResult>({
+      title: 'Bild auswählen',
+      componentType: AssetSelectDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: AssetSelectDialogData,
+            useValue: AssetSelectDialogData.of({
+              multiple: false,
+              watermark: true,
+              initialContentTypes: ['image/png', 'image/jpeg'],
+            }),
+          },
+          { provide: AssetsService, useValue: this.assetsService },
+        ],
+      }),
+    });
+    this.dialogService.open(dialog);
+    this.dialogService
+      .waitUntilClosed(dialog.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        dialog.getResult().ifSome((result) => {
+          this.imageId$.next(some(result.assetIds[0]));
+        });
+      });
   }
 
   getImageId(): Observable<string> {

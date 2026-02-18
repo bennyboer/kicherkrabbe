@@ -9,6 +9,12 @@ import { HighlightsService } from '../../services';
 import { environment } from '../../../../../../../environments';
 import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
 import { AddLinkDialog, AddLinkDialogData, AddLinkDialogResult } from '../../dialogs';
+import {
+  AssetSelectDialog,
+  AssetSelectDialogData,
+  AssetSelectDialogResult,
+} from '../../../assets/dialogs';
+import { AssetsService } from '../../../assets/services/assets.service';
 
 @Component({
   selector: 'app-highlight-page',
@@ -28,7 +34,6 @@ export class HighlightPage implements OnInit, OnDestroy {
   protected readonly updatingSortOrder$ = new BehaviorSubject<boolean>(false);
   protected readonly removingLinkId$ = new BehaviorSubject<string | null>(null);
 
-  protected readonly editingImage$ = new BehaviorSubject<boolean>(false);
   protected readonly editingSortOrder$ = new BehaviorSubject<boolean>(false);
 
   protected readonly sortOrderValue$ = new BehaviorSubject<number>(0);
@@ -44,6 +49,7 @@ export class HighlightPage implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly highlightsService: HighlightsService,
     private readonly dialogService: DialogService,
+    private readonly assetsService: AssetsService,
     private readonly notificationService: NotificationService,
   ) {}
 
@@ -65,7 +71,6 @@ export class HighlightPage implements OnInit, OnDestroy {
     this.updatingImage$.complete();
     this.updatingSortOrder$.complete();
     this.removingLinkId$.complete();
-    this.editingImage$.complete();
     this.editingSortOrder$.complete();
     this.sortOrderValue$.complete();
 
@@ -153,53 +158,63 @@ export class HighlightPage implements OnInit, OnDestroy {
       });
   }
 
-  startEditingImage(): void {
-    this.editingImage$.next(true);
-  }
-
-  cancelEditingImage(): void {
-    this.editingImage$.next(false);
-  }
-
-  onImageUploaded(highlight: Highlight, newImageIds: string[]): void {
-    if (newImageIds.length === 0) {
-      return;
-    }
-
-    const newImageId = newImageIds[0];
-    this.updatingImage$.next(true);
-    this.highlightsService
-      .updateImage(highlight.id, highlight.version, newImageId)
-      .pipe(
-        first(),
-        finalize(() => {
-          this.updatingImage$.next(false);
-          this.editingImage$.next(false);
-        }),
-      )
-      .subscribe({
-        next: (version) => {
-          this.notificationService.publish({
-            type: 'success',
-            message: 'Das Bild wurde aktualisiert.',
-          });
-          this.highlight$.next(some(highlight.updateImage(version, newImageId)));
-        },
-        error: (e) => {
-          console.error(e);
-          if (this.isVersionConflict(e)) {
-            this.notificationService.publish({
-              type: 'error',
-              message: 'Das Highlight wurde zwischenzeitlich geändert. Die Seite wird neu geladen.',
+  selectImage(highlight: Highlight): void {
+    const dialog = Dialog.create<AssetSelectDialogResult>({
+      title: 'Bild auswählen',
+      componentType: AssetSelectDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: AssetSelectDialogData,
+            useValue: AssetSelectDialogData.of({
+              multiple: false,
+              watermark: false,
+              initialContentTypes: ['image/png', 'image/jpeg'],
+            }),
+          },
+          { provide: AssetsService, useValue: this.assetsService },
+        ],
+      }),
+    });
+    this.dialogService.open(dialog);
+    this.dialogService
+      .waitUntilClosed(dialog.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        dialog.getResult().ifSome((result) => {
+          const newImageId = result.assetIds[0];
+          this.updatingImage$.next(true);
+          this.highlightsService
+            .updateImage(highlight.id, highlight.version, newImageId)
+            .pipe(
+              first(),
+              finalize(() => this.updatingImage$.next(false)),
+            )
+            .subscribe({
+              next: (version) => {
+                this.notificationService.publish({
+                  type: 'success',
+                  message: 'Das Bild wurde aktualisiert.',
+                });
+                this.highlight$.next(some(highlight.updateImage(version, newImageId)));
+              },
+              error: (e) => {
+                console.error(e);
+                if (this.isVersionConflict(e)) {
+                  this.notificationService.publish({
+                    type: 'error',
+                    message: 'Das Highlight wurde zwischenzeitlich geändert. Die Seite wird neu geladen.',
+                  });
+                  this.reloadHighlight();
+                } else {
+                  this.notificationService.publish({
+                    type: 'error',
+                    message: 'Das Bild konnte nicht aktualisiert werden.',
+                  });
+                }
+              },
             });
-            this.reloadHighlight();
-          } else {
-            this.notificationService.publish({
-              type: 'error',
-              message: 'Das Bild konnte nicht aktualisiert werden.',
-            });
-          }
-        },
+        });
       });
   }
 

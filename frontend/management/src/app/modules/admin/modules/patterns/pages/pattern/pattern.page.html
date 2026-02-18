@@ -164,30 +164,14 @@
             </ul>
           }
         }
-        @if (imageUploadActive$ | async) {
-          <app-image-upload
-            [multiple]="true"
-            [desiredWidth]="1024"
-            [watermark]="watermark$ | async"
-            (uploaded)="onImagesUploaded($event)">
-          </app-image-upload>
-          <div>
-            <app-checkbox
-              label="Wasserzeichen hinzufügen"
-              [checked]="watermark$ | async"
-              (checkedChanges)="onWatermarkChanged($event)">
-            </app-checkbox>
-          </div>
-        } @else {
-          <div class="add-image-button-container">
-            <app-button (click)="activateImageUpload()">
-              <span class="icon-button">
-                <span class="material-icons">add</span>
-                <span> Bilder hinzufügen </span>
-              </span>
-            </app-button>
-          </div>
-        }
+        <div class="add-image-button-container">
+          <app-button (click)="selectImages()">
+            <span class="icon-button">
+              <span class="material-icons">add</span>
+              <span> Bilder hinzufügen </span>
+            </span>
+          </app-button>
+        </div>
         @if (imagesError$ | async) {
           <app-note level="error"> Bitte lade mindestens ein Bild hoch.</app-note>
         }
