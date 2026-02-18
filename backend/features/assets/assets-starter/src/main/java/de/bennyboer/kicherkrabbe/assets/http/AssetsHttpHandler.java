@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.assets.http;
 
+import de.bennyboer.kicherkrabbe.assets.AssetStillReferencedError;
 import de.bennyboer.kicherkrabbe.assets.AssetTooLargeError;
 import de.bennyboer.kicherkrabbe.assets.AssetsModule;
 import de.bennyboer.kicherkrabbe.assets.http.api.AssetDTO;
@@ -175,6 +176,10 @@ public class AssetsHttpHandler {
         return toAgent(request)
                 .flatMap(agent -> module.deleteAsset(assetId, version, agent))
                 .then(Mono.defer(() -> ServerResponse.ok().build()))
+                .onErrorResume(
+                        AssetStillReferencedError.class,
+                        _ -> ServerResponse.status(HttpStatus.CONFLICT).build()
+                )
                 .as(transactionOperator::transactional);
     }
 

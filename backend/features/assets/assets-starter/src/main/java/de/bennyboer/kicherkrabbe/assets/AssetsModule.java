@@ -175,6 +175,7 @@ public class AssetsModule {
         var id = AssetId.of(assetId);
 
         return assertAgentIsAllowedTo(agent, DELETE, id)
+                .then(assertAssetIsNotReferenced(id))
                 .then(assetService.getOrThrow(id))
                 .delayUntil(ignored -> assetService.delete(id, Version.of(version), agent))
                 .delayUntil(asset -> {
@@ -397,6 +398,14 @@ public class AssetsModule {
             case "FILE_SIZE" -> AssetsSortProperty.FILE_SIZE;
             default -> AssetsSortProperty.CREATED_AT;
         };
+    }
+
+    private Mono<Void> assertAssetIsNotReferenced(AssetId assetId) {
+        return assetReferenceRepo.findByAssetId(assetId)
+                .hasElements()
+                .flatMap(hasReferences -> hasReferences
+                        ? Mono.error(new AssetStillReferencedError())
+                        : Mono.empty());
     }
 
     private AssetsSortDirection parseDirection(String sortDirection) {
