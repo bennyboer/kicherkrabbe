@@ -91,7 +91,8 @@ public class MongoAssetLookupRepo extends MongoEventSourcingReadModelRepo<AssetI
                                 .stream()
                                 .map(serializer::deserialize)
                                 .toList()
-                ));
+                ))
+                .defaultIfEmpty(LookupAssetPage.of(skip, limit, 0, List.of()));
     }
 
     @Override

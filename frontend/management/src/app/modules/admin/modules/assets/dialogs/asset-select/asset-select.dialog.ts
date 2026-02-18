@@ -47,6 +47,7 @@ export class AssetSelectDialog implements OnDestroy {
   browser!: AssetBrowserComponent;
 
   protected readonly uploadActive$ = new BehaviorSubject<boolean>(false);
+  protected readonly watermark$ = new BehaviorSubject<boolean>(true);
 
   private readonly destroy$ = new Subject<void>();
 
@@ -55,13 +56,20 @@ export class AssetSelectDialog implements OnDestroy {
     private readonly dialog: Dialog<AssetSelectDialogResult>,
     private readonly dialogService: DialogService,
     private readonly assetsService: AssetsService,
-  ) {}
+  ) {
+    this.watermark$.next(data.watermark);
+  }
 
   ngOnDestroy(): void {
-    this.uploadActive$.complete();
-
     this.destroy$.next();
     this.destroy$.complete();
+
+    this.uploadActive$.complete();
+    this.watermark$.complete();
+  }
+
+  onWatermarkChanged(value: boolean): void {
+    this.watermark$.next(value);
   }
 
   activateUpload(): void {
