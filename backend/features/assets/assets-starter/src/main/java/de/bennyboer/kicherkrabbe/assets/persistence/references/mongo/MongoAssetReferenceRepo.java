@@ -14,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ public class MongoAssetReferenceRepo implements AssetReferenceRepo {
 
         createIndex(new Index().on("assetId", ASC));
         createIndex(new Index().on("resourceType", ASC).on("resourceId", ASC));
-        createIndex(new Index().on("resourceName", ASC));
+        createIndex(new Index().on("resourceNameLower", ASC));
     }
 
     @Override
@@ -49,7 +50,8 @@ public class MongoAssetReferenceRepo implements AssetReferenceRepo {
                 .set("assetId", doc.assetId)
                 .set("resourceType", doc.resourceType)
                 .set("resourceId", doc.resourceId)
-                .set("resourceName", doc.resourceName);
+                .set("resourceName", doc.resourceName)
+                .set("resourceNameLower", doc.resourceNameLower);
 
         return template.upsert(query, update, collectionName).then();
     }
@@ -74,13 +76,23 @@ public class MongoAssetReferenceRepo implements AssetReferenceRepo {
 
     @Override
     public Flux<AssetId> findAssetIdsByResourceNameContaining(String searchTerm) {
-        String quotedSearchTerm = Pattern.quote(searchTerm);
-        Criteria criteria = where("resourceName").regex(quotedSearchTerm, "i");
+        String quotedSearchTerm = Pattern.quote(searchTerm.toLowerCase(Locale.ROOT));
+        Criteria criteria = where("resourceNameLower").regex(quotedSearchTerm);
         Query query = query(criteria);
 
         return template.find(query, MongoAssetReference.class, collectionName)
                 .map(doc -> AssetId.of(doc.assetId))
                 .distinct();
+    }
+
+    @Override
+    public Flux<AssetReference> findByResource(AssetReferenceResourceType resourceType, AssetResourceId resourceId) {
+        Criteria criteria = where("resourceType").is(resourceType.name())
+                .and("resourceId").is(resourceId.getValue());
+        Query query = query(criteria);
+
+        return template.find(query, MongoAssetReference.class, collectionName)
+                .map(MongoAssetReferenceTransformer::fromMongo);
     }
 
     @Override
@@ -105,7 +117,9 @@ public class MongoAssetReferenceRepo implements AssetReferenceRepo {
         Criteria criteria = where("resourceType").is(resourceType.name())
                 .and("resourceId").is(resourceId.getValue());
         Query query = query(criteria);
-        Update update = new Update().set("resourceName", resourceName);
+        Update update = new Update()
+                .set("resourceName", resourceName)
+                .set("resourceNameLower", resourceName.toLowerCase(Locale.ROOT));
 
         return template.updateMulti(query, update, collectionName).then();
     }

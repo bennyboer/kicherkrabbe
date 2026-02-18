@@ -61,11 +61,11 @@ export class AssetSelectDialog implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.uploadActive$.complete();
-    this.watermark$.complete();
-
     this.destroy$.next();
     this.destroy$.complete();
+
+    this.uploadActive$.complete();
+    this.watermark$.complete();
   }
 
   onWatermarkChanged(value: boolean): void {

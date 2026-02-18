@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { AssetsService } from '../../services/assets.service';
+import { BehaviorSubject } from 'rxjs';
 import { AssetBrowserComponent } from '../../components';
 
 @Component({
@@ -15,18 +14,11 @@ export class AssetsPage implements OnDestroy {
   browser!: AssetBrowserComponent;
 
   protected readonly uploadActive$ = new BehaviorSubject<boolean>(false);
-  protected readonly uploading$ = new BehaviorSubject<boolean>(false);
-
-  private readonly destroy$ = new Subject<void>();
-
-  constructor(private readonly assetsService: AssetsService) {}
+  protected readonly watermark$ = new BehaviorSubject<boolean>(true);
 
   ngOnDestroy(): void {
     this.uploadActive$.complete();
-    this.uploading$.complete();
-
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.watermark$.complete();
   }
 
   activateUpload(): void {
@@ -35,6 +27,10 @@ export class AssetsPage implements OnDestroy {
 
   cancelUpload(): void {
     this.uploadActive$.next(false);
+  }
+
+  onWatermarkChanged(value: boolean): void {
+    this.watermark$.next(value);
   }
 
   onImagesUploaded(assetIds: string[]): void {

@@ -72,7 +72,7 @@ export class AssetsService {
   }
 
   deleteAsset(id: string, version: number): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/assets/${id}`, {
+    return this.http.delete<void>(`${environment.apiUrl}/assets/${id}/`, {
       params: { version: version.toString() },
     });
   }

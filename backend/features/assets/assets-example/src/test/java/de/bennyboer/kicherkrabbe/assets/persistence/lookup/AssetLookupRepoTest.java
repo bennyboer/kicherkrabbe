@@ -136,6 +136,28 @@ public abstract class AssetLookupRepoTest {
     }
 
     @Test
+    void shouldUpdateExistingAsset() {
+        var asset = LookupAsset.of(AssetId.of("ASSET_1"), Version.of(0), ContentType.of("image/jpeg"), 1024, Instant.parse("2024-01-01T00:00:00Z"));
+        update(asset);
+
+        var updated = LookupAsset.of(AssetId.of("ASSET_1"), Version.of(1), ContentType.of("image/jpeg"), 2048, Instant.parse("2024-01-01T00:00:00Z"));
+        update(updated);
+
+        var page = find(
+                List.of(AssetId.of("ASSET_1")),
+                Set.of(),
+                AssetsSortProperty.CREATED_AT,
+                AssetsSortDirection.ASCENDING,
+                0,
+                30
+        );
+
+        assertThat(page.getTotal()).isEqualTo(1);
+        assertThat(page.getResults().getFirst().getFileSize()).isEqualTo(2048);
+        assertThat(page.getResults().getFirst().getVersion()).isEqualTo(Version.of(1));
+    }
+
+    @Test
     void shouldRemoveAsset() {
         var asset = LookupAsset.of(AssetId.of("ASSET_1"), Version.of(0), ContentType.of("image/jpeg"), 1024, Instant.parse("2024-01-01T00:00:00Z"));
         update(asset);

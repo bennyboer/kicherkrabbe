@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.assets.AssetReference;
 import de.bennyboer.kicherkrabbe.assets.AssetReferenceResourceType;
 import de.bennyboer.kicherkrabbe.assets.AssetResourceId;
 
+import java.util.Locale;
 import java.util.Optional;
 
 public class MongoAssetReferenceTransformer {
@@ -19,6 +20,7 @@ public class MongoAssetReferenceTransformer {
         result.resourceType = reference.getResourceType().name();
         result.resourceId = reference.getResourceId().getValue();
         result.resourceName = reference.getResourceName();
+        result.resourceNameLower = reference.getResourceName().toLowerCase(Locale.ROOT);
 
         return result;
     }
