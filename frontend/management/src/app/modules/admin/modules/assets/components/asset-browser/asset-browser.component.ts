@@ -22,9 +22,17 @@ import {
 import { AssetsService, AssetDTO } from '../../services/assets.service';
 import { Asset, AssetReference } from '../../model';
 import { DropdownItem } from '../../../../../shared/components/dropdown/dropdown.component';
+import { NotificationService } from '../../../../../shared';
 import { environment } from '../../../../../../../environments';
 
 type Mode = 'select' | 'manage';
+
+interface AssetViewModel {
+  asset: Asset;
+  selected: boolean;
+  confirmingDelete: boolean;
+  deleting: boolean;
+}
 
 @Component({
   selector: 'app-asset-browser',
@@ -56,16 +64,11 @@ export class AssetBrowserComponent implements OnInit, OnDestroy {
   @Output()
   assetsSelected = new EventEmitter<string[]>();
 
-  protected readonly assets$ = new BehaviorSubject<Asset[]>([]);
   protected readonly loading$ = new BehaviorSubject<boolean>(false);
-  protected readonly searchTerm$ = new BehaviorSubject<string>('');
-  protected readonly sortProperty$ = new BehaviorSubject<string>('CREATED_AT');
-  protected readonly sortDirection$ = new BehaviorSubject<string>('DESCENDING');
-  protected readonly contentTypeFilter$ = new BehaviorSubject<Set<string>>(new Set());
-  protected readonly availableContentTypes$ = new BehaviorSubject<string[]>([]);
-  protected readonly total$ = new BehaviorSubject<number>(0);
-  protected readonly selectedAssetIds$ = new BehaviorSubject<Set<string>>(new Set());
-  protected readonly deleting$ = new BehaviorSubject<Set<string>>(new Set());
+  protected readonly contentTypeItems$: Observable<DropdownItem[]>;
+  protected readonly contentTypeFilterArray$: Observable<string[]>;
+  protected readonly hasMore$: Observable<boolean>;
+  protected readonly assetViewModels$: Observable<AssetViewModel[]>;
 
   protected readonly sortItems: DropdownItem[] = [
     { id: 'CREATED_AT_DESC', label: 'Datum absteigend' },
@@ -74,11 +77,50 @@ export class AssetBrowserComponent implements OnInit, OnDestroy {
     { id: 'FILE_SIZE_ASC', label: 'Dateigröße aufsteigend' },
   ];
 
+  private readonly assets$ = new BehaviorSubject<Asset[]>([]);
+  private readonly searchTerm$ = new BehaviorSubject<string>('');
+  private readonly sortProperty$ = new BehaviorSubject<string>('CREATED_AT');
+  private readonly sortDirection$ = new BehaviorSubject<string>('DESCENDING');
+  private readonly contentTypeFilter$ = new BehaviorSubject<Set<string>>(new Set());
+  private readonly availableContentTypes$ = new BehaviorSubject<string[]>([]);
+  private readonly total$ = new BehaviorSubject<number>(0);
+  private readonly selectedAssetIds$ = new BehaviorSubject<Set<string>>(new Set());
+  private readonly confirmingDelete$ = new BehaviorSubject<Set<string>>(new Set());
+  private readonly deleting$ = new BehaviorSubject<Set<string>>(new Set());
   private readonly pageSize = 30;
   private readonly destroy$ = new Subject<void>();
   private readonly reload$ = new Subject<void>();
 
-  constructor(private readonly assetsService: AssetsService) {}
+  constructor(
+    private readonly assetsService: AssetsService,
+    private readonly notificationService: NotificationService,
+  ) {
+    this.contentTypeItems$ = this.availableContentTypes$.pipe(
+      map((types) => types.map((ct) => ({ id: ct, label: ct }))),
+    );
+
+    this.contentTypeFilterArray$ = this.contentTypeFilter$.pipe(map((s) => Array.from(s)));
+
+    this.hasMore$ = combineLatest([this.assets$, this.total$]).pipe(
+      map(([assets, total]) => assets.length < total),
+    );
+
+    this.assetViewModels$ = combineLatest([
+      this.assets$,
+      this.selectedAssetIds$,
+      this.confirmingDelete$,
+      this.deleting$,
+    ]).pipe(
+      map(([assets, selectedIds, confirmingIds, deletingIds]) =>
+        assets.map((asset) => ({
+          asset,
+          selected: selectedIds.has(asset.id),
+          confirmingDelete: confirmingIds.has(asset.id),
+          deleting: deletingIds.has(asset.id),
+        })),
+      ),
+    );
+  }
 
   ngOnInit(): void {
     this.loadContentTypes();
@@ -103,6 +145,9 @@ export class AssetBrowserComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+
     this.assets$.complete();
     this.loading$.complete();
     this.searchTerm$.complete();
@@ -112,20 +157,14 @@ export class AssetBrowserComponent implements OnInit, OnDestroy {
     this.availableContentTypes$.complete();
     this.total$.complete();
     this.selectedAssetIds$.complete();
+    this.confirmingDelete$.complete();
     this.deleting$.complete();
-
-    this.destroy$.next();
-    this.destroy$.complete();
     this.reload$.complete();
   }
 
   refresh(): void {
     this.loadContentTypes();
     this.reload$.next();
-  }
-
-  hasMore(): Observable<boolean> {
-    return combineLatest([this.assets$, this.total$]).pipe(map(([assets, total]) => assets.length < total));
   }
 
   loadMore(): void {
@@ -139,48 +178,15 @@ export class AssetBrowserComponent implements OnInit, OnDestroy {
     const el = event.target as HTMLElement;
     const threshold = 200;
     if (el.scrollHeight - el.scrollTop - el.clientHeight < threshold) {
-      combineLatest([this.hasMore(), this.loading$])
-        .pipe(
-          map(([hasMore, loading]) => hasMore && !loading),
-        )
-        .subscribe((shouldLoad) => {
-          if (shouldLoad) {
-            this.loadMore();
-          }
-        })
-        .unsubscribe();
+      const hasMore = this.assets$.value.length < this.total$.value;
+      if (hasMore && !this.loading$.value) {
+        this.loadMore();
+      }
     }
   }
 
   updateSearch(value: string): void {
     this.searchTerm$.next(value.trim());
-  }
-
-  updateSort(property: string, direction: string): void {
-    this.sortProperty$.next(property);
-    this.sortDirection$.next(direction);
-  }
-
-  toggleContentTypeFilter(contentType: string): void {
-    const current = new Set(this.contentTypeFilter$.value);
-    if (current.has(contentType)) {
-      current.delete(contentType);
-    } else {
-      current.add(contentType);
-    }
-    this.contentTypeFilter$.next(current);
-  }
-
-  clearContentTypeFilter(): void {
-    this.contentTypeFilter$.next(new Set());
-  }
-
-  toContentTypeItems(contentTypes: string[]): DropdownItem[] {
-    return contentTypes.map((ct) => ({ id: ct, label: ct }));
-  }
-
-  getContentTypeFilterArray(): Observable<string[]> {
-    return this.contentTypeFilter$.pipe(map((s) => Array.from(s)));
   }
 
   onSortChanged(selected: string[]): void {
@@ -191,7 +197,8 @@ export class AssetBrowserComponent implements OnInit, OnDestroy {
     const parts = value.split('_');
     const direction = parts.pop()!;
     const property = parts.join('_');
-    this.updateSort(property, direction === 'ASC' ? 'ASCENDING' : 'DESCENDING');
+    this.sortProperty$.next(property);
+    this.sortDirection$.next(direction === 'ASC' ? 'ASCENDING' : 'DESCENDING');
   }
 
   onContentTypeFilterChanged(selected: string[]): void {
@@ -216,18 +223,24 @@ export class AssetBrowserComponent implements OnInit, OnDestroy {
     }
   }
 
-  isSelected(assetId: string): Observable<boolean> {
-    return this.selectedAssetIds$.pipe(map((selected) => selected.has(assetId)));
-  }
-
   getSelectedIds(): string[] {
     return Array.from(this.selectedAssetIds$.value);
   }
 
-  deleteAsset(asset: Asset): void {
+  requestDeleteAsset(asset: Asset): void {
     if (asset.references.length > 0) {
       return;
     }
+
+    const confirming = new Set(this.confirmingDelete$.value);
+    if (!confirming.has(asset.id)) {
+      confirming.add(asset.id);
+      this.confirmingDelete$.next(confirming);
+      return;
+    }
+
+    confirming.delete(asset.id);
+    this.confirmingDelete$.next(confirming);
 
     const current = new Set(this.deleting$.value);
     current.add(asset.id);
@@ -244,16 +257,22 @@ export class AssetBrowserComponent implements OnInit, OnDestroy {
         const updated = new Set(this.deleting$.value);
         updated.delete(asset.id);
         this.deleting$.next(updated);
+        this.notificationService.publish({
+          type: 'error',
+          message: 'Die Datei konnte nicht gelöscht werden.',
+        });
       },
     });
   }
 
-  isDeleting(assetId: string): Observable<boolean> {
-    return this.deleting$.pipe(map((deleting) => deleting.has(assetId)));
+  cancelDelete(asset: Asset): void {
+    const confirming = new Set(this.confirmingDelete$.value);
+    confirming.delete(asset.id);
+    this.confirmingDelete$.next(confirming);
   }
 
   getImageUrl(assetId: string): string {
-    return `${environment.apiUrl}/assets/${assetId}/content`;
+    return `${environment.apiUrl}/assets/${assetId}/content?width=300`;
   }
 
   getReferenceSummary(asset: Asset): string {
@@ -279,16 +298,6 @@ export class AssetBrowserComponent implements OnInit, OnDestroy {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
-  getSortLabel(): Observable<string> {
-    return combineLatest([this.sortProperty$, this.sortDirection$]).pipe(
-      map(([prop, dir]) => {
-        const propLabel = prop === 'CREATED_AT' ? 'Datum' : 'Dateigröße';
-        const dirLabel = dir === 'ASCENDING' ? 'aufsteigend' : 'absteigend';
-        return `${propLabel} ${dirLabel}`;
-      }),
-    );
-  }
-
   private translateResourceType(type: string): string {
     switch (type) {
       case 'FABRIC':
@@ -308,7 +317,15 @@ export class AssetBrowserComponent implements OnInit, OnDestroy {
     this.assetsService
       .getContentTypes()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((types) => this.availableContentTypes$.next(types));
+      .subscribe({
+        next: (types) => this.availableContentTypes$.next(types),
+        error: () => {
+          this.notificationService.publish({
+            type: 'error',
+            message: 'Die Dateitypen konnten nicht geladen werden.',
+          });
+        },
+      });
   }
 
   private loadPage(skip: number): void {

@@ -3,10 +3,15 @@
     <div class="upload-area">
       <app-image-upload
         [multiple]="data.multiple"
-        [watermark]="data.watermark"
+        [watermark]="watermark$ | async"
         (uploaded)="onImagesUploaded($event)">
       </app-image-upload>
-      <div class="upload-cancel">
+      <div class="upload-options">
+        <app-checkbox
+          label="Wasserzeichen hinzufügen"
+          [checked]="watermark$ | async"
+          (checkedChanges)="onWatermarkChanged($event)">
+        </app-checkbox>
         <app-button (click)="cancelUpload()">Abbrechen</app-button>
       </div>
     </div>

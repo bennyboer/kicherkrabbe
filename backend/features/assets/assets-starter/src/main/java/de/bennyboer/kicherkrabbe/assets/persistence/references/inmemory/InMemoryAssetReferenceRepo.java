@@ -60,6 +60,12 @@ public class InMemoryAssetReferenceRepo implements AssetReferenceRepo {
     }
 
     @Override
+    public Flux<AssetReference> findByResource(AssetReferenceResourceType resourceType, AssetResourceId resourceId) {
+        return Flux.fromIterable(lookup.values())
+                .filter(ref -> ref.getResourceType() == resourceType && ref.getResourceId().equals(resourceId));
+    }
+
+    @Override
     public Mono<Void> updateResourceName(
             AssetReferenceResourceType resourceType,
             AssetResourceId resourceId,

@@ -9,8 +9,16 @@
         <div class="image-container">
           <img [src]="getImageUrl(imageId)" width="100%" alt="Stoffbild" />
         </div>
+        <div>
+          <app-button (click)="selectImage()">Bild ändern</app-button>
+        </div>
       } @else {
-        <app-image-upload (uploaded)="onImageUploaded($event)"></app-image-upload>
+        <app-button (click)="selectImage()">
+          <span class="icon-button">
+            <span class="material-icons">image</span>
+            <span>Bild auswählen</span>
+          </span>
+        </app-button>
       }
     </div>
   </div>
