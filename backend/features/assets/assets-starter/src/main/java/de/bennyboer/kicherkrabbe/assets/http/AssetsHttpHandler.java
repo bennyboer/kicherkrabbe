@@ -3,11 +3,13 @@ package de.bennyboer.kicherkrabbe.assets.http;
 import de.bennyboer.kicherkrabbe.assets.AssetStillReferencedError;
 import de.bennyboer.kicherkrabbe.assets.AssetTooLargeError;
 import de.bennyboer.kicherkrabbe.assets.AssetsModule;
+import de.bennyboer.kicherkrabbe.assets.StorageLimitExceededError;
 import de.bennyboer.kicherkrabbe.assets.http.api.AssetDTO;
 import de.bennyboer.kicherkrabbe.assets.http.api.AssetReferenceDTO;
 import de.bennyboer.kicherkrabbe.assets.http.api.requests.QueryAssetsRequest;
 import de.bennyboer.kicherkrabbe.assets.http.api.responses.QueryAssetsResponse;
 import de.bennyboer.kicherkrabbe.assets.http.api.responses.QueryContentTypesResponse;
+import de.bennyboer.kicherkrabbe.assets.http.api.responses.QueryStorageInfoResponse;
 import de.bennyboer.kicherkrabbe.assets.http.responses.UploadAssetResponse;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
@@ -103,6 +105,18 @@ public class AssetsHttpHandler {
                 .flatMap(response -> ServerResponse.ok().bodyValue(response));
     }
 
+    public Mono<ServerResponse> getStorageInfo(ServerRequest request) {
+        return toAgent(request)
+                .flatMap(module::getStorageInfo)
+                .map(info -> {
+                    var response = new QueryStorageInfoResponse();
+                    response.usedBytes = info.getUsedBytes();
+                    response.limitBytes = info.getLimitBytes();
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response));
+    }
+
     public Mono<ServerResponse> uploadAsset(ServerRequest request) {
         var transactionOperator = TransactionalOperator.create(transactionManager);
 
@@ -134,6 +148,10 @@ public class AssetsHttpHandler {
                 .onErrorResume(
                         AssetTooLargeError.class,
                         _ -> ServerResponse.status(HttpStatus.CONTENT_TOO_LARGE).build()
+                )
+                .onErrorResume(
+                        StorageLimitExceededError.class,
+                        _ -> ServerResponse.status(HttpStatus.INSUFFICIENT_STORAGE).build()
                 )
                 .as(transactionOperator::transactional);
     }

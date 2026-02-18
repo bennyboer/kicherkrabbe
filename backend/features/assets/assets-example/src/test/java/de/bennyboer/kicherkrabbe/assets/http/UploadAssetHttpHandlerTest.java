@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.assets.http;
 
 import de.bennyboer.kicherkrabbe.assets.AssetTooLargeError;
+import de.bennyboer.kicherkrabbe.assets.StorageLimitExceededError;
 import de.bennyboer.kicherkrabbe.assets.http.responses.UploadAssetResponse;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
@@ -15,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.CONTENT_TOO_LARGE;
+import static org.springframework.http.HttpStatus.INSUFFICIENT_STORAGE;
 
 public class UploadAssetHttpHandlerTest extends HttpHandlerTest {
 
@@ -134,6 +136,29 @@ public class UploadAssetHttpHandlerTest extends HttpHandlerTest {
 
         // then: the response is 413 Content Too Large
         exchange.expectStatus().isEqualTo(CONTENT_TOO_LARGE);
+    }
+
+    @Test
+    void shouldRespondWith507WhenStorageLimitExceeded() {
+        var multipartBodyBuilder = new MultipartBodyBuilder();
+        multipartBodyBuilder.part("file", "Hello, World!".getBytes())
+                .contentType(MediaType.IMAGE_JPEG);
+
+        var token = createTokenForUser("USER_ID");
+
+        when(module.uploadAsset(
+                eq("image/jpeg"),
+                any(),
+                eq(Agent.user(AgentId.of("USER_ID")))
+        )).thenReturn(Mono.error(new StorageLimitExceededError()));
+
+        var exchange = client.post()
+                .uri("/assets/upload")
+                .body(BodyInserters.fromMultipartData(multipartBodyBuilder.build()))
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        exchange.expectStatus().isEqualTo(INSUFFICIENT_STORAGE);
     }
 
 }

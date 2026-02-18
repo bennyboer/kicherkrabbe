@@ -55,13 +55,21 @@ public class AssetsModuleConfig {
     }
 
     @Bean
+    public AssetsModuleOptions assetsModuleOptions(
+            @Value("${assets.storage.limit:0}") long storageLimitBytes
+    ) {
+        return AssetsModuleOptions.of(storageLimitBytes);
+    }
+
+    @Bean
     public AssetsModule assetsModule(
             AssetService assetService,
             @Qualifier("assetsPermissionsService") PermissionsService permissionsService,
             StorageService storageService,
             ImageVariantService imageVariantService,
             AssetReferenceRepo assetReferenceRepo,
-            AssetLookupRepo assetLookupRepo
+            AssetLookupRepo assetLookupRepo,
+            AssetsModuleOptions options
     ) {
         return new AssetsModule(
                 assetService,
@@ -69,7 +77,8 @@ public class AssetsModuleConfig {
                 storageService,
                 imageVariantService,
                 assetReferenceRepo,
-                assetLookupRepo
+                assetLookupRepo,
+                options
         );
     }
 

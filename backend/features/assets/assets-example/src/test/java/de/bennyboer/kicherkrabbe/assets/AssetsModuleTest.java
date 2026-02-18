@@ -51,6 +51,10 @@ public class AssetsModuleTest {
 
     @BeforeEach
     void setUp() {
+        setUp(0);
+    }
+
+    void setUp(long storageLimitBytes) {
         assetService = new AssetService(
                 new InMemoryEventSourcingRepo(),
                 new LoggingEventPublisher(),
@@ -74,7 +78,8 @@ public class AssetsModuleTest {
                 storageService,
                 imageVariantService,
                 assetReferenceRepo,
-                assetLookupRepo
+                assetLookupRepo,
+                AssetsModuleOptions.of(storageLimitBytes)
         );
     }
 
@@ -181,6 +186,10 @@ public class AssetsModuleTest {
 
     public void removeAssetReferencesByResource(AssetReferenceResourceType resourceType, String resourceId) {
         module.removeAssetReferencesByResource(resourceType, AssetResourceId.of(resourceId)).block();
+    }
+
+    public StorageInfo getStorageInfo(Agent agent) {
+        return module.getStorageInfo(agent).block();
     }
 
     public List<AssetReference> findAssetReferences(String assetId) {

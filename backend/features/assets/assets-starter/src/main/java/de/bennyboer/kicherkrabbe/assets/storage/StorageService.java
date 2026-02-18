@@ -22,4 +22,6 @@ public interface StorageService {
 
     Mono<Long> getSize(AssetId assetId, Location location);
 
+    Mono<Long> getTotalStorageSize();
+
 }

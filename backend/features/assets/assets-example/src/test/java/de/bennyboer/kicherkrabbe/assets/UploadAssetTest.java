@@ -44,4 +44,21 @@ public class UploadAssetTest extends AssetsModuleTest {
                 .matches(e -> e.getCause() instanceof AssetTooLargeError);
     }
 
+    @Test
+    void shouldRaiseErrorWhenStorageLimitWouldBeExceeded() {
+        // given: a small storage limit
+        setUp(100);
+
+        // and: the user is allowed to upload assets
+        allowUserToCreateAssets("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: a file that exceeds the limit
+        var content = new byte[200];
+
+        // when: uploading the file; then: a StorageLimitExceededError is raised
+        assertThatThrownBy(() -> uploadAsset("image/jpeg", content, agent))
+                .matches(e -> e.getCause() instanceof StorageLimitExceededError);
+    }
+
 }

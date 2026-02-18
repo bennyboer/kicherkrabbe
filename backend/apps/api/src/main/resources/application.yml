@@ -10,6 +10,9 @@ spring:
     port: 5672
     username: guest
     password: guest
+assets:
+  storage:
+    limit: 0
 server:
   compression:
     enabled: true

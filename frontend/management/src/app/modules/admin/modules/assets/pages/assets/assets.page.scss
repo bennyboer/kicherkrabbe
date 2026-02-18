@@ -16,6 +16,48 @@
   }
 }
 
+.storage-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: var(--contrast-lower);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: rgba(var(--text-rgb), 0.6);
+
+  &.warning {
+    background: rgba(var(--yellow-rgb), 0.15);
+    color: var(--yellow);
+
+    .progress-fill {
+      background: var(--yellow);
+    }
+  }
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--contrast-mid);
+  border-radius: 4px;
+  overflow: hidden;
+  max-width: 300px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary-2-sub);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.storage-text {
+  white-space: nowrap;
+}
+
 .upload-area {
   display: flex;
   flex-direction: column;

@@ -54,4 +54,9 @@ public class DelegatingStorageService implements StorageService {
         };
     }
 
+    @Override
+    public Mono<Long> getTotalStorageSize() {
+        return fileStorageService.getTotalStorageSize();
+    }
+
 }

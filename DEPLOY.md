@@ -366,6 +366,20 @@ docker exec $(docker ps -q -f name=kicherkrabbe_app) ping mongo
 docker exec $(docker ps -q -f name=kicherkrabbe_app) ping rabbitmq
 ```
 
+## Asset Storage Limit
+
+The application supports configuring a maximum storage limit for uploaded assets. When the limit is reached, further uploads are rejected with HTTP 507 (Insufficient Storage).
+
+| Configuration | Description |
+|---|---|
+| Application property | `assets.storage.limit` (bytes, `0` = unlimited) |
+| Environment variable | `ASSETS_STORAGE_LIMIT` |
+
+Examples:
+- `524288000` for 500 MB
+- `1073741824` for 1 GB
+- `0` for unlimited (default)
+
 ## Important Notes
 
 ### CORS Configuration

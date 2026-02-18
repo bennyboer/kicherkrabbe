@@ -40,6 +40,8 @@ public class AssetsModule {
 
     private final AssetLookupRepo assetLookupRepo;
 
+    private final AssetsModuleOptions options;
+
     public Mono<AssetsPage> getAssets(
             String searchTerm,
             Set<String> contentTypes,
@@ -334,6 +336,12 @@ public class AssetsModule {
         return assetReferenceRepo.findByAssetId(assetId);
     }
 
+    public Mono<StorageInfo> getStorageInfo(Agent agent) {
+        return assertAgentIsAllowedTo(agent, CREATE)
+                .then(storageService.getTotalStorageSize())
+                .map(usedBytes -> StorageInfo.of(usedBytes, options.getStorageLimitBytes()));
+    }
+
     private Flux<AssetId> getAccessibleAssetIds(Agent agent) {
         Holder holder = toHolder(agent);
         ResourceType resourceType = getResourceType();
@@ -351,7 +359,18 @@ public class AssetsModule {
                 .reduce(0L, Long::sum)
                 .filter(size -> size <= 1024 * 1024 * 50)
                 .switchIfEmpty(Mono.error(new AssetTooLargeError()))
-                .then();
+                .flatMap(contentSize -> {
+                    if (options.getStorageLimitBytes() <= 0) {
+                        return Mono.empty();
+                    }
+                    return storageService.getTotalStorageSize()
+                            .flatMap(currentUsage -> {
+                                if (currentUsage + contentSize > options.getStorageLimitBytes()) {
+                                    return Mono.error(new StorageLimitExceededError());
+                                }
+                                return Mono.empty();
+                            });
+                });
     }
 
     private Mono<Void> assertAgentIsAllowedTo(Agent agent, Action action) {

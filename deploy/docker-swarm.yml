@@ -110,6 +110,7 @@ services:
       - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
       - KICHERKRABBE_KEY_PAIR=/run/secrets/jwt-keypair
       - ASSETS_STORAGE_FILE_ROOT_LOCATION=/app/.kicherkrabbe-assets
+      - ASSETS_STORAGE_LIMIT=${ASSETS_STORAGE_LIMIT:-0}
     secrets:
       - jwt-keypair
     deploy:

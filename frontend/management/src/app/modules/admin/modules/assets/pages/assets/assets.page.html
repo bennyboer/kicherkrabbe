@@ -3,7 +3,10 @@
   @if (uploadActive$ | async) {
     <app-button (click)="cancelUpload()">Abbrechen</app-button>
   } @else {
-    <app-button (click)="activateUpload()" color="primary">
+    <app-button
+      (click)="activateUpload()"
+      color="primary"
+      [disabled]="uploadDisabled$ | async">
       <span class="icon-button">
         <span class="material-icons">upload</span>
         <span>Hochladen</span>
@@ -11,6 +14,21 @@
     </app-button>
   }
 </div>
+
+@if (storageInfo$ | async; as storageInfoOption) {
+  @if (storageInfoOption.unwrap(); as info) {
+    <div class="storage-info" [class.warning]="info.limitBytes > 0 && getUsagePercent(info) > 90">
+      @if (info.limitBytes > 0) {
+        <span class="storage-text">Speicherplatz: {{ formatBytes(info.usedBytes) }} / {{ formatBytes(info.limitBytes) }}</span>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="getUsagePercent(info)"></div>
+        </div>
+      } @else {
+        <span class="storage-text">Speicherplatz: {{ formatBytes(info.usedBytes) }}</span>
+      }
+    </div>
+  }
+}
 
 @if (uploadActive$ | async) {
   <div class="upload-area">

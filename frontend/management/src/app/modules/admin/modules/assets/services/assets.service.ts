@@ -44,6 +44,11 @@ interface QueryContentTypesResponse {
   contentTypes: string[];
 }
 
+export interface StorageInfoResponse {
+  usedBytes: number;
+  limitBytes: number;
+}
+
 @Injectable()
 export class AssetsService {
   constructor(private readonly http: HttpClient) {}
@@ -69,6 +74,10 @@ export class AssetsService {
     return this.http
       .get<QueryContentTypesResponse>(`${environment.apiUrl}/assets/content-types`)
       .pipe(map((response) => response.contentTypes));
+  }
+
+  getStorageInfo(): Observable<StorageInfoResponse> {
+    return this.http.get<StorageInfoResponse>(`${environment.apiUrl}/assets/storage-info`);
   }
 
   deleteAsset(id: string, version: number): Observable<void> {

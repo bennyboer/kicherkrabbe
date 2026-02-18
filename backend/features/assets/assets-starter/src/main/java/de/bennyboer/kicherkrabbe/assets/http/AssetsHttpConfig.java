@@ -31,6 +31,7 @@ public class AssetsHttpConfig {
                 path("/assets"),
                 route(POST("/"), handler::getAssets)
                         .andRoute(GET("/content-types"), handler::getContentTypes)
+                        .andRoute(GET("/storage-info"), handler::getStorageInfo)
                         .andRoute(POST("/upload"), handler::uploadAsset)
                         .andNest(
                                 path("/{assetId}"),
