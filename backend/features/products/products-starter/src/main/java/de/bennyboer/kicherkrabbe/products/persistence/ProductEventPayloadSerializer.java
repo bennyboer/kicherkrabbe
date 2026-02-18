@@ -13,6 +13,7 @@ import de.bennyboer.kicherkrabbe.products.product.links.add.LinkAddedEvent;
 import de.bennyboer.kicherkrabbe.products.product.links.remove.LinkRemovedEvent;
 import de.bennyboer.kicherkrabbe.products.product.links.update.LinkUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.notes.update.NotesUpdatedEvent;
+import de.bennyboer.kicherkrabbe.products.product.number.update.ProductNumberUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.produced.update.ProducedAtUpdatedEvent;
 
 import java.time.Instant;
@@ -53,6 +54,9 @@ public class ProductEventPayloadSerializer implements EventSerializer {
                     "type", serializeLinkType(e.getLinkType()),
                     "id", e.getLinkId().getValue()
             );
+            case ProductNumberUpdatedEvent e -> Map.of(
+                    "number", e.getNumber().getValue()
+            );
             case DeletedEvent ignored -> Map.of();
             default -> throw new IllegalStateException("Unexpected event: " + event);
         };
@@ -90,6 +94,9 @@ public class ProductEventPayloadSerializer implements EventSerializer {
             case "LINK_REMOVED" -> LinkRemovedEvent.of(
                     deserializeLinkType((String) payload.get("type")),
                     LinkId.of((String) payload.get("id"))
+            );
+            case "PRODUCT_NUMBER_UPDATED" -> ProductNumberUpdatedEvent.of(
+                    ProductNumber.of((String) payload.get("number"))
             );
             case "DELETED" -> DeletedEvent.of();
             default -> throw new IllegalStateException("Unexpected event name: " + name);

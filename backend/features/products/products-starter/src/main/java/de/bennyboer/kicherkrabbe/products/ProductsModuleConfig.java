@@ -17,6 +17,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.transaction.ReactiveTransactionManager;
 
+import java.time.Clock;
+import java.util.Optional;
+
 @Import({
         ProductsAggregateConfig.class,
         ProductsPermissionsConfig.class,
@@ -44,7 +47,8 @@ public class ProductsModuleConfig {
             ProductLookupRepo productLookupRepo,
             LinkLookupRepo linkLookupRepo,
             @Qualifier("productsPermissionsService") PermissionsService permissionsService,
-            ReactiveTransactionManager transactionManager
+            ReactiveTransactionManager transactionManager,
+            Optional<Clock> clock
     ) {
         return new ProductsModule(
                 productService,
@@ -52,7 +56,8 @@ public class ProductsModuleConfig {
                 productLookupRepo,
                 linkLookupRepo,
                 permissionsService,
-                transactionManager
+                transactionManager,
+                clock.orElse(Clock.systemUTC())
         );
     }
 

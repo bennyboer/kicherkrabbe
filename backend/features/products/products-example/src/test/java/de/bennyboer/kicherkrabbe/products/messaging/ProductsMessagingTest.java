@@ -236,6 +236,24 @@ public class ProductsMessagingTest extends EventListenerTest {
     }
 
     @Test
+    void shouldUpdateProductLookupOnProductNumberUpdated() {
+        // when: a product number updated event is published
+        send(
+                AggregateType.of("PRODUCT"),
+                AggregateId.of("PRODUCT_ID"),
+                Version.of(1),
+                EventName.of("PRODUCT_NUMBER_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        // then: the product is updated in the lookup
+        verify(module, timeout(5000).times(1)).updateProductInLookup(eq("PRODUCT_ID"));
+    }
+
+    @Test
     void shouldRemoveProductFromLookupOnDeleted() {
         // when: a product deleted event is published
         send(

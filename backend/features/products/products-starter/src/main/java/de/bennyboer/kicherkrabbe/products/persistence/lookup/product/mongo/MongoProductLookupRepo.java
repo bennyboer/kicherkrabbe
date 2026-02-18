@@ -116,6 +116,12 @@ public class MongoProductLookupRepo
     }
 
     @Override
+    public Flux<LookupProduct> findAll() {
+        return template.findAll(MongoLookupProduct.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         var idCreatedAtIndex = new Index().on("_id", ASC)
                 .on("createdAt", DESC);

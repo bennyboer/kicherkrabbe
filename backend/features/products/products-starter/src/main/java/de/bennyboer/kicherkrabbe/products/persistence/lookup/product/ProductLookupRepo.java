@@ -26,4 +26,6 @@ public interface ProductLookupRepo extends EventSourcingReadModelRepo<ProductId,
 
     Flux<LookupProduct> findByLink(LinkType linkType, LinkId linkId);
 
+    Flux<LookupProduct> findAll();
+
 }

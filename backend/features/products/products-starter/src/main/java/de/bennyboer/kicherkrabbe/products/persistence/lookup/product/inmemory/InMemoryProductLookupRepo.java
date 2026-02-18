@@ -62,4 +62,9 @@ public class InMemoryProductLookupRepo
                 .filter(product -> product.getLinks().contains(linkType, linkId));
     }
 
+    @Override
+    public Flux<LookupProduct> findAll() {
+        return getAll();
+    }
+
 }

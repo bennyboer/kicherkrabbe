@@ -25,6 +25,8 @@ import de.bennyboer.kicherkrabbe.products.product.links.update.LinkUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.links.update.UpdateLinkCmd;
 import de.bennyboer.kicherkrabbe.products.product.notes.update.NotesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.notes.update.UpdateNotesCmd;
+import de.bennyboer.kicherkrabbe.products.product.number.update.ProductNumberUpdatedEvent;
+import de.bennyboer.kicherkrabbe.products.product.number.update.UpdateProductNumberCmd;
 import de.bennyboer.kicherkrabbe.products.product.produced.update.ProducedAtUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.produced.update.UpdateProducedAtCmd;
 import jakarta.annotation.Nullable;
@@ -107,6 +109,8 @@ public class Product implements Aggregate {
             case UpdateNotesCmd c -> ApplyCommandResult.of(NotesUpdatedEvent.of(c.getNotes()));
             case UpdateFabricCompositionCmd c ->
                     ApplyCommandResult.of(FabricCompositionUpdatedEvent.of(c.getFabricComposition()));
+            case UpdateProductNumberCmd c ->
+                    ApplyCommandResult.of(ProductNumberUpdatedEvent.of(c.getNumber()));
             default -> throw new IllegalArgumentException("Unknown command " + cmd.getClass().getSimpleName());
         };
     }
@@ -133,6 +137,7 @@ public class Product implements Aggregate {
             case ImagesUpdatedEvent e -> withImages(e.getImages());
             case NotesUpdatedEvent e -> withNotes(e.getNotes());
             case FabricCompositionUpdatedEvent e -> withFabricComposition(e.getFabricComposition());
+            case ProductNumberUpdatedEvent e -> withNumber(e.getNumber());
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());
         }).withVersion(version);
     }

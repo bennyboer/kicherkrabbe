@@ -9,6 +9,7 @@ import de.bennyboer.kicherkrabbe.products.product.links.add.LinkAddedEvent;
 import de.bennyboer.kicherkrabbe.products.product.links.remove.LinkRemovedEvent;
 import de.bennyboer.kicherkrabbe.products.product.links.update.LinkUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.notes.update.NotesUpdatedEvent;
+import de.bennyboer.kicherkrabbe.products.product.number.update.ProductNumberUpdatedEvent;
 import de.bennyboer.kicherkrabbe.products.product.produced.update.ProducedAtUpdatedEvent;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +28,7 @@ public class ProductEventPayloadSerializerTest {
     void shouldSerializeAndDeserializeCreatedEvent() {
         // when: a created event is serialized
         var event = CreatedEvent.of(
-                ProductNumber.of("00001"),
+                ProductNumber.of("2024-1"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Links.of(Set.of(
                         Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("Pattern")),
@@ -51,7 +52,7 @@ public class ProductEventPayloadSerializerTest {
                 .usingRecursiveComparison()
                 .ignoringCollectionOrderInFields("links", "images", "fabricComposition")
                 .isEqualTo(Map.of(
-                        "number", "00001",
+                        "number", "2024-1",
                         "images", List.of("IMAGE_ID_1", "IMAGE_ID_2"),
                         "links", List.of(
                                 Map.of(
@@ -248,6 +249,38 @@ public class ProductEventPayloadSerializerTest {
 
         // then: the deserialized form is correct
         assertThat(deserialized).isEqualTo(event);
+    }
+
+    @Test
+    void shouldSerializeAndDeserializeProductNumberUpdatedEvent() {
+        var event = ProductNumberUpdatedEvent.of(ProductNumber.of("2025-3"));
+        var serialized = serializer.serialize(event);
+
+        assertThat(serialized).isEqualTo(Map.of("number", "2025-3"));
+
+        var deserialized = serializer.deserialize(ProductNumberUpdatedEvent.NAME, ProductNumberUpdatedEvent.VERSION, serialized);
+
+        assertThat(deserialized).isEqualTo(event);
+    }
+
+    @Test
+    void shouldDeserializeLegacyCreatedEventWithFiveDigitNumber() {
+        var payload = Map.<String, Object>of(
+                "number", "00001",
+                "images", List.of("IMAGE_ID_1"),
+                "links", List.of(),
+                "fabricComposition", List.of(
+                        Map.of("fabricType", "COTTON", "percentage", 10000L)
+                ),
+                "notes", Map.of("contains", "C", "care", "C", "safety", "S"),
+                "producedAt", "2024-12-08T12:30:00Z"
+        );
+
+        var deserialized = serializer.deserialize(CreatedEvent.NAME, CreatedEvent.VERSION, payload);
+
+        assertThat(deserialized).isInstanceOf(CreatedEvent.class);
+        var createdEvent = (CreatedEvent) deserialized;
+        assertThat(createdEvent.getNumber()).isEqualTo(ProductNumber.of("00001"));
     }
 
     @Test

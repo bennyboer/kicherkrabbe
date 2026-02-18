@@ -6,23 +6,25 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMem
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
 import de.bennyboer.kicherkrabbe.permissions.persistence.inmemory.InMemoryPermissionsRepo;
 import de.bennyboer.kicherkrabbe.persistence.MockReactiveTransactionManager;
-import de.bennyboer.kicherkrabbe.products.api.*;
+import de.bennyboer.kicherkrabbe.products.api.LinkTypeDTO;
 import de.bennyboer.kicherkrabbe.products.api.requests.*;
 import de.bennyboer.kicherkrabbe.products.api.responses.*;
-import de.bennyboer.kicherkrabbe.products.samples.SampleProduct;
 import de.bennyboer.kicherkrabbe.products.counter.CounterService;
 import de.bennyboer.kicherkrabbe.products.persistence.lookup.links.LinkLookupRepo;
 import de.bennyboer.kicherkrabbe.products.persistence.lookup.links.inmemory.InMemoryLinkLookupRepo;
 import de.bennyboer.kicherkrabbe.products.persistence.lookup.product.ProductLookupRepo;
 import de.bennyboer.kicherkrabbe.products.persistence.lookup.product.inmemory.InMemoryProductLookupRepo;
+import de.bennyboer.kicherkrabbe.products.product.ProductId;
+import de.bennyboer.kicherkrabbe.products.product.ProductNumber;
 import de.bennyboer.kicherkrabbe.products.product.ProductService;
+import de.bennyboer.kicherkrabbe.products.samples.SampleProduct;
 import de.bennyboer.kicherkrabbe.testing.time.TestClock;
 import jakarta.annotation.Nullable;
 import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Optional;
 
 public class ProductsModuleTest {
 
@@ -59,7 +61,8 @@ public class ProductsModuleTest {
             productLookupRepo,
             linkLookupRepo,
             permissionsService,
-            transactionManager
+            transactionManager,
+            Optional.of(clock)
     );
 
     public void setTime(Instant instant) {
@@ -191,6 +194,21 @@ public class ProductsModuleTest {
         }
 
         return result;
+    }
+
+    public void setLegacyProductNumber(String productId, String legacyNumber) {
+        productService.updateNumber(ProductId.of(productId), ProductNumber.of(legacyNumber), Agent.system()).block();
+        updateProductInLookup(productId);
+    }
+
+    public void migrateProductNumbers() {
+        module.migrateProductNumbers().block();
+
+        productLookupRepo.findAll()
+                .map(product -> product.getId().getValue())
+                .collectList()
+                .block()
+                .forEach(this::updateProductInLookup);
     }
 
     public void allowUserToCreateProductsAndReadLinks(String userId) {

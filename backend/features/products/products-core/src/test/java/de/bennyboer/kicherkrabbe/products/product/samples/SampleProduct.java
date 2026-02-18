@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class SampleProduct {
 
     @Builder.Default
-    private String number = "00001";
+    private String number = "2024-1";
 
     @Singular
     private List<String> imageIds;

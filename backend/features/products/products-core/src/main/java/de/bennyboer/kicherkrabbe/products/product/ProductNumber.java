@@ -3,6 +3,8 @@ package de.bennyboer.kicherkrabbe.products.product;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.util.regex.Pattern;
+
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static lombok.AccessLevel.PRIVATE;
@@ -11,13 +13,18 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor(access = PRIVATE)
 public class ProductNumber {
 
+    private static final Pattern YEARLY_FORMAT = Pattern.compile("^\\d{4}-\\d+$");
+    private static final Pattern LEGACY_FORMAT = Pattern.compile("^\\d{5}$");
+
     String value;
 
     public static ProductNumber of(String value) {
         notNull(value, "Product number must be given");
         check(!value.isBlank(), "Product number must not be blank");
-        check(value.length() == 5, "Product number must have 5 characters");
-        check(value.chars().allMatch(Character::isDigit), "Product number must contain only digits");
+        check(
+                YEARLY_FORMAT.matcher(value).matches() || LEGACY_FORMAT.matcher(value).matches(),
+                "Product number must be in YYYY-N format or legacy 5-digit format"
+        );
 
         return new ProductNumber(value);
     }

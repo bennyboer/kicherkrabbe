@@ -190,6 +190,23 @@ public class ProductsMessaging {
         );
     }
 
+    @Bean("products_onProductNumberUpdatedUpdateProductLookupMsgListener")
+    public EventListener onProductNumberUpdatedUpdateProductLookupMsgListener(
+            EventListenerFactory factory,
+            ProductsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "products.product-number-updated-update-product-lookup",
+                AggregateType.of("PRODUCT"),
+                EventName.of("PRODUCT_NUMBER_UPDATED"),
+                (event) -> {
+                    String productId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.updateProductInLookup(productId);
+                }
+        );
+    }
+
     @Bean("products_onProductDeletedRemoveProductFromLookupMsgListener")
     public EventListener onProductDeletedRemoveProductFromLookupMsgListener(
             EventListenerFactory factory,

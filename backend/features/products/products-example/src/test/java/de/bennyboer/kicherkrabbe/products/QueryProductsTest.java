@@ -74,7 +74,7 @@ public class QueryProductsTest extends ProductsModuleTest {
         assertThat(products).hasSize(3);
 
         var product1 = products.get(0);
-        assertThat(product1.number).isEqualTo("00003");
+        assertThat(product1.number).isEqualTo("2024-3");
         assertThat(product1.images).containsExactly("IMAGE_ID_5");
         assertThat(product1.links).isEmpty();
         assertThat(product1.fabricComposition)
@@ -86,7 +86,7 @@ public class QueryProductsTest extends ProductsModuleTest {
         assertThat(product1.createdAt).isEqualTo(Instant.parse("2024-11-12T09:00:00.000Z"));
 
         var product2 = products.get(1);
-        assertThat(product2.number).isEqualTo("00002");
+        assertThat(product2.number).isEqualTo("2024-2");
         assertThat(product2.images).containsExactly("IMAGE_ID_3", "IMAGE_ID_4");
         assertThat(product2.links).isEmpty();
         assertThat(product2.fabricComposition)
@@ -98,7 +98,7 @@ public class QueryProductsTest extends ProductsModuleTest {
         assertThat(product2.createdAt).isEqualTo(Instant.parse("2024-11-10T12:30:00.000Z"));
 
         var product3 = products.get(2);
-        assertThat(product3.number).isEqualTo("00001");
+        assertThat(product3.number).isEqualTo("2024-1");
         assertThat(product3.images).containsExactly("IMAGE_ID_1", "IMAGE_ID_2");
         assertThat(product3.links).containsExactlyInAnyOrder(link1, link2);
         assertThat(product3.fabricComposition)
@@ -111,7 +111,7 @@ public class QueryProductsTest extends ProductsModuleTest {
 
         // when: querying products by search term
         result = getProducts(
-                "00002",
+                "2024-2",
                 null,
                 null,
                 0,
@@ -123,7 +123,7 @@ public class QueryProductsTest extends ProductsModuleTest {
         assertThat(result.total).isEqualTo(1);
         products = result.products;
         assertThat(products).hasSize(1);
-        assertThat(products.get(0).number).isEqualTo("00002");
+        assertThat(products.get(0).number).isEqualTo("2024-2");
 
         // when: querying products by date range
         result = getProducts(
@@ -140,7 +140,7 @@ public class QueryProductsTest extends ProductsModuleTest {
         products = result.products;
         assertThat(products).hasSize(2);
         var productNumbers = products.stream().map(p -> p.number).toList();
-        assertThat(productNumbers).containsExactly("00002", "00001");
+        assertThat(productNumbers).containsExactly("2024-2", "2024-1");
 
         // when: querying products with pagination
         result = getProducts(
@@ -156,7 +156,7 @@ public class QueryProductsTest extends ProductsModuleTest {
         assertThat(result.total).isEqualTo(3);
         products = result.products;
         assertThat(products).hasSize(1);
-        assertThat(products.get(0).number).isEqualTo("00002");
+        assertThat(products.get(0).number).isEqualTo("2024-2");
     }
 
     @Test

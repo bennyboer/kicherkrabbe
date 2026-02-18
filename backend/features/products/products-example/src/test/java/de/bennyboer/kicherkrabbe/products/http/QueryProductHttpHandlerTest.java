@@ -50,7 +50,7 @@ public class QueryProductHttpHandlerTest extends HttpHandlerTest {
         response.product = new ProductDTO();
         response.product.id = "PRODUCT_ID_1";
         response.product.version = 3L;
-        response.product.number = "00001";
+        response.product.number = "2024-1";
         response.product.images = List.of("IMAGE_ID_1", "IMAGE_ID_2");
         response.product.links = List.of(link1, link2);
         response.product.fabricComposition = fabricComposition;

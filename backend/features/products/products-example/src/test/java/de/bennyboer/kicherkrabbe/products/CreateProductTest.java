@@ -73,7 +73,7 @@ public class CreateProductTest extends ProductsModuleTest {
         var product = getProduct(result.id, Agent.user(AgentId.of("USER_ID"))).product;
         assertThat(product.id).isEqualTo(result.id);
         assertThat(product.version).isEqualTo(0L);
-        assertThat(product.number).isEqualTo("00001");
+        assertThat(product.number).isEqualTo("2024-1");
         assertThat(product.images).containsExactly("IMAGE_ID_1", "IMAGE_ID_2");
         assertThat(product.links).containsExactlyInAnyOrder(link1, link2);
         assertThat(product.fabricComposition)
@@ -94,7 +94,7 @@ public class CreateProductTest extends ProductsModuleTest {
 
         // and: the number is incremented
         var product2 = getProduct(result2.id, Agent.user(AgentId.of("USER_ID"))).product;
-        assertThat(product2.number).isEqualTo("00002");
+        assertThat(product2.number).isEqualTo("2024-2");
     }
 
     @Test
