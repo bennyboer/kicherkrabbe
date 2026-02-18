@@ -14,8 +14,6 @@ import de.bennyboer.kicherkrabbe.products.persistence.lookup.links.LinkLookupRep
 import de.bennyboer.kicherkrabbe.products.persistence.lookup.links.inmemory.InMemoryLinkLookupRepo;
 import de.bennyboer.kicherkrabbe.products.persistence.lookup.product.ProductLookupRepo;
 import de.bennyboer.kicherkrabbe.products.persistence.lookup.product.inmemory.InMemoryProductLookupRepo;
-import de.bennyboer.kicherkrabbe.products.product.ProductId;
-import de.bennyboer.kicherkrabbe.products.product.ProductNumber;
 import de.bennyboer.kicherkrabbe.products.product.ProductService;
 import de.bennyboer.kicherkrabbe.products.samples.SampleProduct;
 import de.bennyboer.kicherkrabbe.testing.time.TestClock;
@@ -194,21 +192,6 @@ public class ProductsModuleTest {
         }
 
         return result;
-    }
-
-    public void setLegacyProductNumber(String productId, String legacyNumber) {
-        productService.updateNumber(ProductId.of(productId), ProductNumber.of(legacyNumber), Agent.system()).block();
-        updateProductInLookup(productId);
-    }
-
-    public void migrateProductNumbers() {
-        module.migrateProductNumbers().block();
-
-        productLookupRepo.findAll()
-                .map(product -> product.getId().getValue())
-                .collectList()
-                .block()
-                .forEach(this::updateProductInLookup);
     }
 
     public void allowUserToCreateProductsAndReadLinks(String userId) {

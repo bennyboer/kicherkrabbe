@@ -638,13 +638,10 @@ public class ProductServiceTest {
 
     @Test
     void shouldUpdateProductNumber() {
-        // given: a product
         var id = createSampleProduct();
 
-        // when: updating the product number
         var version = updateNumber(id, ProductNumber.of("2025-42"));
 
-        // then: the product number is updated
         var product = get(id);
         assertThat(product.getVersion()).isEqualTo(version);
         assertThat(product.getNumber()).isEqualTo(ProductNumber.of("2025-42"));

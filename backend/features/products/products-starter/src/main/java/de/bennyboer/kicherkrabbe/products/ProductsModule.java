@@ -27,7 +27,6 @@ import reactor.core.scheduler.Schedulers;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.Year;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -87,8 +86,7 @@ public class ProductsModule {
     }
 
     public Mono<Void> initialize() {
-        return allowSystemUserToUpdateAndDeleteLinksAndManageProductLinks()
-                .then(migrateProductNumbers());
+        return allowSystemUserToUpdateAndDeleteLinksAndManageProductLinks();
     }
 
     public Mono<QueryProductsResponse> getProducts(
@@ -449,60 +447,6 @@ public class ProductsModule {
                                 link,
                                 agent
                         ).map(updatedVersion -> product.getId())));
-    }
-
-    public Mono<Void> migrateProductNumbers() {
-        return productLookupRepo.findAll()
-                .filter(product -> !product.getNumber().getValue().contains("-"))
-                .collectList()
-                .flatMap(products -> {
-                    var grouped = products.stream()
-                            .collect(Collectors.groupingBy(
-                                    product -> Year.from(product.getProducedAt().atZone(clock.getZone()))
-                            ));
-
-                    return Flux.fromIterable(grouped.entrySet())
-                            .sort(Comparator.comparing(entry -> entry.getKey().getValue()))
-                            .concatMap(entry -> {
-                                var year = entry.getKey();
-                                var yearProducts = entry.getValue().stream()
-                                        .sorted(Comparator.comparing(LookupProduct::getProducedAt)
-                                                .thenComparing(LookupProduct::getCreatedAt))
-                                        .toList();
-
-                                return Flux.range(1, yearProducts.size())
-                                        .concatMap(i -> {
-                                            var product = yearProducts.get(i - 1);
-                                            var newNumber = ProductNumber.of(year.getValue() + "-" + i);
-                                            return productService.updateNumber(
-                                                    product.getId(),
-                                                    newNumber,
-                                                    Agent.system()
-                                            );
-                                        })
-                                        .then(initializeCounter(
-                                                CounterId.of("PRODUCT_NUMBER_" + year.getValue()),
-                                                yearProducts.size()
-                                        ));
-                            })
-                            .then();
-                });
-    }
-
-    private Mono<Void> initializeCounter(CounterId counterId, int value) {
-        return getProductCounter(counterId)
-                .flatMap(counter -> {
-                    int increments = (int) (value - counter.getValue());
-                    if (increments <= 0) {
-                        return Mono.empty();
-                    }
-                    return Flux.range(0, increments)
-                            .reduce(Mono.just(counter), (prevMono, i) ->
-                                    prevMono.flatMap(c -> counterService.increment(c.getId(), c.getVersion(), Agent.system())
-                                            .flatMap(v -> counterService.get(c.getId(), v))))
-                            .flatMap(m -> m)
-                            .then();
-                });
     }
 
     private Mono<ProductNumber> generateNextProductNumber() {
