@@ -14,9 +14,11 @@ export class AssetsPage implements OnDestroy {
   browser!: AssetBrowserComponent;
 
   protected readonly uploadActive$ = new BehaviorSubject<boolean>(false);
+  protected readonly watermark$ = new BehaviorSubject<boolean>(true);
 
   ngOnDestroy(): void {
     this.uploadActive$.complete();
+    this.watermark$.complete();
   }
 
   activateUpload(): void {
@@ -25,6 +27,10 @@ export class AssetsPage implements OnDestroy {
 
   cancelUpload(): void {
     this.uploadActive$.next(false);
+  }
+
+  onWatermarkChanged(value: boolean): void {
+    this.watermark$.next(value);
   }
 
   onImagesUploaded(assetIds: string[]): void {
