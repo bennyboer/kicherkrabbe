@@ -18,9 +18,11 @@
   gap: 8px;
 }
 
-.upload-cancel {
+.upload-options {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .upload-toggle {

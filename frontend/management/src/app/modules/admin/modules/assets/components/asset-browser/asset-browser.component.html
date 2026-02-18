@@ -19,11 +19,11 @@
       </ng-template>
     </app-dropdown>
 
-    @if (availableContentTypes$ | async; as contentTypes) {
-      @if (contentTypes.length > 0) {
+    @if (contentTypeItems$ | async; as contentTypeItems) {
+      @if (contentTypeItems.length > 0) {
         <app-dropdown
           label="Dateityp"
-          [items]="toContentTypeItems(contentTypes)"
+          [items]="contentTypeItems"
           [multiple]="true"
           [showSelectionIndicator]="true"
           [selected]="getContentTypeFilterArray() | async"
@@ -73,8 +73,14 @@
                   @if (asset.references.length === 0) {
                     @if (isDeleting(asset.id) | async) {
                       <app-loading-spinner size="16"></app-loading-spinner>
+                    } @else if (isConfirmingDelete(asset.id) | async) {
+                      <span class="confirm-delete" (click)="$event.stopPropagation()">
+                        <span class="confirm-delete-label">Löschen?</span>
+                        <span class="confirm-delete-button material-icons" (click)="requestDeleteAsset(asset)">check</span>
+                        <span class="cancel-delete-button material-icons" (click)="cancelDelete(asset)">close</span>
+                      </span>
                     } @else {
-                      <span class="delete-button material-icons" (click)="deleteAsset(asset); $event.stopPropagation()">
+                      <span class="delete-button material-icons" (click)="requestDeleteAsset(asset); $event.stopPropagation()">
                         delete
                       </span>
                     }

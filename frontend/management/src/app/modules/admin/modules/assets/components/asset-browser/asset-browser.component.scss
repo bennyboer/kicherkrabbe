@@ -133,6 +133,39 @@
           color: var(--red);
         }
       }
+
+      .confirm-delete {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+
+        .confirm-delete-label {
+          font-size: 11px;
+          color: var(--red);
+          font-weight: 500;
+        }
+
+        .confirm-delete-button {
+          font-size: 16px;
+          cursor: pointer;
+          color: var(--red);
+
+          &:hover {
+            color: var(--red);
+            opacity: 0.8;
+          }
+        }
+
+        .cancel-delete-button {
+          font-size: 16px;
+          cursor: pointer;
+          color: rgba(var(--text-rgb), 0.5);
+
+          &:hover {
+            color: rgba(var(--text-rgb), 0.8);
+          }
+        }
+      }
     }
   }
 }

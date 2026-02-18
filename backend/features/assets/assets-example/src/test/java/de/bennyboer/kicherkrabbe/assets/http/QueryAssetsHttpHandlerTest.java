@@ -76,6 +76,54 @@ public class QueryAssetsHttpHandlerTest extends HttpHandlerTest {
     }
 
     @Test
+    void shouldReturnBadRequestForNegativeSkip() {
+        var token = createTokenForUser("USER_ID");
+
+        var request = new QueryAssetsRequest();
+        request.skip = -1;
+        request.limit = 30;
+
+        client.post()
+                .uri("/assets/")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void shouldReturnBadRequestForZeroLimit() {
+        var token = createTokenForUser("USER_ID");
+
+        var request = new QueryAssetsRequest();
+        request.skip = 0;
+        request.limit = 0;
+
+        client.post()
+                .uri("/assets/")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void shouldReturnBadRequestForExcessiveLimit() {
+        var token = createTokenForUser("USER_ID");
+
+        var request = new QueryAssetsRequest();
+        request.skip = 0;
+        request.limit = 101;
+
+        client.post()
+                .uri("/assets/")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
     void shouldNotAllowUnauthorizedAccessToQueryAssets() {
         var request = new QueryAssetsRequest();
         request.skip = 0;

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angular/core';
-import { BehaviorSubject, delay, finalize, from, mergeMap, Subject, take, takeUntil, toArray } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { AssetsService } from '../../services/assets.service';
 import { AssetBrowserComponent } from '../../components';
 
