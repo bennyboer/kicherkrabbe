@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Injector, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, filter, map, Observable, Subject, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FabricsService } from '../../services';
@@ -6,6 +6,13 @@ import { Chip, ColorBadgeColor, NotificationService } from '../../../../../share
 import { Fabric, FabricColor, FabricTopic, FabricType, FabricTypeAvailability } from '../../model';
 import { environment } from '../../../../../../../environments';
 import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
+import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
+import {
+  AssetSelectDialog,
+  AssetSelectDialogData,
+  AssetSelectDialogResult,
+} from '../../../assets/dialogs';
+import { AssetsService } from '../../../assets/services/assets.service';
 
 @Component({
   selector: 'app-fabric-details-page',
@@ -19,7 +26,6 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
   private readonly updatingName$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly failedUpdatingName$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly waitingForDeleteConfirmation$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private readonly editingImage$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly imageId$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());
   private readonly availableTopics$: BehaviorSubject<FabricTopic[]> = new BehaviorSubject<FabricTopic[]>([]);
   private readonly loadingAvailableTopics$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -34,6 +40,8 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly fabricsService: FabricsService,
     private readonly notificationService: NotificationService,
+    private readonly dialogService: DialogService,
+    private readonly assetsService: AssetsService,
   ) {}
 
   ngOnInit(): void {
@@ -47,7 +55,6 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
     this.updatingName$.complete();
     this.failedUpdatingName$.complete();
     this.waitingForDeleteConfirmation$.complete();
-    this.editingImage$.complete();
     this.imageId$.complete();
     this.availableTopics$.complete();
     this.loadingAvailableTopics$.complete();
@@ -138,7 +145,6 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
             message: `Das Bild wurde erfolgreich aktualisiert.`,
             type: 'success',
           });
-          this.editingImage$.next(false);
         },
         error: () => {
           this.notificationService.publish({
@@ -265,20 +271,34 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
     return `${environment.apiUrl}/assets/${imageId}/content`;
   }
 
-  editImage(): void {
-    this.imageId$.next(none());
-    this.editingImage$.next(true);
-  }
-
-  isEditingImage(): Observable<boolean> {
-    return combineLatest([this.editingImage$, this.imageId$]).pipe(
-      map(([editing, imageId]) => editing && imageId.isNone()),
-    );
-  }
-
-  onImageUploaded(fabric: Fabric, imageIds: string[]): void {
-    this.imageId$.next(some(imageIds[0]));
-    this.updateImage(fabric, imageIds[0]);
+  selectImage(fabric: Fabric): void {
+    const dialog = Dialog.create<AssetSelectDialogResult>({
+      title: 'Bild auswählen',
+      componentType: AssetSelectDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: AssetSelectDialogData,
+            useValue: AssetSelectDialogData.of({
+              multiple: false,
+              watermark: true,
+              initialContentTypes: ['image/png', 'image/jpeg'],
+            }),
+          },
+          { provide: AssetsService, useValue: this.assetsService },
+        ],
+      }),
+    });
+    this.dialogService.open(dialog);
+    this.dialogService
+      .waitUntilClosed(dialog.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        dialog.getResult().ifSome((result) => {
+          this.imageId$.next(some(result.assetIds[0]));
+          this.updateImage(fabric, result.assetIds[0]);
+        });
+      });
   }
 
   getImageId(): Observable<string> {

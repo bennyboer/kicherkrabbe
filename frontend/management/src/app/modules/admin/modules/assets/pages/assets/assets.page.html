@@ -1,0 +1,34 @@
+<div class="header">
+  <h2>Dateiverwaltung</h2>
+  @if (uploadActive$ | async) {
+    <app-button (click)="cancelUpload()">Abbrechen</app-button>
+  } @else {
+    <app-button (click)="activateUpload()" color="primary">
+      <span class="icon-button">
+        <span class="material-icons">upload</span>
+        <span>Hochladen</span>
+      </span>
+    </app-button>
+  }
+</div>
+
+@if (uploadActive$ | async) {
+  <div class="upload-area">
+    <app-image-upload
+      [multiple]="true"
+      [watermark]="watermark$ | async"
+      (uploaded)="onImagesUploaded($event)">
+    </app-image-upload>
+    <div class="upload-options">
+      <app-checkbox
+        label="Wasserzeichen hinzufügen"
+        [checked]="watermark$ | async"
+        (checkedChanges)="onWatermarkChanged($event)">
+      </app-checkbox>
+    </div>
+  </div>
+}
+
+<div class="browser-container">
+  <app-asset-browser #browser mode="manage"></app-asset-browser>
+</div>

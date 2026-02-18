@@ -1,0 +1,108 @@
+<div class="controls">
+  <div class="search-row">
+    <input
+      #search
+      type="text"
+      placeholder="Nach Verwendung suchen..."
+      (input)="updateSearch(search.value)" />
+  </div>
+  <div class="filter-row">
+    <app-dropdown
+      label="Sortierung"
+      [items]="sortItems"
+      [selected]="['CREATED_AT_DESC']"
+      [showSelectionIndicator]="true"
+      [useRadioButtonForSingleSelection]="true"
+      (selectionChanged)="onSortChanged($event)">
+      <ng-template let-item>
+        <span>{{ item.label }}</span>
+      </ng-template>
+    </app-dropdown>
+
+    @if (contentTypeItems$ | async; as contentTypeItems) {
+      @if (contentTypeItems.length > 0) {
+        <app-dropdown
+          label="Dateityp"
+          [items]="contentTypeItems"
+          [multiple]="true"
+          [showSelectionIndicator]="true"
+          [selected]="contentTypeFilterArray$ | async"
+          (selectionChanged)="onContentTypeFilterChanged($event)">
+          <ng-template let-item>
+            <span>{{ item.label }}</span>
+          </ng-template>
+        </app-dropdown>
+      }
+    }
+  </div>
+</div>
+
+<div class="asset-grid-container" #scrollContainer (scroll)="onScroll($event)">
+  @if (assetViewModels$ | async; as viewModels) {
+    @if (viewModels.length === 0 && !(loading$ | async)) {
+      <div class="empty-state">
+        <span class="material-icons">image</span>
+        <span>Keine Dateien gefunden.</span>
+      </div>
+    } @else {
+      <div class="asset-grid">
+        @for (vm of viewModels; track vm.asset.id) {
+          <div
+            class="asset-card"
+            [class.selected]="vm.selected"
+            [class.selectable]="mode === 'select'"
+            (click)="onAssetClick(vm.asset)"
+            [title]="getReferenceSummary(vm.asset)">
+            <div class="asset-image">
+              <img [src]="getImageUrl(vm.asset.id)" loading="lazy" alt="" />
+              @if (vm.selected && mode === 'select') {
+                <div class="selection-overlay">
+                  <span class="material-icons">check_circle</span>
+                </div>
+              }
+            </div>
+            <div class="asset-info">
+              <span class="file-size">{{ formatFileSize(vm.asset.fileSize) }}</span>
+              <span class="content-type">{{ vm.asset.contentType }}</span>
+              @if (mode === 'manage') {
+                <div class="asset-actions">
+                  <span class="reference-count" [title]="getReferenceSummary(vm.asset)">
+                    <span class="material-icons">link</span>
+                    {{ vm.asset.references.length }}
+                  </span>
+                  @if (vm.asset.references.length === 0) {
+                    @if (vm.deleting) {
+                      <app-loading-spinner size="16"></app-loading-spinner>
+                    } @else if (vm.confirmingDelete) {
+                      <span class="confirm-delete" (click)="$event.stopPropagation()">
+                        <span class="confirm-delete-label">Löschen?</span>
+                        <span class="confirm-delete-button material-icons" (click)="requestDeleteAsset(vm.asset)">check</span>
+                        <span class="cancel-delete-button material-icons" (click)="cancelDelete(vm.asset)">close</span>
+                      </span>
+                    } @else {
+                      <span class="delete-button material-icons" (click)="requestDeleteAsset(vm.asset); $event.stopPropagation()">
+                        delete
+                      </span>
+                    }
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (loading$ | async) {
+      <div class="loading">
+        <app-loading-spinner size="32"></app-loading-spinner>
+      </div>
+    }
+
+    @if ((hasMore$ | async) && !(loading$ | async)) {
+      <div class="load-more">
+        <app-button (click)="loadMore()">Mehr laden</app-button>
+      </div>
+    }
+  }
+</div>

@@ -20,4 +20,6 @@ public interface StorageService {
 
     Mono<List<String>> listByPrefix(String prefix);
 
+    Mono<Long> getSize(AssetId assetId, Location location);
+
 }

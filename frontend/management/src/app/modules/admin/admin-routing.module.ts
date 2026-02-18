@@ -98,6 +98,11 @@ const routes: Routes = [
         title: 'Highlights',
         loadChildren: () => import('./modules/highlights/highlights.module').then((m) => m.HighlightsModule),
       },
+      {
+        path: 'assets',
+        title: 'Dateiverwaltung',
+        loadChildren: () => import('./modules/assets/assets-page.module').then((m) => m.AssetsPageModule),
+      },
     ],
   },
   {

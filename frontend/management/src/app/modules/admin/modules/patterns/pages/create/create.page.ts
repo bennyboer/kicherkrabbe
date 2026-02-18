@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, catchError, combineLatest, delay, finalize, first, map, Observable } from 'rxjs';
+import { ChangeDetectionStrategy, Component, Injector, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, catchError, combineLatest, delay, finalize, first, map, Observable, Subject, takeUntil } from 'rxjs';
 import { environment } from '../../../../../../../environments';
 import { PatternAttribution, PatternCategory, PatternExtra, PatternVariant } from '../../model';
 import { ButtonSize, Chip, NotificationService } from '../../../../../shared';
@@ -8,6 +8,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ContentChange } from 'ngx-quill';
 import { Delta } from 'quill/core';
 import { someOrNone } from '@kicherkrabbe/shared';
+import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
+import {
+  AssetSelectDialog,
+  AssetSelectDialogData,
+  AssetSelectDialogResult,
+} from '../../../assets/dialogs';
+import { AssetsService } from '../../../assets/services/assets.service';
 
 @Component({
   selector: 'app-create-pattern-page',
@@ -32,7 +39,6 @@ export class CreatePage implements OnInit, OnDestroy {
   protected readonly numberError$: Observable<boolean> = this.numberValid$.pipe(map((valid) => !valid));
 
   protected readonly imageIds$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  protected readonly imageUploadActive$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   protected readonly imagesValid$: Observable<boolean> = this.imageIds$.pipe(map((imageIds) => imageIds.length > 0));
   protected readonly imagesError$: Observable<boolean> = this.imagesValid$.pipe(map((valid) => !valid));
 
@@ -61,8 +67,6 @@ export class CreatePage implements OnInit, OnDestroy {
   );
   protected readonly extrasError$: Observable<boolean> = this.extrasValid$.pipe(map((valid) => !valid));
 
-  protected readonly watermark$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-
   protected readonly creating$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   protected readonly cannotSubmit$: Observable<boolean> = combineLatest([
@@ -74,6 +78,8 @@ export class CreatePage implements OnInit, OnDestroy {
   ]).pipe(map(([name, number, variants, extras, images]) => !name || !number || !variants || !extras || !images));
 
   protected readonly ButtonSize = ButtonSize;
+  private readonly destroy$: Subject<void> = new Subject<void>();
+
   protected readonly quillModules = {
     toolbar: [
       [{ header: [1, 2, false] }],
@@ -89,6 +95,8 @@ export class CreatePage implements OnInit, OnDestroy {
     private readonly patternsService: PatternsService,
     private readonly patternCategoriesService: PatternCategoriesService,
     private readonly notificationService: NotificationService,
+    private readonly dialogService: DialogService,
+    private readonly assetsService: AssetsService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
   ) {}
@@ -107,13 +115,14 @@ export class CreatePage implements OnInit, OnDestroy {
     this.designer$.complete();
     this.description$.complete();
     this.imageIds$.complete();
-    this.imageUploadActive$.complete();
     this.availableCategories$.complete();
     this.loadingAvailableCategories$.complete();
     this.selectedCategories$.complete();
     this.extras$.complete();
     this.variants$.complete();
-    this.watermark$.complete();
+
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   create(): void {
@@ -223,13 +232,33 @@ export class CreatePage implements OnInit, OnDestroy {
     }
   }
 
-  onImagesUploaded(imageIds: string[]): void {
-    this.imageUploadActive$.next(false);
-    this.imageIds$.next([...this.imageIds$.value, ...imageIds]);
-  }
-
-  activateImageUpload(): void {
-    this.imageUploadActive$.next(true);
+  selectImages(): void {
+    const dialog = Dialog.create<AssetSelectDialogResult>({
+      title: 'Bilder auswählen',
+      componentType: AssetSelectDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: AssetSelectDialogData,
+            useValue: AssetSelectDialogData.of({
+              multiple: true,
+              watermark: true,
+              initialContentTypes: ['image/png', 'image/jpeg'],
+            }),
+          },
+          { provide: AssetsService, useValue: this.assetsService },
+        ],
+      }),
+    });
+    this.dialogService.open(dialog);
+    this.dialogService
+      .waitUntilClosed(dialog.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        dialog.getResult().ifSome((result) => {
+          this.imageIds$.next([...this.imageIds$.value, ...result.assetIds]);
+        });
+      });
   }
 
   getImageUrl(imageId: string): string {
@@ -259,10 +288,6 @@ export class CreatePage implements OnInit, OnDestroy {
 
   onVariantsChanged(variants: PatternVariant[]): void {
     this.variants$.next(variants);
-  }
-
-  onWatermarkChanged(value: boolean): void {
-    this.watermark$.next(value);
   }
 
   deleteImage(imageId: string): void {

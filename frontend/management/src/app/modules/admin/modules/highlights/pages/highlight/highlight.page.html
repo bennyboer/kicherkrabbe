@@ -22,23 +22,16 @@
       <div class="highlight-detail">
         <label>
           Bild
-          <app-button [size]="ButtonSize.SMALL" (click)="startEditingImage()">
+          <app-button [size]="ButtonSize.SMALL" [disabled]="updatingImage$ | async" (click)="selectImage(highlight)">
             <span class="icon-button">
               <span class="material-icons">edit</span>
             </span>
           </app-button>
         </label>
         <div class="highlight-image">
-          @if (editingImage$ | async) {
-            <div class="edit-image-container">
-              @if (updatingImage$ | async) {
-                <div class="loading-container">
-                  <app-loading-spinner size="32"></app-loading-spinner>
-                </div>
-              } @else {
-                <app-image-upload keepOriginalWidth [watermark]="false" [exportQuality]="1" (uploaded)="onImageUploaded(highlight, $event)"></app-image-upload>
-              }
-              <app-button (click)="cancelEditingImage()">Abbrechen</app-button>
+          @if (updatingImage$ | async) {
+            <div class="loading-container">
+              <app-loading-spinner size="32"></app-loading-spinner>
             </div>
           } @else {
             <div class="image-container">

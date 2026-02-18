@@ -13,6 +13,12 @@ import org.springframework.data.mongodb.core.query.Update;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
@@ -33,6 +39,7 @@ public class MongoAssetReferenceRepo implements AssetReferenceRepo {
 
         createIndex(new Index().on("assetId", ASC));
         createIndex(new Index().on("resourceType", ASC).on("resourceId", ASC));
+        createIndex(new Index().on("resourceNameLower", ASC));
     }
 
     @Override
@@ -42,7 +49,9 @@ public class MongoAssetReferenceRepo implements AssetReferenceRepo {
         var update = new Update()
                 .set("assetId", doc.assetId)
                 .set("resourceType", doc.resourceType)
-                .set("resourceId", doc.resourceId);
+                .set("resourceId", doc.resourceId)
+                .set("resourceName", doc.resourceName)
+                .set("resourceNameLower", doc.resourceNameLower);
 
         return template.upsert(query, update, collectionName).then();
     }
@@ -63,6 +72,56 @@ public class MongoAssetReferenceRepo implements AssetReferenceRepo {
 
         return template.find(query, MongoAssetReference.class, collectionName)
                 .map(MongoAssetReferenceTransformer::fromMongo);
+    }
+
+    @Override
+    public Flux<AssetId> findAssetIdsByResourceNameContaining(String searchTerm) {
+        String quotedSearchTerm = Pattern.quote(searchTerm.toLowerCase(Locale.ROOT));
+        Criteria criteria = where("resourceNameLower").regex(quotedSearchTerm);
+        Query query = query(criteria);
+
+        return template.find(query, MongoAssetReference.class, collectionName)
+                .map(doc -> AssetId.of(doc.assetId))
+                .distinct();
+    }
+
+    @Override
+    public Flux<AssetReference> findByResource(AssetReferenceResourceType resourceType, AssetResourceId resourceId) {
+        Criteria criteria = where("resourceType").is(resourceType.name())
+                .and("resourceId").is(resourceId.getValue());
+        Query query = query(criteria);
+
+        return template.find(query, MongoAssetReference.class, collectionName)
+                .map(MongoAssetReferenceTransformer::fromMongo);
+    }
+
+    @Override
+    public Flux<AssetReference> findByAssetIds(Collection<AssetId> assetIds) {
+        Set<String> ids = assetIds.stream()
+                .map(AssetId::getValue)
+                .collect(Collectors.toSet());
+
+        Criteria criteria = where("assetId").in(ids);
+        Query query = query(criteria);
+
+        return template.find(query, MongoAssetReference.class, collectionName)
+                .map(MongoAssetReferenceTransformer::fromMongo);
+    }
+
+    @Override
+    public Mono<Void> updateResourceName(
+            AssetReferenceResourceType resourceType,
+            AssetResourceId resourceId,
+            String resourceName
+    ) {
+        Criteria criteria = where("resourceType").is(resourceType.name())
+                .and("resourceId").is(resourceId.getValue());
+        Query query = query(criteria);
+        Update update = new Update()
+                .set("resourceName", resourceName)
+                .set("resourceNameLower", resourceName.toLowerCase(Locale.ROOT));
+
+        return template.updateMulti(query, update, collectionName).then();
     }
 
     private void createIndex(Index index) {

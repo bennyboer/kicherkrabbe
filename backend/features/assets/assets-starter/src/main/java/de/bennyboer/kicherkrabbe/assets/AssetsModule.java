@@ -2,8 +2,13 @@ package de.bennyboer.kicherkrabbe.assets;
 
 import de.bennyboer.kicherkrabbe.assets.image.ImageProcessor;
 import de.bennyboer.kicherkrabbe.assets.image.ImageVariantService;
+import de.bennyboer.kicherkrabbe.assets.persistence.lookup.AssetLookupRepo;
+import de.bennyboer.kicherkrabbe.assets.persistence.lookup.AssetsSortDirection;
+import de.bennyboer.kicherkrabbe.assets.persistence.lookup.AssetsSortProperty;
+import de.bennyboer.kicherkrabbe.assets.persistence.lookup.LookupAsset;
 import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReferenceRepo;
 import de.bennyboer.kicherkrabbe.assets.storage.StorageService;
+import de.bennyboer.kicherkrabbe.commons.Preconditions;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.permissions.*;
@@ -14,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static de.bennyboer.kicherkrabbe.assets.Actions.*;
 import static org.springframework.transaction.annotation.Propagation.MANDATORY;
@@ -32,6 +37,102 @@ public class AssetsModule {
     private final ImageVariantService imageVariantService;
 
     private final AssetReferenceRepo assetReferenceRepo;
+
+    private final AssetLookupRepo assetLookupRepo;
+
+    public Mono<AssetsPage> getAssets(
+            String searchTerm,
+            Set<String> contentTypes,
+            String sortProperty,
+            String sortDirection,
+            long skip,
+            long limit,
+            Agent agent
+    ) {
+        Set<ContentType> contentTypeSet = contentTypes.stream()
+                .map(ContentType::of)
+                .collect(Collectors.toSet());
+
+        AssetsSortProperty sort = parseSort(sortProperty);
+        AssetsSortDirection direction = parseDirection(sortDirection);
+
+        return getAccessibleAssetIds(agent)
+                .collectList()
+                .flatMap(accessibleIds -> {
+                    if (accessibleIds.isEmpty()) {
+                        return Mono.just(AssetsPage.of(skip, limit, 0, List.of()));
+                    }
+
+                    Mono<Set<AssetId>> filteredIds$;
+                    if (searchTerm != null && !searchTerm.isBlank()) {
+                        filteredIds$ = assetReferenceRepo.findAssetIdsByResourceNameContaining(searchTerm)
+                                .collectList()
+                                .map(searchIds -> {
+                                    Set<AssetId> accessibleSet = new HashSet<>(accessibleIds);
+                                    return searchIds.stream()
+                                            .filter(accessibleSet::contains)
+                                            .collect(Collectors.toSet());
+                                });
+                    } else {
+                        filteredIds$ = Mono.just(new HashSet<>(accessibleIds));
+                    }
+
+                    return filteredIds$.flatMap(ids -> {
+                        if (ids.isEmpty()) {
+                            return Mono.just(AssetsPage.of(skip, limit, 0, List.of()));
+                        }
+
+                        return assetLookupRepo.find(ids, contentTypeSet, sort, direction, skip, limit)
+                                .flatMap(page -> {
+                                    List<AssetId> pageIds = page.getResults().stream()
+                                            .map(LookupAsset::getId)
+                                            .toList();
+
+                                    if (pageIds.isEmpty()) {
+                                        return Mono.just(AssetsPage.of(
+                                                page.getSkip(),
+                                                page.getLimit(),
+                                                page.getTotal(),
+                                                List.of()
+                                        ));
+                                    }
+
+                                    return assetReferenceRepo.findByAssetIds(pageIds)
+                                            .collectList()
+                                            .map(refs -> {
+                                                Map<AssetId, List<AssetReference>> refsByAsset = refs.stream()
+                                                        .collect(Collectors.groupingBy(AssetReference::getAssetId));
+
+                                                List<AssetDetails> details = page.getResults().stream()
+                                                        .map(asset -> AssetDetails.of(
+                                                                asset.getId(),
+                                                                asset.getVersion(),
+                                                                asset.getContentType(),
+                                                                asset.getFileSize(),
+                                                                asset.getCreatedAt(),
+                                                                refsByAsset.getOrDefault(asset.getId(), List.of())
+                                                        ))
+                                                        .toList();
+
+                                                return AssetsPage.of(
+                                                        page.getSkip(),
+                                                        page.getLimit(),
+                                                        page.getTotal(),
+                                                        details
+                                                );
+                                            });
+                                });
+                    });
+                });
+    }
+
+    public Mono<List<String>> getContentTypes(Agent agent) {
+        return getAccessibleAssetIds(agent)
+                .collectList()
+                .flatMap(ids -> assetLookupRepo.findUniqueContentTypes(ids)
+                        .map(ContentType::getValue)
+                        .collectList());
+    }
 
     public Mono<AssetContent> getAssetContent(String assetId, Agent agent) {
         return getAssetContent(assetId, null, agent);
@@ -84,6 +185,25 @@ public class AssetsModule {
                     return storageService.remove(id, asset.getLocation());
                 })
                 .then();
+    }
+
+    public Mono<Void> updateAssetInLookup(String assetId) {
+        var id = AssetId.of(assetId);
+
+        return assetService.getOrThrow(id)
+                .flatMap(asset -> storageService.getSize(id, asset.getLocation())
+                        .map(fileSize -> LookupAsset.of(
+                                id,
+                                asset.getVersion(),
+                                asset.getContentType(),
+                                fileSize,
+                                asset.getCreatedAt()
+                        )))
+                .flatMap(assetLookupRepo::update);
+    }
+
+    public Mono<Void> removeAssetFromLookup(String assetId) {
+        return assetLookupRepo.remove(AssetId.of(assetId));
     }
 
     public Mono<Void> allowUserToCreateAssets(String userId) {
@@ -158,12 +278,47 @@ public class AssetsModule {
             AssetResourceId resourceId,
             Set<AssetId> assetIds
     ) {
-        return assetReferenceRepo.removeByResource(resourceType, resourceId)
-                .thenMany(Flux.fromIterable(assetIds)
-                        .flatMap(assetId -> assetReferenceRepo.upsert(
-                                AssetReference.of(assetId, resourceType, resourceId)
-                        )))
-                .then();
+        return updateAssetReferences(resourceType, resourceId, assetIds, null);
+    }
+
+    @Transactional(propagation = MANDATORY)
+    public Mono<Void> updateAssetReferences(
+            AssetReferenceResourceType resourceType,
+            AssetResourceId resourceId,
+            Set<AssetId> assetIds,
+            @Nullable String resourceName
+    ) {
+        Mono<String> resolvedName$;
+        if (resourceName != null) {
+            resolvedName$ = Mono.just(resourceName);
+        } else {
+            resolvedName$ = assetReferenceRepo.findByResource(resourceType, resourceId)
+                    .next()
+                    .map(AssetReference::getResourceName)
+                    .defaultIfEmpty("");
+        }
+
+        return resolvedName$.flatMap(name ->
+                assetReferenceRepo.removeByResource(resourceType, resourceId)
+                        .thenMany(Flux.fromIterable(assetIds)
+                                .flatMap(assetId -> assetReferenceRepo.upsert(
+                                        AssetReference.of(assetId, resourceType, resourceId, name)
+                                )))
+                        .then()
+        );
+    }
+
+    @Transactional(propagation = MANDATORY)
+    public Mono<Void> updateResourceNameInReferences(
+            AssetReferenceResourceType resourceType,
+            AssetResourceId resourceId,
+            String resourceName
+    ) {
+        Preconditions.notNull(resourceType, "Resource type must be given");
+        Preconditions.notNull(resourceId, "Resource ID must be given");
+        Preconditions.notNull(resourceName, "Resource name must be given");
+
+        return assetReferenceRepo.updateResourceName(resourceType, resourceId, resourceName);
     }
 
     @Transactional(propagation = MANDATORY)
@@ -176,6 +331,17 @@ public class AssetsModule {
 
     public Flux<AssetReference> findAssetReferences(AssetId assetId) {
         return assetReferenceRepo.findByAssetId(assetId);
+    }
+
+    private Flux<AssetId> getAccessibleAssetIds(Agent agent) {
+        Holder holder = toHolder(agent);
+        ResourceType resourceType = getResourceType();
+
+        return permissionsService.findPermissionsByHolderAndResourceType(holder, resourceType)
+                .mapNotNull(permission -> permission.getResource()
+                        .getId()
+                        .map(id -> AssetId.of(id.getValue()))
+                        .orElse(null));
     }
 
     private Mono<Void> assertContentIsNotTooLarge(Flux<DataBuffer> content) {
@@ -221,6 +387,26 @@ public class AssetsModule {
 
     private ResourceType getResourceType() {
         return ResourceType.of("ASSET");
+    }
+
+    private AssetsSortProperty parseSort(String sortProperty) {
+        if (sortProperty == null || sortProperty.isBlank()) {
+            return AssetsSortProperty.CREATED_AT;
+        }
+        return switch (sortProperty.toUpperCase()) {
+            case "FILE_SIZE" -> AssetsSortProperty.FILE_SIZE;
+            default -> AssetsSortProperty.CREATED_AT;
+        };
+    }
+
+    private AssetsSortDirection parseDirection(String sortDirection) {
+        if (sortDirection == null || sortDirection.isBlank()) {
+            return AssetsSortDirection.DESCENDING;
+        }
+        return switch (sortDirection.toUpperCase()) {
+            case "ASCENDING" -> AssetsSortDirection.ASCENDING;
+            default -> AssetsSortDirection.DESCENDING;
+        };
     }
 
 }

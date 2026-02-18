@@ -3,6 +3,8 @@ package de.bennyboer.kicherkrabbe.assets;
 import de.bennyboer.kicherkrabbe.assets.http.AssetsHttpConfig;
 import de.bennyboer.kicherkrabbe.assets.image.ImageVariantService;
 import de.bennyboer.kicherkrabbe.assets.messaging.AssetsMessaging;
+import de.bennyboer.kicherkrabbe.assets.persistence.lookup.AssetLookupRepo;
+import de.bennyboer.kicherkrabbe.assets.persistence.lookup.mongo.MongoAssetLookupRepo;
 import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReferenceRepo;
 import de.bennyboer.kicherkrabbe.assets.persistence.references.mongo.MongoAssetReferenceRepo;
 import de.bennyboer.kicherkrabbe.assets.storage.DelegatingStorageService;
@@ -48,14 +50,27 @@ public class AssetsModuleConfig {
     }
 
     @Bean
+    public AssetLookupRepo assetLookupRepo(ReactiveMongoTemplate template) {
+        return new MongoAssetLookupRepo(template);
+    }
+
+    @Bean
     public AssetsModule assetsModule(
             AssetService assetService,
             @Qualifier("assetsPermissionsService") PermissionsService permissionsService,
             StorageService storageService,
             ImageVariantService imageVariantService,
-            AssetReferenceRepo assetReferenceRepo
+            AssetReferenceRepo assetReferenceRepo,
+            AssetLookupRepo assetLookupRepo
     ) {
-        return new AssetsModule(assetService, permissionsService, storageService, imageVariantService, assetReferenceRepo);
+        return new AssetsModule(
+                assetService,
+                permissionsService,
+                storageService,
+                imageVariantService,
+                assetReferenceRepo,
+                assetLookupRepo
+        );
     }
 
 }

@@ -2,6 +2,11 @@ package de.bennyboer.kicherkrabbe.assets.http;
 
 import de.bennyboer.kicherkrabbe.assets.AssetTooLargeError;
 import de.bennyboer.kicherkrabbe.assets.AssetsModule;
+import de.bennyboer.kicherkrabbe.assets.http.api.AssetDTO;
+import de.bennyboer.kicherkrabbe.assets.http.api.AssetReferenceDTO;
+import de.bennyboer.kicherkrabbe.assets.http.api.requests.QueryAssetsRequest;
+import de.bennyboer.kicherkrabbe.assets.http.api.responses.QueryAssetsResponse;
+import de.bennyboer.kicherkrabbe.assets.http.api.responses.QueryContentTypesResponse;
 import de.bennyboer.kicherkrabbe.assets.http.responses.UploadAssetResponse;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
@@ -22,6 +27,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
+import java.util.Set;
 
 @AllArgsConstructor
 public class AssetsHttpHandler {
@@ -29,6 +35,72 @@ public class AssetsHttpHandler {
     private final AssetsModule module;
 
     private final ReactiveTransactionManager transactionManager;
+
+    public Mono<ServerResponse> getAssets(ServerRequest request) {
+        return request.bodyToMono(QueryAssetsRequest.class)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body must be given")))
+                .flatMap(req -> {
+                    if (req.skip < 0) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Skip must not be negative"));
+                    }
+                    if (req.limit <= 0) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Limit must be positive"));
+                    }
+                    if (req.limit > 100) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Limit must not exceed 100"));
+                    }
+
+                    return toAgent(request)
+                            .flatMap(agent -> module.getAssets(
+                                    req.searchTerm,
+                                    Optional.ofNullable(req.contentTypes).orElse(Set.of()),
+                                    req.sortProperty,
+                                    req.sortDirection,
+                                    req.skip,
+                                    req.limit,
+                                    agent
+                            ));
+                })
+                .map(page -> {
+                    var response = new QueryAssetsResponse();
+                    response.skip = page.getSkip();
+                    response.limit = page.getLimit();
+                    response.total = page.getTotal();
+                    response.assets = page.getResults().stream()
+                            .map(asset -> {
+                                var dto = new AssetDTO();
+                                dto.id = asset.getId().getValue();
+                                dto.version = asset.getVersion().getValue();
+                                dto.contentType = asset.getContentType().getValue();
+                                dto.fileSize = asset.getFileSize();
+                                dto.createdAt = asset.getCreatedAt().toString();
+                                dto.references = asset.getReferences().stream()
+                                        .map(ref -> {
+                                            var refDto = new AssetReferenceDTO();
+                                            refDto.resourceType = ref.getResourceType().name();
+                                            refDto.resourceId = ref.getResourceId().getValue();
+                                            refDto.resourceName = ref.getResourceName();
+                                            return refDto;
+                                        })
+                                        .toList();
+                                return dto;
+                            })
+                            .toList();
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response));
+    }
+
+    public Mono<ServerResponse> getContentTypes(ServerRequest request) {
+        return toAgent(request)
+                .flatMap(module::getContentTypes)
+                .map(types -> {
+                    var response = new QueryContentTypesResponse();
+                    response.contentTypes = types;
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response));
+    }
 
     public Mono<ServerResponse> uploadAsset(ServerRequest request) {
         var transactionOperator = TransactionalOperator.create(transactionManager);

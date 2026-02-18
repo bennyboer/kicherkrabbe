@@ -47,4 +47,11 @@ public class DelegatingStorageService implements StorageService {
         return fileStorageService.listByPrefix(prefix);
     }
 
+    @Override
+    public Mono<Long> getSize(AssetId assetId, Location location) {
+        return switch (location.getType()) {
+            case FILE -> fileStorageService.getSize(assetId, location);
+        };
+    }
+
 }

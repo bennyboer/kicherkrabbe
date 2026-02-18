@@ -25,20 +25,16 @@
 
       <div class="image-edit-centering-container">
         <div class="image-edit-container">
-          @if (isEditingImage() | async) {
-            <app-image-upload (uploaded)="onImageUploaded(fabric, $event)"></app-image-upload>
-          } @else {
-            <div class="image-container">
-              @if (getImageId() | async; as imageId) {
-                <img [src]="getImageUrl(imageId)" width="100%" alt="Bild des Stoffs" />
-              } @else {
-                <img [src]="getImageUrl(fabric.image)" width="100%" alt="Bild des Stoffs" />
-              }
-            </div>
-            <div>
-              <app-button (click)="editImage()">Bild ändern</app-button>
-            </div>
-          }
+          <div class="image-container">
+            @if (getImageId() | async; as imageId) {
+              <img [src]="getImageUrl(imageId)" width="100%" alt="Bild des Stoffs" />
+            } @else {
+              <img [src]="getImageUrl(fabric.image)" width="100%" alt="Bild des Stoffs" />
+            }
+          </div>
+          <div>
+            <app-button (click)="selectImage(fabric)">Bild ändern</app-button>
+          </div>
         </div>
       </div>
 

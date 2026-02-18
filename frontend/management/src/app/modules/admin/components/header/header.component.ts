@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, filter, map, Observable, startWith, Subject, takeUntil } from 'rxjs';
-import { DropdownComponent, DropdownItem, DropdownItemId } from '../../../shared';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { AdminAuthService } from '../../services';
-import { someOrNone, validateProps } from '@kicherkrabbe/shared';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {BehaviorSubject, filter, map, Observable, startWith, Subject, takeUntil} from 'rxjs';
+import {DropdownComponent, DropdownItem, DropdownItemId} from '../../../shared';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import {AdminAuthService} from '../../services';
+import {someOrNone, validateProps} from '@kicherkrabbe/shared';
 
 class ManagementItem {
   readonly label: string;
@@ -94,6 +94,11 @@ const HIGHLIGHTS = ManagementItem.of({
   route: 'highlights',
 });
 
+const ASSETS = ManagementItem.of({
+  label: 'Dateiverwaltung',
+  route: 'assets',
+});
+
 const ESSENTIAL_MANAGEMENT_ITEMS = [
   TOPICS,
   FABRIC_TYPES,
@@ -108,6 +113,7 @@ const ESSENTIAL_MANAGEMENT_ITEMS = [
   MAILING,
   PRODUCTS,
   HIGHLIGHTS,
+  ASSETS
 ].sort((a, b) => a.label.localeCompare(b.label));
 const MANAGEMENT_ITEMS = [DASHBOARD, ...ESSENTIAL_MANAGEMENT_ITEMS];
 

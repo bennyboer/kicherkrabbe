@@ -29,7 +29,9 @@ public class AssetsHttpConfig {
     public RouterFunction<ServerResponse> assetsHttpRouting(AssetsHttpHandler handler) {
         return nest(
                 path("/assets"),
-                route(POST("/upload"), handler::uploadAsset)
+                route(POST("/"), handler::getAssets)
+                        .andRoute(GET("/content-types"), handler::getContentTypes)
+                        .andRoute(POST("/upload"), handler::uploadAsset)
                         .andNest(
                                 path("/{assetId}"),
                                 route(GET("/content"), handler::getAssetContent)
