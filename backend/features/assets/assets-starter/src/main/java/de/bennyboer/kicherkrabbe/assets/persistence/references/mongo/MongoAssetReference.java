@@ -23,4 +23,6 @@ public class MongoAssetReference {
 
     String resourceName;
 
+    String resourceNameLower;
+
 }

@@ -21,6 +21,8 @@ public interface AssetReferenceRepo {
 
     Flux<AssetReference> findByAssetIds(Collection<AssetId> assetIds);
 
+    Flux<AssetReference> findByResource(AssetReferenceResourceType resourceType, AssetResourceId resourceId);
+
     Mono<Void> updateResourceName(AssetReferenceResourceType resourceType, AssetResourceId resourceId, String resourceName);
 
 }

@@ -38,6 +38,7 @@ public class AssetsHttpHandler {
 
     public Mono<ServerResponse> getAssets(ServerRequest request) {
         return request.bodyToMono(QueryAssetsRequest.class)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body must be given")))
                 .flatMap(req -> {
                     if (req.skip < 0) {
                         return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Skip must not be negative"));

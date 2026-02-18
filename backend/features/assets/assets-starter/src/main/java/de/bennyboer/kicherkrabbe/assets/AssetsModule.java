@@ -8,6 +8,7 @@ import de.bennyboer.kicherkrabbe.assets.persistence.lookup.AssetsSortProperty;
 import de.bennyboer.kicherkrabbe.assets.persistence.lookup.LookupAsset;
 import de.bennyboer.kicherkrabbe.assets.persistence.references.AssetReferenceRepo;
 import de.bennyboer.kicherkrabbe.assets.storage.StorageService;
+import de.bennyboer.kicherkrabbe.commons.Preconditions;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.permissions.*;
@@ -291,8 +292,7 @@ public class AssetsModule {
         if (resourceName != null) {
             resolvedName$ = Mono.just(resourceName);
         } else {
-            resolvedName$ = assetReferenceRepo.findByAssetIds(assetIds)
-                    .filter(ref -> ref.getResourceType() == resourceType && ref.getResourceId().equals(resourceId))
+            resolvedName$ = assetReferenceRepo.findByResource(resourceType, resourceId)
                     .next()
                     .map(AssetReference::getResourceName)
                     .defaultIfEmpty("");
@@ -314,6 +314,10 @@ public class AssetsModule {
             AssetResourceId resourceId,
             String resourceName
     ) {
+        Preconditions.notNull(resourceType, "Resource type must be given");
+        Preconditions.notNull(resourceId, "Resource ID must be given");
+        Preconditions.notNull(resourceName, "Resource name must be given");
+
         return assetReferenceRepo.updateResourceName(resourceType, resourceId, resourceName);
     }
 
