@@ -38,16 +38,29 @@ public class AssetsHttpHandler {
 
     public Mono<ServerResponse> getAssets(ServerRequest request) {
         return request.bodyToMono(QueryAssetsRequest.class)
-                .flatMap(req -> toAgent(request)
-                        .flatMap(agent -> module.getAssets(
-                                req.searchTerm,
-                                Optional.ofNullable(req.contentTypes).orElse(Set.of()),
-                                req.sortProperty,
-                                req.sortDirection,
-                                req.skip,
-                                req.limit,
-                                agent
-                        )))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body must be given")))
+                .flatMap(req -> {
+                    if (req.skip < 0) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Skip must not be negative"));
+                    }
+                    if (req.limit <= 0) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Limit must be positive"));
+                    }
+                    if (req.limit > 100) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Limit must not exceed 100"));
+                    }
+
+                    return toAgent(request)
+                            .flatMap(agent -> module.getAssets(
+                                    req.searchTerm,
+                                    Optional.ofNullable(req.contentTypes).orElse(Set.of()),
+                                    req.sortProperty,
+                                    req.sortDirection,
+                                    req.skip,
+                                    req.limit,
+                                    agent
+                            ));
+                })
                 .map(page -> {
                     var response = new QueryAssetsResponse();
                     response.skip = page.getSkip();

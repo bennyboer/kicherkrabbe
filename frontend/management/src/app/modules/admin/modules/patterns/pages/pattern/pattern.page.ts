@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Injector, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PatternCategoriesService, PatternsService } from '../../services';
 import {
@@ -31,6 +31,13 @@ import { environment } from '../../../../../../../environments';
 import Quill, { Delta } from 'quill/core';
 import { ContentChange } from 'ngx-quill';
 import { none, Option, someOrNone } from '@kicherkrabbe/shared';
+import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
+import {
+  AssetSelectDialog,
+  AssetSelectDialogData,
+  AssetSelectDialogResult,
+} from '../../../assets/dialogs';
+import { AssetsService } from '../../../assets/services/assets.service';
 
 @Component({
   selector: 'app-pattern-page',
@@ -109,7 +116,6 @@ export class PatternPage implements OnInit, OnDestroy {
   protected readonly extrasError$: Observable<boolean> = this.extrasValid$.pipe(map((valid) => !valid));
 
   protected readonly imageIds$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  protected readonly imageUploadActive$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   protected readonly imagesValid$: Observable<boolean> = this.imageIds$.pipe(map((imageIds) => imageIds.length > 0));
   protected readonly imagesError$: Observable<boolean> = this.imagesValid$.pipe(map((valid) => !valid));
   protected readonly imagesSortableConfig: any = {
@@ -122,8 +128,6 @@ export class PatternPage implements OnInit, OnDestroy {
   };
 
   protected readonly deleteConfirmationRequired$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
-  protected readonly watermark$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   protected readonly loading$: Observable<boolean> = combineLatest([
     this.patternLoading$,
@@ -150,6 +154,8 @@ export class PatternPage implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly notificationService: NotificationService,
+    private readonly dialogService: DialogService,
+    private readonly assetsService: AssetsService,
   ) {}
 
   ngOnInit(): void {
@@ -232,15 +238,9 @@ export class PatternPage implements OnInit, OnDestroy {
     this.variants$.complete();
     this.extras$.complete();
     this.imageIds$.complete();
-    this.imageUploadActive$.complete();
-    this.watermark$.complete();
 
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  onWatermarkChanged(value: boolean): void {
-    this.watermark$.next(value);
   }
 
   updateName(value: string): void {
@@ -632,13 +632,33 @@ export class PatternPage implements OnInit, OnDestroy {
     this.extras$.next(extras);
   }
 
-  onImagesUploaded(imageIds: string[]): void {
-    this.imageUploadActive$.next(false);
-    this.imageIds$.next([...this.imageIds$.value, ...imageIds]);
-  }
-
-  activateImageUpload(): void {
-    this.imageUploadActive$.next(true);
+  selectImages(): void {
+    const dialog = Dialog.create<AssetSelectDialogResult>({
+      title: 'Bilder auswählen',
+      componentType: AssetSelectDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: AssetSelectDialogData,
+            useValue: AssetSelectDialogData.of({
+              multiple: true,
+              watermark: true,
+              initialContentTypes: ['image/png', 'image/jpeg'],
+            }),
+          },
+          { provide: AssetsService, useValue: this.assetsService },
+        ],
+      }),
+    });
+    this.dialogService.open(dialog);
+    this.dialogService
+      .waitUntilClosed(dialog.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        dialog.getResult().ifSome((result) => {
+          this.imageIds$.next([...this.imageIds$.value, ...result.assetIds]);
+        });
+      });
   }
 
   deleteImage(imageId: string): void {

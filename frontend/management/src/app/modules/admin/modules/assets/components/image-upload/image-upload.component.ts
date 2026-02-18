@@ -54,7 +54,9 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   keepOriginalWidth: boolean = false;
 
   @Input({ transform: booleanAttribute })
-  watermark: boolean = true;
+  set watermark(value: boolean) {
+    this.watermark$.next(value);
+  }
 
   @Input()
   watermarkScale: number = 0.2;
@@ -77,6 +79,7 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly whiteWatermark$: Subject<HTMLImageElement> = new ReplaySubject(1);
   private readonly canvas$: Subject<HTMLCanvasElement> = new ReplaySubject(1);
   private readonly resultImages$: Subject<Blob[]> = new ReplaySubject(1);
+  private readonly watermark$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
   constructor(private readonly assetsService: AssetsService) {}
@@ -88,13 +91,13 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
       map(([images, index]) => images[index.index]),
     );
 
-    combineLatest([selectedImage$, this.blackWatermark$, this.whiteWatermark$, this.canvas$])
+    combineLatest([selectedImage$, this.blackWatermark$, this.whiteWatermark$, this.canvas$, this.watermark$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([image, blackWatermark, whiteWatermark, canvas]) =>
         this.onImageAndCanvasReady(image, blackWatermark, whiteWatermark, canvas),
       );
 
-    combineLatest([this.images$, this.blackWatermark$, this.whiteWatermark$])
+    combineLatest([this.images$, this.blackWatermark$, this.whiteWatermark$, this.watermark$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([images, blackWatermark, whiteWatermark]) =>
         this.renderImages(images, blackWatermark, whiteWatermark),
@@ -115,6 +118,9 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+
     this.step$.complete();
     this.files$.complete();
     this.images$.complete();
@@ -123,9 +129,7 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
     this.canvas$.complete();
     this.resultImages$.complete();
     this.selectedImageIndex$.complete();
-
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.watermark$.complete();
   }
 
   getStep(): Observable<Step> {
@@ -244,7 +248,7 @@ export class ImageUploadComponent implements OnInit, OnDestroy, AfterViewInit {
 
     context.drawImage(image, 0, 0, width, height);
 
-    if (this.watermark) {
+    if (this.watermark$.value) {
       const watermarkAspectRatio = blackWatermark.naturalWidth / blackWatermark.naturalHeight;
 
       const watermarkPaddingRatio = 0.02;

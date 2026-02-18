@@ -1,10 +1,17 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Injector, OnDestroy } from '@angular/core';
 import { HighlightsService } from '../../services';
 import { BehaviorSubject, combineLatest, delay, finalize, map, Observable, Subject, takeUntil } from 'rxjs';
 import { ButtonSize, NotificationService } from '../../../../../shared';
 import { ActivatedRoute, Router } from '@angular/router';
 import { none, Option, some } from '@kicherkrabbe/shared';
 import { environment } from '../../../../../../../environments';
+import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
+import {
+  AssetSelectDialog,
+  AssetSelectDialogData,
+  AssetSelectDialogResult,
+} from '../../../assets/dialogs';
+import { AssetsService } from '../../../assets/services/assets.service';
 
 @Component({
   selector: 'app-create-page',
@@ -41,6 +48,8 @@ export class CreatePage implements OnDestroy {
   constructor(
     private readonly highlightsService: HighlightsService,
     private readonly notificationService: NotificationService,
+    private readonly dialogService: DialogService,
+    private readonly assetsService: AssetsService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
   ) {}
@@ -55,10 +64,33 @@ export class CreatePage implements OnDestroy {
     this.destroy$.complete();
   }
 
-  onImageUploaded(imageIds: string[]): void {
-    if (imageIds.length > 0) {
-      this.imageId$.next(some(imageIds[0]));
-    }
+  selectImage(): void {
+    const dialog = Dialog.create<AssetSelectDialogResult>({
+      title: 'Bild auswählen',
+      componentType: AssetSelectDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: AssetSelectDialogData,
+            useValue: AssetSelectDialogData.of({
+              multiple: false,
+              watermark: false,
+              initialContentTypes: ['image/png', 'image/jpeg'],
+            }),
+          },
+          { provide: AssetsService, useValue: this.assetsService },
+        ],
+      }),
+    });
+    this.dialogService.open(dialog);
+    this.dialogService
+      .waitUntilClosed(dialog.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        dialog.getResult().ifSome((result) => {
+          this.imageId$.next(some(result.assetIds[0]));
+        });
+      });
   }
 
   clearImage(): void {

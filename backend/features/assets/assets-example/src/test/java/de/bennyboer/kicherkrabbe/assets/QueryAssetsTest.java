@@ -171,6 +171,27 @@ public class QueryAssetsTest extends AssetsModuleTest {
     }
 
     @Test
+    void shouldNotReturnAssetsOfOtherUser() {
+        allowUserToCreateAssets("USER_A");
+        allowUserToCreateAssets("USER_B");
+        var agentA = Agent.user(AgentId.of("USER_A"));
+        var agentB = Agent.user(AgentId.of("USER_B"));
+
+        uploadAsset("image/jpeg", "contentA".getBytes(UTF_8), agentA);
+        uploadAsset("image/png", "contentB".getBytes(UTF_8), agentB);
+
+        var pageA = getAssets(0, 30, agentA);
+        assertThat(pageA.getTotal()).isEqualTo(1);
+        assertThat(pageA.getResults()).hasSize(1);
+        assertThat(pageA.getResults().getFirst().getContentType().getValue()).isEqualTo("image/jpeg");
+
+        var pageB = getAssets(0, 30, agentB);
+        assertThat(pageB.getTotal()).isEqualTo(1);
+        assertThat(pageB.getResults()).hasSize(1);
+        assertThat(pageB.getResults().getFirst().getContentType().getValue()).isEqualTo("image/png");
+    }
+
+    @Test
     void shouldNotShowDeletedAssetsInQuery() {
         allowUserToCreateAssets("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));

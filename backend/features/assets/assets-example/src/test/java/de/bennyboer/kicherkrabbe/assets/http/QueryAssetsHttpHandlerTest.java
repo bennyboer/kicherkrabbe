@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -73,6 +72,54 @@ public class QueryAssetsHttpHandlerTest extends HttpHandlerTest {
         assertThat(response.assets.getFirst().id).isEqualTo("ASSET_ID");
         assertThat(response.assets.getFirst().contentType).isEqualTo("image/jpeg");
         assertThat(response.assets.getFirst().fileSize).isEqualTo(1024);
+    }
+
+    @Test
+    void shouldReturnBadRequestForNegativeSkip() {
+        var token = createTokenForUser("USER_ID");
+
+        var request = new QueryAssetsRequest();
+        request.skip = -1;
+        request.limit = 30;
+
+        client.post()
+                .uri("/assets/")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void shouldReturnBadRequestForZeroLimit() {
+        var token = createTokenForUser("USER_ID");
+
+        var request = new QueryAssetsRequest();
+        request.skip = 0;
+        request.limit = 0;
+
+        client.post()
+                .uri("/assets/")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void shouldReturnBadRequestForExcessiveLimit() {
+        var token = createTokenForUser("USER_ID");
+
+        var request = new QueryAssetsRequest();
+        request.skip = 0;
+        request.limit = 101;
+
+        client.post()
+                .uri("/assets/")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 
     @Test

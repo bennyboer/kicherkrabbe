@@ -1,10 +1,16 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
-import { BehaviorSubject, finalize, first } from 'rxjs';
+import { ChangeDetectionStrategy, Component, Injector, OnDestroy } from '@angular/core';
+import { BehaviorSubject, finalize, first, Subject, takeUntil } from 'rxjs';
 import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
 import { NotificationService } from '../../../../../shared';
 import { ProductsService } from '../../services';
 import { environment } from '../../../../../../../environments';
 import { Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
+import {
+  AssetSelectDialog,
+  AssetSelectDialogData,
+  AssetSelectDialogResult,
+} from '../../../assets/dialogs';
+import { AssetsService } from '../../../assets/services/assets.service';
 
 type ImageId = string;
 
@@ -40,7 +46,6 @@ export interface EditImagesDialogResult {
   standalone: false,
 })
 export class EditImagesDialog implements OnDestroy {
-  protected readonly imageUploadActive$ = new BehaviorSubject<boolean>(false);
   protected readonly saving$ = new BehaviorSubject<boolean>(false);
   protected readonly imageIds$ = new BehaviorSubject<ImageId[]>([]);
 
@@ -56,34 +61,59 @@ export class EditImagesDialog implements OnDestroy {
     },
   };
 
+  private readonly destroy$ = new Subject<void>();
+
   constructor(
     private readonly data: EditImagesDialogData,
     private readonly dialog: Dialog<EditImagesDialogResult>,
     private readonly dialogService: DialogService,
     private readonly productsService: ProductsService,
+    private readonly assetsService: AssetsService,
     private readonly notificationService: NotificationService,
   ) {
     this.imageIds$.next(this.data.images);
   }
 
   ngOnDestroy(): void {
-    this.imageUploadActive$.complete();
     this.saving$.complete();
     this.imageIds$.complete();
+
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  onImagesUploaded(imageIds: string[]): void {
-    this.imageUploadActive$.next(false);
-    this.imageIds$.next([...this.imageIds$.value, ...imageIds]);
+  selectImages(): void {
+    const selectDialog = Dialog.create<AssetSelectDialogResult>({
+      title: 'Bilder auswählen',
+      componentType: AssetSelectDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: AssetSelectDialogData,
+            useValue: AssetSelectDialogData.of({
+              multiple: true,
+              watermark: false,
+              initialContentTypes: ['image/png', 'image/jpeg'],
+            }),
+          },
+          { provide: AssetsService, useValue: this.assetsService },
+        ],
+      }),
+    });
+    this.dialogService.open(selectDialog);
+    this.dialogService
+      .waitUntilClosed(selectDialog.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        selectDialog.getResult().ifSome((result) => {
+          this.imageIds$.next([...this.imageIds$.value, ...result.assetIds]);
+        });
+      });
   }
 
   deleteImage(imageId: ImageId): void {
     const imageIds = this.imageIds$.value.filter((id) => id !== imageId);
     this.imageIds$.next(imageIds);
-  }
-
-  activateImageUpload(): void {
-    this.imageUploadActive$.next(true);
   }
 
   getImageUrl(imageId: string): string {
