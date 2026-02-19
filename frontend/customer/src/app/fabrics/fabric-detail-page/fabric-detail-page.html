@@ -35,24 +35,6 @@
 				/>
 			</div>
 
-			@if (data.fabric.exampleImageIds.length > 0) {
-				<div class="example-images-section">
-					<h2>Beispielbilder</h2>
-					<div class="example-images-grid">
-						@for (imageId of data.fabric.exampleImageIds; track imageId) {
-							<p-image
-								[src]="getImageUrl(imageId)"
-								[previewImageSrc]="getOriginalImageUrl(imageId)"
-								alt="Beispielbild"
-								[preview]="true"
-								width="100%"
-								appendTo="body"
-							/>
-						}
-					</div>
-				</div>
-			}
-
 			<div class="details-section">
 				<h1 class="fabric-name">{{ data.fabric.name }}</h1>
 
@@ -115,6 +97,24 @@
 				</div>
 			</div>
 		</div>
+
+		@if (data.fabric.exampleImageIds.length > 0) {
+			<div class="example-images-section">
+				<h2>Beispielbilder</h2>
+				<div class="example-images-grid">
+					@for (imageId of data.fabric.exampleImageIds; track imageId) {
+						<p-image
+							[src]="getImageUrl(imageId)"
+							[previewImageSrc]="getOriginalImageUrl(imageId)"
+							alt="Beispielbild"
+							[preview]="true"
+							width="100%"
+							appendTo="body"
+						/>
+					}
+				</div>
+			</div>
+		}
 	} @else {
 		<div class="not-found">
 			<p>Stoff nicht gefunden.</p>
