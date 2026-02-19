@@ -34,6 +34,7 @@ interface FabricDTO {
   version: number;
   name: string;
   imageId: string;
+  exampleImageIds: string[];
   colorIds: string[];
   topicIds: string[];
   availability: FabricTypeAvailabilityDTO[];
@@ -109,9 +110,10 @@ interface RenameFabricRequest {
   name: string;
 }
 
-interface UpdateFabricImageRequest {
+interface UpdateFabricImagesRequest {
   version: number;
   imageId: string;
+  exampleImageIds: string[];
 }
 
 interface UpdateFabricTopicsRequest {
@@ -275,10 +277,10 @@ export class FabricsService implements OnDestroy {
     return this.http.post<void>(`${environment.apiUrl}/fabrics/${id}/rename`, request);
   }
 
-  updateFabricImage(id: FabricId, version: number, imageId: ImageId): Observable<void> {
-    const request: UpdateFabricImageRequest = { version, imageId };
+  updateFabricImages(id: FabricId, version: number, imageId: ImageId, exampleImageIds: ImageId[]): Observable<void> {
+    const request: UpdateFabricImagesRequest = { version, imageId, exampleImageIds };
 
-    return this.http.post<void>(`${environment.apiUrl}/fabrics/${id}/update/image`, request);
+    return this.http.post<void>(`${environment.apiUrl}/fabrics/${id}/update/images`, request);
   }
 
   updateFabricTopics(id: FabricId, version: number, topics: Set<TopicId>): Observable<void> {
@@ -379,6 +381,7 @@ export class FabricsService implements OnDestroy {
       version: fabric.version,
       name: fabric.name,
       image: fabric.imageId,
+      exampleImages: fabric.exampleImageIds ?? [],
       colors: new Set(fabric.colorIds),
       topics: new Set(fabric.topicIds),
       availability: fabric.availability.map((availability) =>

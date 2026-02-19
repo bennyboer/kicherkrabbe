@@ -44,6 +44,7 @@ public class QueryFabricsHttpHandlerTest extends HttpHandlerTest {
                         Version.of(0),
                         FabricName.of("Fabric name"),
                         ImageId.of("IMAGE_ID"),
+                        List.of(),
                         Set.of(),
                         Set.of(),
                         Set.of(),

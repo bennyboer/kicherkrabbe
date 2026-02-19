@@ -10,6 +10,7 @@ export class Fabric {
 	readonly alias: string;
 	readonly name: string;
 	readonly imageId: string;
+	readonly exampleImageIds: string[];
 	readonly colorIds: string[];
 	readonly topicIds: string[];
 	readonly availability: TypeAvailability[];
@@ -19,6 +20,7 @@ export class Fabric {
 		alias: string;
 		name: string;
 		imageId: string;
+		exampleImageIds: string[];
 		colorIds: string[];
 		topicIds: string[];
 		availability: TypeAvailability[];
@@ -29,6 +31,7 @@ export class Fabric {
 		this.alias = props.alias;
 		this.name = props.name;
 		this.imageId = props.imageId;
+		this.exampleImageIds = props.exampleImageIds;
 		this.colorIds = props.colorIds;
 		this.topicIds = props.topicIds;
 		this.availability = props.availability;
@@ -39,6 +42,7 @@ export class Fabric {
 		alias: string;
 		name: string;
 		imageId: string;
+		exampleImageIds?: string[];
 		colorIds?: string[];
 		topicIds?: string[];
 		availability?: TypeAvailability[];
@@ -48,6 +52,7 @@ export class Fabric {
 			alias: props.alias,
 			name: props.name,
 			imageId: props.imageId,
+			exampleImageIds: props.exampleImageIds ?? [],
 			colorIds: props.colorIds ?? [],
 			topicIds: props.topicIds ?? [],
 			availability: props.availability ?? [],

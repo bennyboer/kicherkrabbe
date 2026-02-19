@@ -16,6 +16,7 @@ interface PublishedFabricDTO {
 	alias: string;
 	name: string;
 	imageId: string;
+	exampleImageIds: string[];
 	colorIds: string[];
 	topicIds: string[];
 	availability: FabricTypeAvailabilityDTO[];
@@ -228,6 +229,7 @@ export class FabricsService {
 			alias: dto.alias,
 			name: dto.name,
 			imageId: dto.imageId,
+			exampleImageIds: dto.exampleImageIds ?? [],
 			colorIds: dto.colorIds ?? [],
 			topicIds: dto.topicIds ?? [],
 			availability: (dto.availability ?? []).map(

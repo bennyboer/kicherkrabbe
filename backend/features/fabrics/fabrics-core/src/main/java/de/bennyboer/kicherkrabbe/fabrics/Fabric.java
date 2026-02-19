@@ -37,8 +37,8 @@ import de.bennyboer.kicherkrabbe.fabrics.update.availability.AvailabilityUpdated
 import de.bennyboer.kicherkrabbe.fabrics.update.availability.UpdateAvailabilityCmd;
 import de.bennyboer.kicherkrabbe.fabrics.update.colors.ColorsUpdatedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.update.colors.UpdateColorsCmd;
-import de.bennyboer.kicherkrabbe.fabrics.update.image.ImageUpdatedEvent;
-import de.bennyboer.kicherkrabbe.fabrics.update.image.UpdateImageCmd;
+import de.bennyboer.kicherkrabbe.fabrics.update.images.ImagesUpdatedEvent;
+import de.bennyboer.kicherkrabbe.fabrics.update.images.UpdateImagesCmd;
 import de.bennyboer.kicherkrabbe.fabrics.update.topics.TopicsUpdatedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.update.topics.UpdateTopicsCmd;
 import jakarta.annotation.Nullable;
@@ -48,6 +48,7 @@ import lombok.With;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -71,6 +72,8 @@ public class Fabric implements Aggregate {
 
     ImageId image;
 
+    List<ImageId> exampleImages;
+
     Set<ColorId> colors;
 
     Set<TopicId> topics;
@@ -92,6 +95,7 @@ public class Fabric implements Aggregate {
                 Version.zero(),
                 null,
                 null,
+                List.of(),
                 Set.of(),
                 Set.of(),
                 Set.of(),
@@ -144,7 +148,7 @@ public class Fabric implements Aggregate {
 
                 yield ApplyCommandResult.of(UnfeaturedEvent.of());
             }
-            case UpdateImageCmd c -> ApplyCommandResult.of(ImageUpdatedEvent.of(c.getImage()));
+            case UpdateImagesCmd c -> ApplyCommandResult.of(ImagesUpdatedEvent.of(c.getImage(), c.getExampleImages()));
             case UpdateColorsCmd c -> ApplyCommandResult.of(ColorsUpdatedEvent.of(c.getColors()));
             case UpdateTopicsCmd c -> ApplyCommandResult.of(TopicsUpdatedEvent.of(c.getTopics()));
             case UpdateAvailabilityCmd c -> ApplyCommandResult.of(AvailabilityUpdatedEvent.of(c.getAvailability()));
@@ -186,7 +190,7 @@ public class Fabric implements Aggregate {
             case UnpublishedEvent ignored -> withPublished(false);
             case FeaturedEvent ignored -> withFeatured(true);
             case UnfeaturedEvent ignored -> withFeatured(false);
-            case ImageUpdatedEvent e -> withImage(e.getImage());
+            case ImagesUpdatedEvent e -> withImage(e.getImage()).withExampleImages(e.getExampleImages());
             case ColorsUpdatedEvent e -> withColors(e.getColors());
             case TopicsUpdatedEvent e -> withTopics(e.getTopics());
             case AvailabilityUpdatedEvent e -> withAvailability(e.getAvailability());

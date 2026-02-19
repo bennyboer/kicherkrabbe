@@ -6,12 +6,15 @@ import { FabricsRoutingModule } from './fabrics-routing.module';
 import { FabricsService } from './services';
 import { CreateFabricPage, FabricDetailsPage, FabricsPage } from './pages';
 import { AssetsModule } from '../assets/assets.module';
+import { DIALOGS } from './dialogs';
+import { DialogModule } from '../../../shared/modules/dialog';
+import { SortablejsModule } from 'nxt-sortablejs';
 
 const PAGES = [FabricsPage, CreateFabricPage, FabricDetailsPage];
 
 @NgModule({
-  declarations: [...PAGES],
-  imports: [FabricsRoutingModule, CommonModule, SharedModule, AssetsModule],
+  declarations: [...PAGES, ...DIALOGS],
+  imports: [FabricsRoutingModule, CommonModule, SharedModule, AssetsModule, DialogModule.forChild(), SortablejsModule],
   providers: [FabricsService, provideHttpClient(withInterceptorsFromDi())],
 })
 export class FabricsModule {}

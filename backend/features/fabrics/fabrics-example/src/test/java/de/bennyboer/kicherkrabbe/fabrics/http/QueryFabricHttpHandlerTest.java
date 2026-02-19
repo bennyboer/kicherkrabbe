@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +37,7 @@ public class QueryFabricHttpHandlerTest extends HttpHandlerTest {
                 Version.zero(),
                 FabricName.of("Fabric name"),
                 ImageId.of("IMAGE_ID"),
+                List.of(),
                 Set.of(),
                 Set.of(),
                 Set.of(),

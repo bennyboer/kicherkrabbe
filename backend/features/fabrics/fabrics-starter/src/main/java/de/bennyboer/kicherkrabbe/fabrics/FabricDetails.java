@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
@@ -21,6 +22,8 @@ public class FabricDetails {
     FabricName name;
 
     ImageId image;
+
+    List<ImageId> exampleImages;
 
     Set<ColorId> colors;
 
@@ -39,6 +42,7 @@ public class FabricDetails {
             Version version,
             FabricName name,
             ImageId image,
+            List<ImageId> exampleImages,
             Set<ColorId> colors,
             Set<TopicId> topics,
             Set<FabricTypeAvailability> availability,
@@ -50,12 +54,13 @@ public class FabricDetails {
         notNull(version, "Version must be given");
         notNull(name, "Name must be given");
         notNull(image, "Image ID must be given");
+        notNull(exampleImages, "Example image IDs must be given");
         notNull(colors, "Color IDs must be given");
         notNull(topics, "Topic IDs must be given");
         notNull(availability, "Availability must be given");
         notNull(createdAt, "Creation date must be given");
 
-        return new FabricDetails(id, version, name, image, colors, topics, availability, published, featured, createdAt);
+        return new FabricDetails(id, version, name, image, exampleImages, colors, topics, availability, published, featured, createdAt);
     }
 
 }

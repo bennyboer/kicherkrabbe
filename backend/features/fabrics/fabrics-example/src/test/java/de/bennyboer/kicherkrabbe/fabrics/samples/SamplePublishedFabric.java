@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.fabrics.*;
 import lombok.Builder;
 import lombok.Singular;
 
+import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -21,6 +22,9 @@ public class SamplePublishedFabric {
     @Builder.Default
     private ImageId image = ImageId.of("IMAGE_ID");
 
+    @Builder.Default
+    private List<ImageId> exampleImages = List.of();
+
     @Singular
     private Set<ColorId> colors;
 
@@ -36,6 +40,7 @@ public class SamplePublishedFabric {
                 name,
                 alias,
                 image,
+                exampleImages,
                 colors,
                 topics,
                 availabilities

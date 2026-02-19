@@ -15,6 +15,7 @@ import de.bennyboer.kicherkrabbe.fabrics.unpublish.AlreadyUnpublishedError;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -397,7 +398,7 @@ public class FabricServiceTest {
     }
 
     @Test
-    void shouldUpdateImage() {
+    void shouldUpdateImages() {
         // given: a fabric
         var id = create(
                 FabricName.of("Fabric"),
@@ -407,17 +408,18 @@ public class FabricServiceTest {
                 Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
         );
 
-        // when: updating the image
-        var updatedVersion = updateImage(id, Version.zero(), ImageId.of("image 2"));
+        // when: updating the images
+        var updatedVersion = updateImages(id, Version.zero(), ImageId.of("image 2"), List.of(ImageId.of("example1"), ImageId.of("example2")));
 
-        // then: the image is updated
+        // then: the images are updated
         var fabric = get(id);
         assertThat(fabric.getVersion()).isEqualTo(updatedVersion);
         assertThat(fabric.getImage()).isEqualTo(ImageId.of("image 2"));
+        assertThat(fabric.getExampleImages()).containsExactly(ImageId.of("example1"), ImageId.of("example2"));
     }
 
     @Test
-    void shouldNotUpdateImageGivenAnOutdatedVersion() {
+    void shouldNotUpdateImagesGivenAnOutdatedVersion() {
         // given: a fabric
         var id = create(
                 FabricName.of("Fabric"),
@@ -430,8 +432,8 @@ public class FabricServiceTest {
         // and: the fabric is renamed
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
 
-        // when: updating the image with an outdated version; then: an error is raised
-        assertThatThrownBy(() -> updateImage(id, Version.zero(), ImageId.of("image 2")))
+        // when: updating the images with an outdated version; then: an error is raised
+        assertThatThrownBy(() -> updateImages(id, Version.zero(), ImageId.of("image 2"), List.of()))
                 .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
@@ -739,8 +741,8 @@ public class FabricServiceTest {
         return fabricService.updateColors(id, version, colors, Agent.system()).block();
     }
 
-    private Version updateImage(FabricId id, Version version, ImageId imageId) {
-        return fabricService.updateImage(id, version, imageId, Agent.system()).block();
+    private Version updateImages(FabricId id, Version version, ImageId imageId, List<ImageId> exampleImages) {
+        return fabricService.updateImages(id, version, imageId, exampleImages, Agent.system()).block();
     }
 
     private Version updateTopics(FabricId id, Version version, Set<TopicId> topics) {

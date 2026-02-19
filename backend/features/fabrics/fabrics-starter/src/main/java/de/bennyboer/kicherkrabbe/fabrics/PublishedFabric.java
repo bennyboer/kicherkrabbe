@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.fabrics;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.util.List;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
@@ -20,6 +21,8 @@ public class PublishedFabric {
 
     ImageId image;
 
+    List<ImageId> exampleImages;
+
     Set<ColorId> colors;
 
     Set<TopicId> topics;
@@ -31,6 +34,7 @@ public class PublishedFabric {
             FabricName name,
             FabricAlias alias,
             ImageId image,
+            List<ImageId> exampleImages,
             Set<ColorId> colors,
             Set<TopicId> topics,
             Set<FabricTypeAvailability> availability
@@ -39,11 +43,12 @@ public class PublishedFabric {
         notNull(name, "Fabric name must be given");
         notNull(alias, "Fabric alias must be given");
         notNull(image, "Fabric image must be given");
+        notNull(exampleImages, "Fabric example images must be given");
         notNull(colors, "Fabric colors must be given");
         notNull(topics, "Fabric topics must be given");
         notNull(availability, "Fabric availability must be given");
 
-        return new PublishedFabric(id, name, alias, image, colors, topics, availability);
+        return new PublishedFabric(id, name, alias, image, exampleImages, colors, topics, availability);
     }
 
 }

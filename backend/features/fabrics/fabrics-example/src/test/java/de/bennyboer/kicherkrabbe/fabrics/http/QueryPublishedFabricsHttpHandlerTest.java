@@ -58,6 +58,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
                         FabricName.of("Fabric name"),
                         FabricAlias.of("fabric-name"),
                         ImageId.of("IMAGE_ID"),
+                        List.of(),
                         Set.of(ColorId.of("COLOR_ID")),
                         Set.of(TopicId.of("TOPIC_ID")),
                         Set.of()
@@ -125,6 +126,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
                         FabricName.of("Fabric name"),
                         FabricAlias.of("fabric-name"),
                         ImageId.of("IMAGE_ID"),
+                        List.of(),
                         Set.of(ColorId.of("COLOR_ID")),
                         Set.of(TopicId.of("TOPIC_ID")),
                         Set.of()

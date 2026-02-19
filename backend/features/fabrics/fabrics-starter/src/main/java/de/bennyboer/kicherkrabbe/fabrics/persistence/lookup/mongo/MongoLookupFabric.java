@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 import static lombok.AccessLevel.PUBLIC;
@@ -25,6 +26,8 @@ public class MongoLookupFabric {
     String alias;
 
     String imageId;
+
+    List<String> exampleImageIds;
 
     Set<String> colorIds;
 

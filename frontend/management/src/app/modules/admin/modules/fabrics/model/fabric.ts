@@ -10,6 +10,7 @@ export class Fabric {
   readonly version: number;
   readonly name: string;
   readonly image: ImageId;
+  readonly exampleImages: ImageId[];
   readonly colors: Set<ColorId>;
   readonly topics: Set<TopicId>;
   readonly availability: FabricTypeAvailability[];
@@ -22,6 +23,7 @@ export class Fabric {
     version: number;
     name: string;
     image: ImageId;
+    exampleImages: ImageId[];
     colors: Set<ColorId>;
     topics: Set<TopicId>;
     availability: FabricTypeAvailability[];
@@ -33,6 +35,7 @@ export class Fabric {
     this.version = props.version;
     this.name = props.name;
     this.image = props.image;
+    this.exampleImages = props.exampleImages;
     this.colors = props.colors;
     this.topics = props.topics;
     this.availability = props.availability;
@@ -46,6 +49,7 @@ export class Fabric {
     version: number;
     name: string;
     image: ImageId;
+    exampleImages: ImageId[];
     colors: Set<ColorId>;
     topics: Set<TopicId>;
     availability: FabricTypeAvailability[];

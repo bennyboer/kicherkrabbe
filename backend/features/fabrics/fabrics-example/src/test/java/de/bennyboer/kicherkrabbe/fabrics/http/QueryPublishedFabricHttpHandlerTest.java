@@ -11,6 +11,7 @@ import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.QueryPublishedFabric
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +33,7 @@ public class QueryPublishedFabricHttpHandlerTest extends HttpHandlerTest {
                 FabricName.of("Fabric name"),
                 FabricAlias.of("fabric-name"),
                 ImageId.of("IMAGE_ID"),
+                List.of(),
                 Set.of(),
                 Set.of(),
                 Set.of()
@@ -68,6 +70,7 @@ public class QueryPublishedFabricHttpHandlerTest extends HttpHandlerTest {
                 FabricName.of("Fabric name"),
                 FabricAlias.of("fabric-name"),
                 ImageId.of("IMAGE_ID"),
+                List.of(),
                 Set.of(),
                 Set.of(),
                 Set.of()

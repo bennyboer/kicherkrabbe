@@ -51,7 +51,7 @@ public class FabricsHttpConfig {
                                 .andRoute(DELETE("/"), handler::deleteFabric)
                                 .andNest(
                                         path("/update"),
-                                        route(POST("/image"), handler::updateFabricImage)
+                                        route(POST("/images"), handler::updateFabricImages)
                                                 .andRoute(POST("/colors"), handler::updateFabricColors)
                                                 .andRoute(POST("/topics"), handler::updateFabricTopics)
                                                 .andRoute(

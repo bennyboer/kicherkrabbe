@@ -9,7 +9,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.fabrics.ColorId;
 import de.bennyboer.kicherkrabbe.fabrics.ColorsMissingError;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.requests.UpdateFabricColorsRequest;
-import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.UpdateFabricImageResponse;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.UpdateFabricColorsResponse;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -49,7 +49,7 @@ public class UpdateFabricColorsHttpHandlerTest extends HttpHandlerTest {
         exchange.expectStatus().isOk();
 
         // and: the response contains the new version of the fabric
-        exchange.expectBody(UpdateFabricImageResponse.class)
+        exchange.expectBody(UpdateFabricColorsResponse.class)
                 .value(response -> assertThat(response.version).isEqualTo(4L));
     }
 

@@ -13,6 +13,10 @@ import {
   AssetSelectDialogResult,
 } from '../../../assets/dialogs';
 import { AssetsService } from '../../../assets/services/assets.service';
+import {
+  EditExampleImagesDialog,
+  EditExampleImagesDialogData,
+} from '../../dialogs';
 
 @Component({
   selector: 'app-fabric-details-page',
@@ -137,7 +141,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
 
   updateImage(fabric: Fabric, imageId: string): void {
     this.fabricsService
-      .updateFabricImage(fabric.id, fabric.version, imageId)
+      .updateFabricImages(fabric.id, fabric.version, imageId, fabric.exampleImages)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -152,6 +156,54 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
             type: 'error',
           });
         },
+      });
+  }
+
+  updateExampleImages(fabric: Fabric, exampleImageIds: string[]): void {
+    this.fabricsService
+      .updateFabricImages(fabric.id, fabric.version, fabric.image, exampleImageIds)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.notificationService.publish({
+            message: `Die Beispielbilder wurden erfolgreich aktualisiert.`,
+            type: 'success',
+          });
+        },
+        error: () => {
+          this.notificationService.publish({
+            message:
+              'Ein Fehler ist aufgetreten. Die Beispielbilder konnten nicht aktualisiert werden. Versuche es noch einmal.',
+            type: 'error',
+          });
+        },
+      });
+  }
+
+  editExampleImages(fabric: Fabric): void {
+    const dialog = Dialog.create<string[]>({
+      title: 'Beispielbilder bearbeiten',
+      componentType: EditExampleImagesDialog,
+      injector: Injector.create({
+        providers: [
+          {
+            provide: EditExampleImagesDialogData,
+            useValue: EditExampleImagesDialogData.of({
+              images: fabric.exampleImages,
+            }),
+          },
+          { provide: AssetsService, useValue: this.assetsService },
+        ],
+      }),
+    });
+    this.dialogService.open(dialog);
+    this.dialogService
+      .waitUntilClosed(dialog.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        dialog.getResult().ifSome((result) => {
+          this.updateExampleImages(fabric, result);
+        });
       });
   }
 

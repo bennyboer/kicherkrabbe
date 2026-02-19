@@ -6,37 +6,41 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateId;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.fabrics.http.api.requests.UpdateFabricImageRequest;
-import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.UpdateFabricImageResponse;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.requests.UpdateFabricImagesRequest;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.UpdateFabricImagesResponse;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class UpdateFabricImageHttpHandlerTest extends HttpHandlerTest {
+public class UpdateFabricImagesHttpHandlerTest extends HttpHandlerTest {
 
     @Test
-    void shouldSuccessfullyUpdateFabricImage() {
+    void shouldSuccessfullyUpdateFabricImages() {
         // given: a valid token for a user
         var token = createTokenForUser("USER_ID");
 
-        // and: a request to update the image of a fabric
-        var request = new UpdateFabricImageRequest();
+        // and: a request to update the images of a fabric
+        var request = new UpdateFabricImagesRequest();
         request.version = 3L;
         request.imageId = "NEW_IMAGE_ID";
+        request.exampleImageIds = List.of("EXAMPLE_1", "EXAMPLE_2");
 
         // and: the module is configured to return a successful response
-        when(module.updateFabricImage(
+        when(module.updateFabricImages(
                 "FABRIC_ID",
                 3L,
                 "NEW_IMAGE_ID",
+                List.of("EXAMPLE_1", "EXAMPLE_2"),
                 Agent.user(AgentId.of("USER_ID"))
         )).thenReturn(Mono.just(4L));
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/fabrics/FABRIC_ID/update/image")
+                .uri("/fabrics/FABRIC_ID/update/images")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -45,7 +49,7 @@ public class UpdateFabricImageHttpHandlerTest extends HttpHandlerTest {
         exchange.expectStatus().isOk();
 
         // and: the response contains the new version of the fabric
-        exchange.expectBody(UpdateFabricImageResponse.class)
+        exchange.expectBody(UpdateFabricImagesResponse.class)
                 .value(response -> assertThat(response.version).isEqualTo(4L));
     }
 
@@ -54,16 +58,18 @@ public class UpdateFabricImageHttpHandlerTest extends HttpHandlerTest {
         // given: a valid token for a user
         var token = createTokenForUser("USER_ID");
 
-        // and: a request to update the image of a fabric
-        var request = new UpdateFabricImageRequest();
+        // and: a request to update the images of a fabric
+        var request = new UpdateFabricImagesRequest();
         request.version = 3L;
         request.imageId = "NEW_IMAGE_ID";
+        request.exampleImageIds = List.of();
 
         // and: the module is configured to return a conflict response
-        when(module.updateFabricImage(
+        when(module.updateFabricImages(
                 "FABRIC_ID",
                 3L,
                 "NEW_IMAGE_ID",
+                List.of(),
                 Agent.user(AgentId.of("USER_ID"))
         )).thenReturn(Mono.error(new AggregateVersionOutdatedError(
                 AggregateType.of("TEST"),
@@ -73,7 +79,7 @@ public class UpdateFabricImageHttpHandlerTest extends HttpHandlerTest {
 
         // when: posting the request
         var exchange = client.post()
-                .uri("/fabrics/FABRIC_ID/update/image")
+                .uri("/fabrics/FABRIC_ID/update/images")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();
@@ -86,7 +92,7 @@ public class UpdateFabricImageHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowUnauthorizedAccess() {
         // when: posting the request without a token
         var exchange = client.post()
-                .uri("/fabrics/FABRIC_ID/update/image")
+                .uri("/fabrics/FABRIC_ID/update/images")
                 .exchange();
 
         // then: the response is unauthorized
@@ -97,7 +103,7 @@ public class UpdateFabricImageHttpHandlerTest extends HttpHandlerTest {
     void shouldNotAllowAccessWithInvalidToken() {
         // when: posting the request with an invalid token
         var exchange = client.post()
-                .uri("/fabrics/FABRIC_ID/update/image")
+                .uri("/fabrics/FABRIC_ID/update/images")
                 .headers(headers -> headers.setBearerAuth("INVALID_TOKEN"))
                 .exchange();
 
@@ -107,25 +113,27 @@ public class UpdateFabricImageHttpHandlerTest extends HttpHandlerTest {
 
     @Test
     void shouldRespondWithBadRequestOnInvalidRequest() {
-        // given: a request to update the image of a fabric
-        var request = new UpdateFabricImageRequest();
+        // given: a request to update the images of a fabric
+        var request = new UpdateFabricImagesRequest();
         request.version = 0L;
         request.imageId = "NEW_IMAGE_ID";
+        request.exampleImageIds = List.of();
 
-        // and: having a valid token for a user
+        // and: a valid token for a user
         var token = createTokenForUser("USER_ID");
 
         // and: the module is configured to return an illegal argument exception
-        when(module.updateFabricImage(
+        when(module.updateFabricImages(
                 "FABRIC_ID",
                 0L,
                 "NEW_IMAGE_ID",
+                List.of(),
                 Agent.user(AgentId.of("USER_ID"))
         )).thenReturn(Mono.error(new IllegalArgumentException("Invalid request")));
 
-        // when: posting the request without a token
+        // when: posting the request
         var exchange = client.post()
-                .uri("/fabrics/FABRIC_ID/update/image")
+                .uri("/fabrics/FABRIC_ID/update/images")
                 .bodyValue(request)
                 .headers(headers -> headers.setBearerAuth(token))
                 .exchange();

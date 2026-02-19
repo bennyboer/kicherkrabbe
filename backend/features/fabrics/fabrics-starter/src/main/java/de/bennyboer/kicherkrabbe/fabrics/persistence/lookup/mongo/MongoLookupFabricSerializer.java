@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.ReadM
 import de.bennyboer.kicherkrabbe.fabrics.*;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.LookupFabric;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFabric, MongoLookupFabric> {
@@ -18,6 +19,10 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
         result.name = readModel.getName().getValue();
         result.alias = readModel.getAlias().getValue();
         result.imageId = readModel.getImage().getValue();
+        result.exampleImageIds = readModel.getExampleImages()
+                .stream()
+                .map(ImageId::getValue)
+                .toList();
         result.colorIds = readModel.getColors()
                 .stream()
                 .map(ColorId::getValue)
@@ -44,6 +49,9 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
         var name = FabricName.of(serialized.name);
         var alias = FabricAlias.of(serialized.alias);
         var image = ImageId.of(serialized.imageId);
+        var exampleImages = serialized.exampleImageIds != null
+                ? serialized.exampleImageIds.stream().map(ImageId::of).toList()
+                : List.<ImageId>of();
         var colors = serialized.colorIds
                 .stream()
                 .map(ColorId::of)
@@ -66,6 +74,7 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
                 name,
                 alias,
                 image,
+                exampleImages,
                 colors,
                 topics,
                 availability,

@@ -209,22 +209,22 @@ public class AssetsMessagingTest extends EventListenerTest {
     }
 
     @Test
-    void shouldUpdateAssetReferencesOnFabricImageUpdated() {
+    void shouldUpdateAssetReferencesOnFabricImagesUpdated() {
         send(
                 AggregateType.of("FABRIC"),
                 AggregateId.of("FABRIC_ID"),
                 Version.of(2),
-                EventName.of("IMAGE_UPDATED"),
+                EventName.of("IMAGES_UPDATED"),
                 Version.zero(),
                 Agent.system(),
                 Instant.now(),
-                Map.of("image", "ASSET_2")
+                Map.of("image", "ASSET_2", "exampleImages", List.of("ASSET_3", "ASSET_4"))
         );
 
         verify(module, timeout(5000).times(1)).updateAssetReferences(
                 eq(AssetReferenceResourceType.FABRIC),
                 eq(AssetResourceId.of("FABRIC_ID")),
-                eq(Set.of(AssetId.of("ASSET_2")))
+                eq(Set.of(AssetId.of("ASSET_2"), AssetId.of("ASSET_3"), AssetId.of("ASSET_4")))
         );
     }
 

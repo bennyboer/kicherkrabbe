@@ -1,9 +1,9 @@
 package de.bennyboer.kicherkrabbe.assets.messaging;
 
 import de.bennyboer.kicherkrabbe.assets.AssetId;
-import de.bennyboer.kicherkrabbe.assets.AssetsModule;
 import de.bennyboer.kicherkrabbe.assets.AssetReferenceResourceType;
 import de.bennyboer.kicherkrabbe.assets.AssetResourceId;
+import de.bennyboer.kicherkrabbe.assets.AssetsModule;
 import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListener;
@@ -11,6 +11,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListenerFacto
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,7 +22,7 @@ public class AssetsMessaging {
     record FabricCreatedEvent(String image, String name) {
     }
 
-    record FabricImageUpdatedEvent(String image) {
+    record FabricImagesUpdatedEvent(String image, List<String> exampleImages) {
     }
 
     record FabricRenamedEvent(String name) {
@@ -208,23 +209,29 @@ public class AssetsMessaging {
         );
     }
 
-    @Bean("assets_onFabricImageUpdatedUpdateAssetReferences")
-    public EventListener onFabricImageUpdatedUpdateAssetReferences(
+    @Bean("assets_onFabricImagesUpdatedUpdateAssetReferences")
+    public EventListener onFabricImagesUpdatedUpdateAssetReferences(
             EventListenerFactory factory,
             AssetsModule module
     ) {
         return factory.createEventListenerForEvent(
-                "assets.fabric-image-updated-update-asset-references",
+                "assets.fabric-images-updated-update-asset-references",
                 AggregateType.of("FABRIC"),
-                EventName.of("IMAGE_UPDATED"),
-                FabricImageUpdatedEvent.class,
+                EventName.of("IMAGES_UPDATED"),
+                FabricImagesUpdatedEvent.class,
                 (metadata, event) -> {
                     String fabricId = metadata.getAggregateId().getValue();
+
+                    Set<AssetId> assetIds = new HashSet<>();
+                    assetIds.add(AssetId.of(event.image()));
+                    event.exampleImages().stream()
+                            .map(AssetId::of)
+                            .forEach(assetIds::add);
 
                     return module.updateAssetReferences(
                             AssetReferenceResourceType.FABRIC,
                             AssetResourceId.of(fabricId),
-                            Set.of(AssetId.of(event.image()))
+                            assetIds
                     );
                 }
         );

@@ -45,6 +45,28 @@
 	}
 }
 
+.example-images-section {
+	grid-column: 1 / -1;
+
+	h2 {
+		margin: 0 0 16px 0;
+		font-size: 1.25rem;
+		font-weight: 600;
+	}
+}
+
+.example-images-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 12px;
+
+	::ng-deep p-image img {
+		border-radius: 8px;
+		aspect-ratio: 1;
+		object-fit: cover;
+	}
+}
+
 .details-section {
 	display: flex;
 	flex-direction: column;

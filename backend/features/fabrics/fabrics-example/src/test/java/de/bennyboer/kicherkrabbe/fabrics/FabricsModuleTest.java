@@ -169,8 +169,8 @@ public class FabricsModuleTest {
         module.updateFabricInLookup(fabricId).block();
     }
 
-    public void updateFabricImage(String fabricId, long version, String imageId, Agent agent) {
-        module.updateFabricImage(fabricId, version, imageId, agent).block();
+    public void updateFabricImages(String fabricId, long version, String imageId, List<String> exampleImageIds, Agent agent) {
+        module.updateFabricImages(fabricId, version, imageId, exampleImageIds, agent).block();
 
         module.updateFabricInLookup(fabricId).block();
     }

@@ -1,4 +1,4 @@
-package de.bennyboer.kicherkrabbe.fabrics.update.image;
+package de.bennyboer.kicherkrabbe.fabrics.update.images;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
@@ -7,23 +7,28 @@ import de.bennyboer.kicherkrabbe.fabrics.ImageId;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.util.List;
+
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static lombok.AccessLevel.PRIVATE;
 
 @Value
 @AllArgsConstructor(access = PRIVATE)
-public class ImageUpdatedEvent implements Event {
+public class ImagesUpdatedEvent implements Event {
 
-    public static final EventName NAME = EventName.of("IMAGE_UPDATED");
+    public static final EventName NAME = EventName.of("IMAGES_UPDATED");
 
     public static final Version VERSION = Version.zero();
 
     ImageId image;
 
-    public static ImageUpdatedEvent of(ImageId image) {
-        notNull(image, "Image must be given");
+    List<ImageId> exampleImages;
 
-        return new ImageUpdatedEvent(image);
+    public static ImagesUpdatedEvent of(ImageId image, List<ImageId> exampleImages) {
+        notNull(image, "Image must be given");
+        notNull(exampleImages, "Example images must be given");
+
+        return new ImagesUpdatedEvent(image, exampleImages);
     }
 
     @Override

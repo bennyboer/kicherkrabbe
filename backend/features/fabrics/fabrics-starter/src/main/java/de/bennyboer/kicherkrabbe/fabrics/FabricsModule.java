@@ -27,6 +27,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -102,6 +103,7 @@ public class FabricsModule {
                         fabric.getVersion(),
                         fabric.getName(),
                         fabric.getImage(),
+                        fabric.getExampleImages(),
                         fabric.getColors(),
                         fabric.getTopics(),
                         fabric.getAvailability(),
@@ -126,6 +128,7 @@ public class FabricsModule {
                                         fabric.getVersion(),
                                         fabric.getName(),
                                         fabric.getImage(),
+                                        fabric.getExampleImages(),
                                         fabric.getColors(),
                                         fabric.getTopics(),
                                         fabric.getAvailability(),
@@ -149,6 +152,7 @@ public class FabricsModule {
                         fabric.getName(),
                         fabric.getAlias(),
                         fabric.getImage(),
+                        fabric.getExampleImages(),
                         fabric.getColors(),
                         fabric.getTopics(),
                         fabric.getAvailability()
@@ -163,6 +167,7 @@ public class FabricsModule {
                         fabric.getName(),
                         fabric.getAlias(),
                         fabric.getImage(),
+                        fabric.getExampleImages(),
                         fabric.getColors(),
                         fabric.getTopics(),
                         fabric.getAvailability()
@@ -210,6 +215,7 @@ public class FabricsModule {
                                         fabric.getName(),
                                         fabric.getAlias(),
                                         fabric.getImage(),
+                                        fabric.getExampleImages(),
                                         fabric.getColors(),
                                         fabric.getTopics(),
                                         fabric.getAvailability()
@@ -325,11 +331,14 @@ public class FabricsModule {
     }
 
     @Transactional(propagation = MANDATORY)
-    public Mono<Long> updateFabricImage(String fabricId, long version, String imageId, Agent agent) {
+    public Mono<Long> updateFabricImages(String fabricId, long version, String imageId, List<String> exampleImageIds, Agent agent) {
         var id = FabricId.of(fabricId);
+        var exampleImages = exampleImageIds.stream()
+                .map(ImageId::of)
+                .toList();
 
         return assertAgentIsAllowedTo(agent, UPDATE_IMAGE, id)
-                .then(fabricService.updateImage(id, Version.of(version), ImageId.of(imageId), agent))
+                .then(fabricService.updateImages(id, Version.of(version), ImageId.of(imageId), exampleImages, agent))
                 .map(Version::getValue);
     }
 
@@ -439,6 +448,7 @@ public class FabricsModule {
                         fabric.getName(),
                         FabricAlias.fromName(fabric.getName()),
                         fabric.getImage(),
+                        fabric.getExampleImages(),
                         fabric.getColors(),
                         fabric.getTopics(),
                         fabric.getAvailability(),

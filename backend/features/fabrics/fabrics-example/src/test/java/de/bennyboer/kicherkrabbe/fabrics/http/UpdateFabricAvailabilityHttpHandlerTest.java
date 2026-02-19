@@ -10,7 +10,7 @@ import de.bennyboer.kicherkrabbe.fabrics.FabricTypeId;
 import de.bennyboer.kicherkrabbe.fabrics.FabricTypesMissingError;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.requests.UpdateFabricAvailabilityRequest;
-import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.UpdateFabricImageResponse;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.UpdateFabricAvailabilityResponse;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -57,7 +57,7 @@ public class UpdateFabricAvailabilityHttpHandlerTest extends HttpHandlerTest {
         exchange.expectStatus().isOk();
 
         // and: the response contains the new version of the fabric
-        exchange.expectBody(UpdateFabricImageResponse.class)
+        exchange.expectBody(UpdateFabricAvailabilityResponse.class)
                 .value(response -> assertThat(response.version).isEqualTo(4L));
     }
 

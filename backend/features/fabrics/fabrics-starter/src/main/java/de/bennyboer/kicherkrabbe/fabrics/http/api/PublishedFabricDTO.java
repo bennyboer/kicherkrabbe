@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
 import java.util.Set;
 
 import static lombok.AccessLevel.PUBLIC;
@@ -20,6 +21,8 @@ public class PublishedFabricDTO {
     String name;
 
     String imageId;
+
+    List<String> exampleImageIds;
 
     Set<String> colorIds;
 

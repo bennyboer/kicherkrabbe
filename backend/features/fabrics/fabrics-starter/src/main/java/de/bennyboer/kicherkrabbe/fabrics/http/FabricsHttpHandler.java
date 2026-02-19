@@ -444,20 +444,21 @@ public class FabricsHttpHandler {
                 .as(transactionalOperator::transactional);
     }
 
-    public Mono<ServerResponse> updateFabricImage(ServerRequest request) {
+    public Mono<ServerResponse> updateFabricImages(ServerRequest request) {
         var transactionalOperator = TransactionalOperator.create(transactionManager);
 
         String fabricId = request.pathVariable("fabricId");
 
-        return request.bodyToMono(UpdateFabricImageRequest.class)
-                .flatMap(req -> toAgent(request).flatMap(agent -> module.updateFabricImage(
+        return request.bodyToMono(UpdateFabricImagesRequest.class)
+                .flatMap(req -> toAgent(request).flatMap(agent -> module.updateFabricImages(
                         fabricId,
                         req.version,
                         req.imageId,
+                        req.exampleImageIds,
                         agent
                 )))
                 .map(version -> {
-                    var response = new UpdateFabricImageResponse();
+                    var response = new UpdateFabricImagesResponse();
                     response.version = version;
                     return response;
                 })
@@ -672,6 +673,7 @@ public class FabricsHttpHandler {
         result.version = fabric.getVersion().getValue();
         result.name = fabric.getName().getValue();
         result.imageId = fabric.getImage().getValue();
+        result.exampleImageIds = fabric.getExampleImages().stream().map(ImageId::getValue).toList();
         result.colorIds = toColorIds(fabric.getColors());
         result.topicIds = toTopicIds(fabric.getTopics());
         result.availability = toFabricTypeAvailabilityDTOs(fabric.getAvailability());
@@ -695,6 +697,7 @@ public class FabricsHttpHandler {
         result.alias = fabric.getAlias().getValue();
         result.name = fabric.getName().getValue();
         result.imageId = fabric.getImage().getValue();
+        result.exampleImageIds = fabric.getExampleImages().stream().map(ImageId::getValue).toList();
         result.colorIds = toColorIds(fabric.getColors());
         result.topicIds = toTopicIds(fabric.getTopics());
         result.availability = toFabricTypeAvailabilityDTOs(fabric.getAvailability());

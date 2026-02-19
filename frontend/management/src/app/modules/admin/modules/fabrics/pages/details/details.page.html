@@ -38,6 +38,26 @@
         </div>
       </div>
 
+      <div class="example-images-section">
+        <h4>Beispielbilder</h4>
+        <div class="example-images-container">
+          @if (fabric.exampleImages.length > 0) {
+            <div class="example-images-grid">
+              @for (exampleImageId of fabric.exampleImages; track exampleImageId) {
+                <div class="example-image-container">
+                  <img [src]="getImageUrl(exampleImageId)" alt="Beispielbild" />
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="no-example-images">Keine Beispielbilder vorhanden.</p>
+          }
+          <div>
+            <app-button (click)="editExampleImages(fabric)">Beispielbilder bearbeiten</app-button>
+          </div>
+        </div>
+      </div>
+
       <hr />
 
       <form class="name-form" (submit)="(false)">

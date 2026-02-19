@@ -9,7 +9,7 @@ import static lombok.AccessLevel.PUBLIC;
 @ToString
 @EqualsAndHashCode
 @FieldDefaults(level = PUBLIC)
-public class UpdateFabricImageResponse {
+public class UpdateFabricImagesResponse {
 
     public long version;
 

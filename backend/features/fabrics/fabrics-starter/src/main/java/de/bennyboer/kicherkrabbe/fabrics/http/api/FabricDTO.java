@@ -5,6 +5,7 @@ import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 import static lombok.AccessLevel.PUBLIC;
@@ -21,6 +22,8 @@ public class FabricDTO {
     String name;
 
     String imageId;
+
+    List<String> exampleImageIds;
 
     Set<String> colorIds;
 

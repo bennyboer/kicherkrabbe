@@ -17,7 +17,7 @@ import de.bennyboer.kicherkrabbe.fabrics.unfeature.UnfeaturedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.unpublish.UnpublishedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.update.availability.AvailabilityUpdatedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.update.colors.ColorsUpdatedEvent;
-import de.bennyboer.kicherkrabbe.fabrics.update.image.ImageUpdatedEvent;
+import de.bennyboer.kicherkrabbe.fabrics.update.images.ImagesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.fabrics.update.topics.TopicsUpdatedEvent;
 
 import java.util.List;
@@ -44,7 +44,10 @@ public class FabricEventPayloadSerializer implements EventSerializer {
             case UnpublishedEvent ignored -> Map.of();
             case FeaturedEvent ignored -> Map.of();
             case UnfeaturedEvent ignored -> Map.of();
-            case ImageUpdatedEvent e -> Map.of("image", e.getImage().getValue());
+            case ImagesUpdatedEvent e -> Map.of(
+                    "image", e.getImage().getValue(),
+                    "exampleImages", e.getExampleImages().stream().map(ImageId::getValue).toList()
+            );
             case ColorsUpdatedEvent e -> Map.of("colors", e.getColors().stream().map(ColorId::getValue).toList());
             case TopicsUpdatedEvent e -> Map.of("topics", e.getTopics().stream().map(TopicId::getValue).toList());
             case AvailabilityUpdatedEvent e -> Map.of(
@@ -82,7 +85,16 @@ public class FabricEventPayloadSerializer implements EventSerializer {
             case "UNPUBLISHED" -> UnpublishedEvent.of();
             case "FEATURED" -> FeaturedEvent.of();
             case "UNFEATURED" -> UnfeaturedEvent.of();
-            case "IMAGE_UPDATED" -> ImageUpdatedEvent.of(ImageId.of((String) payload.get("image")));
+            case "IMAGES_UPDATED" -> {
+                var exampleImagesRaw = (List<String>) payload.get("exampleImages");
+                var exampleImages = exampleImagesRaw != null
+                        ? exampleImagesRaw.stream().map(ImageId::of).toList()
+                        : List.<ImageId>of();
+                yield ImagesUpdatedEvent.of(
+                        ImageId.of((String) payload.get("image")),
+                        exampleImages
+                );
+            }
             case "COLORS_UPDATED" -> ColorsUpdatedEvent.of(
                     ((List<String>) payload.get("colors")).stream().map(ColorId::of).collect(Collectors.toSet())
             );
