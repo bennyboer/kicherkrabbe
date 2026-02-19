@@ -49,9 +49,7 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
         var name = FabricName.of(serialized.name);
         var alias = FabricAlias.of(serialized.alias);
         var image = ImageId.of(serialized.imageId);
-        var exampleImages = serialized.exampleImageIds != null
-                ? serialized.exampleImageIds.stream().map(ImageId::of).toList()
-                : List.<ImageId>of();
+        var exampleImages = serialized.exampleImageIds.stream().map(ImageId::of).toList();
         var colors = serialized.colorIds
                 .stream()
                 .map(ColorId::of)

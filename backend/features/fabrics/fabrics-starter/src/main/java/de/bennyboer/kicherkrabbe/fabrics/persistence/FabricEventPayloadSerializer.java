@@ -85,16 +85,10 @@ public class FabricEventPayloadSerializer implements EventSerializer {
             case "UNPUBLISHED" -> UnpublishedEvent.of();
             case "FEATURED" -> FeaturedEvent.of();
             case "UNFEATURED" -> UnfeaturedEvent.of();
-            case "IMAGES_UPDATED" -> {
-                var exampleImagesRaw = (List<String>) payload.get("exampleImages");
-                var exampleImages = exampleImagesRaw != null
-                        ? exampleImagesRaw.stream().map(ImageId::of).toList()
-                        : List.<ImageId>of();
-                yield ImagesUpdatedEvent.of(
-                        ImageId.of((String) payload.get("image")),
-                        exampleImages
-                );
-            }
+            case "IMAGES_UPDATED" -> ImagesUpdatedEvent.of(
+                    ImageId.of((String) payload.get("image")),
+                    ((List<String>) payload.get("exampleImages")).stream().map(ImageId::of).toList()
+            );
             case "COLORS_UPDATED" -> ColorsUpdatedEvent.of(
                     ((List<String>) payload.get("colors")).stream().map(ColorId::of).collect(Collectors.toSet())
             );

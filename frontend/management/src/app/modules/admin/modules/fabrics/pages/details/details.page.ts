@@ -1,8 +1,18 @@
 import { ChangeDetectionStrategy, Component, Injector, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, filter, map, Observable, Subject, switchMap, takeUntil } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  Subject,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FabricsService } from '../../services';
-import { Chip, ColorBadgeColor, NotificationService } from '../../../../../shared';
+import { ButtonSize, Chip, ColorBadgeColor, NotificationService } from '../../../../../shared';
 import { Fabric, FabricColor, FabricTopic, FabricType, FabricTypeAvailability } from '../../model';
 import { environment } from '../../../../../../../environments';
 import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
@@ -17,6 +27,8 @@ import {
   EditExampleImagesDialog,
   EditExampleImagesDialogData,
 } from '../../dialogs';
+import { ImageSliderImage } from '../../../../../shared/modules/image-slider';
+import { Theme, ThemeService } from '../../../../../../services';
 
 @Component({
   selector: 'app-fabric-details-page',
@@ -39,6 +51,22 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
   private readonly loadingAvailableFabricTypes$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
+  protected readonly exampleImages$: Observable<ImageSliderImage[]> = this.getFabric().pipe(
+    map((fabric) => fabric.map((f) => this.toImageSliderImages(f.exampleImages)).orElse([])),
+    distinctUntilChanged((a, b) => {
+      if (a.length !== b.length) {
+        return false;
+      }
+
+      return a.every((image, index) => image.equals(b[index]));
+    }),
+  );
+  protected readonly theme$ = this.themeService
+    .getTheme()
+    .pipe(map((theme) => (theme === Theme.DARK ? 'dark' : 'light')));
+
+  protected readonly ButtonSize = ButtonSize;
+
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
@@ -46,6 +74,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
     private readonly notificationService: NotificationService,
     private readonly dialogService: DialogService,
     private readonly assetsService: AssetsService,
+    private readonly themeService: ThemeService,
   ) {}
 
   ngOnInit(): void {
@@ -575,6 +604,10 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
           });
         },
       });
+  }
+
+  private toImageSliderImages(imageIds: string[]): ImageSliderImage[] {
+    return imageIds.map((imageId) => ImageSliderImage.of({ url: this.getImageUrl(imageId) }));
   }
 
   private getFabricId(): Observable<string> {

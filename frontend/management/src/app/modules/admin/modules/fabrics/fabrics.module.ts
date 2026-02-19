@@ -9,12 +9,13 @@ import { AssetsModule } from '../assets/assets.module';
 import { DIALOGS } from './dialogs';
 import { DialogModule } from '../../../shared/modules/dialog';
 import { SortablejsModule } from 'nxt-sortablejs';
+import { ImageSliderModule } from '../../../shared/modules/image-slider';
 
 const PAGES = [FabricsPage, CreateFabricPage, FabricDetailsPage];
 
 @NgModule({
   declarations: [...PAGES, ...DIALOGS],
-  imports: [FabricsRoutingModule, CommonModule, SharedModule, AssetsModule, DialogModule.forChild(), SortablejsModule],
+  imports: [FabricsRoutingModule, CommonModule, SharedModule, AssetsModule, DialogModule.forChild(), SortablejsModule, ImageSliderModule],
   providers: [FabricsService, provideHttpClient(withInterceptorsFromDi())],
 })
 export class FabricsModule {}

@@ -1,13 +1,104 @@
-<div class="container">
-  <app-loading-bar [visible]="isLoading() | async"></app-loading-bar>
+<div class="action-bar">
+  <app-button routerLink="..">
+    <span class="icon-button">
+      <span class="material-icons">chevron_left</span>
+      <span>Zurück</span>
+    </span>
+  </app-button>
 
   @if (getFabric() | async; as fabricOption) {
     @if (fabricOption.unwrap(); as fabric) {
-      <div class="top-action-bar">
-        <span class="created-at">
-          Erstellt am: {{ fabric.createdAt | date: "dd.MM.yyyy" }} um {{ fabric.createdAt | date: "HH:mm" }} Uhr
-        </span>
-        <span class="top-action-bar-actions">
+      @if (isDeleteConfirmation() | async) {
+        <app-button color="warn" (click)="deleteFabric(fabric)">
+          <span class="icon-button">
+            <span class="material-icons">delete</span>
+            <span>Wirklich löschen?</span>
+          </span>
+        </app-button>
+      } @else {
+        <app-button (click)="waitForDeleteConfirmation()">
+          <span class="icon-button">
+            <span class="material-icons">delete</span>
+            <span>Löschen</span>
+          </span>
+        </app-button>
+      }
+    }
+  }
+</div>
+
+<app-loading-bar [visible]="isLoading() | async"></app-loading-bar>
+
+@if (getFabric() | async; as fabricOption) {
+  @if (fabricOption.unwrap(); as fabric) {
+    <div class="fabric-details">
+      <div class="fabric-detail">
+        <label>
+          Bild
+          <app-button [size]="ButtonSize.SMALL" (click)="selectImage(fabric)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="fabric-image">
+          @if (getImageId() | async; as imageId) {
+            <img [src]="getImageUrl(imageId)" alt="Bild des Stoffs" />
+          } @else {
+            <img [src]="getImageUrl(fabric.image)" alt="Bild des Stoffs" />
+          }
+        </div>
+      </div>
+
+      <div class="fabric-detail">
+        <label>
+          Beispielbilder
+          <app-button [size]="ButtonSize.SMALL" (click)="editExampleImages(fabric)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="fabric-example-images">
+          @if (exampleImages$ | async; as images) {
+            @if (images.length > 0) {
+              <app-image-slider [images]="images" [theme]="theme$ | async"></app-image-slider>
+            } @else {
+              <app-note>Keine Beispielbilder vorhanden</app-note>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="fabric-detail">
+        <label>Name</label>
+        <form class="name-form" (submit)="(false)">
+          <div class="form-group">
+            <input
+              #name
+              id="name"
+              name="name"
+              type="text"
+              [value]="fabric.name"
+              (input)="updateTransientName(name.value)" />
+            <app-button (click)="updateName(fabric)" [disabled]="cannotUpdateName() | async">Speichern</app-button>
+          </div>
+
+          @if (isFailedUpdatingName() | async) {
+            <app-note level="error">Der Name konnte nicht aktualisiert werden. Bitte versuche es erneut.</app-note>
+          }
+
+          <button
+            type="submit"
+            class="hidden"
+            (click)="updateName(fabric)"
+            [disabled]="cannotUpdateName() | async"></button>
+        </form>
+      </div>
+
+      <div class="fabric-detail">
+        <label>Status</label>
+        <div class="status-actions">
           @if (fabric.published) {
             <app-button color="warn" (click)="unpublishFabric(fabric)">Veröffentlichung aufheben</app-button>
             @if (fabric.featured) {
@@ -18,77 +109,11 @@
           } @else {
             <app-button color="primary" (click)="publishFabric(fabric)">Veröffentlichen</app-button>
           }
-        </span>
-      </div>
-
-      <hr />
-
-      <div class="image-edit-centering-container">
-        <div class="image-edit-container">
-          <div class="image-container">
-            @if (getImageId() | async; as imageId) {
-              <img [src]="getImageUrl(imageId)" width="100%" alt="Bild des Stoffs" />
-            } @else {
-              <img [src]="getImageUrl(fabric.image)" width="100%" alt="Bild des Stoffs" />
-            }
-          </div>
-          <div>
-            <app-button (click)="selectImage(fabric)">Bild ändern</app-button>
-          </div>
         </div>
       </div>
 
-      <div class="example-images-section">
-        <h4>Beispielbilder</h4>
-        <div class="example-images-container">
-          @if (fabric.exampleImages.length > 0) {
-            <div class="example-images-grid">
-              @for (exampleImageId of fabric.exampleImages; track exampleImageId) {
-                <div class="example-image-container">
-                  <img [src]="getImageUrl(exampleImageId)" alt="Beispielbild" />
-                </div>
-              }
-            </div>
-          } @else {
-            <p class="no-example-images">Keine Beispielbilder vorhanden.</p>
-          }
-          <div>
-            <app-button (click)="editExampleImages(fabric)">Beispielbilder bearbeiten</app-button>
-          </div>
-        </div>
-      </div>
-
-      <hr />
-
-      <form class="name-form" (submit)="(false)">
-        <div class="form-group">
-          <span class="input-label-group">
-            <label for="name">Name</label>
-            <input
-              #name
-              id="name"
-              name="name"
-              type="text"
-              [value]="fabric.name"
-              (input)="updateTransientName(name.value)" />
-          </span>
-          <app-button (click)="updateName(fabric)" [disabled]="cannotUpdateName() | async">Speichern</app-button>
-        </div>
-
-        @if (isFailedUpdatingName() | async) {
-          <app-note level="error"> Der Name konnte nicht aktualisiert werden. Bitte versuche es erneut.</app-note>
-        }
-
-        <button
-          type="submit"
-          class="hidden"
-          (click)="updateName(fabric)"
-          [disabled]="cannotUpdateName() | async"></button>
-      </form>
-
-      <div class="topics-container">
-        <h4>Themen</h4>
-
+      <div class="fabric-detail">
+        <label>Themen</label>
         @if (isLoadingAvailableTopics() | async) {
           <div class="loading-container">
             <app-loading-spinner></app-loading-spinner>
@@ -112,9 +137,8 @@
         }
       </div>
 
-      <div class="colors-container">
-        <h4>Farben</h4>
-
+      <div class="fabric-detail">
+        <label>Farben</label>
         @if (isLoadingAvailableColors() | async) {
           <div class="loading-container">
             <app-loading-spinner></app-loading-spinner>
@@ -148,9 +172,8 @@
         }
       </div>
 
-      <div class="fabric-type-availability-container">
-        <h4>Verfügbarkeit</h4>
-
+      <div class="fabric-detail">
+        <label>Verfügbarkeit</label>
         @if (isLoadingAvailableFabricTypes() | async) {
           <div class="loading-container">
             <app-loading-spinner></app-loading-spinner>
@@ -174,22 +197,12 @@
         }
       </div>
 
-      <hr />
-
-      <div class="actions">
-        <span>
-          <app-button routerLink="..">Zurück zur Übersicht</app-button>
-        </span>
-        <span>
-          @if (isDeleteConfirmation() | async) {
-            <app-button color="warn" (click)="deleteFabric(fabric)">Wirklich löschen?</app-button>
-          } @else {
-            <app-button (click)="waitForDeleteConfirmation()">Stoff löschen</app-button>
-          }
-        </span>
+      <div class="fabric-detail">
+        <label>Erstellt am</label>
+        <span class="fabric-created-at">{{ fabric.createdAt | date: "dd.MM.yyyy" }} um {{ fabric.createdAt | date: "HH:mm" }}</span>
       </div>
-    } @else {
-      <p>Der Stoff konnte nicht gefunden werden.</p>
-    }
+    </div>
+  } @else {
+    <app-note level="warn">Dieser Stoff konnte nicht gefunden werden.</app-note>
   }
-</div>
+}
