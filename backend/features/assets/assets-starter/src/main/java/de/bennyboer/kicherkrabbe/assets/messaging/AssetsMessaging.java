@@ -224,9 +224,11 @@ public class AssetsMessaging {
 
                     Set<AssetId> assetIds = new HashSet<>();
                     assetIds.add(AssetId.of(event.image()));
-                    event.exampleImages().stream()
-                            .map(AssetId::of)
-                            .forEach(assetIds::add);
+                    if (event.exampleImages() != null) {
+                        event.exampleImages().stream()
+                                .map(AssetId::of)
+                                .forEach(assetIds::add);
+                    }
 
                     return module.updateAssetReferences(
                             AssetReferenceResourceType.FABRIC,

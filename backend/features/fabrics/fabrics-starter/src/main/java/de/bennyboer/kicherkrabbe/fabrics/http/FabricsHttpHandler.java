@@ -454,7 +454,7 @@ public class FabricsHttpHandler {
                         fabricId,
                         req.version,
                         req.imageId,
-                        req.exampleImageIds,
+                        req.exampleImageIds != null ? req.exampleImageIds : List.of(),
                         agent
                 )))
                 .map(version -> {
