@@ -1,0 +1,7 @@
+plugins {
+    id 'kicherkrabbe.feature-conventions'
+}
+
+dependencies {
+    implementation project(':features:offers:offers-starter')
+}
