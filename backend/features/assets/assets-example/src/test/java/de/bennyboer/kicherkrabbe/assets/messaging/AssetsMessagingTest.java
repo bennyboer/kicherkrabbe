@@ -156,38 +156,6 @@ public class AssetsMessagingTest extends EventListenerTest {
     }
 
     @Test
-    void shouldAllowAnonymousUsersToReadAssetOnAssetCreated() {
-        send(
-                AggregateType.of("ASSET"),
-                AggregateId.of("ASSET_ID"),
-                Version.of(1),
-                EventName.of("CREATED"),
-                Version.zero(),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
-
-        verify(module, timeout(5000).times(1)).allowAnonymousUsersToReadAsset(eq("ASSET_ID"));
-    }
-
-    @Test
-    void shouldDisallowAnonymousUsersToReadAssetOnAssetDeleted() {
-        send(
-                AggregateType.of("ASSET"),
-                AggregateId.of("ASSET_ID"),
-                Version.of(1),
-                EventName.of("DELETED"),
-                Version.zero(),
-                Agent.system(),
-                Instant.now(),
-                Map.of()
-        );
-
-        verify(module, timeout(5000).times(1)).disallowAnonymousUsersToReadAsset(eq("ASSET_ID"));
-    }
-
-    @Test
     void shouldUpdateAssetReferencesOnFabricCreated() {
         send(
                 AggregateType.of("FABRIC"),

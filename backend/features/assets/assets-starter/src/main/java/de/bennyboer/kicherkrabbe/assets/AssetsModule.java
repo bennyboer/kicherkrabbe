@@ -302,12 +302,22 @@ public class AssetsModule {
         }
 
         return resolvedName$.flatMap(name ->
-                assetReferenceRepo.removeByResource(resourceType, resourceId)
-                        .thenMany(Flux.fromIterable(assetIds)
-                                .flatMap(assetId -> assetReferenceRepo.upsert(
-                                        AssetReference.of(assetId, resourceType, resourceId, name)
-                                )))
-                        .then()
+                assetReferenceRepo.findByResource(resourceType, resourceId)
+                        .map(AssetReference::getAssetId)
+                        .collect(Collectors.toSet())
+                        .flatMap(oldAssetIds ->
+                                assetReferenceRepo.removeByResource(resourceType, resourceId)
+                                        .thenMany(Flux.fromIterable(assetIds)
+                                                .flatMap(assetId -> assetReferenceRepo.upsert(
+                                                        AssetReference.of(assetId, resourceType, resourceId, name)
+                                                )))
+                                        .then()
+                                        .then(Mono.defer(() -> {
+                                            Set<AssetId> allAffected = new HashSet<>(oldAssetIds);
+                                            allAffected.addAll(assetIds);
+                                            return updateAnonymousAccessForAssets(allAffected);
+                                        }))
+                        )
         );
     }
 
@@ -329,7 +339,13 @@ public class AssetsModule {
             AssetReferenceResourceType resourceType,
             AssetResourceId resourceId
     ) {
-        return assetReferenceRepo.removeByResource(resourceType, resourceId);
+        return assetReferenceRepo.findByResource(resourceType, resourceId)
+                .map(AssetReference::getAssetId)
+                .collect(Collectors.toSet())
+                .flatMap(affectedAssetIds ->
+                        assetReferenceRepo.removeByResource(resourceType, resourceId)
+                                .then(updateAnonymousAccessForAssets(affectedAssetIds))
+                );
     }
 
     public Flux<AssetReference> findAssetReferences(AssetId assetId) {
@@ -435,6 +451,58 @@ public class AssetsModule {
             case "ASCENDING" -> AssetsSortDirection.ASCENDING;
             default -> AssetsSortDirection.DESCENDING;
         };
+    }
+
+    private Mono<Void> updateAnonymousAccessForAssets(Set<AssetId> assetIds) {
+        if (assetIds.isEmpty()) {
+            return Mono.empty();
+        }
+
+        return assetReferenceRepo.findByAssetIds(assetIds)
+                .collect(Collectors.groupingBy(AssetReference::getAssetId))
+                .flatMap(refsByAsset -> {
+                    Set<AssetId> publicAssetIds = new HashSet<>();
+                    Set<AssetId> privateAssetIds = new HashSet<>();
+
+                    for (AssetId assetId : assetIds) {
+                        List<AssetReference> refs = refsByAsset.getOrDefault(assetId, List.of());
+                        boolean hasPublicRef = refs.stream()
+                                .anyMatch(ref -> ref.getResourceType().isPubliclyAccessible());
+
+                        if (hasPublicRef) {
+                            publicAssetIds.add(assetId);
+                        } else {
+                            privateAssetIds.add(assetId);
+                        }
+                    }
+
+                    var resourceType = getResourceType();
+                    var anonymousHolder = Holder.group(HolderId.anonymous());
+
+                    Mono<Void> grant$ = Mono.empty();
+                    if (!publicAssetIds.isEmpty()) {
+                        var permissions = publicAssetIds.stream()
+                                .map(id -> Permission.builder()
+                                        .holder(anonymousHolder)
+                                        .isAllowedTo(READ)
+                                        .on(Resource.of(resourceType, ResourceId.of(id.getValue()))))
+                                .collect(Collectors.toSet());
+                        grant$ = permissionsService.addPermissions(permissions);
+                    }
+
+                    Mono<Void> revoke$ = Mono.empty();
+                    if (!privateAssetIds.isEmpty()) {
+                        var permissions = privateAssetIds.stream()
+                                .map(id -> Permission.builder()
+                                        .holder(anonymousHolder)
+                                        .isAllowedTo(READ)
+                                        .on(Resource.of(resourceType, ResourceId.of(id.getValue()))))
+                                .toArray(Permission[]::new);
+                        revoke$ = permissionsService.removePermissions(permissions);
+                    }
+
+                    return Mono.when(grant$, revoke$);
+                });
     }
 
 }

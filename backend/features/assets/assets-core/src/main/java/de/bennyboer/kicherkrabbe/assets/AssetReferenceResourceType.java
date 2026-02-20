@@ -5,6 +5,13 @@ public enum AssetReferenceResourceType {
     FABRIC,
     PATTERN,
     PRODUCT,
-    HIGHLIGHT
+    HIGHLIGHT;
+
+    public boolean isPubliclyAccessible() {
+        return switch (this) {
+            case FABRIC, PATTERN, HIGHLIGHT -> true;
+            case PRODUCT -> false;
+        };
+    }
 
 }

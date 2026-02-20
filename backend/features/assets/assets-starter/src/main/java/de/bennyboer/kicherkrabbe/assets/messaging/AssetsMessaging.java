@@ -152,40 +152,6 @@ public class AssetsMessaging {
         );
     }
 
-    @Bean("assets_onAssetCreatedAllowAnonymousUsersToReadAsset")
-    public EventListener onAssetCreatedAllowAnonymousUsersToReadAsset(
-            EventListenerFactory factory,
-            AssetsModule module
-    ) {
-        return factory.createEventListenerForEvent(
-                "assets.asset-created-allow-anonymous-users-to-read-asset",
-                AggregateType.of("ASSET"),
-                EventName.of("CREATED"),
-                (event) -> {
-                    String assetId = event.getMetadata().getAggregateId().getValue();
-
-                    return module.allowAnonymousUsersToReadAsset(assetId);
-                }
-        );
-    }
-
-    @Bean("assets_onAssetDeletedDisallowAnonymousUsersToReadAsset")
-    public EventListener onAssetDeletedDisallowAnonymousUsersToReadAsset(
-            EventListenerFactory factory,
-            AssetsModule module
-    ) {
-        return factory.createEventListenerForEvent(
-                "assets.asset-deleted-disallow-anonymous-users-to-read-asset",
-                AggregateType.of("ASSET"),
-                EventName.of("DELETED"),
-                (event) -> {
-                    String assetId = event.getMetadata().getAggregateId().getValue();
-
-                    return module.disallowAnonymousUsersToReadAsset(assetId);
-                }
-        );
-    }
-
     @Bean("assets_onFabricCreatedUpdateAssetReferences")
     public EventListener onFabricCreatedUpdateAssetReferences(
             EventListenerFactory factory,

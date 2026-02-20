@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.assets.AssetContent;
 import de.bennyboer.kicherkrabbe.assets.ContentType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.permissions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -111,6 +112,24 @@ public class QueryAssetContentHttpHandlerTest extends HttpHandlerTest {
 
         // then: the response is unauthorized
         exchange.expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void shouldReturnForbiddenWhenPermissionIsMissing() {
+        when(module.getAssetContent(
+                eq("ASSET_ID"),
+                eq(null),
+                eq(Agent.anonymous())
+        )).thenReturn(Mono.error(new MissingPermissionError(Permission.builder()
+                .holder(Holder.group(HolderId.anonymous()))
+                .isAllowedTo(Action.of("READ"))
+                .on(Resource.of(ResourceType.of("ASSET"), ResourceId.of("ASSET_ID"))))));
+
+        var exchange = client.get()
+                .uri("/assets/ASSET_ID/content")
+                .exchange();
+
+        exchange.expectStatus().isForbidden();
     }
 
     @Test

@@ -1,10 +1,14 @@
 package de.bennyboer.kicherkrabbe.assets;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AssetReferenceTest extends AssetsModuleTest {
 
@@ -63,6 +67,69 @@ public class AssetReferenceTest extends AssetsModuleTest {
 
         var refs3 = findAssetReferences("ASSET_3");
         assertThat(refs3).hasSize(1);
+    }
+
+    @Test
+    void shouldNotAllowAnonymousAccessToNewlyUploadedAsset() {
+        var agent = Agent.user(AgentId.of("USER_ID"));
+        allowUserToCreateAssets("USER_ID");
+        var assetId = uploadSampleAsset(agent);
+
+        assertThatThrownBy(() -> getAssetContent(assetId, Agent.anonymous()))
+                .matches(e -> e.getCause() instanceof MissingPermissionError);
+    }
+
+    @Test
+    void shouldRevokeAnonymousAccessWhenAssetIsOnlyReferencedByProduct() {
+        var agent = Agent.user(AgentId.of("USER_ID"));
+        allowUserToCreateAssets("USER_ID");
+        var assetId = uploadSampleAsset(agent);
+
+        updateAssetReferences(AssetReferenceResourceType.PRODUCT, "PRODUCT_1", Set.of(assetId));
+
+        assertThatThrownBy(() -> getAssetContent(assetId, Agent.anonymous()))
+                .matches(e -> e.getCause() instanceof MissingPermissionError);
+    }
+
+    @Test
+    void shouldKeepAnonymousAccessWhenAssetIsReferencedByProductAndPattern() {
+        var agent = Agent.user(AgentId.of("USER_ID"));
+        allowUserToCreateAssets("USER_ID");
+        var assetId = uploadSampleAsset(agent);
+
+        updateAssetReferences(AssetReferenceResourceType.PRODUCT, "PRODUCT_1", Set.of(assetId));
+        updateAssetReferences(AssetReferenceResourceType.PATTERN, "PATTERN_1", Set.of(assetId));
+
+        var content = getAssetContent(assetId, Agent.anonymous());
+        assertThat(content).isNotEmpty();
+    }
+
+    @Test
+    void shouldRevokeAnonymousAccessWhenPublicReferenceIsRemoved() {
+        var agent = Agent.user(AgentId.of("USER_ID"));
+        allowUserToCreateAssets("USER_ID");
+        var assetId = uploadSampleAsset(agent);
+
+        updateAssetReferences(AssetReferenceResourceType.PRODUCT, "PRODUCT_1", Set.of(assetId));
+        updateAssetReferences(AssetReferenceResourceType.PATTERN, "PATTERN_1", Set.of(assetId));
+
+        removeAssetReferencesByResource(AssetReferenceResourceType.PATTERN, "PATTERN_1");
+
+        assertThatThrownBy(() -> getAssetContent(assetId, Agent.anonymous()))
+                .matches(e -> e.getCause() instanceof MissingPermissionError);
+    }
+
+    @Test
+    void shouldKeepAnonymousAccessRevokedWhenAllReferencesAreRemoved() {
+        var agent = Agent.user(AgentId.of("USER_ID"));
+        allowUserToCreateAssets("USER_ID");
+        var assetId = uploadSampleAsset(agent);
+
+        updateAssetReferences(AssetReferenceResourceType.PRODUCT, "PRODUCT_1", Set.of(assetId));
+        removeAssetReferencesByResource(AssetReferenceResourceType.PRODUCT, "PRODUCT_1");
+
+        assertThatThrownBy(() -> getAssetContent(assetId, Agent.anonymous()))
+                .matches(e -> e.getCause() instanceof MissingPermissionError);
     }
 
 }

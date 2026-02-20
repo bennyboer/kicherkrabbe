@@ -13,6 +13,7 @@ import de.bennyboer.kicherkrabbe.assets.http.api.responses.QueryStorageInfoRespo
 import de.bennyboer.kicherkrabbe.assets.http.responses.UploadAssetResponse;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -180,6 +181,7 @@ public class AssetsHttpHandler {
                 .flatMap(content -> ServerResponse.ok()
                         .contentType(MediaType.parseMediaType(content.getContentType().getValue()))
                         .body(content.getBuffers(), DataBuffer.class))
+                .onErrorResume(MissingPermissionError.class, _ -> ServerResponse.status(HttpStatus.FORBIDDEN).build())
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED)));
     }
 

@@ -35,12 +35,14 @@ public class CacheablePermissionsRepo implements PermissionsRepo {
 
     @Override
     public Mono<Permission> insert(Permission permission) {
-        return delegate.insert(permission);
+        return delegate.insert(permission)
+                .doOnNext(cache::invalidate);
     }
 
     @Override
     public Flux<Permission> insert(Collection<Permission> permissions) {
-        return delegate.insert(permissions);
+        return delegate.insert(permissions)
+                .doOnNext(cache::invalidate);
     }
 
     @Override

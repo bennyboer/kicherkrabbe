@@ -95,7 +95,6 @@ public class AssetsModuleTest {
         if (agent.getType() == AgentType.USER) {
             allowUserToManageAsset(assetId, agent.getId().getValue());
         }
-        allowAnonymousUsersToReadAsset(assetId);
         updateAssetInLookup(assetId);
 
         return assetId;
