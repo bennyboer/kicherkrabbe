@@ -43,9 +43,9 @@
         </label>
         <div class="fabric-image">
           @if (getImageId() | async; as imageId) {
-            <img [src]="getImageUrl(imageId)" alt="Bild des Stoffs" />
+            <img [src]="getImageUrl(imageId) | authImage | async" alt="Bild des Stoffs" />
           } @else {
-            <img [src]="getImageUrl(fabric.image)" alt="Bild des Stoffs" />
+            <img [src]="getImageUrl(fabric.image) | authImage | async" alt="Bild des Stoffs" />
           }
         </div>
       </div>

@@ -12,6 +12,7 @@ import {
   Renderer2,
   ViewChildren,
 } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { ImageSliderImage } from '../../models';
 import {
   animationFrameScheduler,
@@ -113,9 +114,12 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
   private resetAnimationStartTimestamp: number = window.performance.now();
   private resetAnimationDurationMs: number = 0;
 
+  private readonly objectUrls: string[] = [];
+
   constructor(
     private readonly elementRef: ElementRef,
     private readonly renderer: Renderer2,
+    private readonly http: HttpClient,
   ) {}
 
   ngOnInit(): void {
@@ -257,6 +261,8 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dragging$.complete();
     this.fit$.complete();
 
+    this.objectUrls.forEach((url) => URL.revokeObjectURL(url));
+
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -278,14 +284,20 @@ export class SlidingImageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadImage(image: ImageSliderImage): Observable<HTMLImageElement> {
-    return new Observable<HTMLImageElement>((observer) => {
-      const imageElement = new Image();
-      imageElement.src = image.url;
-      imageElement.onload = () => {
-        observer.next(imageElement);
-        observer.complete();
-      };
-    });
+    return this.http.get(image.url, { responseType: 'blob' }).pipe(
+      switchMap((blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+        this.objectUrls.push(objectUrl);
+        return new Observable<HTMLImageElement>((observer) => {
+          const imageElement = new Image();
+          imageElement.onload = () => {
+            observer.next(imageElement);
+            observer.complete();
+          };
+          imageElement.src = objectUrl;
+        });
+      }),
+    );
   }
 
   private repaint(): void {

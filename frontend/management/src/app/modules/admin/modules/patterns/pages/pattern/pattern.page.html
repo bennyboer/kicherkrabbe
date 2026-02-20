@@ -157,7 +157,7 @@
             <ul class="image-list" [nxtSortablejs]="imageIds" [config]="imagesSortableConfig">
               @for (imageId of imageIds; track imageId) {
                 <li class="drag-handle">
-                  <img [src]="getImageUrl(imageId)" width="100%" />
+                  <img [src]="getImageUrl(imageId) | authImage | async" width="100%" />
                   <span class="delete-button material-icons" (click)="deleteImage(imageId)">close</span>
                 </li>
               }

@@ -24,7 +24,7 @@
       @for (fabric of fabrics; track fabric.id) {
         <tr [routerLink]="[fabric.id]">
           <td class="image-cell">
-            <img [src]="getImageUrl(fabric.image)" />
+            <img [src]="getImageUrl(fabric.image) | authImage | async" />
           </td>
           <td class="details-cell">
             <span class="details">

@@ -7,7 +7,7 @@
     <div class="image-edit-container">
       @if (getImageId() | async; as imageId) {
         <div class="image-container">
-          <img [src]="getImageUrl(imageId)" width="100%" alt="Stoffbild" />
+          <img [src]="getImageUrl(imageId) | authImage | async" width="100%" alt="Stoffbild" />
         </div>
         <div>
           <app-button (click)="selectImage()">Bild ändern</app-button>

@@ -36,7 +36,7 @@
           @for (highlight of highlights; track highlight.id) {
             <a class="table-row" [routerLink]="highlight.id">
               <td class="image">
-                <img [src]="getImageUrl(highlight.imageId)" width="64" height="64" />
+                <img [src]="getImageUrl(highlight.imageId) | authImage | async" width="64" height="64" />
               </td>
               <td class="status">
                 @if (highlight.published) {

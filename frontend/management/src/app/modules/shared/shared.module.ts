@@ -30,6 +30,7 @@ import { CommonModule } from '@angular/common';
 import { NgxColorsModule } from 'ngx-colors';
 import { RouterLink } from '@angular/router';
 import { OptionModule } from './modules/option';
+import { AuthImagePipe } from './pipes/auth-image.pipe';
 
 const COMPONENTS = [
   PriceTagComponent,
@@ -61,8 +62,8 @@ const DIRECTIVES = [FlagDirective, UnlessFlagDirective];
 
 @NgModule({
   declarations: [...COMPONENTS, ...DIRECTIVES],
-  exports: [...COMPONENTS, FlagDirective, UnlessFlagDirective],
-  imports: [CommonModule, NgxColorsModule, RouterLink, OptionModule],
+  exports: [...COMPONENTS, FlagDirective, UnlessFlagDirective, AuthImagePipe],
+  imports: [CommonModule, NgxColorsModule, RouterLink, OptionModule, AuthImagePipe],
 })
 export class SharedModule {
   static forRoot() {

@@ -54,7 +54,7 @@
             (click)="onAssetClick(vm.asset)"
             [title]="getReferenceSummary(vm.asset)">
             <div class="asset-image">
-              <img [src]="getImageUrl(vm.asset.id)" loading="lazy" alt="" />
+              <img [src]="getImageUrl(vm.asset.id) | authImage | async" loading="lazy" alt="" />
               @if (vm.selected && mode === 'select') {
                 <div class="selection-overlay">
                   <span class="material-icons">check_circle</span>

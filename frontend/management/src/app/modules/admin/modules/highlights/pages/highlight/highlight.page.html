@@ -35,7 +35,7 @@
             </div>
           } @else {
             <div class="image-container">
-              <img [src]="getImageUrl(highlight.imageId)" alt="Highlight Bild" />
+              <img [src]="getImageUrl(highlight.imageId) | authImage | async" alt="Highlight Bild" />
             </div>
           }
         </div>

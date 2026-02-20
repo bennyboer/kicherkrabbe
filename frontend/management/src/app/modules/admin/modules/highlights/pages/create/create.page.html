@@ -15,7 +15,7 @@
     <div class="highlight-image">
       @if (currentImageId$ | async; as imageId) {
         <div class="image-container">
-          <img [src]="getImageUrl(imageId)" alt="Highlight Bild" />
+          <img [src]="getImageUrl(imageId) | authImage | async" alt="Highlight Bild" />
         </div>
       } @else {
         <app-button (click)="selectImage()">
