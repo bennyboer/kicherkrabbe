@@ -45,14 +45,8 @@
 	}
 }
 
-.example-images-section {
-	margin-top: 48px;
-
-	h2 {
-		margin: 0 0 16px 0;
-		font-size: 1.25rem;
-		font-weight: 600;
-	}
+.mobile-only {
+	display: none;
 }
 
 .example-images-grid {
@@ -78,6 +72,7 @@
 }
 
 .availability-section,
+.example-images-section,
 .colors-section,
 .topics-section {
 	h2 {
@@ -179,4 +174,11 @@
 		position: static;
 	}
 
+	.mobile-only {
+		display: revert;
+	}
+
+	.desktop-only {
+		display: none;
+	}
 }

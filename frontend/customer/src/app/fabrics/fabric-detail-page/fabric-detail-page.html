@@ -33,6 +33,24 @@
 					offIcon="pi pi-th-large"
 					styleClass="tiled-toggle"
 				/>
+
+				@if (data.fabric.exampleImageIds.length > 0) {
+					<div class="example-images-section desktop-only">
+						<h2>Beispielbilder</h2>
+						<div class="example-images-grid">
+							@for (imageId of data.fabric.exampleImageIds; track imageId) {
+								<p-image
+									[src]="getImageUrl(imageId)"
+									[previewImageSrc]="getOriginalImageUrl(imageId)"
+									alt="Beispielbild"
+									[preview]="true"
+									width="100%"
+									appendTo="body"
+								/>
+							}
+						</div>
+					</div>
+				}
 			</div>
 
 			<div class="details-section">
@@ -58,8 +76,28 @@
 					}
 				</div>
 
-				@if (data.colors.length > 0) {
-					<p-divider />
+				@if (data.fabric.exampleImageIds.length > 0) {
+				<p-divider class="mobile-only" />
+
+				<div class="example-images-section mobile-only">
+					<h2>Beispielbilder</h2>
+					<div class="example-images-grid">
+						@for (imageId of data.fabric.exampleImageIds; track imageId) {
+							<p-image
+								[src]="getImageUrl(imageId)"
+								[previewImageSrc]="getOriginalImageUrl(imageId)"
+								alt="Beispielbild"
+								[preview]="true"
+								width="100%"
+								appendTo="body"
+							/>
+						}
+					</div>
+				</div>
+			}
+
+			@if (data.colors.length > 0) {
+				<p-divider />
 
 					<div class="colors-section">
 						<h2>Farben</h2>
@@ -98,23 +136,6 @@
 			</div>
 		</div>
 
-		@if (data.fabric.exampleImageIds.length > 0) {
-			<div class="example-images-section">
-				<h2>Beispielbilder</h2>
-				<div class="example-images-grid">
-					@for (imageId of data.fabric.exampleImageIds; track imageId) {
-						<p-image
-							[src]="getImageUrl(imageId)"
-							[previewImageSrc]="getOriginalImageUrl(imageId)"
-							alt="Beispielbild"
-							[preview]="true"
-							width="100%"
-							appendTo="body"
-						/>
-					}
-				</div>
-			</div>
-		}
 	} @else {
 		<div class="not-found">
 			<p>Stoff nicht gefunden.</p>
