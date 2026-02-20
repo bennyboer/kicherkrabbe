@@ -135,3 +135,8 @@ include('features:products:products-example')
 include('features:highlights:highlights-core')
 include('features:highlights:highlights-starter')
 include('features:highlights:highlights-example')
+
+// Offers
+include('features:offers:offers-core')
+include('features:offers:offers-starter')
+include('features:offers:offers-example')
