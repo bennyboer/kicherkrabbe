@@ -38,6 +38,10 @@ public class Pricing {
         notNull(priceHistory, "Price history must be given");
 
         if (discountedPrice != null) {
+            check(
+                    discountedPrice.getCurrency().equals(price.getCurrency()),
+                    "Discounted price currency must match price currency"
+            );
             check(discountedPrice.getAmount() < price.getAmount(), "Discounted price must be less than price");
         }
 
@@ -62,6 +66,10 @@ public class Pricing {
 
     public Pricing withDiscount(Money discountedPrice) {
         notNull(discountedPrice, "Discounted price must be given");
+        check(
+                discountedPrice.getCurrency().equals(price.getCurrency()),
+                "Discounted price currency must match price currency"
+        );
         check(discountedPrice.getAmount() < price.getAmount(), "Discounted price must be less than price");
 
         return withDiscountedPrice(discountedPrice);

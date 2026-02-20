@@ -8,4 +8,6 @@ public interface ProductForOfferLookupRepo extends EventSourcingReadModelRepo<Pr
 
     Mono<LookupProduct> findById(ProductId id);
 
+    Mono<LookupProductPage> findAll(String searchTerm, long skip, long limit);
+
 }

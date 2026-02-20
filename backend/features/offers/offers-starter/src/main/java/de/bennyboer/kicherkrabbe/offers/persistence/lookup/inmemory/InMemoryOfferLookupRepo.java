@@ -70,9 +70,10 @@ public class InMemoryOfferLookupRepo extends InMemoryEventSourcingReadModelRepo<
             return true;
         }
 
-        return offer.getNotes().getDescription().getValue()
-                .toLowerCase(Locale.ROOT)
-                .contains(searchTerm.toLowerCase(Locale.ROOT));
+        var term = searchTerm.toLowerCase(Locale.ROOT);
+
+        return offer.getNotes().getDescription().getValue().toLowerCase(Locale.ROOT).contains(term)
+                || offer.getProduct().getNumber().getValue().toLowerCase(Locale.ROOT).contains(term);
     }
 
 }

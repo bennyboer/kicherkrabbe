@@ -178,6 +178,61 @@ public abstract class OfferLookupRepoTest {
     }
 
     @Test
+    void shouldFindOffersByProductNumber() {
+        var offer1 = SampleLookupOffer.builder()
+                .productNumber("P-001")
+                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
+                        de.bennyboer.kicherkrabbe.offers.Note.of("Some description"), null, null, null
+                ))
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer2 = SampleLookupOffer.builder()
+                .productNumber("P-002")
+                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
+                        de.bennyboer.kicherkrabbe.offers.Note.of("Other description"), null, null, null
+                ))
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        update(offer1);
+        update(offer2);
+
+        var allIds = Set.of(offer1.getId(), offer2.getId());
+        assertThat(find(allIds, "P-001", 0, 10)).containsExactly(offer1);
+        assertThat(find(allIds, "P-002", 0, 10)).containsExactly(offer2);
+        assertThat(find(allIds, "P-00", 0, 10)).containsExactly(offer1, offer2);
+    }
+
+    @Test
+    void shouldFindPublishedOffersByProductNumber() {
+        var offer1 = SampleLookupOffer.builder()
+                .productNumber("P-100")
+                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
+                        de.bennyboer.kicherkrabbe.offers.Note.of("Cotton dress"), null, null, null
+                ))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer2 = SampleLookupOffer.builder()
+                .productNumber("P-200")
+                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
+                        de.bennyboer.kicherkrabbe.offers.Note.of("Silk gown"), null, null, null
+                ))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        update(offer1);
+        update(offer2);
+
+        var result = findPublished("P-100", 0, 10);
+        assertThat(result.getResults()).containsExactly(offer1);
+        assertThat(result.getTotal()).isEqualTo(1);
+    }
+
+    @Test
     void shouldFindOffersBySearchTermCaseInsensitive() {
         var offer = SampleLookupOffer.builder()
                 .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(

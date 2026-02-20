@@ -36,6 +36,7 @@ public class OffersHttpConfig {
                 route(POST("/"), handler::getOffers)
                         .andRoute(GET("/changes"), handler::getChanges)
                         .andRoute(POST("/published"), handler::getPublishedOffers)
+                        .andRoute(POST("/products"), handler::getProducts)
                         .andRoute(POST("/create"), handler::createOffer)
                         .andNest(path("/{offerId}"), route(GET(""), handler::getOffer)
                                 .andRoute(GET("/published"), handler::getPublishedOffer)

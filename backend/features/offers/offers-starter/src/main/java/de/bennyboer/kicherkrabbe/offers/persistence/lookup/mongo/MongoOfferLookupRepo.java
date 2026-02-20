@@ -55,7 +55,10 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
 
         if (searchTerm != null && !searchTerm.isBlank()) {
             String quotedSearchTerm = Pattern.quote(searchTerm);
-            criteria.and("notes.description").regex(quotedSearchTerm, "i");
+            criteria.andOperator(new Criteria().orOperator(
+                    where("notes.description").regex(quotedSearchTerm, "i"),
+                    where("product.number").regex(quotedSearchTerm, "i")
+            ));
         }
 
         var match = match(criteria);
@@ -83,7 +86,10 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
 
         if (searchTerm != null && !searchTerm.isBlank()) {
             String quotedSearchTerm = Pattern.quote(searchTerm);
-            criteria.and("notes.description").regex(quotedSearchTerm, "i");
+            criteria.andOperator(new Criteria().orOperator(
+                    where("notes.description").regex(quotedSearchTerm, "i"),
+                    where("product.number").regex(quotedSearchTerm, "i")
+            ));
         }
 
         var match = match(criteria);
@@ -126,12 +132,13 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
 
     @Override
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
-        IndexDefinition createdAtIndex = new Index().on("createdAt", Sort.Direction.DESC);
-        IndexDefinition publishedIndex = new Index().on("published", Sort.Direction.ASC);
+        IndexDefinition publishedOffersIndex = new Index()
+                .on("published", Sort.Direction.ASC)
+                .on("archivedAt", Sort.Direction.ASC)
+                .on("createdAt", Sort.Direction.DESC);
         IndexDefinition productIdIndex = new Index().on("product.id", Sort.Direction.ASC);
 
-        return indexOps.createIndex(createdAtIndex)
-                .then(indexOps.createIndex(publishedIndex))
+        return indexOps.createIndex(publishedOffersIndex)
                 .then(indexOps.createIndex(productIdIndex))
                 .then();
     }

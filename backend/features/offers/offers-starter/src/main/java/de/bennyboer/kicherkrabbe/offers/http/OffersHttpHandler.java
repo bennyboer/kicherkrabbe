@@ -9,6 +9,7 @@ import de.bennyboer.kicherkrabbe.offers.*;
 import de.bennyboer.kicherkrabbe.offers.api.*;
 import de.bennyboer.kicherkrabbe.offers.api.requests.*;
 import de.bennyboer.kicherkrabbe.offers.api.responses.*;
+import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.LookupProduct;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import de.bennyboer.kicherkrabbe.offers.archive.NotReservedForArchiveError;
 import de.bennyboer.kicherkrabbe.offers.delete.CannotDeleteNonDraftError;
@@ -128,8 +129,29 @@ public class OffersHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .switchIfEmpty(Mono.error(new ResponseStatusException(NOT_FOUND, "Offer not available")));
+    }
+
+    public Mono<ServerResponse> getProducts(ServerRequest request) {
+        return request.bodyToMono(QueryProductsForOfferCreationRequest.class)
+                .flatMap(req -> toAgent(request).flatMap(agent -> module.getProductsForOfferCreation(
+                        req.searchTerm,
+                        req.skip,
+                        req.limit,
+                        agent
+                )))
+                .map(page -> {
+                    var response = new QueryProductsForOfferCreationResponse();
+                    response.products = page.getResults().stream()
+                            .map(this::toProductForOfferCreationDTO)
+                            .toList();
+                    response.total = page.getTotal();
+                    response.skip = page.getSkip();
+                    response.limit = page.getLimit();
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
     }
 
     public Mono<ServerResponse> createOffer(ServerRequest request) {
@@ -561,6 +583,15 @@ public class OffersHttpHandler {
         result.pricing = toPricingDTO(offer.getPricing());
         result.notes = toNotesDTO(offer.getNotes());
         return result;
+    }
+
+    private ProductForOfferCreationDTO toProductForOfferCreationDTO(LookupProduct product) {
+        var dto = new ProductForOfferCreationDTO();
+        dto.id = product.getId().getValue();
+        dto.number = product.getNumber().getValue();
+        dto.links = toLinkDTOs(product.getLinks());
+        dto.fabricCompositionItems = toFabricCompositionItemDTOs(product.getFabricComposition());
+        return dto;
     }
 
     private ProductDTO toProductDTO(Product product) {

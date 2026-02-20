@@ -191,6 +191,10 @@ public class OffersModuleTest {
         return module.getPublishedOffer(offerId, agent).block();
     }
 
+    public ProductsPage getProductsForOfferCreation(String searchTerm, long skip, long limit, Agent agent) {
+        return module.getProductsForOfferCreation(searchTerm, skip, limit, agent).block();
+    }
+
     public void allowUserToCreateOffers(String userId) {
         module.allowUserToCreateOffers(userId).block();
     }

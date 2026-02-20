@@ -84,6 +84,17 @@ public class OffersModule {
                 ));
     }
 
+    public Mono<ProductsPage> getProductsForOfferCreation(String searchTerm, long skip, long limit, Agent agent) {
+        return assertAgentIsAllowedTo(agent, CREATE)
+                .then(productForOfferLookupRepo.findAll(searchTerm, skip, limit))
+                .map(result -> ProductsPage.of(
+                        result.getSkip(),
+                        result.getLimit(),
+                        result.getTotal(),
+                        result.getResults()
+                ));
+    }
+
     public Mono<PublishedOffer> getPublishedOffer(String offerId, Agent agent) {
         var id = OfferId.of(offerId);
 
@@ -107,12 +118,7 @@ public class OffersModule {
         notNull(priceDTO, "Price must be given");
 
         var images = imageIds.stream().map(ImageId::of).toList();
-        var notes = Notes.of(
-                Note.of(notesDTO.description),
-                notesDTO.contains != null ? Note.of(notesDTO.contains) : null,
-                notesDTO.care != null ? Note.of(notesDTO.care) : null,
-                notesDTO.safety != null ? Note.of(notesDTO.safety) : null
-        );
+        var notes = toNotes(notesDTO);
         var price = Money.of(priceDTO.amount, Currency.fromShortForm(priceDTO.currency));
 
         return assertAgentIsAllowedTo(agent, CREATE)
@@ -193,12 +199,7 @@ public class OffersModule {
     @Transactional(propagation = MANDATORY)
     public Mono<Long> updateOfferNotes(String offerId, long version, NotesDTO notesDTO, Agent agent) {
         var id = OfferId.of(offerId);
-        var notes = Notes.of(
-                Note.of(notesDTO.description),
-                notesDTO.contains != null ? Note.of(notesDTO.contains) : null,
-                notesDTO.care != null ? Note.of(notesDTO.care) : null,
-                notesDTO.safety != null ? Note.of(notesDTO.safety) : null
-        );
+        var notes = toNotes(notesDTO);
 
         return assertAgentIsAllowedTo(agent, UPDATE_NOTES, id)
                 .then(offerService.updateNotes(id, Version.of(version), notes, agent))
@@ -443,9 +444,8 @@ public class OffersModule {
                             product.getNumber(),
                             Links.of(links),
                             product.getFabricComposition()
-                    ));
-                })
-                .then(updateOfferLookupsForProduct(productId));
+                    )).then(updateOfferLookupsForProduct(productId));
+                });
     }
 
     public Mono<Void> updateProductLinkInLookup(String productId, long version, Link updatedLink) {
@@ -592,6 +592,15 @@ public class OffersModule {
         } else {
             return Holder.user(HolderId.of(agent.getId().getValue()));
         }
+    }
+
+    private Notes toNotes(NotesDTO dto) {
+        return Notes.of(
+                Note.of(dto.description),
+                dto.contains != null ? Note.of(dto.contains) : null,
+                dto.care != null ? Note.of(dto.care) : null,
+                dto.safety != null ? Note.of(dto.safety) : null
+        );
     }
 
     private ResourceType getResourceType() {
