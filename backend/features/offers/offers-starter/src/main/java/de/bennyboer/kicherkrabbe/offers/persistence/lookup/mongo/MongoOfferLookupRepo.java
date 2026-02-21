@@ -46,6 +46,11 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
     }
 
     @Override
+    protected boolean allowSameVersionUpdate() {
+        return true;
+    }
+
+    @Override
     public Mono<LookupOfferPage> find(Collection<OfferId> offerIds, String searchTerm, long skip, long limit) {
         Set<String> ids = offerIds.stream()
                 .map(OfferId::getValue)

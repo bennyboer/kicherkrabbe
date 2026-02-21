@@ -114,7 +114,7 @@ public class TelegramMessaging {
 
     private Optional<String> getOriginUrl(String originType, String originId) {
         return switch (originType) {
-            case "MAIL" -> Optional.of("https://kicherkrabbe.com/admin/mailbox/%s".formatted(originId));
+            case "MAIL" -> Optional.of("https://kicherkrabbe.com/mailbox/%s".formatted(originId));
             default -> Optional.empty();
         };
     }

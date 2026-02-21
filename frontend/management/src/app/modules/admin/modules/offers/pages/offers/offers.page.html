@@ -1,0 +1,81 @@
+<div class="action-bar">
+  <div class="left-actions">
+    <input #search type="text" placeholder="Suchen..." (input)="updateSearchTerm(search.value)" />
+  </div>
+  <div class="right-actions">
+    <app-button routerLink="create">
+      <span class="icon-button">
+        <span class="material-icons">add</span>
+        <span>Neuer Sofortkauf</span>
+      </span>
+    </app-button>
+  </div>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (offersLoaded$ | async) {
+  @if (offers$ | async; as offers) {
+    @if (offers.length === 0) {
+      <app-note level="info">Keine Sofortkäufe vorhanden.</app-note>
+    } @else {
+      <table class="offers-table">
+        <colgroup>
+          <col class="image" span="1" style="width: 96px" />
+          <col class="number" span="1" style="width: auto" />
+          <col class="status" span="1" style="width: 140px" />
+          <col class="price" span="1" style="width: 120px" />
+          <col class="created-at" span="1" style="width: 140px" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="image"></th>
+            <th class="number">Produkt-Nr.</th>
+            <th class="status">Status</th>
+            <th class="price">Preis</th>
+            <th class="created-at">Erstellt am</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (offer of offers; track offer.id) {
+            <a class="table-row" [routerLink]="offer.id">
+              <td class="image">
+                @if (offer.images.length > 0) {
+                  <img [src]="getImageUrl(offer.images[0]) | authImage | async" width="64" height="64" />
+                } @else {
+                  <span class="image-placeholder">
+                    <span class="material-icons">image</span>
+                  </span>
+                }
+              </td>
+              <td class="number">
+                {{ offer.product.number }}
+              </td>
+              <td class="status">
+                <span class="status-badge" [style.background-color]="offer.status.color">
+                  {{ offer.status.label }}
+                </span>
+              </td>
+              <td class="price">
+                {{ offer.pricing.price.toDisplayString() }}
+              </td>
+              <td class="created-at" [title]="offer.createdAt | date: 'full'">
+                {{ offer.createdAt | date: "short" }}
+              </td>
+            </a>
+          }
+        </tbody>
+      </table>
+
+      @if (moreOffersAvailable$ | async) {
+        <div class="footer-actions">
+          <app-button (click)="loadMoreOffers()"> Mehr laden... ({{ remainingOffersCount$ | async }}) </app-button>
+        </div>
+      } @else {
+        <div class="footer-actions">
+          <app-note level="info">Keine weiteren Sofortkäufe vorhanden.</app-note>
+        </div>
+      }
+    }
+  }
+}

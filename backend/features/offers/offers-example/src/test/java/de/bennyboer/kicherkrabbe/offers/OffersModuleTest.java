@@ -60,6 +60,7 @@ public class OffersModuleTest {
                 sample.getId(),
                 0L,
                 sample.getNumber(),
+                sample.getImages(),
                 sample.getLinks(),
                 sample.getFabricComposition()
         ).block();
@@ -230,6 +231,10 @@ public class OffersModuleTest {
 
     public void updateProductNumber(String productId, long version, ProductNumber number) {
         module.updateProductNumberInLookup(productId, version, number).block();
+    }
+
+    public void updateProductImages(String productId, long version, List<ImageId> images) {
+        module.updateProductImagesInLookup(productId, version, images).block();
     }
 
 }

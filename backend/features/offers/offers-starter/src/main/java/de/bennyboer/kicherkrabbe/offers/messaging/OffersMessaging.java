@@ -190,10 +190,32 @@ public class OffersMessaging {
                     var payload = event.getEvent();
 
                     var number = ProductNumber.of((String) payload.get("number"));
+                    var images = deserializeImageIds(payload.get("images"));
                     var links = deserializeLinks(payload.get("links"));
                     var fabricComposition = deserializeFabricComposition(payload.get("fabricComposition"));
 
-                    return module.updateProductInLookup(productId, version, number, links, fabricComposition);
+                    return module.updateProductInLookup(productId, version, number, images, links, fabricComposition);
+                }
+        );
+    }
+
+    @Bean("offers_onProductImagesUpdatedUpdateProductLookup")
+    public EventListener onProductImagesUpdatedUpdateProductLookup(
+            EventListenerFactory factory,
+            OffersModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "offers.product-images-updated-update-product-lookup",
+                AggregateType.of("PRODUCT"),
+                EventName.of("IMAGES_UPDATED"),
+                (event) -> {
+                    String productId = event.getMetadata().getAggregateId().getValue();
+                    long version = event.getMetadata().getAggregateVersion().getValue();
+                    var payload = event.getEvent();
+
+                    var images = deserializeImageIds(payload.get("images"));
+
+                    return module.updateProductImagesInLookup(productId, version, images);
                 }
         );
     }
@@ -319,6 +341,14 @@ public class OffersMessaging {
                     return module.updateProductNumberInLookup(productId, version, number);
                 }
         );
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<ImageId> deserializeImageIds(Object imagesPayload) {
+        var imagesList = (List<String>) imagesPayload;
+        return imagesList.stream()
+                .map(ImageId::of)
+                .toList();
     }
 
     @SuppressWarnings("unchecked")

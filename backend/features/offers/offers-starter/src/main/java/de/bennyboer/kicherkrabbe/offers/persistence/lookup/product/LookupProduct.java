@@ -2,12 +2,11 @@ package de.bennyboer.kicherkrabbe.offers.persistence.lookup.product;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.VersionedReadModel;
-import de.bennyboer.kicherkrabbe.offers.FabricComposition;
-import de.bennyboer.kicherkrabbe.offers.Links;
-import de.bennyboer.kicherkrabbe.offers.ProductId;
-import de.bennyboer.kicherkrabbe.offers.ProductNumber;
+import de.bennyboer.kicherkrabbe.offers.*;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+
+import java.util.List;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static lombok.AccessLevel.PRIVATE;
@@ -22,6 +21,8 @@ public class LookupProduct implements VersionedReadModel<ProductId> {
 
     ProductNumber number;
 
+    List<ImageId> images;
+
     Links links;
 
     FabricComposition fabricComposition;
@@ -30,16 +31,18 @@ public class LookupProduct implements VersionedReadModel<ProductId> {
             ProductId id,
             Version version,
             ProductNumber number,
+            List<ImageId> images,
             Links links,
             FabricComposition fabricComposition
     ) {
         notNull(id, "Product ID must be given");
         notNull(version, "Version must be given");
         notNull(number, "Product number must be given");
+        notNull(images, "Images must be given");
         notNull(links, "Links must be given");
         notNull(fabricComposition, "Fabric composition must be given");
 
-        return new LookupProduct(id, version, number, links, fabricComposition);
+        return new LookupProduct(id, version, number, images, links, fabricComposition);
     }
 
 }

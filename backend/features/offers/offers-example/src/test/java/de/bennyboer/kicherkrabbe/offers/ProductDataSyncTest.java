@@ -2,6 +2,7 @@ package de.bennyboer.kicherkrabbe.offers;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.LookupProduct;
 import de.bennyboer.kicherkrabbe.offers.samples.SampleProductForLookup;
 import org.junit.jupiter.api.Test;
 
@@ -104,6 +105,26 @@ public class ProductDataSyncTest extends OffersModuleTest {
 
         var offer = getOffer(offerId, agent);
         assertThat(offer.getProduct().getNumber()).isEqualTo(ProductNumber.of("P-999"));
+    }
+
+    @Test
+    void shouldUpdateProductLookupWhenProductImagesChange() {
+        allowUserToCreateOffers("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        setUpProduct(SampleProductForLookup.builder()
+                .images(List.of(ImageId.of("IMG_1"), ImageId.of("IMG_2")))
+                .build());
+
+        var productsPage = getProductsForOfferCreation("", 0, 10, agent);
+        assertThat(productsPage.getResults().getFirst().getImages())
+                .containsExactly(ImageId.of("IMG_1"), ImageId.of("IMG_2"));
+
+        updateProductImages("PRODUCT_ID", 1L, List.of(ImageId.of("IMG_3")));
+
+        productsPage = getProductsForOfferCreation("", 0, 10, agent);
+        assertThat(productsPage.getResults().getFirst().getImages())
+                .containsExactly(ImageId.of("IMG_3"));
     }
 
     @Test

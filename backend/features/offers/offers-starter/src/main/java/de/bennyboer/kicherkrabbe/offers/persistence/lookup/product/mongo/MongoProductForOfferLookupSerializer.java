@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.offers.persistence.lookup.mongo.MongoFabricComp
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.mongo.MongoLink;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.LookupProduct;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class MongoProductForOfferLookupSerializer
@@ -19,6 +20,9 @@ public class MongoProductForOfferLookupSerializer
         result.id = readModel.getId().getValue();
         result.version = readModel.getVersion().getValue();
         result.number = readModel.getNumber().getValue();
+        result.images = readModel.getImages().stream()
+                .map(ImageId::getValue)
+                .toList();
         result.links = readModel.getLinks().getLinks().stream()
                 .map(this::toMongoLink)
                 .collect(Collectors.toSet());
@@ -34,6 +38,9 @@ public class MongoProductForOfferLookupSerializer
         var id = ProductId.of(serialized.id);
         var version = Version.of(serialized.version);
         var number = ProductNumber.of(serialized.number);
+        var images = serialized.images != null
+                ? serialized.images.stream().map(ImageId::of).toList()
+                : List.<ImageId>of();
         var links = Links.of(serialized.links.stream()
                 .map(this::toLink)
                 .collect(Collectors.toSet()));
@@ -41,7 +48,7 @@ public class MongoProductForOfferLookupSerializer
                 .map(this::toFabricCompositionItem)
                 .collect(Collectors.toSet()));
 
-        return LookupProduct.of(id, version, number, links, fabricComposition);
+        return LookupProduct.of(id, version, number, images, links, fabricComposition);
     }
 
     private MongoLink toMongoLink(Link link) {

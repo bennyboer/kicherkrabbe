@@ -99,6 +99,11 @@ const routes: Routes = [
         loadChildren: () => import('./modules/highlights/highlights.module').then((m) => m.HighlightsModule),
       },
       {
+        path: 'offers',
+        title: 'Sofortkäufe',
+        loadChildren: () => import('./modules/offers/offers.module').then((m) => m.OffersModule),
+      },
+      {
         path: 'assets',
         title: 'Dateiverwaltung',
         loadChildren: () => import('./modules/assets/assets-page.module').then((m) => m.AssetsPageModule),

@@ -94,6 +94,11 @@ const HIGHLIGHTS = ManagementItem.of({
   route: 'highlights',
 });
 
+const OFFERS = ManagementItem.of({
+  label: 'Sofortkäufe',
+  route: 'offers',
+});
+
 const ASSETS = ManagementItem.of({
   label: 'Dateiverwaltung',
   route: 'assets',
@@ -112,6 +117,7 @@ const ESSENTIAL_MANAGEMENT_ITEMS = [
   TELEGRAM,
   MAILING,
   PRODUCTS,
+  OFFERS,
   HIGHLIGHTS,
   ASSETS
 ].sort((a, b) => a.label.localeCompare(b.label));
@@ -204,7 +210,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.adminAuthService.logout();
-    this.router.navigate(['/admin/login']);
+    this.router.navigate(['/login']);
   }
 
   private getCurrentRelativeRoute(url: string): string {

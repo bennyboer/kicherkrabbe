@@ -1,0 +1,274 @@
+<div class="action-bar">
+  <app-button routerLink="..">
+    <span class="icon-button">
+      <span class="material-icons">chevron_left</span>
+      <span>Zurück</span>
+    </span>
+  </app-button>
+
+  @if (offer$ | async | ifSome; as offer) {
+    @if (offer.status === OfferStatus.DRAFT) {
+      <app-button routerLink="delete" color="warn">
+        <span class="icon-button">
+          <span class="material-icons">delete</span>
+          <span>Löschen</span>
+        </span>
+      </app-button>
+    }
+  }
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (offerLoaded$ | async) {
+  @if (offer$ | async | ifSome; as offer) {
+    <div class="offer-details">
+      <div class="offer-detail">
+        <label>
+          Bilder
+          <app-button [size]="ButtonSize.SMALL" (click)="editImages(offer)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="offer-images">
+          @if (images$ | async; as images) {
+            @if (images.length > 0) {
+              <app-image-slider [images]="images" [theme]="theme$ | async"> </app-image-slider>
+            } @else {
+              <span class="image-placeholder">
+                <span class="material-icons">image</span>
+              </span>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="offer-detail">
+        <label>Produkt</label>
+        <a class="product-link" [routerLink]="'/products/' + offer.product.id">
+          {{ offer.product.number }}
+        </a>
+      </div>
+
+      <div class="offer-detail">
+        <label>Links</label>
+        <div class="offer-links">
+          @if (offer.links.length > 0) {
+            <ul class="offer-links-list">
+              @for (link of offer.links; track link.type.internal) {
+                <li>
+                  <a [routerLink]="link.toHref()">
+                    <span>
+                      <strong>{{ link.type.label }}</strong>: {{ link.name }}
+                    </span>
+                  </a>
+                </li>
+              }
+            </ul>
+          } @else {
+            <app-note>Keine Links vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="offer-detail">
+        <label>Stoffzusammensetzung</label>
+        <div class="fabric-composition">
+          @if (offer.fabricComposition.items.length > 0) {
+            <table class="fabric-composition-table">
+              <thead>
+                <tr>
+                  <th class="fabric-type">Stoffart</th>
+                  <th class="percentage">Anteil</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of offer.fabricComposition.getSortedByPercentage(); track item.fabricType.internal) {
+                  <tr>
+                    <td class="fabric-type">{{ item.fabricType.label }}</td>
+                    <td class="percentage">{{ item.percentage / 100 }}%</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <app-note>Keine Stoffzusammensetzung vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="offer-detail">
+        <label>
+          Preis
+          <app-button [size]="ButtonSize.SMALL" (click)="editPrice(offer)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="pricing-section">
+          <span class="price-value">{{ offer.pricing.price.toDisplayString() }}</span>
+          @if (offer.pricing.discountedPrice | ifSome; as discountedPrice) {
+            <div class="discount-row">
+              <span class="discounted-price">Reduziert: {{ discountedPrice.toDisplayString() }}</span>
+              <app-button color="warn" [size]="ButtonSize.SMALL" (click)="removeDiscount(offer)">
+                <span class="icon-button">
+                  <span class="material-icons">delete</span>
+                </span>
+              </app-button>
+            </div>
+          } @else {
+            <app-button [size]="ButtonSize.SMALL" (click)="addDiscount(offer)">
+              <span class="icon-button">
+                <span class="material-icons">add</span>
+                <span>Rabatt hinzufügen</span>
+              </span>
+            </app-button>
+          }
+        </div>
+      </div>
+
+      @if (offer.pricing.priceHistory.length > 0) {
+        <div class="offer-detail">
+          <label>Preishistorie</label>
+          <table class="price-history-table">
+            <thead>
+              <tr>
+                <th class="price">Preis</th>
+                <th class="timestamp">Datum</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of offer.pricing.priceHistory; track entry.timestamp) {
+                <tr>
+                  <td class="price">{{ entry.price.toDisplayString() }}</td>
+                  <td class="timestamp">{{ entry.timestamp | date: "dd.MM.yyyy HH:mm" }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <div class="offer-detail">
+        <label>
+          Beschreibung
+          <app-button [size]="ButtonSize.SMALL" (click)="editDescriptionNote(offer)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="offer-description">
+          @if (offer.notes.description.length > 0) {
+            <quill-view [content]="offer.notes.description" format="json" theme="bubble" style="display: block">
+            </quill-view>
+          } @else {
+            <app-note>Keine Beschreibung vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="offer-detail">
+        <label>
+          Inhaltsangaben
+          <app-button [size]="ButtonSize.SMALL" (click)="editContainsNote(offer)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="offer-contains">
+          @if (offer.notes.contains.orElse('').length > 0) {
+            <quill-view [content]="offer.notes.contains.orElse('')" format="json" theme="bubble" style="display: block">
+            </quill-view>
+          } @else {
+            <app-note>Keine Inhaltsangaben vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="offer-detail">
+        <label>
+          Pflegehinweise
+          <app-button [size]="ButtonSize.SMALL" (click)="editCareNote(offer)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="offer-care">
+          @if (offer.notes.care.orElse('').length > 0) {
+            <quill-view [content]="offer.notes.care.orElse('')" format="json" theme="bubble" style="display: block">
+            </quill-view>
+          } @else {
+            <app-note>Keine Pflegehinweise vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="offer-detail">
+        <label>
+          Sicherheitshinweise
+          <app-button [size]="ButtonSize.SMALL" (click)="editSafetyNote(offer)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="offer-safety">
+          @if (offer.notes.safety.orElse('').length > 0) {
+            <quill-view [content]="offer.notes.safety.orElse('')" format="json" theme="bubble" style="display: block">
+            </quill-view>
+          } @else {
+            <app-note>Keine Sicherheitshinweise vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="offer-detail">
+        <label>Status</label>
+        <div class="status-actions">
+          <span class="status-badge" [style.background-color]="offer.status.color">
+            {{ offer.status.label }}
+          </span>
+
+          <div class="lifecycle-actions">
+            @if (offer.status === OfferStatus.DRAFT) {
+              <app-button color="primary" [disabled]="actionInProgress$ | async" (click)="publishOffer(offer)">
+                Veröffentlichen
+              </app-button>
+            }
+            @if (offer.status === OfferStatus.PUBLISHED) {
+              <app-button [disabled]="actionInProgress$ | async" (click)="unpublishOffer(offer)">
+                Veröffentlichung aufheben
+              </app-button>
+              <app-button color="primary" [disabled]="actionInProgress$ | async" (click)="reserveOffer(offer)">
+                Reservieren
+              </app-button>
+            }
+            @if (offer.status === OfferStatus.RESERVED) {
+              <app-button [disabled]="actionInProgress$ | async" (click)="unreserveOffer(offer)">
+                Reservierung aufheben
+              </app-button>
+              <app-button color="warn" [disabled]="actionInProgress$ | async" (click)="archiveOffer(offer)">
+                Archivieren
+              </app-button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="offer-detail">
+        <label>Erstellt am</label>
+        <span class="offer-created-at"
+          >{{ offer.createdAt | date: "dd.MM.yyyy" }} um {{ offer.createdAt | date: "HH:mm" }}</span
+        >
+      </div>
+    </div>
+  } @else {
+    <app-note level="warn"> Dieser Sofortkauf konnte nicht gefunden werden. </app-note>
+  }
+}

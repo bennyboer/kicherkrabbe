@@ -234,7 +234,7 @@ public class MailingMessagingTest extends EventListenerTest {
         receiver.mail = "john.doe@kicherkrabbe.com";
         request.receivers.add(receiver);
         request.subject = "System-Benachrichtigung: New mail";
-        request.text = "There is a new mail in your mailbox: https://kicherkrabbe.com/admin/mailbox/SOME_MAIL_ID";
+        request.text = "There is a new mail in your mailbox: https://kicherkrabbe.com/mailbox/SOME_MAIL_ID";
         verify(module, timeout(10000).times(1)).sendMail(eq(request), eq(Agent.system()));
     }
 

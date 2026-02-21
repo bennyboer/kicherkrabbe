@@ -1,0 +1,203 @@
+<h3>Neuen Sofortkauf erstellen</h3>
+
+@if (selectedProduct$ | async | ifSome; as product) {
+  <div class="selected-product">
+    <span>Ausgewähltes Produkt: <strong>{{ product.number }}</strong></span>
+    <app-button [size]="ButtonSize.SMALL" [disabled]="creating$ | async" (click)="changeProduct()">
+      <span class="icon-button">
+        <span class="material-icons">swap_horiz</span>
+        <span>Ändern</span>
+      </span>
+    </app-button>
+  </div>
+
+  <div class="offer-details">
+    <div class="offer-detail">
+      <label>
+        Bilder
+        @if (images$ | async; as images) {
+          <app-button [size]="ButtonSize.SMALL" [disabled]="creating$ | async" (click)="editImages(images)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        }
+      </label>
+      <div class="offer-images">
+        @if (imageSliderImages$ | async; as images) {
+          @if (images.length > 0) {
+            <app-image-slider [images]="images" [theme]="theme$ | async"> </app-image-slider>
+          } @else {
+            <span class="image-placeholder">
+              <span class="material-icons">image</span>
+            </span>
+          }
+        }
+      </div>
+    </div>
+
+    @if (notes$ | async; as notes) {
+      <div class="offer-detail">
+        <label>
+          Beschreibung
+          <app-button [size]="ButtonSize.SMALL" [disabled]="creating$ | async" (click)="editDescriptionNote(notes)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="offer-description">
+          @if (notes.description.length > 0) {
+            <quill-view [content]="notes.description" format="json" theme="bubble" style="display: block"> </quill-view>
+          } @else {
+            <app-note>Keine Beschreibung vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="offer-detail">
+        <label>
+          Inhaltsangaben
+          <app-button [size]="ButtonSize.SMALL" [disabled]="creating$ | async" (click)="editContainsNote(notes)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="offer-contains">
+          @if (notes.contains.orElse('').length > 0) {
+            <quill-view [content]="notes.contains.orElse('')" format="json" theme="bubble" style="display: block"> </quill-view>
+          } @else {
+            <app-note>Keine Inhaltsangaben vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="offer-detail">
+        <label>
+          Pflegehinweise
+          <app-button [size]="ButtonSize.SMALL" [disabled]="creating$ | async" (click)="editCareNote(notes)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="offer-care">
+          @if (notes.care.orElse('').length > 0) {
+            <quill-view [content]="notes.care.orElse('')" format="json" theme="bubble" style="display: block"> </quill-view>
+          } @else {
+            <app-note>Keine Pflegehinweise vorhanden</app-note>
+          }
+        </div>
+      </div>
+
+      <div class="offer-detail">
+        <label>
+          Sicherheitshinweise
+          <app-button [size]="ButtonSize.SMALL" [disabled]="creating$ | async" (click)="editSafetyNote(notes)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="offer-safety">
+          @if (notes.safety.orElse('').length > 0) {
+            <quill-view [content]="notes.safety.orElse('')" format="json" theme="bubble" style="display: block"> </quill-view>
+          } @else {
+            <app-note>Keine Sicherheitshinweise vorhanden</app-note>
+          }
+        </div>
+      </div>
+    }
+
+    @if (price$ | async; as priceOption) {
+      <div class="offer-detail">
+        <label>
+          Preis
+          <app-button [size]="ButtonSize.SMALL" [disabled]="creating$ | async" (click)="editPrice(priceOption)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        @if (priceOption | ifSome; as price) {
+          <span class="price-value">{{ price.toDisplayString() }}</span>
+        } @else {
+          <app-note>Kein Preis festgelegt</app-note>
+        }
+      </div>
+    }
+  </div>
+
+  @if (invalid$ | async) {
+    <div class="error-container">
+      @if (priceMissing$ | async) {
+        <app-note level="error"> Ohne Preis kann der Sofortkauf nicht erstellt werden. </app-note>
+      }
+    </div>
+  }
+
+  <div class="footer">
+    <app-button routerLink="..">Abbrechen</app-button>
+
+    <app-button color="primary" [disabled]="cannotCreate$ | async" (click)="create()">
+      @if (creating$ | async) {
+        <span class="loading-button-text">
+          <app-loading-spinner size="16"></app-loading-spinner>
+          <span>Erstellt...</span>
+        </span>
+      } @else {
+        Erstellen
+      }
+    </app-button>
+  </div>
+} @else {
+  <div class="product-selection">
+    <div class="product-search">
+      <input #search type="text" placeholder="Produkt suchen..." (input)="updateProductSearchTerm(search.value)" />
+    </div>
+
+    <app-loading-bar [visible]="loadingProducts$ | async"></app-loading-bar>
+
+    @if (products$ | async; as products) {
+      @if (products.length === 0) {
+        <app-note level="info">Keine Produkte gefunden.</app-note>
+      } @else {
+        <table class="products-table">
+          <colgroup>
+            <col class="number" span="1" style="width: auto" />
+            <col class="links" span="1" style="width: 200px" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="number">Produkt-Nr.</th>
+              <th class="links">Links</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of products; track product.id) {
+              <tr class="table-row" (click)="selectProduct(product)">
+                <td class="number">{{ product.number }}</td>
+                <td class="links">
+                  @for (link of product.links; track link.id; let last = $last) {
+                    <span>{{ link.name }}{{ last ? '' : ', ' }}</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        @if (moreProductsAvailable$ | async) {
+          <div class="footer-actions">
+            <app-button (click)="loadMoreProducts()"> Mehr laden... ({{ remainingProductsCount$ | async }}) </app-button>
+          </div>
+        }
+      }
+    }
+  </div>
+
+  <div class="footer">
+    <app-button routerLink="..">Abbrechen</app-button>
+  </div>
+}

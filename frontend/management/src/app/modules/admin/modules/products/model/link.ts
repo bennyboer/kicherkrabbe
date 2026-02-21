@@ -25,9 +25,9 @@ export class Link {
   toHref(): string {
     switch (this.type.internal) {
       case InternalLinkType.PATTERN:
-        return `/admin/patterns/${this.id}`;
+        return `/patterns/${this.id}`;
       case InternalLinkType.FABRIC:
-        return `/admin/fabrics/${this.id}`;
+        return `/fabrics/${this.id}`;
       default:
         throw new Error(`Unknown link type: ${this.type.internal}`);
     }

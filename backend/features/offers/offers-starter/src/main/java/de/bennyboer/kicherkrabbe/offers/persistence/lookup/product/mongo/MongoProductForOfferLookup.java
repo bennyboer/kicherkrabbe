@@ -7,6 +7,7 @@ import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.util.List;
 import java.util.Set;
 
 import static lombok.AccessLevel.PUBLIC;
@@ -22,6 +23,8 @@ public class MongoProductForOfferLookup {
     long version;
 
     String number;
+
+    List<String> images;
 
     Set<MongoLink> links;
 

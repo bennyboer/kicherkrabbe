@@ -1,0 +1,19 @@
+<div class="content">
+  <div class="form-field">
+    <label for="price">Preis in Euro</label>
+    <input
+      #priceInput
+      id="price"
+      type="text"
+      placeholder="z.B. 12,50"
+      [value]="priceInEuros$ | async"
+      (input)="updatePrice(priceInput.value)" />
+  </div>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+<div class="footer">
+  <app-button (click)="cancel()">Abbrechen</app-button>
+  <app-button color="primary" [disabled]="cannotSave$ | async" (click)="save()">Speichern</app-button>
+</div>

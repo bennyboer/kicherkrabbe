@@ -17,6 +17,11 @@ public class InMemoryOfferLookupRepo extends InMemoryEventSourcingReadModelRepo<
         implements OfferLookupRepo {
 
     @Override
+    protected boolean allowSameVersionUpdate() {
+        return true;
+    }
+
+    @Override
     public Mono<LookupOfferPage> find(Collection<OfferId> offerIds, String searchTerm, long skip, long limit) {
         return getAll()
                 .filter(offer -> offerIds.contains(offer.getId()))

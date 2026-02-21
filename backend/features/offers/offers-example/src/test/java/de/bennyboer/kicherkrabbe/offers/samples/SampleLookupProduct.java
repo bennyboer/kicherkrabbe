@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.offers.*;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.LookupProduct;
 import lombok.Builder;
 
+import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -20,6 +21,9 @@ public class SampleLookupProduct {
     private String number = "P-001";
 
     @Builder.Default
+    private List<ImageId> images = List.of(ImageId.of("IMAGE_ID"));
+
+    @Builder.Default
     private Set<Link> links = Set.of(Link.of(LinkType.PATTERN, LinkId.of("LINK_ID"), LinkName.of("Link")));
 
     @Builder.Default
@@ -32,6 +36,7 @@ public class SampleLookupProduct {
                 ProductId.of(id),
                 Version.of(version),
                 ProductNumber.of(number),
+                images,
                 Links.of(links),
                 FabricComposition.of(fabricCompositionItems)
         );

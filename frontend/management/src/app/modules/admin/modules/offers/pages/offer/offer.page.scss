@@ -1,0 +1,250 @@
+:host {
+  display: block;
+}
+
+label {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.offer-details {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.offer-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-left: 2px solid var(--background-low-contrast);
+  padding-left: 12px;
+
+  & > label {
+    font-size: 0.8em;
+  }
+}
+
+.product-link {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4caf50, #2e8b57);
+  box-shadow: 0 4px 10px rgba(var(--shadow-rgba));
+  border: 1px solid #99e89c;
+  margin-right: auto;
+  text-decoration: none;
+
+  &:hover {
+    background: linear-gradient(135deg, #66bb6a, #388e3c);
+  }
+}
+
+.offer-images {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.image-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 128px;
+  height: 128px;
+  background-color: var(--background-low-contrast);
+  border-radius: 4px;
+
+  & > .material-icons {
+    font-size: 32px;
+    color: rgba(var(--text-rgb), 0.5);
+  }
+}
+
+.offer-links {
+  .offer-links-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+
+    & > li {
+      border-bottom: 1px solid var(--background-low-contrast);
+
+      & > a {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--text);
+        padding: 16px 12px;
+        text-decoration: none;
+
+        &:hover {
+          background-color: var(--background-low-contrast);
+        }
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+.fabric-composition {
+  .fabric-composition-table {
+    table-layout: fixed;
+    border-collapse: collapse;
+    width: 100%;
+
+    tr {
+      &:last-child {
+        td {
+          border-bottom: none;
+        }
+      }
+    }
+
+    th {
+      user-select: none;
+      padding: 8px 16px;
+      font-weight: normal;
+      font-size: 0.8em;
+      color: rgba(var(--text-rgb), 0.7);
+      border-bottom: 4px solid var(--background-low-contrast);
+
+      &.fabric-type {
+        text-align: left;
+      }
+
+      &.percentage {
+        text-align: center;
+      }
+    }
+
+    td {
+      padding: 16px 16px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      border-bottom: 1px solid var(--background-low-contrast);
+
+      &.percentage {
+        text-align: center;
+      }
+    }
+  }
+}
+
+.pricing-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .price-value {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  .discount-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+
+    .discounted-price {
+      color: var(--red, #f44336);
+      font-weight: bold;
+    }
+  }
+}
+
+.price-history-table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  width: 100%;
+
+  tr {
+    &:last-child {
+      td {
+        border-bottom: none;
+      }
+    }
+  }
+
+  th {
+    user-select: none;
+    padding: 8px 16px;
+    font-weight: normal;
+    font-size: 0.8em;
+    color: rgba(var(--text-rgb), 0.7);
+    border-bottom: 4px solid var(--background-low-contrast);
+
+    &.price {
+      text-align: left;
+    }
+
+    &.timestamp {
+      text-align: right;
+    }
+  }
+
+  td {
+    padding: 16px 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid var(--background-low-contrast);
+
+    &.timestamp {
+      text-align: right;
+      font-size: 0.8em;
+    }
+  }
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-weight: bold;
+  color: white;
+  margin-right: auto;
+}
+
+.status-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lifecycle-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@media only screen and (max-width: 1000px) {
+  .action-bar {
+    flex-direction: column;
+  }
+
+  .lifecycle-actions {
+    flex-direction: column;
+  }
+}

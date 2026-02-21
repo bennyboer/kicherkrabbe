@@ -402,6 +402,7 @@ public class OffersModule {
             String productId,
             long version,
             ProductNumber number,
+            List<ImageId> images,
             Links links,
             FabricComposition fabricComposition
     ) {
@@ -409,10 +410,23 @@ public class OffersModule {
                 ProductId.of(productId),
                 Version.of(version),
                 number,
+                images,
                 links,
                 fabricComposition
         );
         return productForOfferLookupRepo.update(product);
+    }
+
+    public Mono<Void> updateProductImagesInLookup(String productId, long version, List<ImageId> images) {
+        return productForOfferLookupRepo.findById(ProductId.of(productId))
+                .flatMap(product -> productForOfferLookupRepo.update(LookupProduct.of(
+                        product.getId(),
+                        Version.of(version),
+                        product.getNumber(),
+                        images,
+                        product.getLinks(),
+                        product.getFabricComposition()
+                )));
     }
 
     public Mono<Void> addProductLinkInLookup(String productId, long version, Link link) {
@@ -425,6 +439,7 @@ public class OffersModule {
                             product.getId(),
                             Version.of(version),
                             product.getNumber(),
+                            product.getImages(),
                             Links.of(links),
                             product.getFabricComposition()
                     )).then(updateOfferLookupsForProduct(productId));
@@ -442,6 +457,7 @@ public class OffersModule {
                             product.getId(),
                             Version.of(version),
                             product.getNumber(),
+                            product.getImages(),
                             Links.of(links),
                             product.getFabricComposition()
                     )).then(updateOfferLookupsForProduct(productId));
@@ -461,6 +477,7 @@ public class OffersModule {
                             product.getId(),
                             Version.of(version),
                             product.getNumber(),
+                            product.getImages(),
                             Links.of(links),
                             product.getFabricComposition()
                     ));
@@ -474,6 +491,7 @@ public class OffersModule {
                         product.getId(),
                         Version.of(version),
                         product.getNumber(),
+                        product.getImages(),
                         product.getLinks(),
                         fabricComposition
                 )).then(updateOfferLookupsForProduct(productId)));
@@ -485,6 +503,7 @@ public class OffersModule {
                         product.getId(),
                         Version.of(version),
                         number,
+                        product.getImages(),
                         product.getLinks(),
                         product.getFabricComposition()
                 )).then(updateOfferLookupsForProduct(productId)));

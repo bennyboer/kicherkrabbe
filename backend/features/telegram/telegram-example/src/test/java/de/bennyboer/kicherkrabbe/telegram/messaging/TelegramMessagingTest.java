@@ -117,7 +117,7 @@ public class TelegramMessagingTest extends EventListenerTest {
         request.text = """
                 <em>System-Benachrichtigung</em>: <strong>New mail</strong>
                 There is a new mail in your mailbox
-                <a href="https://kicherkrabbe.com/admin/mailbox/SOME_MAIL_ID">Jetzt ansehen</a>
+                <a href="https://kicherkrabbe.com/mailbox/SOME_MAIL_ID">Jetzt ansehen</a>
                 """;
         verify(module, timeout(10000).times(1)).sendMessageViaBot(eq(request), eq(Agent.system()));
     }

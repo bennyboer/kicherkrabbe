@@ -33,7 +33,7 @@ public class OffersHttpConfig {
     public RouterFunction<ServerResponse> offersHttpRouting(OffersHttpHandler handler) {
         return nest(
                 path("/offers"),
-                route(POST("/"), handler::getOffers)
+                route(POST(""), handler::getOffers)
                         .andRoute(GET("/changes"), handler::getChanges)
                         .andRoute(POST("/published"), handler::getPublishedOffers)
                         .andRoute(POST("/products"), handler::getProducts)

@@ -106,7 +106,7 @@ export class AuthInterceptor implements HttpInterceptor {
       message: 'Ihre Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an.',
       type: 'error',
     });
-    this.router.navigate(['/admin/login'], {
+    this.router.navigate(['/login'], {
       queryParams: {
         redirect: this.router.url,
       },

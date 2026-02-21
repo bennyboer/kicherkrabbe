@@ -1,0 +1,17 @@
+<div #editorWrapper class="editor-wrapper">
+  <quill-editor
+    theme="bubble"
+    placeholder=""
+    [bounds]="editorWrapper"
+    [modules]="quillModules"
+    (onEditorCreated)="onEditorCreated($event)"
+    (onContentChanged)="updateNote($event)">
+  </quill-editor>
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+<div class="footer">
+  <app-button (click)="cancel()">Abbrechen</app-button>
+  <app-button color="primary" [disabled]="cannotSave$ | async" (click)="save()">Speichern</app-button>
+</div>

@@ -589,6 +589,7 @@ public class OffersHttpHandler {
         var dto = new ProductForOfferCreationDTO();
         dto.id = product.getId().getValue();
         dto.number = product.getNumber().getValue();
+        dto.imageIds = product.getImages().stream().map(ImageId::getValue).toList();
         dto.links = toLinkDTOs(product.getLinks());
         dto.fabricCompositionItems = toFabricCompositionItemDTOs(product.getFabricComposition());
         return dto;
