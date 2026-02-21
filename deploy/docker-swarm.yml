@@ -116,10 +116,16 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
+        - "traefik.http.routers.app-assets.rule=Host(`api.${DOMAIN}`) && PathRegexp(`^/assets/[^/]+/content`)"
+        - "traefik.http.routers.app-assets.entrypoints=websecure"
+        - "traefik.http.routers.app-assets.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.app-assets.middlewares=cors-api@file,rate-limit-assets@file,security-headers@file,compress@file"
+        - "traefik.http.routers.app-assets.service=app"
+        - "traefik.http.routers.app-assets.priority=110"
         - "traefik.http.routers.app.rule=Host(`api.${DOMAIN}`)"
         - "traefik.http.routers.app.entrypoints=websecure"
         - "traefik.http.routers.app.tls.certresolver=letsencrypt"
-        - "traefik.http.routers.app.middlewares=rate-limit-api@file,security-headers@file,compress@file"
+        - "traefik.http.routers.app.middlewares=cors-api@file,rate-limit-api@file,security-headers@file,compress@file"
         - "traefik.http.services.app.loadbalancer.server.port=8080"
       update_config:
         parallelism: 1

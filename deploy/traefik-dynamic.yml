@@ -1,5 +1,20 @@
 http:
   middlewares:
+    cors-api:
+      headers:
+        accessControlAllowOriginList:
+          - "https://kicherkrabbe.com"
+          - "https://manage.kicherkrabbe.com"
+        accessControlAllowMethods:
+          - "GET"
+          - "POST"
+          - "PUT"
+          - "PATCH"
+          - "DELETE"
+          - "OPTIONS"
+        accessControlAllowHeaders:
+          - "*"
+        accessControlMaxAge: 3600
     security-headers:
       headers:
         stsSeconds: 31536000
@@ -17,6 +32,14 @@ http:
       rateLimit:
         average: 30
         burst: 50
+        period: 1s
+        sourceCriterion:
+          ipStrategy:
+            depth: 0
+    rate-limit-assets:
+      rateLimit:
+        average: 200
+        burst: 400
         period: 1s
         sourceCriterion:
           ipStrategy:
