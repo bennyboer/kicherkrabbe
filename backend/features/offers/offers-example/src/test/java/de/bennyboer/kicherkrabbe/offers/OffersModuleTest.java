@@ -12,6 +12,8 @@ import de.bennyboer.kicherkrabbe.offers.persistence.lookup.OfferLookupRepo;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.inmemory.InMemoryOfferLookupRepo;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.ProductForOfferLookupRepo;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.inmemory.InMemoryProductForOfferLookupRepo;
+import de.bennyboer.kicherkrabbe.offers.persistence.categories.OfferCategoryRepo;
+import de.bennyboer.kicherkrabbe.offers.persistence.categories.inmemory.InMemoryOfferCategoryRepo;
 import de.bennyboer.kicherkrabbe.offers.samples.SampleOffer;
 import de.bennyboer.kicherkrabbe.offers.samples.SampleProductForLookup;
 import de.bennyboer.kicherkrabbe.permissions.PermissionsService;
@@ -45,6 +47,8 @@ public class OffersModuleTest {
 
     private final ProductForOfferLookupRepo productForOfferLookupRepo = new InMemoryProductForOfferLookupRepo();
 
+    private final OfferCategoryRepo offerCategoryRepo = new InMemoryOfferCategoryRepo();
+
     private final ResourceChangesTracker changesTracker = ignored -> Flux.empty();
 
     private final OffersModule module = new OffersModule(
@@ -52,6 +56,7 @@ public class OffersModuleTest {
             permissionsService,
             offerLookupRepo,
             productForOfferLookupRepo,
+            offerCategoryRepo,
             changesTracker
     );
 
@@ -71,13 +76,16 @@ public class OffersModuleTest {
     }
 
     public String createOffer(
+            String title,
+            String size,
+            Set<String> categoryIds,
             String productId,
             List<String> imageIds,
             NotesDTO notes,
             MoneyDTO price,
             Agent agent
     ) {
-        String offerId = module.createOffer(productId, imageIds, notes, price, agent).block();
+        String offerId = module.createOffer(title, size, categoryIds, productId, imageIds, notes, price, agent).block();
 
         module.updateOfferInLookup(offerId).block();
         if (agent.getType() == AgentType.USER) {
@@ -89,6 +97,9 @@ public class OffersModuleTest {
 
     public String createOffer(SampleOffer sample, Agent agent) {
         return createOffer(
+                sample.getTitle(),
+                sample.getSize(),
+                sample.getCategoryIds(),
                 sample.getProductId(),
                 sample.getImages(),
                 sample.getNotesDTO(),
@@ -235,6 +246,46 @@ public class OffersModuleTest {
 
     public void updateProductImages(String productId, long version, List<ImageId> images) {
         module.updateProductImagesInLookup(productId, version, images).block();
+    }
+
+    public long updateOfferTitle(String offerId, long version, String title, Agent agent) {
+        long newVersion = module.updateOfferTitle(offerId, version, title, agent).block();
+
+        module.updateOfferInLookup(offerId).block();
+
+        return newVersion;
+    }
+
+    public long updateOfferSize(String offerId, long version, String size, Agent agent) {
+        long newVersion = module.updateOfferSize(offerId, version, size, agent).block();
+
+        module.updateOfferInLookup(offerId).block();
+
+        return newVersion;
+    }
+
+    public long updateOfferCategories(String offerId, long version, Set<String> categoryIds, Agent agent) {
+        long newVersion = module.updateOfferCategories(offerId, version, categoryIds, agent).block();
+
+        module.updateOfferInLookup(offerId).block();
+
+        return newVersion;
+    }
+
+    public void markCategoryAsAvailable(String categoryId, String name) {
+        module.markCategoryAsAvailable(categoryId, name).block();
+    }
+
+    public void renameCategoryIfAvailable(String categoryId, String name) {
+        module.renameCategoryIfAvailable(categoryId, name).block();
+    }
+
+    public void markCategoryAsUnavailable(String categoryId) {
+        module.markCategoryAsUnavailable(categoryId).block();
+    }
+
+    public List<OfferCategory> getAvailableCategoriesForOffers(Agent agent) {
+        return module.getAvailableCategoriesForOffers(agent).collectList().block();
     }
 
 }

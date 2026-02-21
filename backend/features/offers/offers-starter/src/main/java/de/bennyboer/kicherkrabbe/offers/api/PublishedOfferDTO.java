@@ -7,6 +7,12 @@ public class PublishedOfferDTO {
 
     public String id;
 
+    public String title;
+
+    public String size;
+
+    public Set<String> categoryIds;
+
     public List<String> imageIds;
 
     public Set<LinkDTO> links;

@@ -8,6 +8,7 @@ import de.bennyboer.kicherkrabbe.offers.*;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.LookupOffer;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MongoLookupOfferSerializer implements ReadModelSerializer<LookupOffer, MongoLookupOffer> {
@@ -18,6 +19,9 @@ public class MongoLookupOfferSerializer implements ReadModelSerializer<LookupOff
 
         result.id = readModel.getId().getValue();
         result.version = readModel.getVersion().getValue();
+        result.title = readModel.getTitle().getValue();
+        result.size = readModel.getSize().getValue();
+        result.categoryIds = readModel.getCategories().stream().map(OfferCategoryId::getValue).collect(Collectors.toSet());
         var mongoProduct = new MongoProduct();
         mongoProduct.id = readModel.getProduct().getId().getValue();
         mongoProduct.number = readModel.getProduct().getNumber().getValue();
@@ -43,6 +47,11 @@ public class MongoLookupOfferSerializer implements ReadModelSerializer<LookupOff
     public LookupOffer deserialize(MongoLookupOffer serialized) {
         var id = OfferId.of(serialized.id);
         var version = Version.of(serialized.version);
+        var title = OfferTitle.of(serialized.title);
+        var size = OfferSize.of(serialized.size);
+        var categories = serialized.categoryIds != null
+                ? serialized.categoryIds.stream().map(OfferCategoryId::of).collect(Collectors.toSet())
+                : Set.<OfferCategoryId>of();
         var product = Product.of(ProductId.of(serialized.product.id), ProductNumber.of(serialized.product.number));
         var images = serialized.imageIds.stream().map(ImageId::of).toList();
         var links = Links.of(serialized.links.stream()
@@ -57,6 +66,9 @@ public class MongoLookupOfferSerializer implements ReadModelSerializer<LookupOff
         return LookupOffer.of(
                 id,
                 version,
+                title,
+                size,
+                categories,
                 product,
                 images,
                 links,

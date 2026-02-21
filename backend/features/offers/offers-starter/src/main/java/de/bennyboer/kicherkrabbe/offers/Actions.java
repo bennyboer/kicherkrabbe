@@ -30,6 +30,12 @@ public class Actions {
 
     public static final Action REMOVE_DISCOUNT = Action.of("REMOVE_DISCOUNT");
 
+    public static final Action UPDATE_TITLE = Action.of("UPDATE_TITLE");
+
+    public static final Action UPDATE_SIZE = Action.of("UPDATE_SIZE");
+
+    public static final Action UPDATE_CATEGORIES = Action.of("UPDATE_CATEGORIES");
+
     public static final Action DELETE = Action.of("DELETE");
 
 }

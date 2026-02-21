@@ -21,6 +21,15 @@ public class SampleLookupOffer {
     private long version = 0L;
 
     @Builder.Default
+    private OfferTitle title = OfferTitle.of("Sample Offer");
+
+    @Builder.Default
+    private OfferSize size = OfferSize.of("M");
+
+    @Builder.Default
+    private Set<OfferCategoryId> categories = Set.of();
+
+    @Builder.Default
     private String productId = "PRODUCT_ID";
 
     @Builder.Default
@@ -58,6 +67,9 @@ public class SampleLookupOffer {
         return LookupOffer.of(
                 id,
                 Version.of(version),
+                title,
+                size,
+                categories,
                 Product.of(ProductId.of(productId), ProductNumber.of(productNumber)),
                 imageIds,
                 Links.of(links),

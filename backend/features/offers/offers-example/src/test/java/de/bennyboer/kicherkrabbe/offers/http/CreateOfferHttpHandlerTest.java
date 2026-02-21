@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,6 +24,9 @@ public class CreateOfferHttpHandlerTest extends HttpHandlerTest {
     @Test
     void shouldSuccessfullyCreateOffer() {
         var request = new CreateOfferRequest();
+        request.title = "Test Offer";
+        request.size = "M";
+        request.categoryIds = Set.of();
         request.productId = "PRODUCT_ID";
         request.imageIds = List.of("IMAGE_1");
 
@@ -38,7 +42,7 @@ public class CreateOfferHttpHandlerTest extends HttpHandlerTest {
         var token = createTokenForUser("USER_ID");
 
         when(module.createOffer(
-                any(), any(), any(), any(),
+                any(), any(), any(), any(), any(), any(), any(),
                 eq(Agent.user(AgentId.of("USER_ID")))
         )).thenReturn(Mono.just("OFFER_ID"));
 
@@ -59,6 +63,9 @@ public class CreateOfferHttpHandlerTest extends HttpHandlerTest {
     @Test
     void shouldRespondWithBadRequestOnInvalidRequest() {
         var request = new CreateOfferRequest();
+        request.title = "Test Offer";
+        request.size = "M";
+        request.categoryIds = Set.of();
         request.productId = "";
         request.imageIds = List.of();
         var notes = new NotesDTO();
@@ -72,7 +79,7 @@ public class CreateOfferHttpHandlerTest extends HttpHandlerTest {
         var token = createTokenForUser("USER_ID");
 
         when(module.createOffer(
-                any(), any(), any(), any(),
+                any(), any(), any(), any(), any(), any(), any(),
                 eq(Agent.user(AgentId.of("USER_ID")))
         )).thenReturn(Mono.error(new IllegalArgumentException("Invalid request")));
 
@@ -113,6 +120,9 @@ public class CreateOfferHttpHandlerTest extends HttpHandlerTest {
     @Test
     void shouldRespondWithForbiddenForMissingPermission() {
         var request = new CreateOfferRequest();
+        request.title = "Test Offer";
+        request.size = "M";
+        request.categoryIds = Set.of();
         request.productId = "PRODUCT_ID";
         request.imageIds = List.of("IMAGE_1");
         var notes = new NotesDTO();
@@ -126,7 +136,7 @@ public class CreateOfferHttpHandlerTest extends HttpHandlerTest {
         var token = createTokenForUser("USER_ID");
 
         when(module.createOffer(
-                any(), any(), any(), any(),
+                any(), any(), any(), any(), any(), any(), any(),
                 eq(Agent.user(AgentId.of("USER_ID")))
         )).thenReturn(Mono.error(new MissingPermissionError(
                 Permission.builder()

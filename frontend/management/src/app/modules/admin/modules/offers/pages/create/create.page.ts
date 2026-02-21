@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, Injector, OnDestroy, OnInit } from '@angular/core';
-import { ButtonSize, NotificationService } from '../../../../../shared';
+import { ButtonSize, Chip, NotificationService } from '../../../../../shared';
 import {
   BehaviorSubject,
+  catchError,
   combineLatest,
   debounceTime,
   delay,
@@ -13,7 +14,7 @@ import {
   takeUntil,
 } from 'rxjs';
 import { Theme, ThemeService } from '../../../../../../services';
-import { Money, Notes } from '../../model';
+import { Money, Notes, OfferCategory } from '../../model';
 import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
 import {
   EditImagesDialog,
@@ -27,7 +28,7 @@ import {
   EditPriceDialogResult,
   NoteType,
 } from '../../dialogs';
-import { OffersService, ProductForOfferCreation } from '../../services';
+import { OfferCategoriesService, OffersService, ProductForOfferCreation } from '../../services';
 import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 import { AssetsService } from '../../../assets/services/assets.service';
 import { ImageSliderImage } from '../../../../../shared/modules/image-slider';
@@ -50,6 +51,12 @@ export class CreatePage implements OnInit, OnDestroy {
   protected readonly totalProducts$ = new BehaviorSubject<number>(0);
   protected readonly loadingProducts$ = new BehaviorSubject<boolean>(false);
 
+  protected readonly title$ = new BehaviorSubject<string>('');
+  protected readonly size$ = new BehaviorSubject<string>('');
+  protected readonly availableCategories$ = new BehaviorSubject<OfferCategory[]>([]);
+  protected readonly loadingCategories$ = new BehaviorSubject<boolean>(true);
+  protected readonly selectedCategories$ = new BehaviorSubject<OfferCategory[]>([]);
+
   protected readonly images$ = new BehaviorSubject<string[]>([]);
   protected readonly notes$ = new BehaviorSubject<Notes>(Notes.empty());
   protected readonly price$ = new BehaviorSubject<Option<Money>>(none());
@@ -61,8 +68,11 @@ export class CreatePage implements OnInit, OnDestroy {
     .pipe(map((theme) => (theme === Theme.DARK ? 'dark' : 'light')));
   protected readonly priceMissing$ = this.price$.pipe(map((price) => price.isNone()));
   protected readonly productMissing$ = this.selectedProduct$.pipe(map((product) => product.isNone()));
-  protected readonly invalid$ = combineLatest([this.priceMissing$, this.productMissing$]).pipe(
-    map(([priceMissing, productMissing]) => priceMissing || productMissing),
+  protected readonly titleMissing$ = this.title$.pipe(map((title) => title.trim().length === 0));
+  protected readonly sizeMissing$ = this.size$.pipe(map((size) => size.trim().length === 0));
+  protected readonly descriptionMissing$ = this.notes$.pipe(map((notes) => notes.description.length === 0));
+  protected readonly invalid$ = combineLatest([this.priceMissing$, this.productMissing$, this.titleMissing$, this.sizeMissing$, this.descriptionMissing$]).pipe(
+    map(([priceMissing, productMissing, titleMissing, sizeMissing, descriptionMissing]) => priceMissing || productMissing || titleMissing || sizeMissing || descriptionMissing),
   );
   protected readonly cannotCreate$ = combineLatest([this.creating$, this.invalid$]).pipe(
     map(([creating, invalid]) => creating || invalid),
@@ -92,11 +102,14 @@ export class CreatePage implements OnInit, OnDestroy {
     private readonly themeService: ThemeService,
     private readonly dialogService: DialogService,
     private readonly offersService: OffersService,
+    private readonly offerCategoriesService: OfferCategoriesService,
     private readonly assetsService: AssetsService,
     private readonly notificationService: NotificationService,
   ) {}
 
   ngOnInit(): void {
+    this.reloadAvailableCategories();
+
     this.productSearchValue$
       .pipe(debounceTime(300), takeUntil(this.destroy$))
       .subscribe((searchValue) => this.reloadProducts({ searchTerm: searchValue }));
@@ -108,6 +121,11 @@ export class CreatePage implements OnInit, OnDestroy {
     this.products$.complete();
     this.totalProducts$.complete();
     this.loadingProducts$.complete();
+    this.title$.complete();
+    this.size$.complete();
+    this.availableCategories$.complete();
+    this.loadingCategories$.complete();
+    this.selectedCategories$.complete();
     this.images$.complete();
     this.notes$.complete();
     this.price$.complete();
@@ -128,6 +146,9 @@ export class CreatePage implements OnInit, OnDestroy {
 
   changeProduct(): void {
     this.selectedProduct$.next(none());
+    this.title$.next('');
+    this.size$.next('');
+    this.selectedCategories$.next([]);
     this.images$.next([]);
     this.notes$.next(Notes.empty());
     this.price$.next(none());
@@ -142,6 +163,31 @@ export class CreatePage implements OnInit, OnDestroy {
     });
   }
 
+  updateTitle(value: string): void {
+    this.title$.next(value);
+  }
+
+  updateSize(value: string): void {
+    this.size$.next(value);
+  }
+
+  categoriesToChips(categories: OfferCategory[]): Chip[] {
+    return categories.map((category) => Chip.of({ id: category.id, label: category.name }));
+  }
+
+  onCategoryRemoved(chip: Chip): void {
+    const categories = this.selectedCategories$.value.filter((category) => category.id !== chip.id);
+    this.selectedCategories$.next(categories);
+  }
+
+  onCategoryAdded(chip: Chip): void {
+    const category = this.availableCategories$.value.find((c) => c.id === chip.id);
+    if (category) {
+      const categories = [...this.selectedCategories$.value, category];
+      this.selectedCategories$.next(categories);
+    }
+  }
+
   create(): void {
     if (this.creating$.value) {
       return;
@@ -149,8 +195,12 @@ export class CreatePage implements OnInit, OnDestroy {
 
     const product = this.selectedProduct$.value;
     const price = this.price$.value;
+    const title = this.title$.value.trim();
+    const size = this.size$.value.trim();
 
-    if (product.isNone() || price.isNone()) {
+    const notes = this.notes$.value;
+
+    if (product.isNone() || price.isNone() || title.length === 0 || size.length === 0 || notes.description.length === 0) {
       return;
     }
 
@@ -158,6 +208,9 @@ export class CreatePage implements OnInit, OnDestroy {
 
     this.offersService
       .createOffer({
+        title,
+        size,
+        categoryIds: this.selectedCategories$.value.map((c) => c.id),
         productId: product.orElseThrow().id,
         imageIds: this.images$.value,
         notes: this.notes$.value,
@@ -292,6 +345,26 @@ export class CreatePage implements OnInit, OnDestroy {
 
   private getImageUrl(imageId: string): string {
     return `${environment.apiUrl}/assets/${imageId}/content`;
+  }
+
+  private reloadAvailableCategories(): void {
+    this.loadingCategories$.next(true);
+
+    this.offerCategoriesService
+      .getAvailableCategories()
+      .pipe(
+        first(),
+        catchError((e) => {
+          console.error(e);
+          this.notificationService.publish({
+            type: 'error',
+            message: 'Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neuzuladen.',
+          });
+          return [];
+        }),
+        finalize(() => this.loadingCategories$.next(false)),
+      )
+      .subscribe((categories) => this.availableCategories$.next(categories));
   }
 
   private reloadProducts(props: {

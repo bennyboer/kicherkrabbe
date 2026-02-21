@@ -9,6 +9,7 @@ import de.bennyboer.kicherkrabbe.money.Currency;
 import de.bennyboer.kicherkrabbe.money.Money;
 import de.bennyboer.kicherkrabbe.offers.api.MoneyDTO;
 import de.bennyboer.kicherkrabbe.offers.api.NotesDTO;
+import de.bennyboer.kicherkrabbe.offers.persistence.categories.OfferCategoryRepo;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.LookupOffer;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.OfferLookupRepo;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.LookupProduct;
@@ -23,6 +24,7 @@ import reactor.core.publisher.Mono;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
@@ -39,6 +41,8 @@ public class OffersModule {
     private final OfferLookupRepo offerLookupRepo;
 
     private final ProductForOfferLookupRepo productForOfferLookupRepo;
+
+    private final OfferCategoryRepo offerCategoryRepo;
 
     private final ResourceChangesTracker changesTracker;
 
@@ -104,25 +108,41 @@ public class OffersModule {
                 .onErrorResume(MissingPermissionError.class, ignored -> Mono.empty());
     }
 
+    public Flux<OfferCategory> getAvailableCategoriesForOffers(Agent ignoredAgent) {
+        return offerCategoryRepo.findAll();
+    }
+
     @Transactional(propagation = MANDATORY)
     public Mono<String> createOffer(
+            String title,
+            String size,
+            Set<String> categoryIds,
             String productId,
             List<String> imageIds,
             NotesDTO notesDTO,
             MoneyDTO priceDTO,
             Agent agent
     ) {
+        notNull(title, "Title must be given");
+        notNull(size, "Size must be given");
+        notNull(categoryIds, "Category IDs must be given");
         notNull(productId, "Product ID must be given");
         notNull(imageIds, "Image IDs must be given");
         notNull(notesDTO, "Notes must be given");
         notNull(priceDTO, "Price must be given");
 
+        var offerTitle = OfferTitle.of(title);
+        var offerSize = OfferSize.of(size);
+        var categories = categoryIds.stream().map(OfferCategoryId::of).collect(Collectors.toSet());
         var images = imageIds.stream().map(ImageId::of).toList();
         var notes = toNotes(notesDTO);
         var price = Money.of(priceDTO.amount, Currency.fromShortForm(priceDTO.currency));
 
         return assertAgentIsAllowedTo(agent, CREATE)
                 .then(offerService.create(
+                        offerTitle,
+                        offerSize,
+                        categories,
                         ProductId.of(productId),
                         images,
                         notes,
@@ -235,6 +255,68 @@ public class OffersModule {
                 .map(Version::getValue);
     }
 
+    @Transactional(propagation = MANDATORY)
+    public Mono<Long> updateOfferTitle(String offerId, long version, String title, Agent agent) {
+        var id = OfferId.of(offerId);
+        var offerTitle = OfferTitle.of(title);
+
+        return assertAgentIsAllowedTo(agent, UPDATE_TITLE, id)
+                .then(offerService.updateTitle(id, Version.of(version), offerTitle, agent))
+                .map(Version::getValue);
+    }
+
+    @Transactional(propagation = MANDATORY)
+    public Mono<Long> updateOfferSize(String offerId, long version, String size, Agent agent) {
+        var id = OfferId.of(offerId);
+        var offerSize = OfferSize.of(size);
+
+        return assertAgentIsAllowedTo(agent, UPDATE_SIZE, id)
+                .then(offerService.updateSize(id, Version.of(version), offerSize, agent))
+                .map(Version::getValue);
+    }
+
+    @Transactional(propagation = MANDATORY)
+    public Mono<Long> updateOfferCategories(String offerId, long version, Set<String> categoryIds, Agent agent) {
+        var id = OfferId.of(offerId);
+        var categories = categoryIds.stream().map(OfferCategoryId::of).collect(Collectors.toSet());
+
+        return assertAgentIsAllowedTo(agent, UPDATE_CATEGORIES, id)
+                .then(offerService.updateCategories(id, Version.of(version), categories, agent))
+                .map(Version::getValue);
+    }
+
+    public Mono<Void> markCategoryAsAvailable(String id, String name) {
+        var category = OfferCategory.of(OfferCategoryId.of(id), OfferCategoryName.of(name));
+
+        return offerCategoryRepo.save(category).then();
+    }
+
+    public Mono<Void> renameCategoryIfAvailable(String id, String name) {
+        var categoryId = OfferCategoryId.of(id);
+
+        return offerCategoryRepo.findById(categoryId)
+                .flatMap(ignored -> {
+                    var updated = OfferCategory.of(categoryId, OfferCategoryName.of(name));
+                    return offerCategoryRepo.save(updated).then();
+                });
+    }
+
+    public Mono<Void> markCategoryAsUnavailable(String id) {
+        return offerCategoryRepo.removeById(OfferCategoryId.of(id));
+    }
+
+    @Transactional(propagation = MANDATORY)
+    public Flux<String> removeCategoryFromOffers(String categoryId, Agent agent) {
+        return offerLookupRepo.findByCategoryId(OfferCategoryId.of(categoryId))
+                .delayUntil(offer -> offerService.removeCategory(
+                        offer.getId(),
+                        offer.getVersion(),
+                        OfferCategoryId.of(categoryId),
+                        agent
+                ))
+                .map(offer -> offer.getId().getValue());
+    }
+
     public Mono<Void> allowUserToCreateOffers(String userId) {
         var holder = Holder.user(HolderId.of(userId));
         var resourceType = getResourceType();
@@ -299,6 +381,18 @@ public class OffersModule {
                 .holder(holder)
                 .isAllowedTo(REMOVE_DISCOUNT)
                 .on(resource);
+        var updateTitlePermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(UPDATE_TITLE)
+                .on(resource);
+        var updateSizePermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(UPDATE_SIZE)
+                .on(resource);
+        var updateCategoriesPermission = Permission.builder()
+                .holder(holder)
+                .isAllowedTo(UPDATE_CATEGORIES)
+                .on(resource);
         var deletePermission = Permission.builder()
                 .holder(holder)
                 .isAllowedTo(DELETE)
@@ -317,6 +411,9 @@ public class OffersModule {
                 updatePricePermission,
                 addDiscountPermission,
                 removeDiscountPermission,
+                updateTitlePermission,
+                updateSizePermission,
+                updateCategoriesPermission,
                 deletePermission
         );
     }
@@ -379,6 +476,9 @@ public class OffersModule {
                         .map(productData -> LookupOffer.of(
                                 offer.getId(),
                                 offer.getVersion(),
+                                offer.getTitle(),
+                                offer.getSize(),
+                                offer.getCategories(),
                                 Product.of(offer.getProductId(), productData.getNumber()),
                                 offer.getImages(),
                                 productData.getLinks(),
@@ -529,6 +629,9 @@ public class OffersModule {
         return OfferDetails.of(
                 offer.getId(),
                 offer.getVersion(),
+                offer.getTitle(),
+                offer.getSize(),
+                offer.getCategories(),
                 product,
                 offer.getImages(),
                 productData.getLinks(),
@@ -546,6 +649,9 @@ public class OffersModule {
         return OfferDetails.of(
                 offer.getId(),
                 offer.getVersion(),
+                offer.getTitle(),
+                offer.getSize(),
+                offer.getCategories(),
                 offer.getProduct(),
                 offer.getImages(),
                 offer.getLinks(),
@@ -562,6 +668,9 @@ public class OffersModule {
     private PublishedOffer toPublishedOffer(LookupOffer offer) {
         return PublishedOffer.of(
                 offer.getId(),
+                offer.getTitle(),
+                offer.getSize(),
+                offer.getCategories(),
                 offer.getImages(),
                 offer.getLinks(),
                 offer.getFabricComposition(),

@@ -20,6 +20,15 @@ public class SampleOfferDetails {
     private long version = 0L;
 
     @Builder.Default
+    private String title = "Sample Offer";
+
+    @Builder.Default
+    private String size = "M";
+
+    @Builder.Default
+    private Set<String> categoryIds = Set.of();
+
+    @Builder.Default
     private String productId = "PRODUCT_ID";
 
     @Builder.Default
@@ -57,6 +66,9 @@ public class SampleOfferDetails {
         return OfferDetails.of(
                 OfferId.of(id),
                 Version.of(version),
+                OfferTitle.of(title),
+                OfferSize.of(size),
+                categoryIds.stream().map(OfferCategoryId::of).collect(java.util.stream.Collectors.toSet()),
                 Product.of(ProductId.of(productId), ProductNumber.of(productNumber)),
                 imageIds.stream().map(ImageId::of).toList(),
                 Links.of(links),

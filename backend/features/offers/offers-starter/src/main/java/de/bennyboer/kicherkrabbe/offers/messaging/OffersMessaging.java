@@ -5,18 +5,25 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListener;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListenerFactory;
 import de.bennyboer.kicherkrabbe.offers.*;
-import de.bennyboer.kicherkrabbe.offers.OffersModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Configuration
 public class OffersMessaging {
+
+    record CategoryEvent(String name) {
+    }
+
+    record CategoryCreatedEvent(String name, String group) {
+    }
+
+    record CategoryRegroupedEvent(String name, String group) {
+    }
 
     @Bean("offers_onUserCreatedAllowUserToCreateOffers")
     public EventListener onUserCreatedAllowUserToCreateOffers(
@@ -171,6 +178,121 @@ public class OffersMessaging {
                     String offerId = event.getMetadata().getAggregateId().getValue();
 
                     return module.disallowAnonymousAndSystemUsersToReadPublishedOffer(offerId);
+                }
+        );
+    }
+
+    @Bean("offers_onCategoryCreatedMarkCategoryAsAvailable")
+    public EventListener onCategoryCreatedMarkCategoryAsAvailable(
+            EventListenerFactory factory,
+            OffersModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "offers.category-created-mark-category-as-available",
+                AggregateType.of("CATEGORY"),
+                EventName.of("CREATED"),
+                CategoryCreatedEvent.class,
+                (metadata, event) -> {
+                    if (!"CLOTHING".equals(event.group())) {
+                        return Mono.empty();
+                    }
+
+                    String categoryId = metadata.getAggregateId().getValue();
+                    return module.markCategoryAsAvailable(categoryId, event.name());
+                }
+        );
+    }
+
+    @Bean("offers_onCategoryRenamedRenameCategoryIfAvailable")
+    public EventListener onCategoryRenamedRenameCategoryIfAvailable(
+            EventListenerFactory factory,
+            OffersModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "offers.category-renamed-rename-category-if-available",
+                AggregateType.of("CATEGORY"),
+                EventName.of("RENAMED"),
+                CategoryEvent.class,
+                (metadata, event) -> {
+                    String categoryId = metadata.getAggregateId().getValue();
+
+                    return module.renameCategoryIfAvailable(categoryId, event.name());
+                }
+        );
+    }
+
+    @Bean("offers_onCategoryRegroupedMarkCategoryAsAvailable")
+    public EventListener onCategoryRegroupedMarkCategoryAsAvailable(
+            EventListenerFactory factory,
+            OffersModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "offers.category-regrouped-mark-category-as-available",
+                AggregateType.of("CATEGORY"),
+                EventName.of("REGROUPED"),
+                CategoryRegroupedEvent.class,
+                (metadata, event) -> {
+                    if (!"CLOTHING".equals(event.group())) {
+                        return Mono.empty();
+                    }
+
+                    String categoryId = metadata.getAggregateId().getValue();
+                    return module.markCategoryAsAvailable(categoryId, event.name());
+                }
+        );
+    }
+
+    @Bean("offers_onCategoryRegroupedToNonClothingMarkCategoryAsUnavailable")
+    public EventListener onCategoryRegroupedToNonClothingMarkCategoryAsUnavailable(
+            EventListenerFactory factory,
+            OffersModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "offers.category-regrouped-to-non-clothing-mark-category-as-unavailable",
+                AggregateType.of("CATEGORY"),
+                EventName.of("REGROUPED"),
+                CategoryRegroupedEvent.class,
+                (metadata, event) -> {
+                    if ("CLOTHING".equals(event.group())) {
+                        return Mono.empty();
+                    }
+
+                    String categoryId = metadata.getAggregateId().getValue();
+                    return module.markCategoryAsUnavailable(categoryId);
+                }
+        );
+    }
+
+    @Bean("offers_onCategoryDeletedMarkCategoryAsUnavailable")
+    public EventListener onCategoryDeletedMarkCategoryAsUnavailable(
+            EventListenerFactory factory,
+            OffersModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "offers.category-deleted-mark-category-as-unavailable",
+                AggregateType.of("CATEGORY"),
+                EventName.of("DELETED"),
+                (event) -> {
+                    String categoryId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.markCategoryAsUnavailable(categoryId);
+                }
+        );
+    }
+
+    @Bean("offers_onCategoryDeletedRemoveCategoryFromOffers")
+    public EventListener onCategoryDeletedRemoveCategoryFromOffers(
+            EventListenerFactory factory,
+            OffersModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "offers.category-deleted-remove-category-from-offers",
+                AggregateType.of("CATEGORY"),
+                EventName.of("DELETED"),
+                (event) -> {
+                    String categoryId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.removeCategoryFromOffers(categoryId, event.getMetadata().getAgent()).then();
                 }
         );
     }

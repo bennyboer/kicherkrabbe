@@ -49,6 +49,7 @@ import {
   Notes,
   NYLON,
   Offer,
+  OfferCategoryId,
   OfferProduct,
   OTTER,
   PAPER,
@@ -80,6 +81,9 @@ import {environment} from '../../../../../../environments';
 import {someOrNone} from '@kicherkrabbe/shared';
 
 interface CreateOfferRequest {
+  title: string;
+  size: string;
+  categoryIds: string[];
   productId: string;
   imageIds: string[];
   notes: NotesDTO;
@@ -150,6 +154,33 @@ interface ArchiveOfferResponse {
   version: number;
 }
 
+interface UpdateTitleRequest {
+  version: number;
+  title: string;
+}
+
+interface UpdateTitleResponse {
+  version: number;
+}
+
+interface UpdateSizeRequest {
+  version: number;
+  size: string;
+}
+
+interface UpdateSizeResponse {
+  version: number;
+}
+
+interface UpdateCategoriesRequest {
+  version: number;
+  categoryIds: string[];
+}
+
+interface UpdateCategoriesResponse {
+  version: number;
+}
+
 interface QueryOfferResponse {
   offer: OfferDTO;
 }
@@ -179,6 +210,9 @@ interface QueryProductsForOfferCreationResponse {
 interface OfferDTO {
   id: string;
   version: number;
+  title: string;
+  size: string;
+  categoryIds: string[];
   product: ProductDTO;
   imageIds: string[];
   links: LinkDTO[];
@@ -350,12 +384,18 @@ export class OffersService {
   }
 
   createOffer(props: {
+    title: string;
+    size: string;
+    categoryIds: string[];
     productId: string;
     imageIds: string[];
     notes: Notes;
     price: Money;
   }): Observable<string> {
     const request: CreateOfferRequest = {
+      title: props.title,
+      size: props.size,
+      categoryIds: props.categoryIds,
       productId: props.productId,
       imageIds: props.imageIds,
       notes: this.toApiNotes(props.notes),
@@ -447,6 +487,39 @@ export class OffersService {
       .pipe(map((response) => response.version));
   }
 
+  updateTitle(props: { id: string; version: number; title: string }): Observable<number> {
+    const request: UpdateTitleRequest = {
+      version: props.version,
+      title: props.title,
+    };
+
+    return this.http
+      .post<UpdateTitleResponse>(`${environment.apiUrl}/offers/${props.id}/title/update`, request)
+      .pipe(map((response) => response.version));
+  }
+
+  updateSize(props: { id: string; version: number; size: string }): Observable<number> {
+    const request: UpdateSizeRequest = {
+      version: props.version,
+      size: props.size,
+    };
+
+    return this.http
+      .post<UpdateSizeResponse>(`${environment.apiUrl}/offers/${props.id}/size/update`, request)
+      .pipe(map((response) => response.version));
+  }
+
+  updateCategories(props: { id: string; version: number; categoryIds: string[] }): Observable<number> {
+    const request: UpdateCategoriesRequest = {
+      version: props.version,
+      categoryIds: props.categoryIds,
+    };
+
+    return this.http
+      .post<UpdateCategoriesResponse>(`${environment.apiUrl}/offers/${props.id}/categories/update`, request)
+      .pipe(map((response) => response.version));
+  }
+
   addDiscount(props: { id: string; version: number; discountedPrice: Money }): Observable<number> {
     const request: AddDiscountRequest = {
       version: props.version,
@@ -497,6 +570,9 @@ export class OffersService {
     return Offer.of({
       id: offer.id,
       version: offer.version,
+      title: offer.title,
+      size: offer.size,
+      categories: new Set<OfferCategoryId>(someOrNone(offer.categoryIds).orElse([])),
       product: OfferProduct.of({
         id: offer.product.id,
         number: offer.product.number,

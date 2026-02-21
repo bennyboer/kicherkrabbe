@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,12 +37,18 @@ public class OfferServiceTest {
 
     @Test
     void shouldCreateOffer() {
-        var sample = SampleOffer.builder().build();
+        var sample = SampleOffer.builder()
+                .categoryId("CAT_1")
+                .categoryId("CAT_2")
+                .build();
         var id = create(sample);
 
         var offer = get(id);
         assertThat(offer.getId()).isEqualTo(id);
         assertThat(offer.getVersion()).isEqualTo(Version.zero());
+        assertThat(offer.getTitle()).isEqualTo(sample.getTitle());
+        assertThat(offer.getSize()).isEqualTo(sample.getSize());
+        assertThat(offer.getCategories()).isEqualTo(sample.getCategories());
         assertThat(offer.getProductId()).isEqualTo(sample.getProductId());
         assertThat(offer.getImages()).isEqualTo(sample.getImageIds());
         assertThat(offer.getNotes()).isEqualTo(sample.getNotes());
@@ -367,6 +374,95 @@ public class OfferServiceTest {
     }
 
     @Test
+    void shouldUpdateTitle() {
+        var id = create();
+
+        var updatedVersion = updateTitle(id, Version.zero(), OfferTitle.of("New Title"));
+
+        var offer = get(id);
+        assertThat(offer.getVersion()).isEqualTo(updatedVersion);
+        assertThat(offer.getTitle()).isEqualTo(OfferTitle.of("New Title"));
+    }
+
+    @Test
+    void shouldNotUpdateTitleGivenAnOutdatedVersion() {
+        var id = create();
+
+        updateTitle(id, Version.zero(), OfferTitle.of("New Title"));
+
+        assertThatThrownBy(() -> updateTitle(id, Version.zero(), OfferTitle.of("Another Title")))
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
+    void shouldUpdateSize() {
+        var id = create();
+
+        var updatedVersion = updateSize(id, Version.zero(), OfferSize.of("XL"));
+
+        var offer = get(id);
+        assertThat(offer.getVersion()).isEqualTo(updatedVersion);
+        assertThat(offer.getSize()).isEqualTo(OfferSize.of("XL"));
+    }
+
+    @Test
+    void shouldNotUpdateSizeGivenAnOutdatedVersion() {
+        var id = create();
+
+        updateSize(id, Version.zero(), OfferSize.of("XL"));
+
+        assertThatThrownBy(() -> updateSize(id, Version.zero(), OfferSize.of("XXL")))
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
+    void shouldUpdateCategories() {
+        var id = create();
+
+        var categories = Set.of(OfferCategoryId.of("CAT_1"), OfferCategoryId.of("CAT_2"));
+        var updatedVersion = updateCategories(id, Version.zero(), categories);
+
+        var offer = get(id);
+        assertThat(offer.getVersion()).isEqualTo(updatedVersion);
+        assertThat(offer.getCategories()).isEqualTo(categories);
+    }
+
+    @Test
+    void shouldNotUpdateCategoriesGivenAnOutdatedVersion() {
+        var id = create();
+
+        updateCategories(id, Version.zero(), Set.of(OfferCategoryId.of("CAT_1")));
+
+        assertThatThrownBy(() -> updateCategories(id, Version.zero(), Set.of(OfferCategoryId.of("CAT_2"))))
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
+    }
+
+    @Test
+    void shouldRemoveCategory() {
+        var id = create(SampleOffer.builder()
+                .categoryId("CAT_1")
+                .categoryId("CAT_2")
+                .build());
+
+        var updatedVersion = removeCategory(id, Version.zero(), OfferCategoryId.of("CAT_1"));
+
+        var offer = get(id);
+        assertThat(offer.getVersion()).isEqualTo(updatedVersion);
+        assertThat(offer.getCategories()).containsExactly(OfferCategoryId.of("CAT_2"));
+    }
+
+    @Test
+    void shouldIgnoreRemovingNonExistentCategory() {
+        var id = create();
+
+        removeCategory(id, Version.zero(), OfferCategoryId.of("NON_EXISTENT"));
+
+        var offer = get(id);
+        assertThat(offer.getVersion()).isEqualTo(Version.zero());
+        assertThat(offer.getCategories()).isEmpty();
+    }
+
+    @Test
     void shouldSnapshotEvery100Events() {
         var id = create();
 
@@ -401,6 +497,9 @@ public class OfferServiceTest {
 
     private OfferId create(SampleOffer sample) {
         return offerService.create(
+                sample.getTitle(),
+                sample.getSize(),
+                sample.getCategories(),
                 sample.getProductId(),
                 sample.getImageIds(),
                 sample.getNotes(),
@@ -451,6 +550,22 @@ public class OfferServiceTest {
 
     private Version removeDiscount(OfferId id, Version version) {
         return offerService.removeDiscount(id, version, Agent.system()).block();
+    }
+
+    private Version updateTitle(OfferId id, Version version, OfferTitle title) {
+        return offerService.updateTitle(id, version, title, Agent.system()).block();
+    }
+
+    private Version updateSize(OfferId id, Version version, OfferSize size) {
+        return offerService.updateSize(id, version, size, Agent.system()).block();
+    }
+
+    private Version updateCategories(OfferId id, Version version, Set<OfferCategoryId> categories) {
+        return offerService.updateCategories(id, version, categories, Agent.system()).block();
+    }
+
+    private Version removeCategory(OfferId id, Version version, OfferCategoryId categoryId) {
+        return offerService.removeCategory(id, version, categoryId, Agent.system()).block();
     }
 
 }

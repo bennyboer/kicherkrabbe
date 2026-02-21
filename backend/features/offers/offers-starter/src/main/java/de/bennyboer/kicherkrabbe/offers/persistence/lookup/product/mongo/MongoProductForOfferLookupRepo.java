@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.regex.Pattern;
 
-import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -55,7 +55,7 @@ public class MongoProductForOfferLookupRepo
 
         Query countQuery = Query.query(criteria);
         Query pagedQuery = Query.query(criteria)
-                .with(Sort.by(ASC, "number"))
+                .with(Sort.by(DESC, "number"))
                 .skip((int) skip)
                 .limit((int) limit);
 

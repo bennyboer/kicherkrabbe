@@ -8,6 +8,8 @@ import de.bennyboer.kicherkrabbe.money.Currency;
 import de.bennyboer.kicherkrabbe.money.Money;
 import de.bennyboer.kicherkrabbe.offers.*;
 import de.bennyboer.kicherkrabbe.offers.archive.ArchivedEvent;
+import de.bennyboer.kicherkrabbe.offers.categories.remove.CategoryRemovedEvent;
+import de.bennyboer.kicherkrabbe.offers.categories.update.CategoriesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.offers.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.offers.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.offers.discount.add.DiscountAddedEvent;
@@ -17,10 +19,13 @@ import de.bennyboer.kicherkrabbe.offers.notes.update.NotesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.offers.price.update.PriceUpdatedEvent;
 import de.bennyboer.kicherkrabbe.offers.publish.PublishedEvent;
 import de.bennyboer.kicherkrabbe.offers.reserve.ReservedEvent;
+import de.bennyboer.kicherkrabbe.offers.size.update.SizeUpdatedEvent;
+import de.bennyboer.kicherkrabbe.offers.title.update.TitleUpdatedEvent;
 import de.bennyboer.kicherkrabbe.offers.unpublish.UnpublishedEvent;
 import de.bennyboer.kicherkrabbe.offers.unreserve.UnreservedEvent;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class OfferEventPayloadSerializer implements EventSerializer {
 
@@ -29,6 +34,9 @@ public class OfferEventPayloadSerializer implements EventSerializer {
         return switch (event) {
             case CreatedEvent e -> {
                 var result = new HashMap<String, Object>();
+                result.put("title", e.getTitle().getValue());
+                result.put("size", e.getSize().getValue());
+                result.put("categoryIds", e.getCategories().stream().map(OfferCategoryId::getValue).toList());
                 result.put("productId", e.getProductId().getValue());
                 result.put("images", e.getImages().stream().map(ImageId::getValue).toList());
                 result.put("notes", serializeNotes(e.getNotes()));
@@ -48,6 +56,12 @@ public class OfferEventPayloadSerializer implements EventSerializer {
             case PriceUpdatedEvent e -> Map.of("price", serializeMoney(e.getPrice()));
             case DiscountAddedEvent e -> Map.of("discountedPrice", serializeMoney(e.getDiscountedPrice()));
             case DiscountRemovedEvent ignored -> Map.of();
+            case TitleUpdatedEvent e -> Map.of("title", e.getTitle().getValue());
+            case SizeUpdatedEvent e -> Map.of("size", e.getSize().getValue());
+            case CategoriesUpdatedEvent e -> Map.of(
+                    "categoryIds", e.getCategories().stream().map(OfferCategoryId::getValue).toList()
+            );
+            case CategoryRemovedEvent e -> Map.of("categoryId", e.getCategoryId().getValue());
             default -> throw new IllegalStateException("Unexpected event: " + event);
         };
     }
@@ -56,12 +70,26 @@ public class OfferEventPayloadSerializer implements EventSerializer {
     @SuppressWarnings("unchecked")
     public Event deserialize(EventName name, Version eventVersion, Map<String, Object> payload) {
         return switch (name.getValue()) {
-            case "CREATED" -> CreatedEvent.of(
-                    ProductId.of((String) payload.get("productId")),
-                    ((List<String>) payload.get("images")).stream().map(ImageId::of).toList(),
-                    deserializeNotes((Map<String, Object>) payload.get("notes")),
-                    deserializeMoney((Map<String, Object>) payload.get("price"))
-            );
+            case "CREATED" -> {
+                var title = payload.containsKey("title")
+                        ? OfferTitle.of((String) payload.get("title"))
+                        : OfferTitle.of("Untitled");
+                var size = payload.containsKey("size")
+                        ? OfferSize.of((String) payload.get("size"))
+                        : OfferSize.of("N/A");
+                var categories = payload.containsKey("categoryIds")
+                        ? ((List<String>) payload.get("categoryIds")).stream().map(OfferCategoryId::of).collect(Collectors.toSet())
+                        : Set.<OfferCategoryId>of();
+                yield CreatedEvent.of(
+                        title,
+                        size,
+                        categories,
+                        ProductId.of((String) payload.get("productId")),
+                        ((List<String>) payload.get("images")).stream().map(ImageId::of).toList(),
+                        deserializeNotes((Map<String, Object>) payload.get("notes")),
+                        deserializeMoney((Map<String, Object>) payload.get("price"))
+                );
+            }
             case "DELETED" -> DeletedEvent.of();
             case "PUBLISHED" -> PublishedEvent.of();
             case "UNPUBLISHED" -> UnpublishedEvent.of();
@@ -81,6 +109,18 @@ public class OfferEventPayloadSerializer implements EventSerializer {
                     deserializeMoney((Map<String, Object>) payload.get("discountedPrice"))
             );
             case "DISCOUNT_REMOVED" -> DiscountRemovedEvent.of();
+            case "TITLE_UPDATED" -> TitleUpdatedEvent.of(
+                    OfferTitle.of((String) payload.get("title"))
+            );
+            case "SIZE_UPDATED" -> SizeUpdatedEvent.of(
+                    OfferSize.of((String) payload.get("size"))
+            );
+            case "CATEGORIES_UPDATED" -> CategoriesUpdatedEvent.of(
+                    ((List<String>) payload.get("categoryIds")).stream().map(OfferCategoryId::of).collect(Collectors.toSet())
+            );
+            case "CATEGORY_REMOVED" -> CategoryRemovedEvent.of(
+                    OfferCategoryId.of((String) payload.get("categoryId"))
+            );
             default -> throw new IllegalStateException("Unexpected event name: " + name);
         };
     }

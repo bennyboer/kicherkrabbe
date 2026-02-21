@@ -1,4 +1,5 @@
-export { Offer, OfferStatus } from './offer';
+export { Offer, OfferStatus, type OfferCategoryId } from './offer';
+export { OfferCategory } from './offer-category';
 export { OfferProduct } from './offer-product';
 export { Money } from './money';
 export { PriceHistoryEntry } from './price-history-entry';

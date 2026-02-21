@@ -4,9 +4,9 @@ import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.money.Currency;
+import de.bennyboer.kicherkrabbe.money.Money;
 import de.bennyboer.kicherkrabbe.offers.api.MoneyDTO;
 import de.bennyboer.kicherkrabbe.offers.api.NotesDTO;
-import de.bennyboer.kicherkrabbe.money.Money;
 import de.bennyboer.kicherkrabbe.offers.samples.SampleProductForLookup;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
@@ -40,6 +40,9 @@ public class CreateOfferTest extends OffersModuleTest {
         price.currency = "EUR";
 
         String offerId = createOffer(
+                "Test Offer",
+                "L",
+                Set.of(),
                 "PRODUCT_ID",
                 List.of("IMAGE_1", "IMAGE_2"),
                 notes,
@@ -52,6 +55,9 @@ public class CreateOfferTest extends OffersModuleTest {
         var offer = offers.getFirst();
         assertThat(offer.getId()).isEqualTo(OfferId.of(offerId));
         assertThat(offer.getVersion()).isEqualTo(Version.zero());
+        assertThat(offer.getTitle()).isEqualTo(OfferTitle.of("Test Offer"));
+        assertThat(offer.getSize()).isEqualTo(OfferSize.of("L"));
+        assertThat(offer.getCategories()).isEmpty();
         assertThat(offer.getProduct().getId()).isEqualTo(ProductId.of("PRODUCT_ID"));
         assertThat(offer.getProduct().getNumber()).isEqualTo(ProductNumber.of("P-001"));
         assertThat(offer.getImages()).containsExactly(ImageId.of("IMAGE_1"), ImageId.of("IMAGE_2"));

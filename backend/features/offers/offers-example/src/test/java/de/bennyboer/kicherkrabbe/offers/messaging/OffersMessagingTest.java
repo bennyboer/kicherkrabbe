@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.ReactiveTransactionManager;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
@@ -58,6 +59,10 @@ public class OffersMessagingTest extends EventListenerTest {
         when(module.updateProductLinkInLookup(any(), anyLong(), any())).thenReturn(Mono.empty());
         when(module.updateProductFabricCompositionInLookup(any(), anyLong(), any())).thenReturn(Mono.empty());
         when(module.updateProductNumberInLookup(any(), anyLong(), any())).thenReturn(Mono.empty());
+        when(module.markCategoryAsAvailable(any(), any())).thenReturn(Mono.empty());
+        when(module.renameCategoryIfAvailable(any(), any())).thenReturn(Mono.empty());
+        when(module.markCategoryAsUnavailable(any())).thenReturn(Mono.empty());
+        when(module.removeCategoryFromOffers(any(), any())).thenReturn(Flux.empty());
     }
 
     @Test
@@ -392,6 +397,130 @@ public class OffersMessagingTest extends EventListenerTest {
                 eq(2L),
                 eq(ProductNumber.of("P-999"))
         );
+    }
+
+    @Test
+    void shouldMarkCategoryAsAvailableOnClothingCategoryCreated() {
+        send(
+                AggregateType.of("CATEGORY"),
+                AggregateId.of("CATEGORY_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of(
+                        "name", "Dress",
+                        "group", "CLOTHING"
+                )
+        );
+
+        verify(module, timeout(10000).times(1)).markCategoryAsAvailable(eq("CATEGORY_ID"), eq("Dress"));
+    }
+
+    @Test
+    void shouldNotMarkCategoryAsAvailableOnNonClothingCategoryCreated() {
+        send(
+                AggregateType.of("CATEGORY"),
+                AggregateId.of("CATEGORY_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of(
+                        "name", "Fabric",
+                        "group", "NONE"
+                )
+        );
+
+        verify(module, timeout(5000).times(0)).markCategoryAsAvailable(any(), any());
+    }
+
+    @Test
+    void shouldRenameCategoryIfAvailableOnCategoryRenamed() {
+        send(
+                AggregateType.of("CATEGORY"),
+                AggregateId.of("CATEGORY_ID"),
+                Version.of(1),
+                EventName.of("RENAMED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("name", "Trousers")
+        );
+
+        verify(module, timeout(10000).times(1)).renameCategoryIfAvailable(eq("CATEGORY_ID"), eq("Trousers"));
+    }
+
+    @Test
+    void shouldMarkCategoryAsAvailableOnCategoryRegroupedToClothingGroup() {
+        send(
+                AggregateType.of("CATEGORY"),
+                AggregateId.of("CATEGORY_ID"),
+                Version.of(1),
+                EventName.of("REGROUPED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of(
+                        "name", "Skirt",
+                        "group", "CLOTHING"
+                )
+        );
+
+        verify(module, timeout(10000).times(1)).markCategoryAsAvailable(eq("CATEGORY_ID"), eq("Skirt"));
+    }
+
+    @Test
+    void shouldMarkCategoryAsUnavailableOnCategoryRegroupedToNonClothingGroup() {
+        send(
+                AggregateType.of("CATEGORY"),
+                AggregateId.of("CATEGORY_ID"),
+                Version.of(1),
+                EventName.of("REGROUPED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of(
+                        "name", "Dress",
+                        "group", "NONE"
+                )
+        );
+
+        verify(module, timeout(10000).times(1)).markCategoryAsUnavailable(eq("CATEGORY_ID"));
+    }
+
+    @Test
+    void shouldMarkCategoryAsUnavailableOnCategoryDeleted() {
+        send(
+                AggregateType.of("CATEGORY"),
+                AggregateId.of("CATEGORY_ID"),
+                Version.of(1),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        verify(module, timeout(10000).times(1)).markCategoryAsUnavailable(eq("CATEGORY_ID"));
+    }
+
+    @Test
+    void shouldRemoveCategoryFromOffersOnCategoryDeleted() {
+        send(
+                AggregateType.of("CATEGORY"),
+                AggregateId.of("CATEGORY_ID"),
+                Version.of(1),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        verify(module, timeout(10000).times(1)).removeCategoryFromOffers(eq("CATEGORY_ID"), eq(Agent.system()));
     }
 
 }

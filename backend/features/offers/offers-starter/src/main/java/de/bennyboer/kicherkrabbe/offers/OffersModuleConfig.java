@@ -7,6 +7,8 @@ import de.bennyboer.kicherkrabbe.changes.ResourceType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListenerFactory;
 import de.bennyboer.kicherkrabbe.offers.http.OffersHttpConfig;
 import de.bennyboer.kicherkrabbe.offers.messaging.OffersMessaging;
+import de.bennyboer.kicherkrabbe.offers.persistence.categories.OfferCategoryRepo;
+import de.bennyboer.kicherkrabbe.offers.persistence.categories.mongo.MongoOfferCategoryRepo;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.OfferLookupRepo;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.mongo.MongoOfferLookupRepo;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.ProductForOfferLookupRepo;
@@ -43,6 +45,11 @@ public class OffersModuleConfig {
         return new MongoProductForOfferLookupRepo(template);
     }
 
+    @Bean
+    public OfferCategoryRepo offerCategoryRepo(ReactiveMongoTemplate template) {
+        return new MongoOfferCategoryRepo(template);
+    }
+
     @Bean("offerChangesTracker")
     public ResourceChangesTracker offerChangesTracker(
             EventListenerFactory eventListenerFactory,
@@ -74,6 +81,7 @@ public class OffersModuleConfig {
             @Qualifier("offersPermissionsService") PermissionsService permissionsService,
             OfferLookupRepo offerLookupRepo,
             ProductForOfferLookupRepo productForOfferLookupRepo,
+            OfferCategoryRepo offerCategoryRepo,
             @Qualifier("offerChangesTracker") ResourceChangesTracker offerChangesTracker
     ) {
         return new OffersModule(
@@ -81,6 +89,7 @@ public class OffersModuleConfig {
                 permissionsService,
                 offerLookupRepo,
                 productForOfferLookupRepo,
+                offerCategoryRepo,
                 offerChangesTracker
         );
     }

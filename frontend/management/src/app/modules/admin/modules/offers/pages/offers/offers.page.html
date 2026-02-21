@@ -22,7 +22,8 @@
       <table class="offers-table">
         <colgroup>
           <col class="image" span="1" style="width: 96px" />
-          <col class="number" span="1" style="width: auto" />
+          <col class="title" span="1" style="width: auto" />
+          <col class="number" span="1" style="width: 160px" />
           <col class="status" span="1" style="width: 140px" />
           <col class="price" span="1" style="width: 120px" />
           <col class="created-at" span="1" style="width: 140px" />
@@ -30,6 +31,7 @@
         <thead>
           <tr>
             <th class="image"></th>
+            <th class="title">Titel</th>
             <th class="number">Produkt-Nr.</th>
             <th class="status">Status</th>
             <th class="price">Preis</th>
@@ -47,6 +49,9 @@
                     <span class="material-icons">image</span>
                   </span>
                 }
+              </td>
+              <td class="title">
+                {{ offer.title }}
               </td>
               <td class="number">
                 {{ offer.product.number }}

@@ -11,6 +11,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.EventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.money.Money;
 import de.bennyboer.kicherkrabbe.offers.archive.ArchiveCmd;
+import de.bennyboer.kicherkrabbe.offers.categories.remove.RemoveCategoryCmd;
+import de.bennyboer.kicherkrabbe.offers.categories.update.UpdateCategoriesCmd;
 import de.bennyboer.kicherkrabbe.offers.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.offers.delete.DeleteCmd;
 import de.bennyboer.kicherkrabbe.offers.discount.add.AddDiscountCmd;
@@ -20,12 +22,15 @@ import de.bennyboer.kicherkrabbe.offers.notes.update.UpdateNotesCmd;
 import de.bennyboer.kicherkrabbe.offers.price.update.UpdatePriceCmd;
 import de.bennyboer.kicherkrabbe.offers.publish.PublishCmd;
 import de.bennyboer.kicherkrabbe.offers.reserve.ReserveCmd;
+import de.bennyboer.kicherkrabbe.offers.size.update.UpdateSizeCmd;
+import de.bennyboer.kicherkrabbe.offers.title.update.UpdateTitleCmd;
 import de.bennyboer.kicherkrabbe.offers.unpublish.UnpublishCmd;
 import de.bennyboer.kicherkrabbe.offers.unreserve.UnreserveCmd;
 import reactor.core.publisher.Mono;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Set;
 
 public class OfferService extends AggregateService<Offer, OfferId> {
 
@@ -41,6 +46,9 @@ public class OfferService extends AggregateService<Offer, OfferId> {
     }
 
     public Mono<AggregateIdAndVersion<OfferId>> create(
+            OfferTitle title,
+            OfferSize size,
+            Set<OfferCategoryId> categories,
             ProductId productId,
             List<ImageId> images,
             Notes notes,
@@ -48,7 +56,7 @@ public class OfferService extends AggregateService<Offer, OfferId> {
             Agent agent
     ) {
         var id = OfferId.create();
-        var cmd = CreateCmd.of(productId, images, notes, price);
+        var cmd = CreateCmd.of(title, size, categories, productId, images, notes, price);
 
         return dispatchCommandToLatest(id, agent, cmd)
                 .map(version -> AggregateIdAndVersion.of(id, version));
@@ -96,6 +104,22 @@ public class OfferService extends AggregateService<Offer, OfferId> {
 
     public Mono<Version> removeDiscount(OfferId id, Version version, Agent agent) {
         return dispatchCommand(id, version, agent, RemoveDiscountCmd.of());
+    }
+
+    public Mono<Version> updateTitle(OfferId id, Version version, OfferTitle title, Agent agent) {
+        return dispatchCommand(id, version, agent, UpdateTitleCmd.of(title));
+    }
+
+    public Mono<Version> updateSize(OfferId id, Version version, OfferSize size, Agent agent) {
+        return dispatchCommand(id, version, agent, UpdateSizeCmd.of(size));
+    }
+
+    public Mono<Version> updateCategories(OfferId id, Version version, Set<OfferCategoryId> categories, Agent agent) {
+        return dispatchCommand(id, version, agent, UpdateCategoriesCmd.of(categories));
+    }
+
+    public Mono<Version> removeCategory(OfferId id, Version version, OfferCategoryId categoryId, Agent agent) {
+        return dispatchCommand(id, version, agent, RemoveCategoryCmd.of(categoryId));
     }
 
     @Override

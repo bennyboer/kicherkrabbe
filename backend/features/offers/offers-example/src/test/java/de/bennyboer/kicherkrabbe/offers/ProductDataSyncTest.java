@@ -2,7 +2,7 @@ package de.bennyboer.kicherkrabbe.offers;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.LookupProduct;
+import de.bennyboer.kicherkrabbe.offers.samples.SampleOffer;
 import de.bennyboer.kicherkrabbe.offers.samples.SampleProductForLookup;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +22,7 @@ public class ProductDataSyncTest extends OffersModuleTest {
         setUpProduct(SampleProductForLookup.builder()
                 .links(Set.of(patternLink))
                 .build());
-        String offerId = createOffer("PRODUCT_ID", List.of("IMAGE_ID"), sampleNotes(), samplePrice(), agent);
+        String offerId = createOffer(SampleOffer.builder().build(), agent);
 
         var fabricLink = Link.of(LinkType.FABRIC, LinkId.of("FABRIC_ID"), LinkName.of("Cotton Fabric"));
         addProductLink("PRODUCT_ID", 1L, fabricLink);
@@ -41,7 +41,7 @@ public class ProductDataSyncTest extends OffersModuleTest {
         setUpProduct(SampleProductForLookup.builder()
                 .links(Set.of(patternLink, fabricLink))
                 .build());
-        String offerId = createOffer("PRODUCT_ID", List.of("IMAGE_ID"), sampleNotes(), samplePrice(), agent);
+        String offerId = createOffer(SampleOffer.builder().build(), agent);
 
         removeProductLink("PRODUCT_ID", 1L, LinkType.FABRIC, "FABRIC_ID");
 
@@ -58,7 +58,7 @@ public class ProductDataSyncTest extends OffersModuleTest {
         setUpProduct(SampleProductForLookup.builder()
                 .links(Set.of(originalLink))
                 .build());
-        String offerId = createOffer("PRODUCT_ID", List.of("IMAGE_ID"), sampleNotes(), samplePrice(), agent);
+        String offerId = createOffer(SampleOffer.builder().build(), agent);
 
         var renamedLink = Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("New Name"));
         updateProductLink("PRODUCT_ID", 1L, renamedLink);
@@ -77,7 +77,7 @@ public class ProductDataSyncTest extends OffersModuleTest {
                         FabricCompositionItem.of(FabricType.COTTON, LowPrecisionFloat.of(10000L))
                 ))
                 .build());
-        String offerId = createOffer("PRODUCT_ID", List.of("IMAGE_ID"), sampleNotes(), samplePrice(), agent);
+        String offerId = createOffer(SampleOffer.builder().build(), agent);
 
         var updatedComposition = FabricComposition.of(Set.of(
                 FabricCompositionItem.of(FabricType.POLYESTER, LowPrecisionFloat.of(6000L)),
@@ -99,7 +99,7 @@ public class ProductDataSyncTest extends OffersModuleTest {
         setUpProduct(SampleProductForLookup.builder()
                 .number(ProductNumber.of("P-001"))
                 .build());
-        String offerId = createOffer("PRODUCT_ID", List.of("IMAGE_ID"), sampleNotes(), samplePrice(), agent);
+        String offerId = createOffer(SampleOffer.builder().build(), agent);
 
         updateProductNumber("PRODUCT_ID", 1L, ProductNumber.of("P-999"));
 
@@ -136,8 +136,8 @@ public class ProductDataSyncTest extends OffersModuleTest {
         setUpProduct(SampleProductForLookup.builder()
                 .links(Set.of(originalLink))
                 .build());
-        String offerId1 = createOffer("PRODUCT_ID", List.of("IMAGE_ID"), sampleNotes(), samplePrice(), agent);
-        String offerId2 = createOffer("PRODUCT_ID", List.of("IMAGE_ID"), sampleNotes(), samplePrice(), agent);
+        String offerId1 = createOffer(SampleOffer.builder().build(), agent);
+        String offerId2 = createOffer(SampleOffer.builder().build(), agent);
 
         var renamedLink = Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("New Name"));
         updateProductLink("PRODUCT_ID", 1L, renamedLink);

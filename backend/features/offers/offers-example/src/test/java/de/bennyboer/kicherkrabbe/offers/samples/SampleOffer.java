@@ -3,13 +3,28 @@ package de.bennyboer.kicherkrabbe.offers.samples;
 import de.bennyboer.kicherkrabbe.offers.api.MoneyDTO;
 import de.bennyboer.kicherkrabbe.offers.api.NotesDTO;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Singular;
 
 import java.util.List;
+import java.util.Set;
 
 @Builder
 public class SampleOffer {
 
+    @Getter
+    @Builder.Default
+    private String title = "Sample Offer";
+
+    @Getter
+    @Builder.Default
+    private String size = "M";
+
+    @Getter
+    @Builder.Default
+    private Set<String> categoryIds = Set.of();
+
+    @Getter
     @Builder.Default
     private String productId = "PRODUCT_ID";
 
@@ -21,10 +36,6 @@ public class SampleOffer {
 
     @Builder.Default
     private SamplePrice price = SamplePrice.builder().build();
-
-    public String getProductId() {
-        return productId;
-    }
 
     public List<String> getImages() {
         return images.isEmpty() ? List.of("IMAGE_ID") : images;

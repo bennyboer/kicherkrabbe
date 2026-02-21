@@ -2,7 +2,10 @@ import { ChangeDetectionStrategy, Component, Injector, OnDestroy, OnInit } from 
 import {
   BehaviorSubject,
   catchError,
+  combineLatest,
+  debounceTime,
   distinctUntilChanged,
+  filter,
   finalize,
   first,
   map,
@@ -14,9 +17,9 @@ import {
 } from 'rxjs';
 import { none, Option, some } from '@kicherkrabbe/shared';
 import { ActivatedRoute } from '@angular/router';
-import { ButtonSize, NotificationService } from '../../../../../shared';
-import { Offer, OfferStatus } from '../../model';
-import { OffersService } from '../../services';
+import { ButtonSize, Chip, NotificationService } from '../../../../../shared';
+import { Offer, OfferCategory, OfferCategoryId, OfferStatus } from '../../model';
+import { OfferCategoriesService, OffersService } from '../../services';
 import { environment } from '../../../../../../../environments';
 import { ImageSliderImage } from '../../../../../shared/modules/image-slider';
 import { Theme, ThemeService } from '../../../../../../services';
@@ -53,7 +56,31 @@ export class OfferPage implements OnInit, OnDestroy {
   protected readonly offerLoaded$ = new BehaviorSubject<boolean>(false);
   protected readonly actionInProgress$ = new BehaviorSubject<boolean>(false);
 
-  protected readonly loading$ = this.loadingOffer$.asObservable();
+  protected readonly title$ = new BehaviorSubject<string>('');
+  private readonly titleValid$ = this.title$.pipe(map((title) => title.trim().length > 0));
+  private readonly titleChanged$ = combineLatest([this.offer$, this.title$]).pipe(
+    map(([offer, title]) => offer.map((o) => o.title !== title).orElse(false)),
+  );
+  protected readonly cannotSaveTitle$ = combineLatest([this.titleValid$, this.titleChanged$]).pipe(
+    map(([valid, changed]) => !valid || !changed),
+  );
+
+  protected readonly size$ = new BehaviorSubject<string>('');
+  private readonly sizeValid$ = this.size$.pipe(map((size) => size.trim().length > 0));
+  private readonly sizeChanged$ = combineLatest([this.offer$, this.size$]).pipe(
+    map(([offer, size]) => offer.map((o) => o.size !== size).orElse(false)),
+  );
+  protected readonly cannotSaveSize$ = combineLatest([this.sizeValid$, this.sizeChanged$]).pipe(
+    map(([valid, changed]) => !valid || !changed),
+  );
+
+  protected readonly availableCategories$ = new BehaviorSubject<OfferCategory[]>([]);
+  protected readonly loadingCategories$ = new BehaviorSubject<boolean>(true);
+  protected readonly selectedCategories$ = new BehaviorSubject<OfferCategoryId[]>([]);
+
+  protected readonly loading$ = combineLatest([this.loadingOffer$, this.loadingCategories$]).pipe(
+    map(([offerLoading, categoriesLoading]) => offerLoading || categoriesLoading),
+  );
   protected readonly images$: Observable<ImageSliderImage[]> = this.offer$.pipe(
     map((offer) => offer.map((o) => this.toImageSliderImages(o.images)).orElse([])),
     distinctUntilChanged((a, b) => {
@@ -76,6 +103,7 @@ export class OfferPage implements OnInit, OnDestroy {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly offersService: OffersService,
+    private readonly offerCategoriesService: OfferCategoriesService,
     private readonly assetsService: AssetsService,
     private readonly notificationService: NotificationService,
     private readonly themeService: ThemeService,
@@ -83,6 +111,8 @@ export class OfferPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.reloadAvailableCategories();
+
     this.route.params
       .pipe(
         map((params) => params['offerId']),
@@ -91,6 +121,19 @@ export class OfferPage implements OnInit, OnDestroy {
       .subscribe((offerId) => this.offerId$.next(offerId));
 
     this.offerId$.pipe(takeUntil(this.destroy$)).subscribe((offerId) => this.reloadOffer(offerId));
+
+    combineLatest([this.offer$, this.selectedCategories$.pipe(debounceTime(300))])
+      .pipe(
+        filter(([offer, categories]) => {
+          if (offer.isNone()) {
+            return false;
+          }
+          const o = offer.orElseThrow();
+          return !this.areSetsEqual(o.categories, new Set<OfferCategoryId>(categories));
+        }),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(([offer, categories]) => this.saveUpdatedCategories(offer.orElseThrow(), categories));
   }
 
   ngOnDestroy(): void {
@@ -100,9 +143,114 @@ export class OfferPage implements OnInit, OnDestroy {
     this.offerLoaded$.complete();
     this.loadingOffer$.complete();
     this.actionInProgress$.complete();
+    this.title$.complete();
+    this.size$.complete();
+    this.availableCategories$.complete();
+    this.loadingCategories$.complete();
+    this.selectedCategories$.complete();
 
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  updateTitle(value: string): void {
+    this.title$.next(value);
+  }
+
+  saveTitle(offer: Offer): void {
+    const title = this.title$.value.trim();
+    if (title.length === 0) {
+      return;
+    }
+
+    this.offersService
+      .updateTitle({ id: offer.id, version: offer.version, title })
+      .pipe(first())
+      .subscribe({
+        next: (version) => {
+          const updatedOffer = offer.updateTitle(version, title);
+          this.offer$.next(some(updatedOffer));
+
+          this.notificationService.publish({
+            message: 'Titel wurde aktualisiert.',
+            type: 'success',
+          });
+        },
+        error: (e) => {
+          console.error('Failed to update title', e);
+          this.notificationService.publish({
+            message: 'Titel konnte nicht aktualisiert werden. Bitte versuche es erneut.',
+            type: 'error',
+          });
+        },
+      });
+  }
+
+  updateSize(value: string): void {
+    this.size$.next(value);
+  }
+
+  saveSize(offer: Offer): void {
+    const size = this.size$.value.trim();
+    if (size.length === 0) {
+      return;
+    }
+
+    this.offersService
+      .updateSize({ id: offer.id, version: offer.version, size })
+      .pipe(first())
+      .subscribe({
+        next: (version) => {
+          const updatedOffer = offer.updateSize(version, size);
+          this.offer$.next(some(updatedOffer));
+
+          this.notificationService.publish({
+            message: 'Größe wurde aktualisiert.',
+            type: 'success',
+          });
+        },
+        error: (e) => {
+          console.error('Failed to update size', e);
+          this.notificationService.publish({
+            message: 'Größe konnte nicht aktualisiert werden. Bitte versuche es erneut.',
+            type: 'error',
+          });
+        },
+      });
+  }
+
+  toCategories(ids: OfferCategoryId[], categories: OfferCategory[]): OfferCategory[] {
+    const lookup = new Map<OfferCategoryId, OfferCategory>();
+    for (const category of categories) {
+      lookup.set(category.id, category);
+    }
+
+    const result = ids.map((id) => lookup.get(id)).filter((category) => !!category);
+
+    result.sort((a, b) =>
+      a.name.localeCompare(b.name, 'de-de', {
+        numeric: true,
+      }),
+    );
+
+    return result;
+  }
+
+  categoriesToChips(categories: OfferCategory[]): Chip[] {
+    return categories.map((category) => Chip.of({ id: category.id, label: category.name }));
+  }
+
+  onCategoryRemoved(chip: Chip): void {
+    const categories = this.selectedCategories$.value.filter((category) => category !== chip.id);
+    this.selectedCategories$.next(categories);
+  }
+
+  onCategoryAdded(chip: Chip): void {
+    const category = this.availableCategories$.value.find((c) => c.id === chip.id);
+    if (category) {
+      const categories = [...this.selectedCategories$.value, category.id];
+      this.selectedCategories$.next(categories);
+    }
   }
 
   editImages(offer: Offer): void {
@@ -392,6 +540,64 @@ export class OfferPage implements OnInit, OnDestroy {
     return `${environment.apiUrl}/assets/${imageId}/content`;
   }
 
+  private saveUpdatedCategories(offer: Offer, categories: OfferCategoryId[]): void {
+    this.offersService
+      .updateCategories({ id: offer.id, version: offer.version, categoryIds: categories })
+      .pipe(first())
+      .subscribe({
+        next: (version) => {
+          const updatedOffer = offer.updateCategories(version, new Set(categories));
+          this.offer$.next(some(updatedOffer));
+
+          this.notificationService.publish({
+            message: 'Kategorien wurden aktualisiert.',
+            type: 'success',
+          });
+        },
+        error: (e) => {
+          console.error('Failed to update categories', e);
+          this.notificationService.publish({
+            message: 'Kategorien konnten nicht aktualisiert werden. Bitte versuche es erneut.',
+            type: 'error',
+          });
+        },
+      });
+  }
+
+  private reloadAvailableCategories(): void {
+    this.loadingCategories$.next(true);
+
+    this.offerCategoriesService
+      .getAvailableCategories()
+      .pipe(
+        first(),
+        catchError((e) => {
+          console.error(e);
+          this.notificationService.publish({
+            type: 'error',
+            message: 'Die Kategorien konnten nicht geladen werden. Bitte versuche die Seite neuzuladen.',
+          });
+          return [];
+        }),
+        finalize(() => this.loadingCategories$.next(false)),
+      )
+      .subscribe((categories) => this.availableCategories$.next(categories));
+  }
+
+  private areSetsEqual<T>(a: Set<T>, b: Set<T>): boolean {
+    if (a.size !== b.size) {
+      return false;
+    }
+
+    for (const item of a) {
+      if (!b.has(item)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   private reloadOffer(offerId: string): void {
     if (this.loadingOffer$.value) {
       return;
@@ -418,6 +624,13 @@ export class OfferPage implements OnInit, OnDestroy {
           this.offerLoaded$.next(true);
         }),
       )
-      .subscribe((offer) => this.offer$.next(offer));
+      .subscribe((offer) => {
+        this.offer$.next(offer);
+        offer.ifSome((o) => {
+          this.title$.next(o.title);
+          this.size$.next(o.size);
+          this.selectedCategories$.next(Array.from(o.categories));
+        });
+      });
   }
 }

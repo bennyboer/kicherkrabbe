@@ -15,6 +15,15 @@ public class SamplePublishedOffer {
     private String id = "OFFER_ID";
 
     @Builder.Default
+    private String title = "Sample Offer";
+
+    @Builder.Default
+    private String size = "M";
+
+    @Builder.Default
+    private Set<String> categoryIds = Set.of();
+
+    @Builder.Default
     private List<String> imageIds = List.of("IMAGE_ID");
 
     @Builder.Default
@@ -34,6 +43,9 @@ public class SamplePublishedOffer {
     public PublishedOffer toModel() {
         return PublishedOffer.of(
                 OfferId.of(id),
+                OfferTitle.of(title),
+                OfferSize.of(size),
+                categoryIds.stream().map(OfferCategoryId::of).collect(java.util.stream.Collectors.toSet()),
                 imageIds.stream().map(ImageId::of).toList(),
                 Links.of(links),
                 FabricComposition.of(fabricCompositionItems),

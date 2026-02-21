@@ -154,11 +154,33 @@ public class OffersHttpHandler {
                 .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
     }
 
+    public Mono<ServerResponse> getAvailableCategoriesForOffers(ServerRequest request) {
+        return toAgent(request)
+                .flatMapMany(module::getAvailableCategoriesForOffers)
+                .map(category -> {
+                    var dto = new OfferCategoryDTO();
+                    dto.id = category.getId().getValue();
+                    dto.name = category.getName().getValue();
+                    return dto;
+                })
+                .collectList()
+                .map(categories -> {
+                    var response = new QueryAvailableCategoriesForOffersResponse();
+                    response.categories = categories;
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
+    }
+
     public Mono<ServerResponse> createOffer(ServerRequest request) {
         var transactionalOperator = TransactionalOperator.create(transactionManager);
 
         return request.bodyToMono(CreateOfferRequest.class)
                 .flatMap(req -> toAgent(request).flatMap(agent -> module.createOffer(
+                        req.title,
+                        req.size,
+                        req.categoryIds,
                         req.productId,
                         req.imageIds,
                         req.notes,
@@ -539,6 +561,102 @@ public class OffersHttpHandler {
                 .as(transactionalOperator::transactional);
     }
 
+    public Mono<ServerResponse> updateTitle(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        String offerId = request.pathVariable("offerId");
+
+        return request.bodyToMono(UpdateTitleRequest.class)
+                .flatMap(req -> toAgent(request).flatMap(agent -> module.updateOfferTitle(
+                        offerId,
+                        req.version,
+                        req.title,
+                        agent
+                )))
+                .map(version -> {
+                    var response = new UpdateTitleResponse();
+                    response.version = version;
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
+                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                        CONFLICT,
+                        e.getMessage(),
+                        e
+                ))
+                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
+                        BAD_REQUEST,
+                        e.getMessage(),
+                        e
+                ))
+                .as(transactionalOperator::transactional);
+    }
+
+    public Mono<ServerResponse> updateSize(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        String offerId = request.pathVariable("offerId");
+
+        return request.bodyToMono(UpdateSizeRequest.class)
+                .flatMap(req -> toAgent(request).flatMap(agent -> module.updateOfferSize(
+                        offerId,
+                        req.version,
+                        req.size,
+                        agent
+                )))
+                .map(version -> {
+                    var response = new UpdateSizeResponse();
+                    response.version = version;
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
+                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                        CONFLICT,
+                        e.getMessage(),
+                        e
+                ))
+                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
+                        BAD_REQUEST,
+                        e.getMessage(),
+                        e
+                ))
+                .as(transactionalOperator::transactional);
+    }
+
+    public Mono<ServerResponse> updateCategories(ServerRequest request) {
+        var transactionalOperator = TransactionalOperator.create(transactionManager);
+
+        String offerId = request.pathVariable("offerId");
+
+        return request.bodyToMono(UpdateCategoriesRequest.class)
+                .flatMap(req -> toAgent(request).flatMap(agent -> module.updateOfferCategories(
+                        offerId,
+                        req.version,
+                        req.categoryIds,
+                        agent
+                )))
+                .map(version -> {
+                    var response = new UpdateCategoriesResponse();
+                    response.version = version;
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
+                .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
+                        CONFLICT,
+                        e.getMessage(),
+                        e
+                ))
+                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
+                        BAD_REQUEST,
+                        e.getMessage(),
+                        e
+                ))
+                .as(transactionalOperator::transactional);
+    }
+
     private Mono<Agent> toAgent(ServerRequest request) {
         return request.principal()
                 .map(principal -> Agent.user(AgentId.of(principal.getName())))
@@ -555,6 +673,9 @@ public class OffersHttpHandler {
         var result = new OfferDTO();
         result.id = offer.getId().getValue();
         result.version = offer.getVersion().getValue();
+        result.title = offer.getTitle().getValue();
+        result.size = offer.getSize().getValue();
+        result.categoryIds = offer.getCategories().stream().map(OfferCategoryId::getValue).collect(Collectors.toSet());
         result.product = toProductDTO(offer.getProduct());
         result.imageIds = offer.getImages().stream().map(ImageId::getValue).toList();
         result.links = toLinkDTOs(offer.getLinks());
@@ -577,6 +698,9 @@ public class OffersHttpHandler {
     private PublishedOfferDTO toPublishedOfferDTO(PublishedOffer offer) {
         var result = new PublishedOfferDTO();
         result.id = offer.getId().getValue();
+        result.title = offer.getTitle().getValue();
+        result.size = offer.getSize().getValue();
+        result.categoryIds = offer.getCategories().stream().map(OfferCategoryId::getValue).collect(Collectors.toSet());
         result.imageIds = offer.getImages().stream().map(ImageId::getValue).toList();
         result.links = toLinkDTOs(offer.getLinks());
         result.fabricCompositionItems = toFabricCompositionItemDTOs(offer.getFabricComposition());

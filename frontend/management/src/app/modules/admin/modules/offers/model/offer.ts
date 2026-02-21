@@ -7,6 +7,7 @@ import { Option, someOrNone, none, validateProps } from '@kicherkrabbe/shared';
 
 type OfferId = string;
 type ImageId = string;
+export type OfferCategoryId = string;
 
 export class OfferStatus {
   readonly label: string;
@@ -26,6 +27,9 @@ export class OfferStatus {
 export class Offer {
   readonly id: OfferId;
   readonly version: number;
+  readonly title: string;
+  readonly size: string;
+  readonly categories: Set<OfferCategoryId>;
   readonly product: OfferProduct;
   readonly images: ImageId[];
   readonly links: Link[];
@@ -40,6 +44,9 @@ export class Offer {
   private constructor(props: {
     id: OfferId;
     version: number;
+    title: string;
+    size: string;
+    categories: Set<OfferCategoryId>;
     product: OfferProduct;
     images: ImageId[];
     links: Link[];
@@ -55,6 +62,9 @@ export class Offer {
 
     this.id = props.id;
     this.version = props.version;
+    this.title = props.title;
+    this.size = props.size;
+    this.categories = props.categories;
     this.product = props.product;
     this.images = props.images;
     this.links = props.links;
@@ -70,6 +80,9 @@ export class Offer {
   static of(props: {
     id: OfferId;
     version?: number;
+    title: string;
+    size: string;
+    categories?: Set<OfferCategoryId>;
     product: OfferProduct;
     images?: ImageId[];
     links?: Link[];
@@ -84,6 +97,9 @@ export class Offer {
     return new Offer({
       id: props.id,
       version: someOrNone(props.version).orElse(0),
+      title: props.title,
+      size: props.size,
+      categories: someOrNone(props.categories).orElse(new Set<OfferCategoryId>()),
       product: props.product,
       images: someOrNone(props.images).orElse([]),
       links: someOrNone(props.links).orElse([]),
@@ -108,6 +124,30 @@ export class Offer {
       return OfferStatus.PUBLISHED;
     }
     return OfferStatus.DRAFT;
+  }
+
+  updateTitle(version: number, title: string): Offer {
+    return new Offer({
+      ...this,
+      version,
+      title,
+    });
+  }
+
+  updateSize(version: number, size: string): Offer {
+    return new Offer({
+      ...this,
+      version,
+      size,
+    });
+  }
+
+  updateCategories(version: number, categories: Set<OfferCategoryId>): Offer {
+    return new Offer({
+      ...this,
+      version,
+      categories,
+    });
   }
 
   updateImages(version: number, images: ImageId[]): Offer {

@@ -7,6 +7,8 @@ import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.LookupProduct
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.ProductForOfferLookupRepo;
 import reactor.core.publisher.Mono;
 
+import java.util.Comparator;
+
 public class InMemoryProductForOfferLookupRepo
         extends InMemoryEventSourcingReadModelRepo<ProductId, LookupProduct>
         implements ProductForOfferLookupRepo {
@@ -28,7 +30,9 @@ public class InMemoryProductForOfferLookupRepo
                     return product.getNumber().getValue().toLowerCase()
                             .contains(searchTerm.toLowerCase());
                 })
-                .collectList()
+                .collectSortedList(Comparator.comparing(
+                        (LookupProduct p) -> p.getNumber().getValue()
+                ).reversed())
                 .map(products -> {
                     long total = products.size();
                     var paged = products.stream()

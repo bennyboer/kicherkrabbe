@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.offers.persistence.lookup.mongo;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.MongoEventSourcingReadModelRepo;
+import de.bennyboer.kicherkrabbe.offers.OfferCategoryId;
 import de.bennyboer.kicherkrabbe.offers.OfferId;
 import de.bennyboer.kicherkrabbe.offers.ProductId;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.LookupOffer;
@@ -61,6 +62,7 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
         if (searchTerm != null && !searchTerm.isBlank()) {
             String quotedSearchTerm = Pattern.quote(searchTerm);
             criteria.andOperator(new Criteria().orOperator(
+                    where("title").regex(quotedSearchTerm, "i"),
                     where("notes.description").regex(quotedSearchTerm, "i"),
                     where("product.number").regex(quotedSearchTerm, "i")
             ));
@@ -92,6 +94,7 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
         if (searchTerm != null && !searchTerm.isBlank()) {
             String quotedSearchTerm = Pattern.quote(searchTerm);
             criteria.andOperator(new Criteria().orOperator(
+                    where("title").regex(quotedSearchTerm, "i"),
                     where("notes.description").regex(quotedSearchTerm, "i"),
                     where("product.number").regex(quotedSearchTerm, "i")
             ));
@@ -129,6 +132,15 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
     @Override
     public Flux<LookupOffer> findByProductId(ProductId productId) {
         Criteria criteria = where("product.id").is(productId.getValue());
+        Query query = query(criteria);
+
+        return template.find(query, MongoLookupOffer.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
+    public Flux<LookupOffer> findByCategoryId(OfferCategoryId categoryId) {
+        Criteria criteria = where("categoryIds").is(categoryId.getValue());
         Query query = query(criteria);
 
         return template.find(query, MongoLookupOffer.class, collectionName)

@@ -37,6 +37,7 @@ public class OffersHttpConfig {
                         .andRoute(GET("/changes"), handler::getChanges)
                         .andRoute(POST("/published"), handler::getPublishedOffers)
                         .andRoute(POST("/products"), handler::getProducts)
+                        .andRoute(GET("/categories"), handler::getAvailableCategoriesForOffers)
                         .andRoute(POST("/create"), handler::createOffer)
                         .andNest(path("/{offerId}"), route(GET(""), handler::getOffer)
                                 .andRoute(GET("/published"), handler::getPublishedOffer)
@@ -49,6 +50,9 @@ public class OffersHttpConfig {
                                 .andRoute(POST("/images/update"), handler::updateImages)
                                 .andRoute(POST("/notes/update"), handler::updateNotes)
                                 .andRoute(POST("/price/update"), handler::updatePrice)
+                                .andRoute(POST("/title/update"), handler::updateTitle)
+                                .andRoute(POST("/size/update"), handler::updateSize)
+                                .andRoute(POST("/categories/update"), handler::updateCategories)
                                 .andRoute(POST("/discount/add"), handler::addDiscount)
                                 .andRoute(POST("/discount/remove"), handler::removeDiscount)
                         )
@@ -59,7 +63,8 @@ public class OffersHttpConfig {
     public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> offersAuthorizeExchangeSpecCustomizer() {
         return exchanges -> exchanges
                 .pathMatchers(POST, "/offers/published").permitAll()
-                .pathMatchers(GET, "/offers/{offerId}/published").permitAll();
+                .pathMatchers(GET, "/offers/{offerId}/published").permitAll()
+                .pathMatchers(GET, "/offers/categories").permitAll();
     }
 
 }

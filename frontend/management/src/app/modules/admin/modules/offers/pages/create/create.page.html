@@ -13,6 +13,59 @@
 
   <div class="offer-details">
     <div class="offer-detail">
+      <label for="title">Titel</label>
+      <input
+        #titleInput
+        id="title"
+        type="text"
+        placeholder="z.B. Sommerkleid Gr. 86"
+        [disabled]="creating$ | async"
+        (input)="updateTitle(titleInput.value)" />
+      @if (titleMissing$ | async) {
+        <app-note level="error">Bitte gib einen Titel ein.</app-note>
+      }
+    </div>
+
+    <div class="offer-detail">
+      <label for="size">Größe</label>
+      <input
+        #sizeInput
+        id="size"
+        type="text"
+        placeholder="z.B. 86"
+        [disabled]="creating$ | async"
+        (input)="updateSize(sizeInput.value)" />
+      @if (sizeMissing$ | async) {
+        <app-note level="error">Bitte gib eine Größe ein.</app-note>
+      }
+    </div>
+
+    <div class="offer-detail">
+      <label>Kategorien</label>
+      @if (loadingCategories$ | async) {
+        <div class="loading-container">
+          <app-loading-spinner></app-loading-spinner>
+        </div>
+      } @else {
+        @if (availableCategories$ | async; as categories) {
+          @if (selectedCategories$ | async; as selectedCategories) {
+            <app-chips
+              [chips]="categoriesToChips(selectedCategories)"
+              [available]="categoriesToChips(categories)"
+              [alwaysShowOptions]="true"
+              [chipDropdownItemTemplateRef]="categoryDropdownItemTemplateRef"
+              (removed)="onCategoryRemoved($event)"
+              (added)="onCategoryAdded($event)">
+              <ng-template let-chip> {{ chip.label }} </ng-template>
+            </app-chips>
+
+            <ng-template #categoryDropdownItemTemplateRef let-chip> {{ chip.label }} </ng-template>
+          }
+        }
+      }
+    </div>
+
+    <div class="offer-detail">
       <label>
         Bilder
         @if (images$ | async; as images) {
@@ -131,6 +184,9 @@
 
   @if (invalid$ | async) {
     <div class="error-container">
+      @if (descriptionMissing$ | async) {
+        <app-note level="error"> Ohne Beschreibung kann der Sofortkauf nicht erstellt werden. </app-note>
+      }
       @if (priceMissing$ | async) {
         <app-note level="error"> Ohne Preis kann der Sofortkauf nicht erstellt werden. </app-note>
       }

@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.offers.persistence.lookup.inmemory;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.inmemory.InMemoryEventSourcingReadModelRepo;
+import de.bennyboer.kicherkrabbe.offers.OfferCategoryId;
 import de.bennyboer.kicherkrabbe.offers.OfferId;
 import de.bennyboer.kicherkrabbe.offers.ProductId;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.LookupOffer;
@@ -70,6 +71,12 @@ public class InMemoryOfferLookupRepo extends InMemoryEventSourcingReadModelRepo<
                 .filter(offer -> offer.getProduct().getId().equals(productId));
     }
 
+    @Override
+    public Flux<LookupOffer> findByCategoryId(OfferCategoryId categoryId) {
+        return getAll()
+                .filter(offer -> offer.getCategories().contains(categoryId));
+    }
+
     private boolean matchesSearchTerm(LookupOffer offer, String searchTerm) {
         if (searchTerm == null || searchTerm.isBlank()) {
             return true;
@@ -77,7 +84,8 @@ public class InMemoryOfferLookupRepo extends InMemoryEventSourcingReadModelRepo<
 
         var term = searchTerm.toLowerCase(Locale.ROOT);
 
-        return offer.getNotes().getDescription().getValue().toLowerCase(Locale.ROOT).contains(term)
+        return offer.getTitle().getValue().toLowerCase(Locale.ROOT).contains(term)
+                || offer.getNotes().getDescription().getValue().toLowerCase(Locale.ROOT).contains(term)
                 || offer.getProduct().getNumber().getValue().toLowerCase(Locale.ROOT).contains(term);
     }
 

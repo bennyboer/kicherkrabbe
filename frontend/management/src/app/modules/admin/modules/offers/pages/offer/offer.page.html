@@ -24,6 +24,63 @@
   @if (offer$ | async | ifSome; as offer) {
     <div class="offer-details">
       <div class="offer-detail">
+        <label for="title">Titel</label>
+        <div class="form-field-content">
+          <input
+            #titleInput
+            id="title"
+            type="text"
+            [value]="title$ | async"
+            (input)="updateTitle(titleInput.value)"
+            (keydown.enter)="saveTitle(offer)" />
+          <app-button [disabled]="cannotSaveTitle$ | async" (click)="saveTitle(offer)">
+            Speichern
+          </app-button>
+        </div>
+      </div>
+
+      <div class="offer-detail">
+        <label for="size">Größe</label>
+        <div class="form-field-content">
+          <input
+            #sizeInput
+            id="size"
+            type="text"
+            [value]="size$ | async"
+            (input)="updateSize(sizeInput.value)"
+            (keydown.enter)="saveSize(offer)" />
+          <app-button [disabled]="cannotSaveSize$ | async" (click)="saveSize(offer)">
+            Speichern
+          </app-button>
+        </div>
+      </div>
+
+      <div class="offer-detail">
+        <label>Kategorien</label>
+        @if (loadingCategories$ | async) {
+          <div class="loading-container">
+            <app-loading-spinner></app-loading-spinner>
+          </div>
+        } @else {
+          @if (availableCategories$ | async; as categories) {
+            @if (selectedCategories$ | async; as selectedCategories) {
+              <app-chips
+                [chips]="categoriesToChips(toCategories(selectedCategories, categories))"
+                [available]="categoriesToChips(categories)"
+                [alwaysShowOptions]="true"
+                [chipDropdownItemTemplateRef]="categoryDropdownItemTemplateRef"
+                (removed)="onCategoryRemoved($event)"
+                (added)="onCategoryAdded($event)">
+                <ng-template let-chip> {{ chip.label }}</ng-template>
+              </app-chips>
+
+              <ng-template #categoryDropdownItemTemplateRef let-chip> {{ chip.label }}</ng-template>
+            }
+          }
+        }
+      </div>
+
+      <div class="offer-detail">
         <label>
           Bilder
           <app-button [size]="ButtonSize.SMALL" (click)="editImages(offer)">

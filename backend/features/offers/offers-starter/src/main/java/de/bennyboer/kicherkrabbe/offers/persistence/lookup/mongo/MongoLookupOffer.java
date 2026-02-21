@@ -21,6 +21,12 @@ public class MongoLookupOffer {
 
     long version;
 
+    String title;
+
+    String size;
+
+    Set<String> categoryIds;
+
     MongoProduct product;
 
     List<String> imageIds;

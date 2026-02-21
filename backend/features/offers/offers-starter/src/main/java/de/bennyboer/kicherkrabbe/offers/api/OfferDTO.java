@@ -10,6 +10,12 @@ public class OfferDTO {
 
     public long version;
 
+    public String title;
+
+    public String size;
+
+    public Set<String> categoryIds;
+
     public ProductDTO product;
 
     public List<String> imageIds;

@@ -12,6 +12,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.snapshot.SnapshotExclude;
 import de.bennyboer.kicherkrabbe.offers.archive.ArchiveCmd;
 import de.bennyboer.kicherkrabbe.offers.archive.ArchivedEvent;
 import de.bennyboer.kicherkrabbe.offers.archive.NotReservedForArchiveError;
+import de.bennyboer.kicherkrabbe.offers.categories.remove.CategoryRemovedEvent;
+import de.bennyboer.kicherkrabbe.offers.categories.remove.RemoveCategoryCmd;
+import de.bennyboer.kicherkrabbe.offers.categories.update.CategoriesUpdatedEvent;
+import de.bennyboer.kicherkrabbe.offers.categories.update.UpdateCategoriesCmd;
 import de.bennyboer.kicherkrabbe.offers.create.CreateCmd;
 import de.bennyboer.kicherkrabbe.offers.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.offers.delete.CannotDeleteNonDraftError;
@@ -34,6 +38,10 @@ import de.bennyboer.kicherkrabbe.offers.reserve.AlreadyReservedError;
 import de.bennyboer.kicherkrabbe.offers.reserve.NotPublishedError;
 import de.bennyboer.kicherkrabbe.offers.reserve.ReserveCmd;
 import de.bennyboer.kicherkrabbe.offers.reserve.ReservedEvent;
+import de.bennyboer.kicherkrabbe.offers.size.update.SizeUpdatedEvent;
+import de.bennyboer.kicherkrabbe.offers.size.update.UpdateSizeCmd;
+import de.bennyboer.kicherkrabbe.offers.title.update.TitleUpdatedEvent;
+import de.bennyboer.kicherkrabbe.offers.title.update.UpdateTitleCmd;
 import de.bennyboer.kicherkrabbe.offers.unpublish.AlreadyUnpublishedError;
 import de.bennyboer.kicherkrabbe.offers.unpublish.CannotUnpublishReservedError;
 import de.bennyboer.kicherkrabbe.offers.unpublish.UnpublishCmd;
@@ -47,8 +55,10 @@ import lombok.Value;
 import lombok.With;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.check;
 import static lombok.AccessLevel.PRIVATE;
@@ -65,6 +75,12 @@ public class Offer implements Aggregate {
 
     @SnapshotExclude
     Version version;
+
+    OfferTitle title;
+
+    OfferSize size;
+
+    Set<OfferCategoryId> categories;
 
     ProductId productId;
 
@@ -91,6 +107,9 @@ public class Offer implements Aggregate {
                 null,
                 Version.zero(),
                 null,
+                null,
+                Set.of(),
+                null,
                 List.of(),
                 null,
                 null,
@@ -110,6 +129,9 @@ public class Offer implements Aggregate {
 
         return switch (cmd) {
             case CreateCmd c -> ApplyCommandResult.of(CreatedEvent.of(
+                    c.getTitle(),
+                    c.getSize(),
+                    c.getCategories(),
                     c.getProductId(),
                     c.getImages(),
                     c.getNotes(),
@@ -162,6 +184,15 @@ public class Offer implements Aggregate {
             case UpdatePriceCmd c -> ApplyCommandResult.of(PriceUpdatedEvent.of(c.getPrice()));
             case AddDiscountCmd c -> ApplyCommandResult.of(DiscountAddedEvent.of(c.getDiscountedPrice()));
             case RemoveDiscountCmd ignored -> ApplyCommandResult.of(DiscountRemovedEvent.of());
+            case UpdateTitleCmd c -> ApplyCommandResult.of(TitleUpdatedEvent.of(c.getTitle()));
+            case UpdateSizeCmd c -> ApplyCommandResult.of(SizeUpdatedEvent.of(c.getSize()));
+            case UpdateCategoriesCmd c -> ApplyCommandResult.of(CategoriesUpdatedEvent.of(c.getCategories()));
+            case RemoveCategoryCmd c -> {
+                if (!categories.contains(c.getCategoryId())) {
+                    yield ApplyCommandResult.of();
+                }
+                yield ApplyCommandResult.of(CategoryRemovedEvent.of(c.getCategoryId()));
+            }
             default -> throw new IllegalArgumentException("Unknown command " + cmd.getClass().getSimpleName());
         };
     }
@@ -173,6 +204,9 @@ public class Offer implements Aggregate {
 
         return (switch (event) {
             case CreatedEvent e -> withId(id)
+                    .withTitle(e.getTitle())
+                    .withSize(e.getSize())
+                    .withCategories(e.getCategories())
                     .withProductId(e.getProductId())
                     .withImages(e.getImages())
                     .withPricing(Pricing.of(e.getPrice()))
@@ -191,6 +225,14 @@ public class Offer implements Aggregate {
             case PriceUpdatedEvent e -> withPricing(pricing.withUpdatedPrice(e.getPrice(), metadata.getDate()));
             case DiscountAddedEvent e -> withPricing(pricing.withDiscount(e.getDiscountedPrice()));
             case DiscountRemovedEvent ignored -> withPricing(pricing.withoutDiscount());
+            case TitleUpdatedEvent e -> withTitle(e.getTitle());
+            case SizeUpdatedEvent e -> withSize(e.getSize());
+            case CategoriesUpdatedEvent e -> withCategories(e.getCategories());
+            case CategoryRemovedEvent e -> {
+                var updatedCategories = new HashSet<>(categories);
+                updatedCategories.remove(e.getCategoryId());
+                yield withCategories(updatedCategories);
+            }
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());
         }).withVersion(version);
     }

@@ -4,6 +4,8 @@ import de.bennyboer.kicherkrabbe.money.Currency;
 import de.bennyboer.kicherkrabbe.money.Money;
 import de.bennyboer.kicherkrabbe.offers.*;
 import de.bennyboer.kicherkrabbe.offers.archive.ArchivedEvent;
+import de.bennyboer.kicherkrabbe.offers.categories.remove.CategoryRemovedEvent;
+import de.bennyboer.kicherkrabbe.offers.categories.update.CategoriesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.offers.create.CreatedEvent;
 import de.bennyboer.kicherkrabbe.offers.delete.DeletedEvent;
 import de.bennyboer.kicherkrabbe.offers.discount.add.DiscountAddedEvent;
@@ -13,12 +15,15 @@ import de.bennyboer.kicherkrabbe.offers.notes.update.NotesUpdatedEvent;
 import de.bennyboer.kicherkrabbe.offers.price.update.PriceUpdatedEvent;
 import de.bennyboer.kicherkrabbe.offers.publish.PublishedEvent;
 import de.bennyboer.kicherkrabbe.offers.reserve.ReservedEvent;
+import de.bennyboer.kicherkrabbe.offers.size.update.SizeUpdatedEvent;
+import de.bennyboer.kicherkrabbe.offers.title.update.TitleUpdatedEvent;
 import de.bennyboer.kicherkrabbe.offers.unpublish.UnpublishedEvent;
 import de.bennyboer.kicherkrabbe.offers.unreserve.UnreservedEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,6 +34,9 @@ public class OfferEventPayloadSerializerTest {
     @Test
     void shouldSerializeAndDeserializeCreatedEvent() {
         var event = CreatedEvent.of(
+                OfferTitle.of("Test Offer"),
+                OfferSize.of("L"),
+                Set.of(OfferCategoryId.of("CAT_1")),
                 ProductId.of("PRODUCT_ID"),
                 List.of(ImageId.of("IMAGE_ID_1"), ImageId.of("IMAGE_ID_2")),
                 Notes.of(
@@ -41,17 +49,10 @@ public class OfferEventPayloadSerializerTest {
         );
         var serialized = serializer.serialize(event);
 
-        assertThat(serialized).isEqualTo(Map.of(
-                "productId", "PRODUCT_ID",
-                "images", List.of("IMAGE_ID_1", "IMAGE_ID_2"),
-                "notes", Map.of(
-                        "description", "Description",
-                        "contains", "Contains",
-                        "care", "Care",
-                        "safety", "Safety"
-                ),
-                "price", Map.of("amount", 1999L, "currency", "EUR")
-        ));
+        assertThat(serialized).containsEntry("title", "Test Offer");
+        assertThat(serialized).containsEntry("size", "L");
+        assertThat(serialized).containsEntry("categoryIds", List.of("CAT_1"));
+        assertThat(serialized).containsEntry("productId", "PRODUCT_ID");
 
         var deserialized = serializer.deserialize(CreatedEvent.NAME, CreatedEvent.VERSION, serialized);
         assertThat(deserialized).isEqualTo(event);
@@ -60,6 +61,9 @@ public class OfferEventPayloadSerializerTest {
     @Test
     void shouldSerializeAndDeserializeCreatedEventWithNullableNotes() {
         var event = CreatedEvent.of(
+                OfferTitle.of("Test"),
+                OfferSize.of("M"),
+                Set.of(),
                 ProductId.of("PRODUCT_ID"),
                 List.of(ImageId.of("IMAGE_ID")),
                 Notes.of(Note.of("Description"), null, null, null),
@@ -69,6 +73,21 @@ public class OfferEventPayloadSerializerTest {
 
         var deserialized = serializer.deserialize(CreatedEvent.NAME, CreatedEvent.VERSION, serialized);
         assertThat(deserialized).isEqualTo(event);
+    }
+
+    @Test
+    void shouldDeserializeOldCreatedEventWithoutTitleSizeCategories() {
+        var payload = Map.of(
+                "productId", "PRODUCT_ID",
+                "images", List.of("IMAGE_ID"),
+                "notes", Map.of("description", "Description"),
+                "price", Map.of("amount", 999L, "currency", "EUR")
+        );
+
+        var deserialized = (CreatedEvent) serializer.deserialize(CreatedEvent.NAME, CreatedEvent.VERSION, payload);
+        assertThat(deserialized.getTitle()).isEqualTo(OfferTitle.of("Untitled"));
+        assertThat(deserialized.getSize()).isEqualTo(OfferSize.of("N/A"));
+        assertThat(deserialized.getCategories()).isEmpty();
     }
 
     @Test
@@ -201,6 +220,48 @@ public class OfferEventPayloadSerializerTest {
         assertThat(serialized).isEmpty();
 
         var deserialized = serializer.deserialize(DiscountRemovedEvent.NAME, DiscountRemovedEvent.VERSION, serialized);
+        assertThat(deserialized).isEqualTo(event);
+    }
+
+    @Test
+    void shouldSerializeAndDeserializeTitleUpdatedEvent() {
+        var event = TitleUpdatedEvent.of(OfferTitle.of("New Title"));
+        var serialized = serializer.serialize(event);
+
+        assertThat(serialized).isEqualTo(Map.of("title", "New Title"));
+
+        var deserialized = serializer.deserialize(TitleUpdatedEvent.NAME, TitleUpdatedEvent.VERSION, serialized);
+        assertThat(deserialized).isEqualTo(event);
+    }
+
+    @Test
+    void shouldSerializeAndDeserializeSizeUpdatedEvent() {
+        var event = SizeUpdatedEvent.of(OfferSize.of("XL"));
+        var serialized = serializer.serialize(event);
+
+        assertThat(serialized).isEqualTo(Map.of("size", "XL"));
+
+        var deserialized = serializer.deserialize(SizeUpdatedEvent.NAME, SizeUpdatedEvent.VERSION, serialized);
+        assertThat(deserialized).isEqualTo(event);
+    }
+
+    @Test
+    void shouldSerializeAndDeserializeCategoriesUpdatedEvent() {
+        var event = CategoriesUpdatedEvent.of(Set.of(OfferCategoryId.of("CAT_1"), OfferCategoryId.of("CAT_2")));
+        var serialized = serializer.serialize(event);
+
+        var deserialized = serializer.deserialize(CategoriesUpdatedEvent.NAME, CategoriesUpdatedEvent.VERSION, serialized);
+        assertThat(deserialized).isEqualTo(event);
+    }
+
+    @Test
+    void shouldSerializeAndDeserializeCategoryRemovedEvent() {
+        var event = CategoryRemovedEvent.of(OfferCategoryId.of("CAT_1"));
+        var serialized = serializer.serialize(event);
+
+        assertThat(serialized).isEqualTo(Map.of("categoryId", "CAT_1"));
+
+        var deserialized = serializer.deserialize(CategoryRemovedEvent.NAME, CategoryRemovedEvent.VERSION, serialized);
         assertThat(deserialized).isEqualTo(event);
     }
 
