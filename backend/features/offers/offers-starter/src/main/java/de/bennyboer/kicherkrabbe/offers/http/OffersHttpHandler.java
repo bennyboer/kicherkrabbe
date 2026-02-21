@@ -193,12 +193,12 @@ public class OffersHttpHandler {
                     return result;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(
                         BAD_REQUEST,
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -254,12 +254,12 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(AlreadyPublishedError.class, e -> new ResponseStatusException(
                         PRECONDITION_FAILED,
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -292,12 +292,12 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(CannotUnpublishReservedError.class, e -> new ResponseStatusException(
                         CONFLICT,
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -330,12 +330,12 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(AlreadyReservedError.class, e -> new ResponseStatusException(
                         PRECONDITION_FAILED,
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -363,12 +363,12 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(NotReservedError.class, e -> new ResponseStatusException(
                         PRECONDITION_FAILED,
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -396,12 +396,12 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(NotReservedForArchiveError.class, e -> new ResponseStatusException(
                         PRECONDITION_FAILED,
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -423,7 +423,6 @@ public class OffersHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
                         CONFLICT,
                         e.getMessage(),
@@ -434,6 +433,7 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -455,7 +455,6 @@ public class OffersHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
                         CONFLICT,
                         e.getMessage(),
@@ -466,6 +465,7 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -487,7 +487,6 @@ public class OffersHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
                         CONFLICT,
                         e.getMessage(),
@@ -498,6 +497,7 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -519,7 +519,6 @@ public class OffersHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
                         CONFLICT,
                         e.getMessage(),
@@ -530,6 +529,7 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -552,12 +552,12 @@ public class OffersHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
                         CONFLICT,
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -579,7 +579,6 @@ public class OffersHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
                         CONFLICT,
                         e.getMessage(),
@@ -590,6 +589,7 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -611,7 +611,6 @@ public class OffersHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
                         CONFLICT,
                         e.getMessage(),
@@ -622,6 +621,7 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 
@@ -643,7 +643,6 @@ public class OffersHttpHandler {
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .onErrorMap(AggregateVersionOutdatedError.class, e -> new ResponseStatusException(
                         CONFLICT,
                         e.getMessage(),
@@ -654,6 +653,7 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
 

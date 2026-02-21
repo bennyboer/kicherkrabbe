@@ -258,7 +258,8 @@ public class OffersMessaging {
                     }
 
                     String categoryId = metadata.getAggregateId().getValue();
-                    return module.markCategoryAsUnavailable(categoryId);
+                    return module.markCategoryAsUnavailable(categoryId)
+                            .then(module.removeCategoryFromOffers(categoryId, metadata.getAgent()).then());
                 }
         );
     }

@@ -154,9 +154,11 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
                 .on("archivedAt", Sort.Direction.ASC)
                 .on("createdAt", Sort.Direction.DESC);
         IndexDefinition productIdIndex = new Index().on("product.id", Sort.Direction.ASC);
+        IndexDefinition categoryIdsIndex = new Index().on("categoryIds", Sort.Direction.ASC);
 
         return indexOps.createIndex(publishedOffersIndex)
                 .then(indexOps.createIndex(productIdIndex))
+                .then(indexOps.createIndex(categoryIdsIndex))
                 .then();
     }
 
