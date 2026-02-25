@@ -1,0 +1,36 @@
+:host {
+	display: block;
+	width: 100%;
+}
+
+.offer-image-container {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1;
+}
+
+.offer-image {
+	border-radius: 8px 8px 0 0;
+	object-fit: cover;
+}
+
+.offer-size {
+	display: inline-block;
+	background: var(--p-surface-200);
+	padding: 2px 8px;
+	border-radius: 4px;
+	font-size: 0.75rem;
+	margin-bottom: 4px;
+}
+
+.offer-price {
+	display: block;
+	font-weight: 600;
+}
+
+.original-price {
+	text-decoration: line-through;
+	color: var(--p-text-muted-color);
+	font-weight: 400;
+	margin-right: 6px;
+}

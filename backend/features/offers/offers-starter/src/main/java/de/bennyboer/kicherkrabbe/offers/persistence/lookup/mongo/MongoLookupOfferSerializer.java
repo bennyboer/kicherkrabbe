@@ -120,6 +120,9 @@ public class MongoLookupOfferSerializer implements ReadModelSerializer<LookupOff
             result.discountedPriceAmount = dp.getAmount();
             result.discountedPriceCurrency = dp.getCurrency().getShortForm();
         });
+        result.effectivePriceAmount = pricing.getDiscountedPrice()
+                .map(Money::getAmount)
+                .orElse(pricing.getPrice().getAmount());
         result.priceHistory = pricing.getPriceHistory().stream()
                 .map(this::toMongoPriceHistoryEntry)
                 .toList();

@@ -1,0 +1,75 @@
+h1 {
+	margin: 0 0 24px 0;
+}
+
+::ng-deep .filter-group p-slider {
+	padding: 0 10px;
+	display: block;
+}
+
+.product-grid {
+	display: grid;
+	gap: 16px;
+	grid-template-columns: repeat(4, 1fr);
+}
+
+.product-link {
+	text-decoration: none;
+	color: inherit;
+	display: flex;
+
+	@media (hover: hover) {
+		&:hover {
+			opacity: 0.9;
+		}
+	}
+}
+
+.loading-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 200px;
+}
+
+.empty-state {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 200px;
+	color: var(--p-text-muted-color);
+
+	p {
+		font-size: 1.125rem;
+	}
+}
+
+.load-more-container {
+	display: flex;
+	justify-content: center;
+	margin-top: 24px;
+}
+
+
+@media (max-width: 1400px) {
+	.product-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+@media (max-width: 768px) {
+	h1 {
+		margin-bottom: 16px;
+	}
+
+	.product-grid {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 12px;
+	}
+}
+
+@media (max-width: 560px) {
+	.product-grid {
+		grid-template-columns: 1fr;
+	}
+}

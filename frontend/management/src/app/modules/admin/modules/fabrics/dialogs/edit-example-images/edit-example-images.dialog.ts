@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Injector, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EnvironmentInjector, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
 import { environment } from '../../../../../../../environments';
@@ -54,6 +54,7 @@ export class EditExampleImagesDialog implements OnDestroy {
     private readonly dialog: Dialog<ImageId[]>,
     private readonly dialogService: DialogService,
     private readonly assetsService: AssetsService,
+    private readonly environmentInjector: EnvironmentInjector,
   ) {
     this.imageIds$.next(this.data.images);
   }
@@ -69,19 +70,18 @@ export class EditExampleImagesDialog implements OnDestroy {
     const selectDialog = Dialog.create<AssetSelectDialogResult>({
       title: 'Bilder auswählen',
       componentType: AssetSelectDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: AssetSelectDialogData,
-            useValue: AssetSelectDialogData.of({
-              multiple: true,
-              watermark: false,
-              initialContentTypes: ['image/png', 'image/jpeg'],
-            }),
-          },
-          { provide: AssetsService, useValue: this.assetsService },
-        ],
-      }),
+      providers: [
+        {
+          provide: AssetSelectDialogData,
+          useValue: AssetSelectDialogData.of({
+            multiple: true,
+            watermark: false,
+            initialContentTypes: ['image/png', 'image/jpeg'],
+          }),
+        },
+        { provide: AssetsService, useValue: this.assetsService },
+      ],
+      environmentInjector: this.environmentInjector,
     });
     this.dialogService.open(selectDialog);
     this.dialogService

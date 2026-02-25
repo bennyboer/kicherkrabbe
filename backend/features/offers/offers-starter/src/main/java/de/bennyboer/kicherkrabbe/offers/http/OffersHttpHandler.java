@@ -102,6 +102,10 @@ public class OffersHttpHandler {
         return request.bodyToMono(QueryPublishedOffersRequest.class)
                 .flatMap(req -> toAgent(request).flatMap(agent -> module.getPublishedOffers(
                         req.searchTerm,
+                        req.categories,
+                        req.sizes,
+                        req.priceRange,
+                        req.sort,
                         req.skip,
                         req.limit,
                         agent
@@ -112,6 +116,19 @@ public class OffersHttpHandler {
                     response.total = page.getTotal();
                     response.skip = page.getSkip();
                     response.limit = page.getLimit();
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build());
+    }
+
+    public Mono<ServerResponse> getAvailableSizesForOffers(ServerRequest request) {
+        return toAgent(request)
+                .flatMapMany(module::getAvailableSizesForOffers)
+                .collectList()
+                .map(sizes -> {
+                    var response = new QueryAvailableSizesForOffersResponse();
+                    response.sizes = sizes;
                     return response;
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))

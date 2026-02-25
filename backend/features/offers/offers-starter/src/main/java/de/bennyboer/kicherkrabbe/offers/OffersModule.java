@@ -7,11 +7,9 @@ import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.money.Currency;
 import de.bennyboer.kicherkrabbe.money.Money;
-import de.bennyboer.kicherkrabbe.offers.api.MoneyDTO;
-import de.bennyboer.kicherkrabbe.offers.api.NotesDTO;
+import de.bennyboer.kicherkrabbe.offers.api.*;
 import de.bennyboer.kicherkrabbe.offers.persistence.categories.OfferCategoryRepo;
-import de.bennyboer.kicherkrabbe.offers.persistence.lookup.LookupOffer;
-import de.bennyboer.kicherkrabbe.offers.persistence.lookup.OfferLookupRepo;
+import de.bennyboer.kicherkrabbe.offers.persistence.lookup.*;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.LookupProduct;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.ProductForOfferLookupRepo;
 import de.bennyboer.kicherkrabbe.permissions.*;
@@ -75,8 +73,30 @@ public class OffersModule {
                 ));
     }
 
-    public Mono<PublishedOffersPage> getPublishedOffers(String searchTerm, long skip, long limit, Agent ignoredAgent) {
-        return offerLookupRepo.findPublished(searchTerm, skip, limit)
+    public Mono<PublishedOffersPage> getPublishedOffers(
+            String searchTerm,
+            @Nullable Set<String> categories,
+            @Nullable Set<String> sizes,
+            @Nullable PriceRangeDTO priceRange,
+            @Nullable OffersSortDTO sort,
+            long skip,
+            long limit,
+            Agent ignoredAgent
+    ) {
+        var categoryIds = categories != null
+                ? categories.stream().map(OfferCategoryId::of).collect(Collectors.toSet())
+                : Set.<OfferCategoryId>of();
+        var offerSizes = sizes != null
+                ? sizes.stream().map(OfferSize::of).collect(Collectors.toSet())
+                : Set.<OfferSize>of();
+        @Nullable Long minPrice = priceRange != null ? priceRange.minPrice : null;
+        @Nullable Long maxPrice = priceRange != null ? priceRange.maxPrice : null;
+        @Nullable OfferSortProperty sortProperty = sort != null && sort.property != null ? toSortProperty(sort.property) : null;
+        @Nullable OfferSortDirection sortDirection = sort != null && sort.direction != null ? toSortDirection(sort.direction) : null;
+
+        var query = PublishedOfferQuery.of(searchTerm, categoryIds, offerSizes, minPrice, maxPrice, sortProperty, sortDirection, skip, limit);
+
+        return offerLookupRepo.findPublished(query)
                 .map(result -> PublishedOffersPage.of(
                         result.getSkip(),
                         result.getLimit(),
@@ -110,6 +130,10 @@ public class OffersModule {
 
     public Flux<OfferCategory> getAvailableCategoriesForOffers(Agent ignoredAgent) {
         return offerCategoryRepo.findAll();
+    }
+
+    public Flux<String> getAvailableSizesForOffers(Agent ignoredAgent) {
+        return offerLookupRepo.findDistinctPublishedSizes();
     }
 
     @Transactional(propagation = MANDATORY)
@@ -729,6 +753,21 @@ public class OffersModule {
                 dto.care != null ? Note.of(dto.care) : null,
                 dto.safety != null ? Note.of(dto.safety) : null
         );
+    }
+
+    private OfferSortProperty toSortProperty(OffersSortPropertyDTO dto) {
+        return switch (dto) {
+            case ALPHABETICAL -> OfferSortProperty.ALPHABETICAL;
+            case NEWEST -> OfferSortProperty.NEWEST;
+            case PRICE -> OfferSortProperty.PRICE;
+        };
+    }
+
+    private OfferSortDirection toSortDirection(OffersSortDirectionDTO dto) {
+        return switch (dto) {
+            case ASCENDING -> OfferSortDirection.ASCENDING;
+            case DESCENDING -> OfferSortDirection.DESCENDING;
+        };
     }
 
     private ResourceType getResourceType() {

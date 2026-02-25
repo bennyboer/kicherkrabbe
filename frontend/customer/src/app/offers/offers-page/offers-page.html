@@ -1,0 +1,103 @@
+<app-filter-layout
+	[filtersTemplate]="filtersRef"
+	[sortOptions]="sortOptions"
+	[selectedSort]="selectedSort"
+	[hasActiveFilters]="(hasActiveFilters$ | async) ?? false"
+	(sortChange)="onSortChange($event)"
+	(resetFilters)="resetFilters()"
+>
+	<ng-template #filtersRef>
+		<div class="filter-group">
+			<label>Suche</label>
+			<input
+				pInputText
+				type="text"
+				[ngModel]="searchTerm$ | async"
+				(ngModelChange)="searchTerm$.next($event)"
+				placeholder="Suchen..."
+				class="w-full"
+			/>
+		</div>
+
+		<div class="filter-group">
+			<label>Kategorie</label>
+			<p-multiselect
+				[options]="(categories$ | async) ?? []"
+				[ngModel]="selectedCategoryIds$ | async"
+				(ngModelChange)="onCategoriesChange($event)"
+				optionLabel="name"
+				optionValue="id"
+				placeholder="Kategorie wählen"
+				[showClear]="true"
+				[filter]="true"
+				filterPlaceholder="Suchen..."
+				selectedItemsLabel="{0} ausgewählt"
+				styleClass="w-full"
+			/>
+		</div>
+
+		<div class="filter-group">
+			<label>Größe</label>
+			<p-multiselect
+				[options]="(sizes$ | async) ?? []"
+				[ngModel]="selectedSizes$ | async"
+				(ngModelChange)="onSizesChange($event)"
+				optionLabel="label"
+				optionValue="value"
+				placeholder="Größe wählen"
+				[showClear]="true"
+				selectedItemsLabel="{0} ausgewählt"
+				styleClass="w-full"
+			/>
+		</div>
+
+		@if (priceRange$ | async; as priceRange) {
+			<div class="filter-group">
+				<label>Preis: {{ priceRange[0] }} € – {{ priceRange[1] }} €</label>
+				<p-slider
+					[ngModel]="priceRange"
+					(ngModelChange)="onPriceRangeChange($event)"
+					[range]="true"
+					[min]="priceSliderMin"
+					[max]="priceSliderMax"
+					[step]="5"
+					styleClass="w-full"
+				/>
+			</div>
+		}
+	</ng-template>
+
+	<ng-container results>
+		<h1>Sofortkäufe</h1>
+
+		@if (loading$ | async) {
+			<div class="loading-container">
+				<p-progressspinner strokeWidth="4" />
+			</div>
+		} @else {
+			@if ((offers$ | async)?.length === 0) {
+				<div class="empty-state">
+					<p>Keine Sofortkäufe gefunden.</p>
+				</div>
+			} @else {
+				<div class="product-grid">
+					@for (offer of offers$ | async; track offer.id) {
+						<a [routerLink]="['/offers', offer.id]" class="product-link">
+							<app-offer-card [offer]="offer" />
+						</a>
+					}
+				</div>
+
+				@if (hasMore$ | async) {
+					<div class="load-more-container">
+						<p-button
+							label="Mehr laden"
+							[outlined]="true"
+							(click)="loadMore()"
+						/>
+					</div>
+				}
+			}
+		}
+	</ng-container>
+</app-filter-layout>

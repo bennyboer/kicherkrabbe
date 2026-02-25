@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Injector, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EnvironmentInjector, OnDestroy } from '@angular/core';
 import { ButtonSize, NotificationService } from '../../../../../shared';
 import { BehaviorSubject, combineLatest, delay, distinctUntilChanged, finalize, first, map } from 'rxjs';
 import { Theme, ThemeService } from '../../../../../../services';
@@ -76,6 +76,7 @@ export class CreatePage implements OnDestroy {
     private readonly productsService: ProductsService,
     private readonly assetsService: AssetsService,
     private readonly notificationService: NotificationService,
+    private readonly environmentInjector: EnvironmentInjector,
   ) {}
 
   ngOnDestroy(): void {
@@ -129,20 +130,19 @@ export class CreatePage implements OnDestroy {
     const dialog = Dialog.create<AddLinkDialogResult>({
       title: 'Link hinzufügen',
       componentType: AddLinkDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: AddLinkDialogData,
-            useValue: AddLinkDialogData.of({
-              links,
-            }),
-          },
-          {
-            provide: ProductsService,
-            useValue: this.productsService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: AddLinkDialogData,
+          useValue: AddLinkDialogData.of({
+            links,
+          }),
+        },
+        {
+          provide: ProductsService,
+          useValue: this.productsService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);
@@ -166,24 +166,23 @@ export class CreatePage implements OnDestroy {
     const dialog = Dialog.create<EditImagesDialogResult>({
       title: 'Bilder bearbeiten',
       componentType: EditImagesDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: EditImagesDialogData,
-            useValue: EditImagesDialogData.of({
-              images,
-            }),
-          },
-          {
-            provide: ProductsService,
-            useValue: this.productsService,
-          },
-          {
-            provide: AssetsService,
-            useValue: this.assetsService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: EditImagesDialogData,
+          useValue: EditImagesDialogData.of({
+            images,
+          }),
+        },
+        {
+          provide: ProductsService,
+          useValue: this.productsService,
+        },
+        {
+          provide: AssetsService,
+          useValue: this.assetsService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);
@@ -196,20 +195,19 @@ export class CreatePage implements OnDestroy {
     const dialog = Dialog.create<EditFabricCompositionDialogResult>({
       title: 'Stoffzusammensetzung bearbeiten',
       componentType: EditFabricCompositionDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: EditFabricCompositionDialogData,
-            useValue: EditFabricCompositionDialogData.of({
-              fabricComposition: composition.orElseNull(),
-            }),
-          },
-          {
-            provide: ProductsService,
-            useValue: this.productsService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: EditFabricCompositionDialogData,
+          useValue: EditFabricCompositionDialogData.of({
+            fabricComposition: composition.orElseNull(),
+          }),
+        },
+        {
+          provide: ProductsService,
+          useValue: this.productsService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);
@@ -222,21 +220,20 @@ export class CreatePage implements OnDestroy {
     const dialog = Dialog.create<EditNoteDialogResult>({
       title: 'Inhaltsangaben bearbeiten',
       componentType: EditNoteDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: EditNoteDialogData,
-            useValue: EditNoteDialogData.of({
-              notes,
-              noteType: NoteType.CONTAINS,
-            }),
-          },
-          {
-            provide: ProductsService,
-            useValue: this.productsService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: EditNoteDialogData,
+          useValue: EditNoteDialogData.of({
+            notes,
+            noteType: NoteType.CONTAINS,
+          }),
+        },
+        {
+          provide: ProductsService,
+          useValue: this.productsService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);
@@ -249,21 +246,20 @@ export class CreatePage implements OnDestroy {
     const dialog = Dialog.create<EditNoteDialogResult>({
       title: 'Pflegehinweise bearbeiten',
       componentType: EditNoteDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: EditNoteDialogData,
-            useValue: EditNoteDialogData.of({
-              notes,
-              noteType: NoteType.CARE,
-            }),
-          },
-          {
-            provide: ProductsService,
-            useValue: this.productsService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: EditNoteDialogData,
+          useValue: EditNoteDialogData.of({
+            notes,
+            noteType: NoteType.CARE,
+          }),
+        },
+        {
+          provide: ProductsService,
+          useValue: this.productsService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);
@@ -276,21 +272,20 @@ export class CreatePage implements OnDestroy {
     const dialog = Dialog.create<EditNoteDialogResult>({
       title: 'Sicherheitshinweise bearbeiten',
       componentType: EditNoteDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: EditNoteDialogData,
-            useValue: EditNoteDialogData.of({
-              notes,
-              noteType: NoteType.SAFETY,
-            }),
-          },
-          {
-            provide: ProductsService,
-            useValue: this.productsService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: EditNoteDialogData,
+          useValue: EditNoteDialogData.of({
+            notes,
+            noteType: NoteType.SAFETY,
+          }),
+        },
+        {
+          provide: ProductsService,
+          useValue: this.productsService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);
@@ -303,18 +298,17 @@ export class CreatePage implements OnDestroy {
     const dialog = Dialog.create<EditProducedAtDateDialogResult>({
       title: 'Produktionsdatum bearbeiten',
       componentType: EditProducedAtDateDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: EditProducedAtDateDialogData,
-            useValue: EditProducedAtDateDialogData.of({}),
-          },
-          {
-            provide: ProductsService,
-            useValue: this.productsService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: EditProducedAtDateDialogData,
+          useValue: EditProducedAtDateDialogData.of({}),
+        },
+        {
+          provide: ProductsService,
+          useValue: this.productsService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);

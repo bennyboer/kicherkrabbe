@@ -11,8 +11,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 public class QueryPublishedOffersHttpHandlerTest extends HttpHandlerTest {
@@ -28,6 +27,10 @@ public class QueryPublishedOffersHttpHandlerTest extends HttpHandlerTest {
 
         when(module.getPublishedOffers(
                 eq(""),
+                isNull(),
+                isNull(),
+                isNull(),
+                isNull(),
                 eq(0L),
                 eq(10L),
                 any(Agent.class)
@@ -56,6 +59,10 @@ public class QueryPublishedOffersHttpHandlerTest extends HttpHandlerTest {
 
         when(module.getPublishedOffers(
                 eq(""),
+                isNull(),
+                isNull(),
+                isNull(),
+                isNull(),
                 eq(0L),
                 eq(10L),
                 any(Agent.class)

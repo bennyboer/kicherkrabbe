@@ -3,10 +3,11 @@ package de.bennyboer.kicherkrabbe.offers.persistence.lookup.mongo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.MongoEventSourcingReadModelRepo;
 import de.bennyboer.kicherkrabbe.offers.OfferCategoryId;
 import de.bennyboer.kicherkrabbe.offers.OfferId;
+import de.bennyboer.kicherkrabbe.offers.OfferSize;
 import de.bennyboer.kicherkrabbe.offers.ProductId;
-import de.bennyboer.kicherkrabbe.offers.persistence.lookup.LookupOffer;
-import de.bennyboer.kicherkrabbe.offers.persistence.lookup.LookupOfferPage;
-import de.bennyboer.kicherkrabbe.offers.persistence.lookup.OfferLookupRepo;
+import de.bennyboer.kicherkrabbe.offers.persistence.lookup.*;
+import jakarta.annotation.Nullable;
+import static java.util.Objects.requireNonNull;
 import lombok.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -87,7 +88,15 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
     }
 
     @Override
-    public Mono<LookupOfferPage> findPublished(String searchTerm, long skip, long limit) {
+    public Mono<LookupOfferPage> findPublished(PublishedOfferQuery query) {
+        requireNonNull(query);
+
+        var searchTerm = query.getSearchTerm();
+        var categories = query.getCategories();
+        var sizes = query.getSizes();
+        var minPrice = query.getMinPrice();
+        var maxPrice = query.getMaxPrice();
+
         Criteria criteria = where("published").is(true)
                 .and("archivedAt").isNull();
 
@@ -100,17 +109,39 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
             ));
         }
 
-        var match = match(criteria);
-        var sortByCreationDate = sort(Sort.by(Sort.Order.desc("createdAt")));
-        var transformToPage = transformToPage(skip, limit);
+        if (categories != null && !categories.isEmpty()) {
+            Set<String> categoryIds = categories.stream()
+                    .map(OfferCategoryId::getValue)
+                    .collect(Collectors.toSet());
+            criteria = criteria.and("categoryIds").in(categoryIds);
+        }
 
-        Aggregation aggregation = newAggregation(match, sortByCreationDate, transformToPage);
+        if (sizes != null && !sizes.isEmpty()) {
+            Set<String> sizeValues = sizes.stream()
+                    .map(OfferSize::getValue)
+                    .collect(Collectors.toSet());
+            criteria = criteria.and("size").in(sizeValues);
+        }
+
+        if (minPrice != null && maxPrice != null) {
+            criteria = criteria.and("pricing.effectivePriceAmount").gte(minPrice).lte(maxPrice);
+        } else if (minPrice != null) {
+            criteria = criteria.and("pricing.effectivePriceAmount").gte(minPrice);
+        } else if (maxPrice != null) {
+            criteria = criteria.and("pricing.effectivePriceAmount").lte(maxPrice);
+        }
+
+        var match = match(criteria);
+        var sortOp = sort(resolveSort(query.getSortProperty(), query.getSortDirection()));
+        var transformToPage = transformToPage(query.getSkip(), query.getLimit());
+
+        Aggregation aggregation = newAggregation(match, sortOp, transformToPage);
 
         return template.aggregate(aggregation, collectionName, PipelinePage.class)
                 .next()
                 .map(result -> LookupOfferPage.of(
-                        skip,
-                        limit,
+                        query.getSkip(),
+                        query.getLimit(),
                         result.getTotal(),
                         result.getMatches().stream()
                                 .map(serializer::deserialize)
@@ -148,6 +179,15 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
     }
 
     @Override
+    public Flux<String> findDistinctPublishedSizes() {
+        Criteria criteria = where("published").is(true)
+                .and("archivedAt").isNull();
+
+        return template.findDistinct(Query.query(criteria), "size", collectionName, String.class)
+                .sort();
+    }
+
+    @Override
     protected Mono<Void> initializeIndices(ReactiveIndexOperations indexOps) {
         IndexDefinition publishedOffersIndex = new Index()
                 .on("published", Sort.Direction.ASC)
@@ -155,11 +195,37 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
                 .on("createdAt", Sort.Direction.DESC);
         IndexDefinition productIdIndex = new Index().on("product.id", Sort.Direction.ASC);
         IndexDefinition categoryIdsIndex = new Index().on("categoryIds", Sort.Direction.ASC);
+        IndexDefinition sizeIndex = new Index()
+                .on("published", Sort.Direction.ASC)
+                .on("size", Sort.Direction.ASC);
+        IndexDefinition effectivePriceIndex = new Index()
+                .on("published", Sort.Direction.ASC)
+                .on("pricing.effectivePriceAmount", Sort.Direction.ASC);
 
         return indexOps.createIndex(publishedOffersIndex)
                 .then(indexOps.createIndex(productIdIndex))
                 .then(indexOps.createIndex(categoryIdsIndex))
+                .then(indexOps.createIndex(sizeIndex))
+                .then(indexOps.createIndex(effectivePriceIndex))
                 .then();
+    }
+
+    private Sort resolveSort(
+            @Nullable OfferSortProperty property,
+            @Nullable OfferSortDirection direction
+    ) {
+        var effectiveProperty = property != null ? property : OfferSortProperty.NEWEST;
+        var effectiveDirection = direction != null ? direction : OfferSortDirection.DESCENDING;
+        var isAscending = effectiveDirection == OfferSortDirection.ASCENDING;
+
+        String field = switch (effectiveProperty) {
+            case ALPHABETICAL -> "title";
+            case NEWEST -> "createdAt";
+            case PRICE -> "pricing.effectivePriceAmount";
+        };
+
+        var order = isAscending ? Sort.Order.asc(field) : Sort.Order.desc(field);
+        return Sort.by(order);
     }
 
     private AggregationOperation transformToPage(long skip, long limit) {

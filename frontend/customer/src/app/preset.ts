@@ -275,6 +275,25 @@ export const customerPreset = definePreset(Aura, {
 				},
 			},
 		},
+		slider: {
+			colorScheme: {
+				dark: {
+					track: {
+						background: "{surface.300}",
+					},
+					range: {
+						background: "{primary.color}",
+					},
+					handle: {
+						background: "{surface.0}",
+						hoverBackground: "{surface.0}",
+						content: {
+							background: "{primary.color}",
+						},
+					},
+				},
+			},
+		},
 		popover: {
 			colorScheme: {
 				light: {

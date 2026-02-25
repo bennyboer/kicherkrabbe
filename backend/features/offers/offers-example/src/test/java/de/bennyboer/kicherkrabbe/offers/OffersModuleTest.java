@@ -6,8 +6,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
-import de.bennyboer.kicherkrabbe.offers.api.MoneyDTO;
-import de.bennyboer.kicherkrabbe.offers.api.NotesDTO;
+import de.bennyboer.kicherkrabbe.offers.api.*;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.OfferLookupRepo;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.inmemory.InMemoryOfferLookupRepo;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.product.ProductForOfferLookupRepo;
@@ -196,7 +195,24 @@ public class OffersModuleTest {
     }
 
     public PublishedOffersPage getPublishedOffers(String searchTerm, long skip, long limit, Agent agent) {
-        return module.getPublishedOffers(searchTerm, skip, limit, agent).block();
+        return module.getPublishedOffers(searchTerm, null, null, null, null, skip, limit, agent).block();
+    }
+
+    public PublishedOffersPage getPublishedOffers(
+            String searchTerm,
+            Set<String> categories,
+            Set<String> sizes,
+            PriceRangeDTO priceRange,
+            OffersSortDTO sort,
+            long skip,
+            long limit,
+            Agent agent
+    ) {
+        return module.getPublishedOffers(searchTerm, categories, sizes, priceRange, sort, skip, limit, agent).block();
+    }
+
+    public List<String> getAvailableSizesForOffers(Agent agent) {
+        return module.getAvailableSizesForOffers(agent).collectList().block();
     }
 
     public PublishedOffer getPublishedOffer(String offerId, Agent agent) {

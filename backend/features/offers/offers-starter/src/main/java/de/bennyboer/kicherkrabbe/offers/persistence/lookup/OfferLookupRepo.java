@@ -13,12 +13,14 @@ public interface OfferLookupRepo extends EventSourcingReadModelRepo<OfferId, Loo
 
     Mono<LookupOfferPage> find(Collection<OfferId> offerIds, String searchTerm, long skip, long limit);
 
-    Mono<LookupOfferPage> findPublished(String searchTerm, long skip, long limit);
+    Mono<LookupOfferPage> findPublished(PublishedOfferQuery query);
 
     Mono<LookupOffer> findPublished(OfferId id);
 
     Flux<LookupOffer> findByProductId(ProductId productId);
 
     Flux<LookupOffer> findByCategoryId(OfferCategoryId categoryId);
+
+    Flux<String> findDistinctPublishedSizes();
 
 }

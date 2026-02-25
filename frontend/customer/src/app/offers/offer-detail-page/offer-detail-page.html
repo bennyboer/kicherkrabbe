@@ -1,0 +1,158 @@
+<div class="offer-detail-page">
+	@let state = (state$ | async);
+	@if (!state || state.loading) {
+		<div class="loading-container">
+			<p-progressspinner strokeWidth="4" />
+		</div>
+	} @else if (state?.offer; as offer) {
+		<app-breadcrumbs [items]="(breadcrumbs$ | async) ?? []" />
+
+		<div class="content-grid">
+			<div class="gallery-section">
+				@if (offer.images.length > 0) {
+					@let selectedIndex = (selectedImageIndex$ | async) ?? 0;
+					<div class="main-image">
+						<p-image
+							[src]="getImageUrl(offer.images[selectedIndex])"
+							[previewImageSrc]="getOriginalImageUrl(offer.images[selectedIndex])"
+							[alt]="offer.title"
+							[preview]="true"
+							width="100%"
+							height="100%"
+							[imageStyle]="{ 'object-fit': 'contain' }"
+							appendTo="body"
+						/>
+					</div>
+
+					@if (offer.images.length > 1) {
+						<div class="thumbnails">
+							@for (imageId of offer.images; track imageId; let i = $index) {
+								<button
+									class="thumbnail"
+									[class.active]="selectedIndex === i"
+									(click)="selectImage(i)"
+								>
+									<img [src]="getThumbnailUrl(imageId)" [alt]="offer.title + ' - Bild ' + (i + 1)" loading="lazy" />
+								</button>
+							}
+						</div>
+					}
+				}
+			</div>
+
+			<div class="details-section">
+				<h1 class="offer-title">{{ offer.title }}</h1>
+
+				<div class="offer-size-badge">Größe {{ offer.size }}</div>
+
+				<div class="price-info">
+					@if (offer.hasDiscount()) {
+						<span class="original-price">{{ offer.formatPrice() }}</span>
+						<span class="effective-price">{{ offer.formatEffectivePrice() }}</span>
+					} @else {
+						<span class="effective-price">{{ offer.formatEffectivePrice() }}</span>
+					}
+				</div>
+				<p class="vat-note">Gem&auml;&szlig; &sect; 19 UStG &bdquo;Kleinunternehmerregelung&ldquo; wird keine Umsatzsteuer berechnet.</p>
+
+				@if (offer.notes.description) {
+					<div class="description">
+						<quill-view [content]="offer.notes.description" format="json" theme="bubble" />
+					</div>
+				}
+
+				@if (offer.notes.contains.isSome()) {
+					<div class="info-section">
+						<h3>Inhalt</h3>
+						<quill-view [content]="offer.notes.contains.orElseThrow()" format="json" theme="bubble" />
+					</div>
+				}
+
+				@if (offer.notes.care.isSome()) {
+					<div class="info-section">
+						<h3>Pflegehinweise</h3>
+						<quill-view [content]="offer.notes.care.orElseThrow()" format="json" theme="bubble" />
+					</div>
+				}
+
+				@if (offer.fabricCompositionItems.length > 0) {
+					<p-divider />
+					<div class="composition-section">
+						<h2>Stoffzusammensetzung</h2>
+						<div class="composition-list">
+							@for (item of offer.fabricCompositionItems; track item.fabricType) {
+								<div class="composition-row">
+									<span class="composition-type">{{ formatFabricType(item.fabricType) }}</span>
+									<span class="composition-percentage">{{ formatPercentage(item.percentage) }}</span>
+								</div>
+							}
+						</div>
+					</div>
+				}
+
+				@if (offer.links.length > 0) {
+					<p-divider />
+					<div class="links-section">
+						<h2>Verwendete Materialien</h2>
+						<div class="links-list">
+							@for (link of offer.links; track link.id) {
+								<a [routerLink]="getLinkRoute(link)" class="material-link">
+									<span class="link-type">{{ getLinkTypeLabel(link) }}:</span>
+									{{ link.name }}
+								</a>
+							}
+						</div>
+					</div>
+				}
+
+				<p-divider />
+
+				<div class="producer-info">
+					<p><strong>Hersteller</strong>: Jenny Michel, Weststr. 23 ½, 84416 Taufkirchen (Vils)</p>
+					<p><strong>E-Mail</strong>: <a href="mailto:info@kicherkrabbe.com">info&#64;kicherkrabbe.com</a></p>
+				</div>
+
+				@if (offer.notes.safety.isSome()) {
+					<p-divider />
+					<p-panel header="Produktsicherheit" [toggleable]="true" [collapsed]="true" toggler="header">
+						<quill-view class="safety-text" [content]="offer.notes.safety.orElseThrow()" format="json" theme="bubble" />
+					</p-panel>
+				} @else {
+					<p-divider />
+					<p-panel header="Produktsicherheit" [toggleable]="true" [collapsed]="true" toggler="header">
+						<p class="safety-intro">
+							<em>Diese Kleidung wurde mit viel Sorgfalt und Liebe zum Detail handgefertigt. Bitte beachte dennoch folgende Hinweise, um die Sicherheit deines Kindes zu gewährleisten:</em>
+						</p>
+						<ul class="safety-list">
+							<li>Dieses Kleidungsstück ist kein Spielzeug.</li>
+							<li>Bitte lasse dein Kind nicht unbeaufsichtigt, insbesondere bei Kleidungsstücken mit Bändern, Kordeln, Knöpfen oder anderen dekorativen Elementen.</li>
+							<li>Lose Teile können sich bei starker Beanspruchung lösen und ein mögliches Verschluckungs- oder Strangulationsrisiko darstellen.</li>
+							<li>Bitte halte das Kleidungsstück von Kerzen, offenem Feuer und heißen Gegenständen fern.</li>
+							<li>Prüfe das Kleidungsstück vor jedem Tragen auf Beschädigungen oder gelöste Teile und verwende es bei Bedarf nicht weiter.</li>
+							<li>Obwohl bei der Auswahl der Materialien auf Qualität und Hautverträglichkeit geachtet wird, können in seltenen Fällen individuelle Hautreaktionen auftreten. Wir empfehlen, das Kleidungsstück vor dem ersten Tragen zu waschen.</li>
+							<li>Bitte beachte die angegebenen Pflegehinweise, da unsachgemäße Pflege die Sicherheit und Haltbarkeit beeinträchtigen kann.</li>
+						</ul>
+						<p class="safety-footer">Dieses Produkt wurde nach bestem Wissen und Gewissen hergestellt und ist für den vorgesehenen Verwendungszweck bestimmt.</p>
+					</p-panel>
+				}
+
+				<p-divider />
+
+				<div class="contact-cta">
+					<p>Interesse an diesem Artikel?</p>
+					<a routerLink="/contact">
+						<p-button label="Kontakt aufnehmen" icon="pi pi-envelope" />
+					</a>
+				</div>
+			</div>
+		</div>
+	} @else {
+		<div class="not-found">
+			<p>Sofortkauf nicht gefunden.</p>
+			<p-button
+				label="Zurück zu Sofortkäufe"
+				(click)="goBack()"
+			/>
+		</div>
+	}
+</div>

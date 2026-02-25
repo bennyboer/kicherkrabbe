@@ -1,12 +1,11 @@
 package de.bennyboer.kicherkrabbe.offers.persistence.lookup;
 
-import de.bennyboer.kicherkrabbe.offers.OfferId;
-import de.bennyboer.kicherkrabbe.offers.ProductId;
+import de.bennyboer.kicherkrabbe.money.Currency;
+import de.bennyboer.kicherkrabbe.money.Money;
+import de.bennyboer.kicherkrabbe.offers.*;
 import de.bennyboer.kicherkrabbe.offers.samples.SampleLookupOffer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -147,23 +146,17 @@ public abstract class OfferLookupRepoTest {
     @Test
     void shouldFindOffersBySearchTerm() {
         var offer1 = SampleLookupOffer.builder()
-                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
-                        de.bennyboer.kicherkrabbe.offers.Note.of("Cotton summer dress"), null, null, null
-                ))
+                .notes(Notes.of(Note.of("Cotton summer dress"), null, null, null))
                 .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
                 .build()
                 .toModel();
         var offer2 = SampleLookupOffer.builder()
-                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
-                        de.bennyboer.kicherkrabbe.offers.Note.of("Silk evening gown"), null, null, null
-                ))
+                .notes(Notes.of(Note.of("Silk evening gown"), null, null, null))
                 .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
                 .build()
                 .toModel();
         var offer3 = SampleLookupOffer.builder()
-                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
-                        de.bennyboer.kicherkrabbe.offers.Note.of("Cotton winter coat"), null, null, null
-                ))
+                .notes(Notes.of(Note.of("Cotton winter coat"), null, null, null))
                 .createdAt(Instant.parse("2024-03-12T11:00:00.00Z"))
                 .build()
                 .toModel();
@@ -181,17 +174,13 @@ public abstract class OfferLookupRepoTest {
     void shouldFindOffersByProductNumber() {
         var offer1 = SampleLookupOffer.builder()
                 .productNumber("P-001")
-                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
-                        de.bennyboer.kicherkrabbe.offers.Note.of("Some description"), null, null, null
-                ))
+                .notes(Notes.of(Note.of("Some description"), null, null, null))
                 .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
                 .build()
                 .toModel();
         var offer2 = SampleLookupOffer.builder()
                 .productNumber("P-002")
-                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
-                        de.bennyboer.kicherkrabbe.offers.Note.of("Other description"), null, null, null
-                ))
+                .notes(Notes.of(Note.of("Other description"), null, null, null))
                 .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
                 .build()
                 .toModel();
@@ -208,18 +197,14 @@ public abstract class OfferLookupRepoTest {
     void shouldFindPublishedOffersByProductNumber() {
         var offer1 = SampleLookupOffer.builder()
                 .productNumber("P-100")
-                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
-                        de.bennyboer.kicherkrabbe.offers.Note.of("Cotton dress"), null, null, null
-                ))
+                .notes(Notes.of(Note.of("Cotton dress"), null, null, null))
                 .published(true)
                 .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
                 .build()
                 .toModel();
         var offer2 = SampleLookupOffer.builder()
                 .productNumber("P-200")
-                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
-                        de.bennyboer.kicherkrabbe.offers.Note.of("Silk gown"), null, null, null
-                ))
+                .notes(Notes.of(Note.of("Silk gown"), null, null, null))
                 .published(true)
                 .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
                 .build()
@@ -235,9 +220,7 @@ public abstract class OfferLookupRepoTest {
     @Test
     void shouldFindOffersBySearchTermCaseInsensitive() {
         var offer = SampleLookupOffer.builder()
-                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
-                        de.bennyboer.kicherkrabbe.offers.Note.of("Cotton summer dress"), null, null, null
-                ))
+                .notes(Notes.of(Note.of("Cotton summer dress"), null, null, null))
                 .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
                 .build()
                 .toModel();
@@ -252,25 +235,19 @@ public abstract class OfferLookupRepoTest {
     @Test
     void shouldFindPublishedOffersBySearchTerm() {
         var offer1 = SampleLookupOffer.builder()
-                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
-                        de.bennyboer.kicherkrabbe.offers.Note.of("Cotton summer dress"), null, null, null
-                ))
+                .notes(Notes.of(Note.of("Cotton summer dress"), null, null, null))
                 .published(true)
                 .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
                 .build()
                 .toModel();
         var offer2 = SampleLookupOffer.builder()
-                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
-                        de.bennyboer.kicherkrabbe.offers.Note.of("Silk evening gown"), null, null, null
-                ))
+                .notes(Notes.of(Note.of("Silk evening gown"), null, null, null))
                 .published(true)
                 .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
                 .build()
                 .toModel();
         var offer3 = SampleLookupOffer.builder()
-                .notes(de.bennyboer.kicherkrabbe.offers.Notes.of(
-                        de.bennyboer.kicherkrabbe.offers.Note.of("Cotton winter coat"), null, null, null
-                ))
+                .notes(Notes.of(Note.of("Cotton winter coat"), null, null, null))
                 .createdAt(Instant.parse("2024-03-12T11:00:00.00Z"))
                 .build()
                 .toModel();
@@ -345,6 +322,262 @@ public abstract class OfferLookupRepoTest {
         assertThat(offers).isEmpty();
     }
 
+    @Test
+    void shouldFilterPublishedOffersByCategory() {
+        var offer1 = SampleLookupOffer.builder()
+                .categories(Set.of(OfferCategoryId.of("CAT_1")))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer2 = SampleLookupOffer.builder()
+                .categories(Set.of(OfferCategoryId.of("CAT_2")))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer3 = SampleLookupOffer.builder()
+                .categories(Set.of(OfferCategoryId.of("CAT_1"), OfferCategoryId.of("CAT_2")))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T11:00:00.00Z"))
+                .build()
+                .toModel();
+        update(offer1);
+        update(offer2);
+        update(offer3);
+
+        var result = findPublished("", Set.of(OfferCategoryId.of("CAT_1")), Set.of(), null, null, null, null, 0, 100);
+        assertThat(result.getTotal()).isEqualTo(2);
+        assertThat(result.getResults()).containsExactly(offer1, offer3);
+
+        result = findPublished("", Set.of(OfferCategoryId.of("CAT_2")), Set.of(), null, null, null, null, 0, 100);
+        assertThat(result.getTotal()).isEqualTo(2);
+        assertThat(result.getResults()).containsExactly(offer2, offer3);
+
+        result = findPublished("", Set.of(OfferCategoryId.of("CAT_1"), OfferCategoryId.of("CAT_2")), Set.of(), null, null, null, null, 0, 100);
+        assertThat(result.getTotal()).isEqualTo(3);
+    }
+
+    @Test
+    void shouldFilterPublishedOffersBySize() {
+        var offer1 = SampleLookupOffer.builder()
+                .size(OfferSize.of("S"))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer2 = SampleLookupOffer.builder()
+                .size(OfferSize.of("M"))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer3 = SampleLookupOffer.builder()
+                .size(OfferSize.of("L"))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T11:00:00.00Z"))
+                .build()
+                .toModel();
+        update(offer1);
+        update(offer2);
+        update(offer3);
+
+        var result = findPublished("", Set.of(), Set.of(OfferSize.of("S")), null, null, null, null, 0, 100);
+        assertThat(result.getTotal()).isEqualTo(1);
+        assertThat(result.getResults()).containsExactly(offer1);
+
+        result = findPublished("", Set.of(), Set.of(OfferSize.of("S"), OfferSize.of("L")), null, null, null, null, 0, 100);
+        assertThat(result.getTotal()).isEqualTo(2);
+        assertThat(result.getResults()).containsExactly(offer1, offer3);
+    }
+
+    @Test
+    void shouldFilterPublishedOffersByPriceRange() {
+        var offer1 = SampleLookupOffer.builder()
+                .pricing(Pricing.of(Money.of(1000L, Currency.euro())))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer2 = SampleLookupOffer.builder()
+                .pricing(Pricing.of(Money.of(2000L, Currency.euro())))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer3 = SampleLookupOffer.builder()
+                .pricing(Pricing.of(Money.of(3000L, Currency.euro())))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T11:00:00.00Z"))
+                .build()
+                .toModel();
+        update(offer1);
+        update(offer2);
+        update(offer3);
+
+        var result = findPublished("", Set.of(), Set.of(), 1500L, 2500L, null, null, 0, 100);
+        assertThat(result.getTotal()).isEqualTo(1);
+        assertThat(result.getResults()).containsExactly(offer2);
+
+        result = findPublished("", Set.of(), Set.of(), 2000L, null, null, null, 0, 100);
+        assertThat(result.getTotal()).isEqualTo(2);
+
+        result = findPublished("", Set.of(), Set.of(), null, 2000L, null, null, 0, 100);
+        assertThat(result.getTotal()).isEqualTo(2);
+    }
+
+    @Test
+    void shouldFilterByEffectivePriceWhenDiscounted() {
+        var offer1 = SampleLookupOffer.builder()
+                .pricing(Pricing.of(
+                        Money.of(3000L, Currency.euro()),
+                        Money.of(1500L, Currency.euro()),
+                        List.of()
+                ))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer2 = SampleLookupOffer.builder()
+                .pricing(Pricing.of(Money.of(2000L, Currency.euro())))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        update(offer1);
+        update(offer2);
+
+        var result = findPublished("", Set.of(), Set.of(), null, 1600L, null, null, 0, 100);
+        assertThat(result.getTotal()).isEqualTo(1);
+        assertThat(result.getResults()).containsExactly(offer1);
+
+        result = findPublished("", Set.of(), Set.of(), 1600L, null, null, null, 0, 100);
+        assertThat(result.getTotal()).isEqualTo(1);
+        assertThat(result.getResults()).containsExactly(offer2);
+    }
+
+    @Test
+    void shouldSortPublishedOffersByAlphabetical() {
+        var offer1 = SampleLookupOffer.builder()
+                .title(OfferTitle.of("Banana"))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer2 = SampleLookupOffer.builder()
+                .title(OfferTitle.of("Apple"))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer3 = SampleLookupOffer.builder()
+                .title(OfferTitle.of("Cherry"))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T11:00:00.00Z"))
+                .build()
+                .toModel();
+        update(offer1);
+        update(offer2);
+        update(offer3);
+
+        var result = findPublished("", Set.of(), Set.of(), null, null, OfferSortProperty.ALPHABETICAL, OfferSortDirection.ASCENDING, 0, 100);
+        assertThat(result.getResults()).containsExactly(offer2, offer1, offer3);
+
+        result = findPublished("", Set.of(), Set.of(), null, null, OfferSortProperty.ALPHABETICAL, OfferSortDirection.DESCENDING, 0, 100);
+        assertThat(result.getResults()).containsExactly(offer3, offer1, offer2);
+    }
+
+    @Test
+    void shouldSortPublishedOffersByPrice() {
+        var offer1 = SampleLookupOffer.builder()
+                .pricing(Pricing.of(Money.of(3000L, Currency.euro())))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer2 = SampleLookupOffer.builder()
+                .pricing(Pricing.of(Money.of(1000L, Currency.euro())))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer3 = SampleLookupOffer.builder()
+                .pricing(Pricing.of(Money.of(2000L, Currency.euro())))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T11:00:00.00Z"))
+                .build()
+                .toModel();
+        update(offer1);
+        update(offer2);
+        update(offer3);
+
+        var result = findPublished("", Set.of(), Set.of(), null, null, OfferSortProperty.PRICE, OfferSortDirection.ASCENDING, 0, 100);
+        assertThat(result.getResults()).containsExactly(offer2, offer3, offer1);
+
+        result = findPublished("", Set.of(), Set.of(), null, null, OfferSortProperty.PRICE, OfferSortDirection.DESCENDING, 0, 100);
+        assertThat(result.getResults()).containsExactly(offer1, offer3, offer2);
+    }
+
+    @Test
+    void shouldSortPublishedOffersByEffectivePrice() {
+        var offer1 = SampleLookupOffer.builder()
+                .pricing(Pricing.of(
+                        Money.of(5000L, Currency.euro()),
+                        Money.of(1000L, Currency.euro()),
+                        List.of()
+                ))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer2 = SampleLookupOffer.builder()
+                .pricing(Pricing.of(Money.of(2000L, Currency.euro())))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        update(offer1);
+        update(offer2);
+
+        var result = findPublished("", Set.of(), Set.of(), null, null, OfferSortProperty.PRICE, OfferSortDirection.ASCENDING, 0, 100);
+        assertThat(result.getResults()).containsExactly(offer1, offer2);
+    }
+
+    @Test
+    void shouldFindDistinctPublishedSizes() {
+        var offer1 = SampleLookupOffer.builder()
+                .size(OfferSize.of("M"))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer2 = SampleLookupOffer.builder()
+                .size(OfferSize.of("S"))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer3 = SampleLookupOffer.builder()
+                .size(OfferSize.of("M"))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T11:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer4 = SampleLookupOffer.builder()
+                .size(OfferSize.of("L"))
+                .published(false)
+                .createdAt(Instant.parse("2024-03-12T10:00:00.00Z"))
+                .build()
+                .toModel();
+        update(offer1);
+        update(offer2);
+        update(offer3);
+        update(offer4);
+
+        var sizes = findDistinctPublishedSizes();
+        assertThat(sizes).containsExactly("M", "S");
+    }
+
     private void update(LookupOffer offer) {
         repo.update(offer).block();
     }
@@ -370,11 +603,29 @@ public abstract class OfferLookupRepoTest {
     }
 
     private LookupOfferPage findPublished(String searchTerm, long skip, long limit) {
-        return repo.findPublished(searchTerm, skip, limit).block();
+        return repo.findPublished(PublishedOfferQuery.of(searchTerm, Set.of(), Set.of(), null, null, null, null, skip, limit)).block();
+    }
+
+    private LookupOfferPage findPublished(
+            String searchTerm,
+            Set<OfferCategoryId> categories,
+            Set<OfferSize> sizes,
+            Long minPrice,
+            Long maxPrice,
+            OfferSortProperty sortProperty,
+            OfferSortDirection sortDirection,
+            long skip,
+            long limit
+    ) {
+        return repo.findPublished(PublishedOfferQuery.of(searchTerm, categories, sizes, minPrice, maxPrice, sortProperty, sortDirection, skip, limit)).block();
     }
 
     private List<LookupOffer> findByProductId(ProductId productId) {
         return repo.findByProductId(productId).collectList().block();
+    }
+
+    private List<String> findDistinctPublishedSizes() {
+        return repo.findDistinctPublishedSizes().collectList().block();
     }
 
 }

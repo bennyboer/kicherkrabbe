@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Injector, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EnvironmentInjector, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PatternCategoriesService, PatternsService } from '../../services';
 import {
@@ -156,6 +156,7 @@ export class PatternPage implements OnInit, OnDestroy {
     private readonly notificationService: NotificationService,
     private readonly dialogService: DialogService,
     private readonly assetsService: AssetsService,
+    private readonly environmentInjector: EnvironmentInjector,
   ) {}
 
   ngOnInit(): void {
@@ -636,19 +637,18 @@ export class PatternPage implements OnInit, OnDestroy {
     const dialog = Dialog.create<AssetSelectDialogResult>({
       title: 'Bilder auswählen',
       componentType: AssetSelectDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: AssetSelectDialogData,
-            useValue: AssetSelectDialogData.of({
-              multiple: true,
-              watermark: true,
-              initialContentTypes: ['image/png', 'image/jpeg'],
-            }),
-          },
-          { provide: AssetsService, useValue: this.assetsService },
-        ],
-      }),
+      providers: [
+        {
+          provide: AssetSelectDialogData,
+          useValue: AssetSelectDialogData.of({
+            multiple: true,
+            watermark: true,
+            initialContentTypes: ['image/png', 'image/jpeg'],
+          }),
+        },
+        { provide: AssetsService, useValue: this.assetsService },
+      ],
+      environmentInjector: this.environmentInjector,
     });
     this.dialogService.open(dialog);
     this.dialogService

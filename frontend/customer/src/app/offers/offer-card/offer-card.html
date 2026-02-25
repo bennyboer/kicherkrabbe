@@ -1,0 +1,29 @@
+<p-card styleClass="product-card">
+	<ng-template #header>
+		<div class="offer-image-container">
+			@if (imageId) {
+				<img
+					[ngSrc]="imageId"
+					[alt]="offer.title + ' - Sofortkauf'"
+					class="offer-image"
+					fill
+					sizes="(max-width: 576px) 50vw, (max-width: 992px) 33vw, 25vw"
+				/>
+			}
+		</div>
+	</ng-template>
+	<ng-template #title>
+		{{ offer.title }}
+	</ng-template>
+	<ng-template #subtitle>
+		<span class="offer-size">Größe {{ offer.size }}</span>
+		<span class="offer-price">
+			@if (offer.hasDiscount()) {
+				<span class="original-price">{{ offer.formatPrice() }}</span>
+				{{ offer.formatEffectivePrice() }}
+			} @else {
+				{{ offer.formatEffectivePrice() }}
+			}
+		</span>
+	</ng-template>
+</p-card>

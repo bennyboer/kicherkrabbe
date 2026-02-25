@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Injector, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { Dialog } from '../../model';
 import { DialogService } from '../../services';
 
@@ -16,11 +16,15 @@ export class DialogComponent implements OnInit {
   @Input({ required: true })
   dialog!: Dialog<any>;
 
-  constructor(private readonly dialogService: DialogService) {}
+  constructor(
+    private readonly injector: Injector,
+    private readonly dialogService: DialogService,
+  ) {}
 
   ngOnInit(): void {
     this.outlet.createComponent(this.dialog.componentType, {
-      injector: this.dialog.getInjector(),
+      injector: this.dialog.getInjector(this.injector),
+      environmentInjector: this.dialog.environmentInjector ?? undefined,
     });
   }
 

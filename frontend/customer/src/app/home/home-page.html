@@ -4,6 +4,15 @@
 </div>
 <app-badges></app-badges>
 
+@if (showOffers$ | async) {
+	<section>
+		<a routerLink="/offers"><h1>Sofortkäufe</h1></a>
+		<app-featured-offers></app-featured-offers>
+		<div class="show-all-link">
+			<a routerLink="/offers">Alle Sofortkäufe anzeigen ›</a>
+		</div>
+	</section>
+}
 <section>
 	<a routerLink="/patterns"><h1>Schnitte</h1></a>
 	<app-featured-patterns></app-featured-patterns>

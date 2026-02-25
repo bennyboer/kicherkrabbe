@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Injector, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EnvironmentInjector, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -75,6 +75,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
     private readonly dialogService: DialogService,
     private readonly assetsService: AssetsService,
     private readonly themeService: ThemeService,
+    private readonly environmentInjector: EnvironmentInjector,
   ) {}
 
   ngOnInit(): void {
@@ -213,17 +214,16 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
     const dialog = Dialog.create<string[]>({
       title: 'Beispielbilder bearbeiten',
       componentType: EditExampleImagesDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: EditExampleImagesDialogData,
-            useValue: EditExampleImagesDialogData.of({
-              images: fabric.exampleImages,
-            }),
-          },
-          { provide: AssetsService, useValue: this.assetsService },
-        ],
-      }),
+      providers: [
+        {
+          provide: EditExampleImagesDialogData,
+          useValue: EditExampleImagesDialogData.of({
+            images: fabric.exampleImages,
+          }),
+        },
+        { provide: AssetsService, useValue: this.assetsService },
+      ],
+      environmentInjector: this.environmentInjector,
     });
     this.dialogService.open(dialog);
     this.dialogService
@@ -356,19 +356,18 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
     const dialog = Dialog.create<AssetSelectDialogResult>({
       title: 'Bild auswählen',
       componentType: AssetSelectDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: AssetSelectDialogData,
-            useValue: AssetSelectDialogData.of({
-              multiple: false,
-              watermark: true,
-              initialContentTypes: ['image/png', 'image/jpeg'],
-            }),
-          },
-          { provide: AssetsService, useValue: this.assetsService },
-        ],
-      }),
+      providers: [
+        {
+          provide: AssetSelectDialogData,
+          useValue: AssetSelectDialogData.of({
+            multiple: false,
+            watermark: true,
+            initialContentTypes: ['image/png', 'image/jpeg'],
+          }),
+        },
+        { provide: AssetsService, useValue: this.assetsService },
+      ],
+      environmentInjector: this.environmentInjector,
     });
     this.dialogService.open(dialog);
     this.dialogService

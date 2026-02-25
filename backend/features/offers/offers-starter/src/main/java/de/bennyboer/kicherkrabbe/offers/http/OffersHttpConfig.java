@@ -38,6 +38,7 @@ public class OffersHttpConfig {
                         .andRoute(POST("/published"), handler::getPublishedOffers)
                         .andRoute(POST("/products"), handler::getProducts)
                         .andRoute(GET("/categories"), handler::getAvailableCategoriesForOffers)
+                        .andRoute(GET("/sizes"), handler::getAvailableSizesForOffers)
                         .andRoute(POST("/create"), handler::createOffer)
                         .andNest(path("/{offerId}"), route(GET(""), handler::getOffer)
                                 .andRoute(GET("/published"), handler::getPublishedOffer)
@@ -64,7 +65,8 @@ public class OffersHttpConfig {
         return exchanges -> exchanges
                 .pathMatchers(POST, "/offers/published").permitAll()
                 .pathMatchers(GET, "/offers/{offerId}/published").permitAll()
-                .pathMatchers(GET, "/offers/categories").permitAll();
+                .pathMatchers(GET, "/offers/categories").permitAll()
+                .pathMatchers(GET, "/offers/sizes").permitAll();
     }
 
 }

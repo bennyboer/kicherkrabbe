@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Injector, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EnvironmentInjector, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
@@ -108,6 +108,7 @@ export class OfferPage implements OnInit, OnDestroy {
     private readonly notificationService: NotificationService,
     private readonly themeService: ThemeService,
     private readonly dialogService: DialogService,
+    private readonly environmentInjector: EnvironmentInjector,
   ) {}
 
   ngOnInit(): void {
@@ -257,28 +258,27 @@ export class OfferPage implements OnInit, OnDestroy {
     const dialog = Dialog.create<EditImagesDialogResult>({
       title: 'Bilder bearbeiten',
       componentType: EditImagesDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: EditImagesDialogData,
-            useValue: EditImagesDialogData.of({
-              offer: {
-                id: offer.id,
-                version: offer.version,
-              },
-              images: offer.images,
-            }),
-          },
-          {
-            provide: OffersService,
-            useValue: this.offersService,
-          },
-          {
-            provide: AssetsService,
-            useValue: this.assetsService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: EditImagesDialogData,
+          useValue: EditImagesDialogData.of({
+            offer: {
+              id: offer.id,
+              version: offer.version,
+            },
+            images: offer.images,
+          }),
+        },
+        {
+          provide: OffersService,
+          useValue: this.offersService,
+        },
+        {
+          provide: AssetsService,
+          useValue: this.assetsService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);
@@ -310,24 +310,23 @@ export class OfferPage implements OnInit, OnDestroy {
     const dialog = Dialog.create<EditPriceDialogResult>({
       title: 'Preis bearbeiten',
       componentType: EditPriceDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: EditPriceDialogData,
-            useValue: EditPriceDialogData.of({
-              offer: {
-                id: offer.id,
-                version: offer.version,
-              },
-              currentPrice: offer.pricing.price,
-            }),
-          },
-          {
-            provide: OffersService,
-            useValue: this.offersService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: EditPriceDialogData,
+          useValue: EditPriceDialogData.of({
+            offer: {
+              id: offer.id,
+              version: offer.version,
+            },
+            currentPrice: offer.pricing.price,
+          }),
+        },
+        {
+          provide: OffersService,
+          useValue: this.offersService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);
@@ -343,24 +342,23 @@ export class OfferPage implements OnInit, OnDestroy {
     const dialog = Dialog.create<AddDiscountDialogResult>({
       title: 'Rabatt hinzufügen',
       componentType: AddDiscountDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: AddDiscountDialogData,
-            useValue: AddDiscountDialogData.of({
-              offer: {
-                id: offer.id,
-                version: offer.version,
-              },
-              currentPrice: offer.pricing.price,
-            }),
-          },
-          {
-            provide: OffersService,
-            useValue: this.offersService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: AddDiscountDialogData,
+          useValue: AddDiscountDialogData.of({
+            offer: {
+              id: offer.id,
+              version: offer.version,
+            },
+            currentPrice: offer.pricing.price,
+          }),
+        },
+        {
+          provide: OffersService,
+          useValue: this.offersService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);
@@ -502,25 +500,24 @@ export class OfferPage implements OnInit, OnDestroy {
     const dialog = Dialog.create<EditNoteDialogResult>({
       title,
       componentType: EditNoteDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: EditNoteDialogData,
-            useValue: EditNoteDialogData.of({
-              offer: {
-                id: offer.id,
-                version: offer.version,
-              },
-              notes: offer.notes,
-              noteType,
-            }),
-          },
-          {
-            provide: OffersService,
-            useValue: this.offersService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: EditNoteDialogData,
+          useValue: EditNoteDialogData.of({
+            offer: {
+              id: offer.id,
+              version: offer.version,
+            },
+            notes: offer.notes,
+            noteType,
+          }),
+        },
+        {
+          provide: OffersService,
+          useValue: this.offersService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);

@@ -1,0 +1,303 @@
+.offer-detail-page {
+	padding: 24px;
+	max-width: 1400px;
+	margin: 0 auto;
+}
+
+.loading-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 400px;
+}
+
+.content-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 48px;
+}
+
+.gallery-section {
+	position: sticky;
+	top: 100px;
+	height: fit-content;
+	max-height: calc(100dvh - 150px);
+	display: flex;
+	flex-direction: column;
+}
+
+.main-image {
+	margin-bottom: 16px;
+	border-radius: 8px;
+	overflow: hidden;
+	background: var(--p-surface-100);
+	aspect-ratio: 1;
+	max-height: calc(100dvh - 266px);
+}
+
+.thumbnails {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	flex-shrink: 0;
+}
+
+.thumbnail {
+	width: 80px;
+	height: 80px;
+	padding: 0;
+	border: 2px solid transparent;
+	border-radius: 8px;
+	overflow: hidden;
+	cursor: pointer;
+	background: none;
+	transition: border-color 0.2s;
+
+	&:hover {
+		border-color: var(--p-surface-300);
+	}
+
+	&.active {
+		border-color: var(--p-primary-color);
+	}
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+}
+
+.details-section {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.offer-title {
+	margin: 0;
+}
+
+.offer-size-badge {
+	display: inline-block;
+	background: var(--p-surface-200);
+	padding: 4px 12px;
+	border-radius: 4px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	width: fit-content;
+}
+
+.price-info {
+	display: flex;
+	align-items: baseline;
+	gap: 12px;
+}
+
+.effective-price {
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: var(--p-primary-color);
+}
+
+.original-price {
+	font-size: 1.125rem;
+	text-decoration: line-through;
+	color: var(--p-text-muted-color);
+}
+
+.vat-note {
+	margin: 0;
+	font-size: 0.75rem;
+	color: var(--p-text-muted-color);
+}
+
+.description {
+	margin: 8px 0;
+	line-height: 1.6;
+}
+
+.info-section {
+	h3 {
+		margin: 0 0 8px 0;
+		font-size: 1rem;
+		font-weight: 600;
+	}
+
+	p {
+		margin: 0;
+		line-height: 1.6;
+		color: var(--p-text-muted-color);
+	}
+}
+
+.composition-section,
+.links-section {
+	h2 {
+		margin: 0 0 16px 0;
+		font-size: 1.25rem;
+		font-weight: 600;
+	}
+}
+
+.composition-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.composition-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 12px;
+	background: var(--p-surface-100);
+	border-radius: 4px;
+
+	.composition-type {
+		color: var(--p-surface-900);
+	}
+
+	.composition-percentage {
+		font-weight: 500;
+		color: var(--p-surface-900);
+	}
+}
+
+.links-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.material-link {
+	display: block;
+	padding: 8px 12px;
+	background: var(--p-surface-100);
+	border-radius: 4px;
+	text-decoration: none;
+	color: var(--p-primary-color);
+	transition: background-color 0.2s;
+
+	&:hover {
+		background: var(--p-surface-200);
+	}
+
+	.link-type {
+		color: var(--p-text-muted-color);
+		margin-right: 4px;
+	}
+}
+
+.producer-info {
+	background: var(--p-surface-100);
+	padding: 12px 16px;
+	border-radius: 8px;
+
+	p {
+		margin: 0;
+		font-size: 0.875rem;
+		color: var(--p-text-muted-color);
+
+		&:not(:last-child) {
+			margin-bottom: 4px;
+		}
+	}
+
+	a {
+		color: var(--p-primary-color);
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+.safety-intro {
+	margin: 0 0 12px 0;
+	line-height: 1.6;
+	font-size: 0.875rem;
+}
+
+.safety-text {
+	margin: 0;
+	line-height: 1.6;
+	font-size: 0.875rem;
+}
+
+.safety-list {
+	margin: 0 0 12px 0;
+	padding-left: 20px;
+	font-size: 0.875rem;
+	line-height: 1.6;
+
+	li:not(:last-child) {
+		margin-bottom: 8px;
+	}
+}
+
+.safety-footer {
+	margin: 0;
+	font-size: 0.875rem;
+	line-height: 1.6;
+}
+
+.contact-cta {
+	text-align: center;
+	padding: 24px;
+	background: var(--p-surface-100);
+	border-radius: 8px;
+
+	p {
+		margin: 0 0 16px 0;
+		font-size: 1.125rem;
+		color: var(--p-surface-900);
+	}
+}
+
+.not-found {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 400px;
+	gap: 16px;
+
+	p {
+		font-size: 1.125rem;
+		color: var(--p-text-muted-color);
+	}
+}
+
+@media (max-width: 1024px) {
+	.content-grid {
+		gap: 32px;
+	}
+}
+
+@media (max-width: 768px) {
+	.offer-detail-page {
+		padding: 16px;
+	}
+
+	.content-grid {
+		grid-template-columns: 1fr;
+		gap: 24px;
+	}
+
+	.gallery-section {
+		position: static;
+		max-height: none;
+		display: block;
+	}
+
+	.main-image {
+		max-height: none;
+		aspect-ratio: 1;
+	}
+
+	.effective-price {
+		font-size: 1.25rem;
+	}
+}

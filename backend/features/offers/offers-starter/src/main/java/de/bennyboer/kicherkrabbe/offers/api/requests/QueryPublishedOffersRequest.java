@@ -1,11 +1,32 @@
 package de.bennyboer.kicherkrabbe.offers.api.requests;
 
+import de.bennyboer.kicherkrabbe.offers.api.OffersSortDTO;
+import de.bennyboer.kicherkrabbe.offers.api.PriceRangeDTO;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.FieldDefaults;
+
+import java.util.Set;
+
+import static lombok.AccessLevel.PUBLIC;
+
+@ToString
+@EqualsAndHashCode
+@FieldDefaults(level = PUBLIC)
 public class QueryPublishedOffersRequest {
 
-    public String searchTerm;
+    String searchTerm;
 
-    public long skip;
+    Set<String> categories;
 
-    public long limit;
+    Set<String> sizes;
+
+    PriceRangeDTO priceRange;
+
+    OffersSortDTO sort;
+
+    long skip;
+
+    long limit;
 
 }

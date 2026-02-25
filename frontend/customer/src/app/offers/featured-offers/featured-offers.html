@@ -1,0 +1,31 @@
+@if (items$ | async; as items) {
+	@if (items.length > 1) {
+		<p-carousel
+			[value]="items"
+			[numVisible]="4"
+			[numScroll]="1"
+			[circular]="false"
+			[showNavigators]="showNavigators$ | async"
+			[responsiveOptions]="responsiveOptions"
+		>
+			<ng-template #item let-item>
+				<div class="carousel-item">
+					@if (item.type === "offer") {
+						@defer (on viewport) {
+							<a [routerLink]="['/offers', item.offer.id]" class="product-link">
+								<app-offer-card [offer]="item.offer"></app-offer-card>
+							</a>
+						} @placeholder {
+							<div class="card-placeholder"></div>
+						}
+					} @else {
+						<app-show-more-card
+							label="Weitere Sofortkäufe..."
+							link="/offers"
+						></app-show-more-card>
+					}
+				</div>
+			</ng-template>
+		</p-carousel>
+	}
+}

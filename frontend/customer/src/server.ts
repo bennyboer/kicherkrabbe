@@ -24,6 +24,10 @@ interface PublishedFabricDTO {
 	alias: string;
 }
 
+interface PublishedOfferDTO {
+	id: string;
+}
+
 interface SitemapCache {
 	xml: string;
 	timestamp: number;
@@ -77,14 +81,38 @@ async function fetchFabrics(): Promise<PublishedFabricDTO[]> {
 	}
 }
 
+async function fetchOffers(): Promise<PublishedOfferDTO[]> {
+	try {
+		const response = await fetch(`${API_URL}/offers/published`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				searchTerm: "",
+				categories: [],
+				sizes: [],
+				sort: { property: "NEWEST", direction: "DESCENDING" },
+				skip: 0,
+				limit: 1000,
+			}),
+		});
+		if (!response.ok) return [];
+		const data = await response.json();
+		return data.offers || [];
+	} catch {
+		return [];
+	}
+}
+
 function generateSitemapXml(
 	patterns: PublishedPatternDTO[],
-	fabrics: PublishedFabricDTO[]
+	fabrics: PublishedFabricDTO[],
+	offers: PublishedOfferDTO[]
 ): string {
 	const staticRoutes = [
 		"",
 		"/patterns",
 		"/fabrics",
+		"/offers",
 		"/contact",
 		"/landing/hochzeit",
 		"/landing/tracht",
@@ -123,6 +151,15 @@ function generateSitemapXml(
   </url>`);
 	}
 
+	for (const offer of offers) {
+		urls.push(`
+  <url>
+    <loc>${SITE_URL}/offers/${offer.id}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`);
+	}
+
 	return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.join("")}
 </urlset>`;
@@ -137,12 +174,13 @@ app.get("/sitemap.xml", async (_req, res) => {
 		return;
 	}
 
-	const [patterns, fabrics] = await Promise.all([
+	const [patterns, fabrics, offers] = await Promise.all([
 		fetchPatterns(),
 		fetchFabrics(),
+		fetchOffers(),
 	]);
 
-	const xml = generateSitemapXml(patterns, fabrics);
+	const xml = generateSitemapXml(patterns, fabrics, offers);
 	sitemapCache = { xml, timestamp: now };
 
 	res.set("Content-Type", "application/xml");

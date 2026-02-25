@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.offers.persistence.lookup.mongo;
 
+import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -17,9 +18,13 @@ public class MongoPricing {
 
     String priceCurrency;
 
+    @Nullable
     Long discountedPriceAmount;
 
+    @Nullable
     String discountedPriceCurrency;
+
+    long effectivePriceAmount;
 
     List<MongoPriceHistoryEntry> priceHistory;
 

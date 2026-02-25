@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Injector, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EnvironmentInjector, OnDestroy, OnInit } from '@angular/core';
 import { ButtonSize, Chip, NotificationService } from '../../../../../shared';
 import {
   BehaviorSubject,
@@ -105,6 +105,7 @@ export class CreatePage implements OnInit, OnDestroy {
     private readonly offerCategoriesService: OfferCategoriesService,
     private readonly assetsService: AssetsService,
     private readonly notificationService: NotificationService,
+    private readonly environmentInjector: EnvironmentInjector,
   ) {}
 
   ngOnInit(): void {
@@ -244,24 +245,23 @@ export class CreatePage implements OnInit, OnDestroy {
     const dialog = Dialog.create<EditImagesDialogResult>({
       title: 'Bilder bearbeiten',
       componentType: EditImagesDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: EditImagesDialogData,
-            useValue: EditImagesDialogData.of({
-              images,
-            }),
-          },
-          {
-            provide: OffersService,
-            useValue: this.offersService,
-          },
-          {
-            provide: AssetsService,
-            useValue: this.assetsService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: EditImagesDialogData,
+          useValue: EditImagesDialogData.of({
+            images,
+          }),
+        },
+        {
+          provide: OffersService,
+          useValue: this.offersService,
+        },
+        {
+          provide: AssetsService,
+          useValue: this.assetsService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);
@@ -290,20 +290,19 @@ export class CreatePage implements OnInit, OnDestroy {
     const dialog = Dialog.create<EditPriceDialogResult>({
       title: 'Preis festlegen',
       componentType: EditPriceDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: EditPriceDialogData,
-            useValue: EditPriceDialogData.of({
-              currentPrice: price.orElse(undefined!),
-            }),
-          },
-          {
-            provide: OffersService,
-            useValue: this.offersService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: EditPriceDialogData,
+          useValue: EditPriceDialogData.of({
+            currentPrice: price.orElse(undefined!),
+          }),
+        },
+        {
+          provide: OffersService,
+          useValue: this.offersService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);
@@ -316,21 +315,20 @@ export class CreatePage implements OnInit, OnDestroy {
     const dialog = Dialog.create<EditNoteDialogResult>({
       title,
       componentType: EditNoteDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: EditNoteDialogData,
-            useValue: EditNoteDialogData.of({
-              notes,
-              noteType,
-            }),
-          },
-          {
-            provide: OffersService,
-            useValue: this.offersService,
-          },
-        ],
-      }),
+      providers: [
+        {
+          provide: EditNoteDialogData,
+          useValue: EditNoteDialogData.of({
+            notes,
+            noteType,
+          }),
+        },
+        {
+          provide: OffersService,
+          useValue: this.offersService,
+        },
+      ],
+      environmentInjector: this.environmentInjector,
     });
 
     this.dialogService.open(dialog);

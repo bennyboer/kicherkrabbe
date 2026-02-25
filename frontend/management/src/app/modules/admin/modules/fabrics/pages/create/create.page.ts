@@ -3,7 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  Injector,
+  EnvironmentInjector,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -56,6 +56,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     private readonly assetsService: AssetsService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
+    private readonly environmentInjector: EnvironmentInjector,
   ) {}
 
   ngAfterViewInit(): void {
@@ -171,19 +172,18 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     const dialog = Dialog.create<AssetSelectDialogResult>({
       title: 'Bild auswählen',
       componentType: AssetSelectDialog,
-      injector: Injector.create({
-        providers: [
-          {
-            provide: AssetSelectDialogData,
-            useValue: AssetSelectDialogData.of({
-              multiple: false,
-              watermark: true,
-              initialContentTypes: ['image/png', 'image/jpeg'],
-            }),
-          },
-          { provide: AssetsService, useValue: this.assetsService },
-        ],
-      }),
+      providers: [
+        {
+          provide: AssetSelectDialogData,
+          useValue: AssetSelectDialogData.of({
+            multiple: false,
+            watermark: true,
+            initialContentTypes: ['image/png', 'image/jpeg'],
+          }),
+        },
+        { provide: AssetsService, useValue: this.assetsService },
+      ],
+      environmentInjector: this.environmentInjector,
     });
     this.dialogService.open(dialog);
     this.dialogService
