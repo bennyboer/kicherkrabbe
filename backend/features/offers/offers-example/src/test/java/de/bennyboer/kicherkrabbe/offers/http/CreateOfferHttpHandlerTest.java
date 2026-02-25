@@ -3,6 +3,9 @@ package de.bennyboer.kicherkrabbe.offers.http;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.offers.Actions;
+import de.bennyboer.kicherkrabbe.offers.AliasAlreadyInUseError;
+import de.bennyboer.kicherkrabbe.offers.OfferAlias;
+import de.bennyboer.kicherkrabbe.offers.OfferId;
 import de.bennyboer.kicherkrabbe.offers.api.MoneyDTO;
 import de.bennyboer.kicherkrabbe.permissions.*;
 import de.bennyboer.kicherkrabbe.offers.api.NotesDTO;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -115,6 +119,47 @@ public class CreateOfferHttpHandlerTest extends HttpHandlerTest {
                 .exchange();
 
         exchange.expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void shouldRespondWithPreconditionFailedOnAliasConflict() {
+        var request = new CreateOfferRequest();
+        request.title = "Test Offer";
+        request.size = "M";
+        request.categoryIds = Set.of();
+        request.productId = "PRODUCT_ID";
+        request.imageIds = List.of("IMAGE_1");
+        var notes = new NotesDTO();
+        notes.description = "Description";
+        request.notes = notes;
+        var price = new MoneyDTO();
+        price.amount = 1999L;
+        price.currency = "EUR";
+        request.price = price;
+
+        var token = createTokenForUser("USER_ID");
+
+        when(module.createOffer(
+                any(), any(), any(), any(), any(), any(), any(),
+                eq(Agent.user(AgentId.of("USER_ID")))
+        )).thenReturn(Mono.error(new AliasAlreadyInUseError(
+                OfferId.of("CONFLICTING_OFFER_ID"),
+                OfferAlias.of("test-offer")
+        )));
+
+        var exchange = client.post()
+                .uri("/offers/create")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        exchange.expectStatus().isEqualTo(412);
+        var body = exchange.expectBody(Map.class)
+                .returnResult()
+                .getResponseBody();
+        assertThat(body.get("reason")).isEqualTo("ALIAS_ALREADY_IN_USE");
+        assertThat(body.get("offerId")).isEqualTo("CONFLICTING_OFFER_ID");
+        assertThat(body.get("alias")).isEqualTo("test-offer");
     }
 
     @Test

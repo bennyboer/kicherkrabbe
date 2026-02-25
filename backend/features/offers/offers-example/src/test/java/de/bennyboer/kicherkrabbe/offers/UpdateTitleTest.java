@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.offers;
 import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.offers.samples.SampleOffer;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
 
@@ -48,6 +49,31 @@ public class UpdateTitleTest extends OffersModuleTest {
         archiveOffer(offerId, 2L, agent);
 
         assertThatThrownBy(() -> updateOfferTitle(offerId, 3L, "Updated Title", agent));
+    }
+
+    @Test
+    void shouldNotUpdateTitleToConflictingAlias() {
+        allowUserToCreateOffers("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        setUpDefaultProduct();
+        createOffer(SampleOffer.builder().title("Summer Dress").build(), agent);
+        String offerId2 = createOffer(SampleOffer.builder().title("Winter Coat").build(), agent);
+
+        assertThatThrownBy(() -> updateOfferTitle(offerId2, 0L, "Summer Dress", agent))
+                .matches(e -> e.getCause() instanceof AliasAlreadyInUseError);
+    }
+
+    @Test
+    void shouldAllowUpdatingTitleToSameTitle() {
+        allowUserToCreateOffers("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        setUpDefaultProduct();
+        String offerId = createOffer(SampleOffer.builder().title("My Offer").build(), agent);
+
+        long newVersion = updateOfferTitle(offerId, 0L, "My Offer", agent);
+        assertThat(newVersion).isEqualTo(1L);
     }
 
     @Test

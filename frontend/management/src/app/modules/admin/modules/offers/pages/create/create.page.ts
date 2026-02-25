@@ -232,11 +232,19 @@ export class CreatePage implements OnInit, OnDestroy {
           this.router.navigate(['..'], { relativeTo: this.route });
         },
         error: (e) => {
-          console.error('Failed to create offer', e);
-          this.notificationService.publish({
-            message: 'Sofortkauf konnte nicht erstellt werden. Bitte versuchen Sie es erneut.',
-            type: 'error',
-          });
+          const reason = e?.error?.reason;
+          if (reason === 'ALIAS_ALREADY_IN_USE') {
+            this.notificationService.publish({
+              type: 'error',
+              message: 'Es existiert bereits ein Sofortkauf mit diesem Titel.',
+            });
+          } else {
+            console.error('Failed to create offer', e);
+            this.notificationService.publish({
+              message: 'Sofortkauf konnte nicht erstellt werden. Bitte versuchen Sie es erneut.',
+              type: 'error',
+            });
+          }
         },
       });
   }

@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.money.Currency;
 import de.bennyboer.kicherkrabbe.money.Money;
 import de.bennyboer.kicherkrabbe.offers.api.MoneyDTO;
 import de.bennyboer.kicherkrabbe.offers.api.NotesDTO;
+import de.bennyboer.kicherkrabbe.offers.samples.SampleOffer;
 import de.bennyboer.kicherkrabbe.offers.samples.SampleProductForLookup;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
@@ -82,6 +83,31 @@ public class CreateOfferTest extends OffersModuleTest {
     void shouldNotCreateOfferWhenUserIsNotAllowed() {
         assertThatThrownBy(() -> createSampleOffer(Agent.user(AgentId.of("USER_ID"))))
                 .matches(e -> e.getCause() instanceof MissingPermissionError);
+    }
+
+    @Test
+    void shouldNotCreateOfferWithDuplicateAlias() {
+        allowUserToCreateOffers("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        setUpDefaultProduct();
+        createOffer(SampleOffer.builder().title("Summer Dress").build(), agent);
+
+        assertThatThrownBy(() -> createOffer(SampleOffer.builder().title("Summer Dress").build(), agent))
+                .matches(e -> e.getCause() instanceof AliasAlreadyInUseError);
+    }
+
+    @Test
+    void shouldCreateOffersWithDifferentTitles() {
+        allowUserToCreateOffers("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        setUpDefaultProduct();
+        createOffer(SampleOffer.builder().title("Summer Dress").build(), agent);
+        createOffer(SampleOffer.builder().title("Winter Coat").build(), agent);
+
+        var offers = getOffers(agent);
+        assertThat(offers).hasSize(2);
     }
 
     @Test

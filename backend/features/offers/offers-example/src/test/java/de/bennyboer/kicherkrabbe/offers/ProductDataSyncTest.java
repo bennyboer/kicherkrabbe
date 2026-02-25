@@ -136,8 +136,8 @@ public class ProductDataSyncTest extends OffersModuleTest {
         setUpProduct(SampleProductForLookup.builder()
                 .links(Set.of(originalLink))
                 .build());
-        String offerId1 = createOffer(SampleOffer.builder().build(), agent);
-        String offerId2 = createOffer(SampleOffer.builder().build(), agent);
+        String offerId1 = createOffer(SampleOffer.builder().title("Offer 1").build(), agent);
+        String offerId2 = createOffer(SampleOffer.builder().title("Offer 2").build(), agent);
 
         var renamedLink = Link.of(LinkType.PATTERN, LinkId.of("PATTERN_ID"), LinkName.of("New Name"));
         updateProductLink("PRODUCT_ID", 1L, renamedLink);

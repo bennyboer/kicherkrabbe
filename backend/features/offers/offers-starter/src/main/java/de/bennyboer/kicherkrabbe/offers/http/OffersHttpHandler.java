@@ -28,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -215,6 +216,14 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(
+                        AliasAlreadyInUseError.class, e -> ServerResponse.status(PRECONDITION_FAILED)
+                                .bodyValue(Map.of(
+                                        "reason", "ALIAS_ALREADY_IN_USE",
+                                        "offerId", e.getConflictingOfferId().getValue(),
+                                        "alias", e.getAlias().getValue()
+                                ))
+                )
                 .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }
@@ -606,6 +615,14 @@ public class OffersHttpHandler {
                         e.getMessage(),
                         e
                 ))
+                .onErrorResume(
+                        AliasAlreadyInUseError.class, e -> ServerResponse.status(PRECONDITION_FAILED)
+                                .bodyValue(Map.of(
+                                        "reason", "ALIAS_ALREADY_IN_USE",
+                                        "offerId", e.getConflictingOfferId().getValue(),
+                                        "alias", e.getAlias().getValue()
+                                ))
+                )
                 .onErrorResume(MissingPermissionError.class, e -> ServerResponse.status(FORBIDDEN).build())
                 .as(transactionalOperator::transactional);
     }

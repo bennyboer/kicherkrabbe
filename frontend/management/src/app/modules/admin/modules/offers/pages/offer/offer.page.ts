@@ -178,11 +178,19 @@ export class OfferPage implements OnInit, OnDestroy {
           });
         },
         error: (e) => {
-          console.error('Failed to update title', e);
-          this.notificationService.publish({
-            message: 'Titel konnte nicht aktualisiert werden. Bitte versuche es erneut.',
-            type: 'error',
-          });
+          const reason = e?.error?.reason;
+          if (reason === 'ALIAS_ALREADY_IN_USE') {
+            this.notificationService.publish({
+              type: 'error',
+              message: 'Es existiert bereits ein Sofortkauf mit diesem Titel.',
+            });
+          } else {
+            console.error('Failed to update title', e);
+            this.notificationService.publish({
+              message: 'Titel konnte nicht aktualisiert werden. Bitte versuche es erneut.',
+              type: 'error',
+            });
+          }
         },
       });
   }

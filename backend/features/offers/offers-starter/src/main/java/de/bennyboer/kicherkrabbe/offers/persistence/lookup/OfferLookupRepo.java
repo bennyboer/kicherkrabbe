@@ -20,6 +20,8 @@ public interface OfferLookupRepo extends EventSourcingReadModelRepo<OfferId, Loo
 
     Mono<LookupOffer> findPublishedByAlias(OfferAlias alias);
 
+    Mono<LookupOffer> findByAlias(OfferAlias alias);
+
     Flux<LookupOffer> findByProductId(ProductId productId);
 
     Flux<LookupOffer> findByCategoryId(OfferCategoryId categoryId);

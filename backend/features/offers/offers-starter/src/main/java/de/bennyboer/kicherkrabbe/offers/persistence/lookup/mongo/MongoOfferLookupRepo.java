@@ -173,6 +173,15 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
     }
 
     @Override
+    public Mono<LookupOffer> findByAlias(OfferAlias alias) {
+        Criteria criteria = where("alias").is(alias.getValue());
+        Query query = query(criteria);
+
+        return template.findOne(query, MongoLookupOffer.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
     public Flux<LookupOffer> findByProductId(ProductId productId) {
         Criteria criteria = where("product.id").is(productId.getValue());
         Query query = query(criteria);

@@ -162,7 +162,10 @@ public class OffersModule {
         var notes = toNotes(notesDTO);
         var price = Money.of(priceDTO.amount, Currency.fromShortForm(priceDTO.currency));
 
+        var alias = OfferAlias.fromTitle(offerTitle);
+
         return assertAgentIsAllowedTo(agent, CREATE)
+                .then(assertAliasIsNotAlreadyInUse(alias, null))
                 .then(offerService.create(
                         offerTitle,
                         offerSize,
@@ -283,8 +286,10 @@ public class OffersModule {
     public Mono<Long> updateOfferTitle(String offerId, long version, String title, Agent agent) {
         var id = OfferId.of(offerId);
         var offerTitle = OfferTitle.of(title);
+        var alias = OfferAlias.fromTitle(offerTitle);
 
         return assertAgentIsAllowedTo(agent, UPDATE_TITLE, id)
+                .then(assertAliasIsNotAlreadyInUse(alias, id))
                 .then(offerService.updateTitle(id, Version.of(version), offerTitle, agent))
                 .map(Version::getValue);
     }
@@ -770,6 +775,13 @@ public class OffersModule {
             case ASCENDING -> OfferSortDirection.ASCENDING;
             case DESCENDING -> OfferSortDirection.DESCENDING;
         };
+    }
+
+    private Mono<Void> assertAliasIsNotAlreadyInUse(OfferAlias alias, @Nullable OfferId excludeId) {
+        return offerLookupRepo.findByAlias(alias)
+                .filter(offer -> !offer.getId().equals(excludeId))
+                .map(LookupOffer::getId)
+                .flatMap(conflictingId -> Mono.error(new AliasAlreadyInUseError(conflictingId, alias)));
     }
 
     private ResourceType getResourceType() {

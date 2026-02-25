@@ -83,6 +83,13 @@ public class InMemoryOfferLookupRepo extends InMemoryEventSourcingReadModelRepo<
     }
 
     @Override
+    public Mono<LookupOffer> findByAlias(OfferAlias alias) {
+        return getAll()
+                .filter(offer -> offer.getAlias().equals(alias))
+                .singleOrEmpty();
+    }
+
+    @Override
     public Flux<LookupOffer> findByProductId(ProductId productId) {
         return getAll()
                 .filter(offer -> offer.getProduct().getId().equals(productId));

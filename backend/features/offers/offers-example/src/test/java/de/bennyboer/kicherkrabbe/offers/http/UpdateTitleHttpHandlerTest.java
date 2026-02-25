@@ -7,11 +7,16 @@ import de.bennyboer.kicherkrabbe.eventsourcing.aggregate.AggregateType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.offers.Actions;
+import de.bennyboer.kicherkrabbe.offers.AliasAlreadyInUseError;
+import de.bennyboer.kicherkrabbe.offers.OfferAlias;
+import de.bennyboer.kicherkrabbe.offers.OfferId;
 import de.bennyboer.kicherkrabbe.permissions.*;
 import de.bennyboer.kicherkrabbe.offers.api.requests.UpdateTitleRequest;
 import de.bennyboer.kicherkrabbe.offers.api.responses.UpdateTitleResponse;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -88,6 +93,39 @@ public class UpdateTitleHttpHandlerTest extends HttpHandlerTest {
                 .exchange();
 
         exchange.expectStatus().isUnauthorized();
+    }
+
+    @Test
+    void shouldRespondWithPreconditionFailedOnAliasConflict() {
+        var request = new UpdateTitleRequest();
+        request.version = 0L;
+        request.title = "Conflicting Title";
+
+        var token = createTokenForUser("USER_ID");
+
+        when(module.updateOfferTitle(
+                eq("OFFER_ID"),
+                any(Long.class),
+                eq("Conflicting Title"),
+                eq(Agent.user(AgentId.of("USER_ID")))
+        )).thenReturn(Mono.error(new AliasAlreadyInUseError(
+                OfferId.of("CONFLICTING_OFFER_ID"),
+                OfferAlias.of("conflicting-title")
+        )));
+
+        var exchange = client.post()
+                .uri("/offers/OFFER_ID/title/update")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        exchange.expectStatus().isEqualTo(412);
+        var body = exchange.expectBody(Map.class)
+                .returnResult()
+                .getResponseBody();
+        assertThat(body.get("reason")).isEqualTo("ALIAS_ALREADY_IN_USE");
+        assertThat(body.get("offerId")).isEqualTo("CONFLICTING_OFFER_ID");
+        assertThat(body.get("alias")).isEqualTo("conflicting-title");
     }
 
     @Test

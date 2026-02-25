@@ -24,8 +24,11 @@ import reactor.core.publisher.Mono;
 import java.time.Clock;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class OffersModuleTest {
+
+    private final AtomicLong sampleOfferCounter = new AtomicLong(0);
 
     private final EventSourcingRepo eventSourcingRepo = new InMemoryEventSourcingRepo();
 
@@ -109,7 +112,8 @@ public class OffersModuleTest {
 
     public String createSampleOffer(Agent agent) {
         setUpDefaultProduct();
-        return createOffer(SampleOffer.builder().build(), agent);
+        long counter = sampleOfferCounter.incrementAndGet();
+        return createOffer(SampleOffer.builder().title("Sample Offer " + counter).build(), agent);
     }
 
     public void deleteOffer(String offerId, long version, Agent agent) {

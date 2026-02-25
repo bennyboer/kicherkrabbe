@@ -148,9 +148,9 @@ public class QueryPublishedOffersTest extends OffersModuleTest {
         markCategoryAsAvailable("CAT_2", "Category 2");
 
         setUpDefaultProduct();
-        String offerId1 = createOffer(SampleOffer.builder().categoryIds(Set.of("CAT_1")).build(), agent);
-        String offerId2 = createOffer(SampleOffer.builder().categoryIds(Set.of("CAT_2")).build(), agent);
-        String offerId3 = createOffer(SampleOffer.builder().categoryIds(Set.of("CAT_1", "CAT_2")).build(), agent);
+        String offerId1 = createOffer(SampleOffer.builder().title("Offer Cat1").categoryIds(Set.of("CAT_1")).build(), agent);
+        String offerId2 = createOffer(SampleOffer.builder().title("Offer Cat2").categoryIds(Set.of("CAT_2")).build(), agent);
+        String offerId3 = createOffer(SampleOffer.builder().title("Offer Cat1Cat2").categoryIds(Set.of("CAT_1", "CAT_2")).build(), agent);
         publishOffer(offerId1, 0L, agent);
         publishOffer(offerId2, 0L, agent);
         publishOffer(offerId3, 0L, agent);
@@ -175,9 +175,9 @@ public class QueryPublishedOffersTest extends OffersModuleTest {
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         setUpDefaultProduct();
-        String offerId1 = createOffer(SampleOffer.builder().size("S").build(), agent);
-        String offerId2 = createOffer(SampleOffer.builder().size("M").build(), agent);
-        String offerId3 = createOffer(SampleOffer.builder().size("L").build(), agent);
+        String offerId1 = createOffer(SampleOffer.builder().title("Offer S").size("S").build(), agent);
+        String offerId2 = createOffer(SampleOffer.builder().title("Offer M").size("M").build(), agent);
+        String offerId3 = createOffer(SampleOffer.builder().title("Offer L").size("L").build(), agent);
         publishOffer(offerId1, 0L, agent);
         publishOffer(offerId2, 0L, agent);
         publishOffer(offerId3, 0L, agent);
@@ -198,9 +198,9 @@ public class QueryPublishedOffersTest extends OffersModuleTest {
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         setUpDefaultProduct();
-        String offerId1 = createOffer(SampleOffer.builder().price(SamplePrice.builder().amount(1000L).build()).build(), agent);
-        String offerId2 = createOffer(SampleOffer.builder().price(SamplePrice.builder().amount(2000L).build()).build(), agent);
-        String offerId3 = createOffer(SampleOffer.builder().price(SamplePrice.builder().amount(3000L).build()).build(), agent);
+        String offerId1 = createOffer(SampleOffer.builder().title("Cheap Offer").price(SamplePrice.builder().amount(1000L).build()).build(), agent);
+        String offerId2 = createOffer(SampleOffer.builder().title("Mid Offer").price(SamplePrice.builder().amount(2000L).build()).build(), agent);
+        String offerId3 = createOffer(SampleOffer.builder().title("Expensive Offer").price(SamplePrice.builder().amount(3000L).build()).build(), agent);
         publishOffer(offerId1, 0L, agent);
         publishOffer(offerId2, 0L, agent);
         publishOffer(offerId3, 0L, agent);
@@ -255,9 +255,9 @@ public class QueryPublishedOffersTest extends OffersModuleTest {
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         setUpDefaultProduct();
-        String offerId1 = createOffer(SampleOffer.builder().price(SamplePrice.builder().amount(3000L).build()).build(), agent);
-        String offerId2 = createOffer(SampleOffer.builder().price(SamplePrice.builder().amount(1000L).build()).build(), agent);
-        String offerId3 = createOffer(SampleOffer.builder().price(SamplePrice.builder().amount(2000L).build()).build(), agent);
+        String offerId1 = createOffer(SampleOffer.builder().title("Expensive").price(SamplePrice.builder().amount(3000L).build()).build(), agent);
+        String offerId2 = createOffer(SampleOffer.builder().title("Cheap").price(SamplePrice.builder().amount(1000L).build()).build(), agent);
+        String offerId3 = createOffer(SampleOffer.builder().title("Medium").price(SamplePrice.builder().amount(2000L).build()).build(), agent);
         publishOffer(offerId1, 0L, agent);
         publishOffer(offerId2, 0L, agent);
         publishOffer(offerId3, 0L, agent);
@@ -281,10 +281,10 @@ public class QueryPublishedOffersTest extends OffersModuleTest {
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         setUpDefaultProduct();
-        String offerId1 = createOffer(SampleOffer.builder().size("M").build(), agent);
-        String offerId2 = createOffer(SampleOffer.builder().size("S").build(), agent);
-        String offerId3 = createOffer(SampleOffer.builder().size("L").build(), agent);
-        String offerId4 = createOffer(SampleOffer.builder().size("M").build(), agent);
+        String offerId1 = createOffer(SampleOffer.builder().title("Offer M1").size("M").build(), agent);
+        String offerId2 = createOffer(SampleOffer.builder().title("Offer S").size("S").build(), agent);
+        String offerId3 = createOffer(SampleOffer.builder().title("Offer L").size("L").build(), agent);
+        String offerId4 = createOffer(SampleOffer.builder().title("Offer M2").size("M").build(), agent);
 
         publishOffer(offerId1, 0L, agent);
         publishOffer(offerId2, 0L, agent);
@@ -300,8 +300,8 @@ public class QueryPublishedOffersTest extends OffersModuleTest {
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         setUpDefaultProduct();
-        String offerId1 = createOffer(SampleOffer.builder().size("M").build(), agent);
-        String offerId2 = createOffer(SampleOffer.builder().size("XL").build(), agent);
+        String offerId1 = createOffer(SampleOffer.builder().title("Offer Medium").size("M").build(), agent);
+        String offerId2 = createOffer(SampleOffer.builder().title("Offer XL").size("XL").build(), agent);
 
         publishOffer(offerId1, 0L, agent);
         publishOffer(offerId2, 0L, agent);
