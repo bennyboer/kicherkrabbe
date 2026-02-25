@@ -26,6 +26,7 @@ interface PublishedFabricDTO {
 
 interface PublishedOfferDTO {
 	id: string;
+	alias: string;
 }
 
 interface SitemapCache {
@@ -154,7 +155,7 @@ function generateSitemapXml(
 	for (const offer of offers) {
 		urls.push(`
   <url>
-    <loc>${SITE_URL}/offers/${offer.id}</loc>
+    <loc>${SITE_URL}/offers/${offer.alias}</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`);

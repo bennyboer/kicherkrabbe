@@ -435,4 +435,103 @@ public class AssetsMessagingTest extends EventListenerTest {
         );
     }
 
+    @Test
+    void shouldUpdateAssetReferencesOnOfferCreated() {
+        send(
+                AggregateType.of("OFFER"),
+                AggregateId.of("OFFER_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("images", List.of("ASSET_1", "ASSET_2"), "title", "Summer Dress L")
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetReferences(
+                eq(AssetReferenceResourceType.OFFER),
+                eq(AssetResourceId.of("OFFER_ID")),
+                eq(Set.of(AssetId.of("ASSET_1"), AssetId.of("ASSET_2"))),
+                eq("Summer Dress L")
+        );
+    }
+
+    @Test
+    void shouldUpdateAssetReferencesOnOfferImagesUpdated() {
+        send(
+                AggregateType.of("OFFER"),
+                AggregateId.of("OFFER_ID"),
+                Version.of(2),
+                EventName.of("IMAGES_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("images", List.of("ASSET_3"))
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetReferences(
+                eq(AssetReferenceResourceType.OFFER),
+                eq(AssetResourceId.of("OFFER_ID")),
+                eq(Set.of(AssetId.of("ASSET_3")))
+        );
+    }
+
+    @Test
+    void shouldUpdateResourceNameOnOfferTitleUpdated() {
+        send(
+                AggregateType.of("OFFER"),
+                AggregateId.of("OFFER_ID"),
+                Version.of(3),
+                EventName.of("TITLE_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("title", "New Offer Title")
+        );
+
+        verify(module, timeout(5000).times(1)).updateResourceNameInReferences(
+                eq(AssetReferenceResourceType.OFFER),
+                eq(AssetResourceId.of("OFFER_ID")),
+                eq("New Offer Title")
+        );
+    }
+
+    @Test
+    void shouldRemoveAssetReferencesOnOfferDeleted() {
+        send(
+                AggregateType.of("OFFER"),
+                AggregateId.of("OFFER_ID"),
+                Version.of(3),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        verify(module, timeout(5000).times(1)).removeAssetReferencesByResource(
+                eq(AssetReferenceResourceType.OFFER),
+                eq(AssetResourceId.of("OFFER_ID"))
+        );
+    }
+
+    @Test
+    void shouldRemoveAssetReferencesOnOfferArchived() {
+        send(
+                AggregateType.of("OFFER"),
+                AggregateId.of("OFFER_ID"),
+                Version.of(4),
+                EventName.of("ARCHIVED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        verify(module, timeout(5000).times(1)).removeAssetReferencesByResource(
+                eq(AssetReferenceResourceType.OFFER),
+                eq(AssetResourceId.of("OFFER_ID"))
+        );
+    }
+
 }

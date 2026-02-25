@@ -15,6 +15,9 @@ public class SamplePublishedOffer {
     private String id = "OFFER_ID";
 
     @Builder.Default
+    private String alias = "sample-offer";
+
+    @Builder.Default
     private String title = "Sample Offer";
 
     @Builder.Default
@@ -43,6 +46,7 @@ public class SamplePublishedOffer {
     public PublishedOffer toModel() {
         return PublishedOffer.of(
                 OfferId.of(id),
+                OfferAlias.of(alias),
                 OfferTitle.of(title),
                 OfferSize.of(size),
                 categoryIds.stream().map(OfferCategoryId::of).collect(java.util.stream.Collectors.toSet()),

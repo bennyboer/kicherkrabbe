@@ -2,6 +2,7 @@ package de.bennyboer.kicherkrabbe.offers.persistence.lookup.inmemory;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.inmemory.InMemoryEventSourcingReadModelRepo;
 import de.bennyboer.kicherkrabbe.money.Money;
+import de.bennyboer.kicherkrabbe.offers.OfferAlias;
 import de.bennyboer.kicherkrabbe.offers.OfferCategoryId;
 import de.bennyboer.kicherkrabbe.offers.OfferId;
 import de.bennyboer.kicherkrabbe.offers.OfferSize;
@@ -71,6 +72,13 @@ public class InMemoryOfferLookupRepo extends InMemoryEventSourcingReadModelRepo<
     public Mono<LookupOffer> findPublished(OfferId id) {
         return getAll()
                 .filter(offer -> offer.getId().equals(id) && offer.isPublished() && offer.getArchivedAt().isEmpty())
+                .singleOrEmpty();
+    }
+
+    @Override
+    public Mono<LookupOffer> findPublishedByAlias(OfferAlias alias) {
+        return getAll()
+                .filter(offer -> offer.getAlias().equals(alias) && offer.isPublished() && offer.getArchivedAt().isEmpty())
                 .singleOrEmpty();
     }
 

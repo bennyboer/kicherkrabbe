@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.offers.persistence.lookup.mongo;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.MongoEventSourcingReadModelRepo;
+import de.bennyboer.kicherkrabbe.offers.OfferAlias;
 import de.bennyboer.kicherkrabbe.offers.OfferCategoryId;
 import de.bennyboer.kicherkrabbe.offers.OfferId;
 import de.bennyboer.kicherkrabbe.offers.OfferSize;
@@ -161,6 +162,17 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
     }
 
     @Override
+    public Mono<LookupOffer> findPublishedByAlias(OfferAlias alias) {
+        Criteria criteria = where("alias").is(alias.getValue())
+                .and("published").is(true)
+                .and("archivedAt").isNull();
+        Query query = query(criteria);
+
+        return template.findOne(query, MongoLookupOffer.class, collectionName)
+                .map(serializer::deserialize);
+    }
+
+    @Override
     public Flux<LookupOffer> findByProductId(ProductId productId) {
         Criteria criteria = where("product.id").is(productId.getValue());
         Query query = query(criteria);
@@ -201,12 +213,14 @@ public class MongoOfferLookupRepo extends MongoEventSourcingReadModelRepo<OfferI
         IndexDefinition effectivePriceIndex = new Index()
                 .on("published", Sort.Direction.ASC)
                 .on("pricing.effectivePriceAmount", Sort.Direction.ASC);
+        IndexDefinition aliasIndex = new Index().on("alias", Sort.Direction.ASC).unique();
 
         return indexOps.createIndex(publishedOffersIndex)
                 .then(indexOps.createIndex(productIdIndex))
                 .then(indexOps.createIndex(categoryIdsIndex))
                 .then(indexOps.createIndex(sizeIndex))
                 .then(indexOps.createIndex(effectivePriceIndex))
+                .then(indexOps.createIndex(aliasIndex))
                 .then();
     }
 

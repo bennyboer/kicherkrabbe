@@ -15,6 +15,8 @@ public class PublishedOffer {
 
     OfferId id;
 
+    OfferAlias alias;
+
     OfferTitle title;
 
     OfferSize size;
@@ -33,6 +35,7 @@ public class PublishedOffer {
 
     public static PublishedOffer of(
             OfferId id,
+            OfferAlias alias,
             OfferTitle title,
             OfferSize size,
             Set<OfferCategoryId> categories,
@@ -43,6 +46,7 @@ public class PublishedOffer {
             Notes notes
     ) {
         notNull(id, "Offer ID must be given");
+        notNull(alias, "Alias must be given");
         notNull(title, "Title must be given");
         notNull(size, "Size must be given");
         notNull(categories, "Categories must be given");
@@ -52,7 +56,7 @@ public class PublishedOffer {
         notNull(pricing, "Pricing must be given");
         notNull(notes, "Notes must be given");
 
-        return new PublishedOffer(id, title, size, categories, images, links, fabricComposition, pricing, notes);
+        return new PublishedOffer(id, alias, title, size, categories, images, links, fabricComposition, pricing, notes);
     }
 
 }

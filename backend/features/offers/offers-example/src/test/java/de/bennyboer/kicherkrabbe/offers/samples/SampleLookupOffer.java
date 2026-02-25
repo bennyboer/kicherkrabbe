@@ -5,6 +5,7 @@ import de.bennyboer.kicherkrabbe.money.Currency;
 import de.bennyboer.kicherkrabbe.money.Money;
 import de.bennyboer.kicherkrabbe.offers.*;
 import de.bennyboer.kicherkrabbe.offers.persistence.lookup.LookupOffer;
+import jakarta.annotation.Nullable;
 import lombok.Builder;
 
 import java.time.Instant;
@@ -19,6 +20,10 @@ public class SampleLookupOffer {
 
     @Builder.Default
     private long version = 0L;
+
+    @Nullable
+    @Builder.Default
+    private OfferAlias alias = null;
 
     @Builder.Default
     private OfferTitle title = OfferTitle.of("Sample Offer");
@@ -67,6 +72,7 @@ public class SampleLookupOffer {
         return LookupOffer.of(
                 id,
                 Version.of(version),
+                alias != null ? alias : OfferAlias.of("sample-offer-" + id.getValue()),
                 title,
                 size,
                 categories,

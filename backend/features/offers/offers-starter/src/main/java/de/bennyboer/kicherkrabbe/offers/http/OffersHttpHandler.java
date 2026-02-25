@@ -715,6 +715,7 @@ public class OffersHttpHandler {
     private PublishedOfferDTO toPublishedOfferDTO(PublishedOffer offer) {
         var result = new PublishedOfferDTO();
         result.id = offer.getId().getValue();
+        result.alias = offer.getAlias().getValue();
         result.title = offer.getTitle().getValue();
         result.size = offer.getSize().getValue();
         result.categoryIds = offer.getCategories().stream().map(OfferCategoryId::getValue).collect(Collectors.toSet());

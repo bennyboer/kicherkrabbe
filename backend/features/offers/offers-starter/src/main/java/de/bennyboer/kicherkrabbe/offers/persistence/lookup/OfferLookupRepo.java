@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.offers.persistence.lookup;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.EventSourcingReadModelRepo;
+import de.bennyboer.kicherkrabbe.offers.OfferAlias;
 import de.bennyboer.kicherkrabbe.offers.OfferCategoryId;
 import de.bennyboer.kicherkrabbe.offers.OfferId;
 import de.bennyboer.kicherkrabbe.offers.ProductId;
@@ -16,6 +17,8 @@ public interface OfferLookupRepo extends EventSourcingReadModelRepo<OfferId, Loo
     Mono<LookupOfferPage> findPublished(PublishedOfferQuery query);
 
     Mono<LookupOffer> findPublished(OfferId id);
+
+    Mono<LookupOffer> findPublishedByAlias(OfferAlias alias);
 
     Flux<LookupOffer> findByProductId(ProductId productId);
 

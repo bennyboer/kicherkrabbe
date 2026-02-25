@@ -144,11 +144,11 @@ export class FabricsPage implements OnInit, OnDestroy {
 	}
 
 	onTopicsChange(ids: string[]): void {
-		this.selectedTopicIds$.next(ids);
+		this.selectedTopicIds$.next(ids ?? []);
 	}
 
 	onColorsChange(ids: string[]): void {
-		this.selectedColorIds$.next(ids);
+		this.selectedColorIds$.next(ids ?? []);
 	}
 
 	onInStockChange(value: boolean): void {

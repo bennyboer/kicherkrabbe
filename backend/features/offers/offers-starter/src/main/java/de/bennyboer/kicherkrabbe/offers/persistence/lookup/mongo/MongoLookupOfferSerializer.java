@@ -19,6 +19,7 @@ public class MongoLookupOfferSerializer implements ReadModelSerializer<LookupOff
 
         result.id = readModel.getId().getValue();
         result.version = readModel.getVersion().getValue();
+        result.alias = readModel.getAlias().getValue();
         result.title = readModel.getTitle().getValue();
         result.size = readModel.getSize().getValue();
         result.categoryIds = readModel.getCategories().stream().map(OfferCategoryId::getValue).collect(Collectors.toSet());
@@ -47,6 +48,7 @@ public class MongoLookupOfferSerializer implements ReadModelSerializer<LookupOff
     public LookupOffer deserialize(MongoLookupOffer serialized) {
         var id = OfferId.of(serialized.id);
         var version = Version.of(serialized.version);
+        var alias = OfferAlias.of(serialized.alias != null ? serialized.alias : serialized.id);
         var title = OfferTitle.of(serialized.title);
         var size = OfferSize.of(serialized.size);
         var categories = serialized.categoryIds != null
@@ -66,6 +68,7 @@ public class MongoLookupOfferSerializer implements ReadModelSerializer<LookupOff
         return LookupOffer.of(
                 id,
                 version,
+                alias,
                 title,
                 size,
                 categories,

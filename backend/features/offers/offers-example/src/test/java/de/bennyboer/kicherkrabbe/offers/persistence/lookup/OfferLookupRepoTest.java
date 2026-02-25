@@ -544,6 +544,45 @@ public abstract class OfferLookupRepoTest {
     }
 
     @Test
+    void shouldFindPublishedOfferByAlias() {
+        var offer1 = SampleLookupOffer.builder()
+                .alias(OfferAlias.of("summer-dress"))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T13:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer2 = SampleLookupOffer.builder()
+                .alias(OfferAlias.of("winter-coat"))
+                .published(true)
+                .createdAt(Instant.parse("2024-03-12T12:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer3 = SampleLookupOffer.builder()
+                .alias(OfferAlias.of("archived-dress"))
+                .published(true)
+                .archivedAt(Instant.parse("2024-03-12T14:00:00.00Z"))
+                .createdAt(Instant.parse("2024-03-12T11:00:00.00Z"))
+                .build()
+                .toModel();
+        var offer4 = SampleLookupOffer.builder()
+                .alias(OfferAlias.of("unpublished-dress"))
+                .published(false)
+                .createdAt(Instant.parse("2024-03-12T10:00:00.00Z"))
+                .build()
+                .toModel();
+        update(offer1);
+        update(offer2);
+        update(offer3);
+        update(offer4);
+
+        assertThat(findPublishedByAlias(OfferAlias.of("summer-dress"))).isEqualTo(offer1);
+        assertThat(findPublishedByAlias(OfferAlias.of("winter-coat"))).isEqualTo(offer2);
+        assertThat(findPublishedByAlias(OfferAlias.of("archived-dress"))).isNull();
+        assertThat(findPublishedByAlias(OfferAlias.of("unpublished-dress"))).isNull();
+        assertThat(findPublishedByAlias(OfferAlias.of("non-existing"))).isNull();
+    }
+
+    @Test
     void shouldFindDistinctPublishedSizes() {
         var offer1 = SampleLookupOffer.builder()
                 .size(OfferSize.of("M"))
@@ -622,6 +661,10 @@ public abstract class OfferLookupRepoTest {
 
     private List<LookupOffer> findByProductId(ProductId productId) {
         return repo.findByProductId(productId).collectList().block();
+    }
+
+    private LookupOffer findPublishedByAlias(OfferAlias alias) {
+        return repo.findPublishedByAlias(alias).block();
     }
 
     private List<String> findDistinctPublishedSizes() {

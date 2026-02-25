@@ -93,6 +93,35 @@ public class QueryPublishedOffersTest extends OffersModuleTest {
     }
 
     @Test
+    void shouldGetPublishedOfferByAlias() {
+        allowUserToCreateOffers("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        setUpDefaultProduct();
+        String offerId = createOffer(SampleOffer.builder().title("Baby Strampler").build(), agent);
+        publishOffer(offerId, 0L, agent);
+
+        var offer = getPublishedOffer("baby-strampler", Agent.anonymous());
+        assertThat(offer).isNotNull();
+        assertThat(offer.getId()).isEqualTo(OfferId.of(offerId));
+        assertThat(offer.getAlias()).isEqualTo(OfferAlias.of("baby-strampler"));
+    }
+
+    @Test
+    void shouldReturnAliasInPublishedOffers() {
+        allowUserToCreateOffers("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        setUpDefaultProduct();
+        String offerId = createOffer(SampleOffer.builder().title("Baby Strampler").build(), agent);
+        publishOffer(offerId, 0L, agent);
+
+        var page = getPublishedOffers("", 0, 100, agent);
+        assertThat(page.getResults()).hasSize(1);
+        assertThat(page.getResults().getFirst().getAlias()).isEqualTo(OfferAlias.of("baby-strampler"));
+    }
+
+    @Test
     void shouldQueryPublishedOffersWithPaging() {
         allowUserToCreateOffers("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));

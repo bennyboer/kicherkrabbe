@@ -21,6 +21,8 @@ public class MongoLookupOffer {
 
     long version;
 
+    String alias;
+
     String title;
 
     String size;

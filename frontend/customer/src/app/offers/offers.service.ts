@@ -35,6 +35,7 @@ interface FabricCompositionItemDTO {
 
 interface PublishedOfferDTO {
 	id: string;
+	alias: string;
 	title: string;
 	size: string;
 	categoryIds: string[];
@@ -187,6 +188,7 @@ export class OffersService {
 	private toInternalOffer(dto: PublishedOfferDTO): Offer {
 		return Offer.of({
 			id: dto.id,
+			alias: dto.alias,
 			title: dto.title,
 			size: dto.size,
 			categoryIds: dto.categoryIds ?? [],

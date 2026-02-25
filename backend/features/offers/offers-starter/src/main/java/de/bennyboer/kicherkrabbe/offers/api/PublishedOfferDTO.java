@@ -7,6 +7,8 @@ public class PublishedOfferDTO {
 
     public String id;
 
+    public String alias;
+
     public String title;
 
     public String size;

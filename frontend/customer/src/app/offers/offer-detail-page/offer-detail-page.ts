@@ -164,7 +164,7 @@ export class OfferDetailPage implements OnInit, OnDestroy {
 	}
 
 	private updateSeo(offer: Offer): void {
-		const canonicalPath = `/offers/${offer.id}`;
+		const canonicalPath = `/offers/${offer.alias}`;
 
 		this.seoService.updateMetaTags({
 			title: `${offer.title} | Kicherkrabbe`,

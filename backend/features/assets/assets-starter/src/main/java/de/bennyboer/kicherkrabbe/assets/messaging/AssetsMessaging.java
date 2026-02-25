@@ -49,6 +49,15 @@ public class AssetsMessaging {
     record HighlightImageUpdatedEvent(String imageId) {
     }
 
+    record OfferCreatedEvent(List<String> images, String title) {
+    }
+
+    record OfferImagesUpdatedEvent(List<String> images) {
+    }
+
+    record OfferTitleUpdatedEvent(String title) {
+    }
+
     @Bean("assets_onUserCreatedAllowUserToCreateAssets")
     public EventListener onUserCreatedAllowUserToCreateAssets(
             EventListenerFactory factory,
@@ -457,6 +466,113 @@ public class AssetsMessaging {
                     return module.removeAssetReferencesByResource(
                             AssetReferenceResourceType.HIGHLIGHT,
                             AssetResourceId.of(highlightId)
+                    );
+                }
+        );
+    }
+
+    @Bean("assets_onOfferCreatedUpdateAssetReferences")
+    public EventListener onOfferCreatedUpdateAssetReferences(
+            EventListenerFactory factory,
+            AssetsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "assets.offer-created-update-asset-references",
+                AggregateType.of("OFFER"),
+                EventName.of("CREATED"),
+                OfferCreatedEvent.class,
+                (metadata, event) -> {
+                    String offerId = metadata.getAggregateId().getValue();
+
+                    return module.updateAssetReferences(
+                            AssetReferenceResourceType.OFFER,
+                            AssetResourceId.of(offerId),
+                            toAssetIds(event.images()),
+                            event.title()
+                    );
+                }
+        );
+    }
+
+    @Bean("assets_onOfferImagesUpdatedUpdateAssetReferences")
+    public EventListener onOfferImagesUpdatedUpdateAssetReferences(
+            EventListenerFactory factory,
+            AssetsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "assets.offer-images-updated-update-asset-references",
+                AggregateType.of("OFFER"),
+                EventName.of("IMAGES_UPDATED"),
+                OfferImagesUpdatedEvent.class,
+                (metadata, event) -> {
+                    String offerId = metadata.getAggregateId().getValue();
+
+                    return module.updateAssetReferences(
+                            AssetReferenceResourceType.OFFER,
+                            AssetResourceId.of(offerId),
+                            toAssetIds(event.images())
+                    );
+                }
+        );
+    }
+
+    @Bean("assets_onOfferTitleUpdatedUpdateResourceName")
+    public EventListener onOfferTitleUpdatedUpdateResourceName(
+            EventListenerFactory factory,
+            AssetsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "assets.offer-title-updated-update-resource-name",
+                AggregateType.of("OFFER"),
+                EventName.of("TITLE_UPDATED"),
+                OfferTitleUpdatedEvent.class,
+                (metadata, event) -> {
+                    String offerId = metadata.getAggregateId().getValue();
+
+                    return module.updateResourceNameInReferences(
+                            AssetReferenceResourceType.OFFER,
+                            AssetResourceId.of(offerId),
+                            event.title()
+                    );
+                }
+        );
+    }
+
+    @Bean("assets_onOfferDeletedRemoveAssetReferences")
+    public EventListener onOfferDeletedRemoveAssetReferences(
+            EventListenerFactory factory,
+            AssetsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "assets.offer-deleted-remove-asset-references",
+                AggregateType.of("OFFER"),
+                EventName.of("DELETED"),
+                (event) -> {
+                    String offerId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.removeAssetReferencesByResource(
+                            AssetReferenceResourceType.OFFER,
+                            AssetResourceId.of(offerId)
+                    );
+                }
+        );
+    }
+
+    @Bean("assets_onOfferArchivedRemoveAssetReferences")
+    public EventListener onOfferArchivedRemoveAssetReferences(
+            EventListenerFactory factory,
+            AssetsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "assets.offer-archived-remove-asset-references",
+                AggregateType.of("OFFER"),
+                EventName.of("ARCHIVED"),
+                (event) -> {
+                    String offerId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.removeAssetReferencesByResource(
+                            AssetReferenceResourceType.OFFER,
+                            AssetResourceId.of(offerId)
                     );
                 }
         );

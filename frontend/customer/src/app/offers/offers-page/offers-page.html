@@ -82,7 +82,7 @@
 			} @else {
 				<div class="product-grid">
 					@for (offer of offers$ | async; track offer.id) {
-						<a [routerLink]="['/offers', offer.id]" class="product-link">
+						<a [routerLink]="['/offers', offer.alias]" class="product-link">
 							<app-offer-card [offer]="offer" />
 						</a>
 					}

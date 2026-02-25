@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.offers;
 
+import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
@@ -22,6 +23,18 @@ public class UpdateSizeTest extends OffersModuleTest {
 
         var offer = getOffer(offerId, agent);
         assertThat(offer.getSize()).isEqualTo(OfferSize.of("XL"));
+    }
+
+    @Test
+    void shouldNotUpdateSizeGivenAnOutdatedVersion() {
+        allowUserToCreateOffers("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+        String offerId = createSampleOffer(agent);
+
+        updateOfferSize(offerId, 0L, "XL", agent);
+
+        assertThatThrownBy(() -> updateOfferSize(offerId, 0L, "XXL", agent))
+                .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test

@@ -23,6 +23,8 @@ public class LookupOffer implements VersionedReadModel<OfferId> {
 
     Version version;
 
+    OfferAlias alias;
+
     OfferTitle title;
 
     OfferSize size;
@@ -53,6 +55,7 @@ public class LookupOffer implements VersionedReadModel<OfferId> {
     public static LookupOffer of(
             OfferId id,
             Version version,
+            OfferAlias alias,
             OfferTitle title,
             OfferSize size,
             Set<OfferCategoryId> categories,
@@ -69,6 +72,7 @@ public class LookupOffer implements VersionedReadModel<OfferId> {
     ) {
         notNull(id, "Offer ID must be given");
         notNull(version, "Version must be given");
+        notNull(alias, "Alias must be given");
         notNull(title, "Title must be given");
         notNull(size, "Size must be given");
         notNull(categories, "Categories must be given");
@@ -80,7 +84,7 @@ public class LookupOffer implements VersionedReadModel<OfferId> {
         notNull(notes, "Notes must be given");
         notNull(createdAt, "Created at must be given");
 
-        return new LookupOffer(id, version, title, size, categories, product, images, links, fabricComposition, pricing, notes, published, reserved, createdAt, archivedAt);
+        return new LookupOffer(id, version, alias, title, size, categories, product, images, links, fabricComposition, pricing, notes, published, reserved, createdAt, archivedAt);
     }
 
     public Optional<Instant> getArchivedAt() {

@@ -54,6 +54,19 @@ public class PublishOfferTest extends OffersModuleTest {
     }
 
     @Test
+    void shouldNotPublishArchivedOffer() {
+        allowUserToCreateOffers("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        String offerId = createSampleOffer(agent);
+        publishOffer(offerId, 0L, agent);
+        reserveOffer(offerId, 1L, agent);
+        archiveOffer(offerId, 2L, agent);
+
+        assertThatThrownBy(() -> publishOffer(offerId, 3L, agent));
+    }
+
+    @Test
     void shouldNotPublishOfferWhenUserIsNotAllowed() {
         assertThatThrownBy(() -> publishOffer(
                 "OFFER_ID",

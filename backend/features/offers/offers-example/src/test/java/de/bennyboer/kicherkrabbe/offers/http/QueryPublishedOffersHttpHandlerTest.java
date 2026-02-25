@@ -48,6 +48,7 @@ public class QueryPublishedOffersHttpHandlerTest extends HttpHandlerTest {
         assertThat(response.total).isEqualTo(1);
         assertThat(response.offers).hasSize(1);
         assertThat(response.offers.getFirst().id).isEqualTo("OFFER_ID");
+        assertThat(response.offers.getFirst().alias).isEqualTo("sample-offer");
     }
 
     @Test

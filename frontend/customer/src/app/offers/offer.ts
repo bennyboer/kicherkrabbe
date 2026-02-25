@@ -9,6 +9,7 @@ import type {
 
 export class Offer {
 	readonly id: string;
+	readonly alias: string;
 	readonly title: string;
 	readonly size: string;
 	readonly categoryIds: string[];
@@ -20,6 +21,7 @@ export class Offer {
 
 	private constructor(props: {
 		id: string;
+		alias: string;
 		title: string;
 		size: string;
 		categoryIds: string[];
@@ -32,6 +34,7 @@ export class Offer {
 		validateProps(props);
 
 		this.id = props.id;
+		this.alias = props.alias;
 		this.title = props.title;
 		this.size = props.size;
 		this.categoryIds = props.categoryIds;
@@ -44,6 +47,7 @@ export class Offer {
 
 	static of(props: {
 		id: string;
+		alias: string;
 		title: string;
 		size: string;
 		categoryIds?: string[];
@@ -55,6 +59,7 @@ export class Offer {
 	}): Offer {
 		return new Offer({
 			id: props.id,
+			alias: props.alias,
 			title: props.title,
 			size: props.size,
 			categoryIds: props.categoryIds ?? [],

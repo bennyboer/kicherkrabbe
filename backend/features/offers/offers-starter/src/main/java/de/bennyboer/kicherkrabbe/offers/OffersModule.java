@@ -119,11 +119,11 @@ public class OffersModule {
                 ));
     }
 
-    public Mono<PublishedOffer> getPublishedOffer(String offerId, Agent agent) {
-        var id = OfferId.of(offerId);
-
-        return assertAgentIsAllowedTo(agent, READ_PUBLISHED, id)
-                .then(offerLookupRepo.findPublished(id))
+    public Mono<PublishedOffer> getPublishedOffer(String offerIdOrAlias, Agent agent) {
+        return offerLookupRepo.findPublishedByAlias(OfferAlias.of(offerIdOrAlias))
+                .switchIfEmpty(Mono.defer(() -> offerLookupRepo.findPublished(OfferId.of(offerIdOrAlias))))
+                .flatMap(offer -> assertAgentIsAllowedTo(agent, READ_PUBLISHED, offer.getId())
+                        .thenReturn(offer))
                 .map(this::toPublishedOffer)
                 .onErrorResume(MissingPermissionError.class, ignored -> Mono.empty());
     }
@@ -500,6 +500,7 @@ public class OffersModule {
                         .map(productData -> LookupOffer.of(
                                 offer.getId(),
                                 offer.getVersion(),
+                                OfferAlias.fromTitle(offer.getTitle()),
                                 offer.getTitle(),
                                 offer.getSize(),
                                 offer.getCategories(),
@@ -692,6 +693,7 @@ public class OffersModule {
     private PublishedOffer toPublishedOffer(LookupOffer offer) {
         return PublishedOffer.of(
                 offer.getId(),
+                offer.getAlias(),
                 offer.getTitle(),
                 offer.getSize(),
                 offer.getCategories(),

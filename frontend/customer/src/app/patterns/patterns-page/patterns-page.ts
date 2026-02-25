@@ -132,11 +132,11 @@ export class PatternsPage implements OnInit, OnDestroy {
 	}
 
 	onCategoriesChange(ids: string[]): void {
-		this.selectedCategoryIds$.next(ids);
+		this.selectedCategoryIds$.next(ids ?? []);
 	}
 
 	onSizesChange(sizes: number[]): void {
-		this.selectedSizes$.next(sizes);
+		this.selectedSizes$.next(sizes ?? []);
 	}
 
 	onSortChange(value: string): void {
