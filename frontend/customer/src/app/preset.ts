@@ -61,6 +61,9 @@ export const customerPreset = definePreset(Aura, {
 					activeColor: "{zinc.200}",
 					contrastColor: "{zinc.900}",
 				},
+				text: {
+					mutedColor: "{surface.500}",
+				},
 				surface: {
 					0: "{zinc.950}",
 					50: "{zinc.900}",

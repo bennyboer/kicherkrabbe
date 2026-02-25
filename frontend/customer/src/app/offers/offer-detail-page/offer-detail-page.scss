@@ -88,6 +88,12 @@
 	width: fit-content;
 }
 
+.price-section {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
 .price-info {
 	display: flex;
 	align-items: baseline;
@@ -103,6 +109,12 @@
 .original-price {
 	font-size: 1.125rem;
 	text-decoration: line-through;
+	color: var(--p-text-muted-color);
+}
+
+.lowest-price-note {
+	margin: 0;
+	font-size: 0.75rem;
 	color: var(--p-text-muted-color);
 }
 

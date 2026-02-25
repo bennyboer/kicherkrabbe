@@ -45,15 +45,20 @@
 
 				<div class="offer-size-badge">Größe {{ offer.size }}</div>
 
-				<div class="price-info">
-					@if (offer.hasDiscount()) {
-						<span class="original-price">{{ offer.formatPrice() }}</span>
-						<span class="effective-price">{{ offer.formatEffectivePrice() }}</span>
-					} @else {
-						<span class="effective-price">{{ offer.formatEffectivePrice() }}</span>
+				<div class="price-section">
+					<div class="price-info">
+						@if (offer.hasDiscount()) {
+							<span class="original-price">{{ offer.formatPrice() }}</span>
+							<span class="effective-price">{{ offer.formatEffectivePrice() }}</span>
+						} @else {
+							<span class="effective-price">{{ offer.formatEffectivePrice() }}</span>
+						}
+					</div>
+					@if (offer.formatLowestPriceInLast30Days().isSome()) {
+						<p class="lowest-price-note">Niedrigster Preis der letzten 30 Tage: {{ offer.formatLowestPriceInLast30Days().orElse('') }}</p>
 					}
+					<p class="vat-note">Gem&auml;&szlig; &sect; 19 UStG &bdquo;Kleinunternehmerregelung&ldquo; wird keine Umsatzsteuer berechnet.</p>
 				</div>
-				<p class="vat-note">Gem&auml;&szlig; &sect; 19 UStG &bdquo;Kleinunternehmerregelung&ldquo; wird keine Umsatzsteuer berechnet.</p>
 
 				@if (offer.notes.description) {
 					<div class="description">

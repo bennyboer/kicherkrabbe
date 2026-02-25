@@ -1,4 +1,4 @@
-import { validateProps } from "@kicherkrabbe/shared";
+import { none, someOrNone, type Option, validateProps } from "@kicherkrabbe/shared";
 import type {
 	FabricCompositionItem,
 	Money,
@@ -88,6 +88,30 @@ export class Offer {
 
 	hasDiscount(): boolean {
 		return this.pricing.discountedPrice.isSome();
+	}
+
+	getLowestPriceInLast30Days(): Option<Money> {
+		if (!this.hasDiscount()) {
+			return none();
+		}
+
+		const thirtyDaysAgo = new Date();
+		thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+		const recentPrices = this.pricing.priceHistory
+			.filter((entry) => entry.timestamp >= thirtyDaysAgo)
+			.map((entry) => entry.price);
+
+		recentPrices.push(this.pricing.price);
+
+		return someOrNone(recentPrices.reduce((lowest, current) => (current.amount < lowest.amount ? current : lowest)));
+	}
+
+	formatLowestPriceInLast30Days(): Option<string> {
+		return this.getLowestPriceInLast30Days().map((lowest) => {
+			const euros = lowest.amount / 100;
+			return `${euros.toFixed(2).replace(".", ",")} €`;
+		});
 	}
 
 	getFirstImage(): string | null {

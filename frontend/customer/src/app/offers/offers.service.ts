@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { map, Observable, shareReplay } from "rxjs";
 import { environment } from "../../environments";
-import { Category, FabricCompositionItem, Money, Notes, OfferLink, Pricing } from "./model";
+import { Category, FabricCompositionItem, Money, Notes, OfferLink, PriceHistoryEntry, Pricing } from "./model";
 import { Offer } from "./offer";
 
 interface MoneyDTO {
@@ -10,9 +10,15 @@ interface MoneyDTO {
 	currency: string;
 }
 
+interface PriceHistoryEntryDTO {
+	price: MoneyDTO;
+	timestamp: string;
+}
+
 interface PricingDTO {
 	price: MoneyDTO;
 	discountedPrice: MoneyDTO | null;
+	priceHistory: PriceHistoryEntryDTO[];
 }
 
 interface NotesDTO {
@@ -214,6 +220,12 @@ export class OffersService {
 			discountedPrice: dto.discountedPrice
 				? Money.of({ amount: dto.discountedPrice.amount, currency: dto.discountedPrice.currency })
 				: null,
+			priceHistory: (dto.priceHistory ?? []).map((entry) =>
+				PriceHistoryEntry.of({
+					price: Money.of({ amount: entry.price.amount, currency: entry.price.currency }),
+					timestamp: new Date(entry.timestamp),
+				}),
+			),
 		});
 	}
 
