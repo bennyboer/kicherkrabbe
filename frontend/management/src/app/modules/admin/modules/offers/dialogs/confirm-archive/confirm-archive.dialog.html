@@ -1,0 +1,10 @@
+<div class="content">
+  <app-note level="warn">
+    Diese Aktion kann nicht rückgängig gemacht werden. Der Sofortkauf wird archiviert und ist danach nicht mehr verfügbar.
+  </app-note>
+</div>
+
+<div class="footer">
+  <app-button (click)="cancel()">Abbrechen</app-button>
+  <app-button color="warn" (click)="confirm()">Archivieren</app-button>
+</div>

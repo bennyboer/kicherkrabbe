@@ -28,6 +28,8 @@ import {
   AddDiscountDialog,
   AddDiscountDialogData,
   AddDiscountDialogResult,
+  ConfirmArchiveDialog,
+  ConfirmArchiveDialogResult,
   EditImagesDialog,
   EditImagesDialogData,
   EditImagesDialogResult,
@@ -453,14 +455,28 @@ export class OfferPage implements OnInit, OnDestroy {
   }
 
   archiveOffer(offer: Offer): void {
-    this.performLifecycleAction(
-      offer,
-      () => this.offersService.archiveOffer(offer.id, offer.version),
-      (version) => offer,
-      'Sofortkauf wurde archiviert.',
-      'Sofortkauf konnte nicht archiviert werden.',
-      true,
-    );
+    const dialog = Dialog.create<ConfirmArchiveDialogResult>({
+      title: 'Sofortkauf archivieren',
+      componentType: ConfirmArchiveDialog,
+      providers: [],
+      environmentInjector: this.environmentInjector,
+    });
+
+    this.dialogService.open(dialog);
+    this.dialogService.waitUntilClosed(dialog.id).subscribe(() => {
+      dialog.getResult().ifSome((result) => {
+        if (result.confirmed) {
+          this.performLifecycleAction(
+            offer,
+            () => this.offersService.archiveOffer(offer.id, offer.version),
+            (version) => offer,
+            'Sofortkauf wurde archiviert.',
+            'Sofortkauf konnte nicht archiviert werden.',
+            true,
+          );
+        }
+      });
+    });
   }
 
   private performLifecycleAction(
