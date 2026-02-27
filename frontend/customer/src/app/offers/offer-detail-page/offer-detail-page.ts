@@ -10,6 +10,7 @@ import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { QuillViewComponent } from "ngx-quill";
 import { MessageService } from "primeng/api";
 import { Button } from "primeng/button";
+import { Dialog } from "primeng/dialog";
 import { Divider } from "primeng/divider";
 import { Image } from "primeng/image";
 import { Panel } from "primeng/panel";
@@ -48,6 +49,7 @@ const FABRIC_TYPE_LABELS: Record<string, string> = {
 		AsyncPipe,
 		RouterLink,
 		Button,
+		Dialog,
 		ProgressSpinner,
 		Divider,
 		Image,
@@ -75,6 +77,7 @@ export class OfferDetailPage implements OnInit, OnDestroy {
 	});
 	readonly selectedImageIndex$ = new BehaviorSubject<number>(0);
 	readonly breadcrumbs$ = new BehaviorSubject<BreadcrumbItem[]>([]);
+	showShippingDialog = false;
 
 	ngOnInit(): void {
 		this.route.paramMap

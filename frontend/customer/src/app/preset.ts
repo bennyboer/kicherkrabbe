@@ -263,6 +263,17 @@ export const customerPreset = definePreset(Aura, {
 				},
 			},
 		},
+		dialog: {
+			colorScheme: {
+				dark: {
+					root: {
+						background: "{surface.0}",
+						borderColor: "{surface.200}",
+						color: "{surface.900}",
+					},
+				},
+			},
+		},
 		divider: {
 			colorScheme: {
 				dark: {

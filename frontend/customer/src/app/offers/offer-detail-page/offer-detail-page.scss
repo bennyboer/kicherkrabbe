@@ -133,7 +133,24 @@
 	color: var(--p-text-muted-color);
 }
 
-.vat-note {
+.vat-note,
+.shipping-note {
+	margin: 0;
+	font-size: 0.75rem;
+	color: var(--p-text-muted-color);
+}
+
+.shipping-link {
+	color: var(--p-primary-color);
+	text-decoration: none;
+	cursor: pointer;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+.delivery-note {
 	margin: 0;
 	font-size: 0.75rem;
 	color: var(--p-text-muted-color);
@@ -247,6 +264,21 @@
 		margin: 0 0 16px 0;
 		font-size: 1.125rem;
 		color: var(--p-surface-900);
+	}
+
+	.legal-links {
+		margin: 12px 0 0 0;
+		font-size: 0.75rem;
+		color: var(--p-text-muted-color);
+
+		a {
+			color: var(--p-primary-color);
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
 	}
 }
 

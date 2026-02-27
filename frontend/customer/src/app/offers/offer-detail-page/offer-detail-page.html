@@ -63,7 +63,15 @@
 						<p class="lowest-price-note">Niedrigster Preis der letzten 30 Tage: {{ offer.formatLowestPriceInLast30Days().orElse('') }}</p>
 					}
 					<p class="vat-note">Gem&auml;&szlig; &sect; 19 UStG &bdquo;Kleinunternehmerregelung&ldquo; wird keine Umsatzsteuer berechnet.</p>
+					<p class="shipping-note">zzgl. <a class="shipping-link" (click)="showShippingDialog = true">Versandkosten</a></p>
+					<p class="delivery-note">Lieferzeit: 3&ndash;5 Werktage</p>
 				</div>
+
+				<p-dialog header="Versandkosten" [(visible)]="showShippingDialog" [modal]="true" [dismissableMask]="true" [style]="{ 'max-width': '480px', width: '90vw' }" appendTo="body">
+					<p>Der Versand erfolgt als <strong>versichertes DHL-Paket f&uuml;r 6,99 &euro;</strong>.</p>
+					<p>Auf Wunsch ist der Versand auch mit anderen Versanddienstleistern m&ouml;glich. Kontaktiere uns dazu gerne &uuml;ber unser <a routerLink="/contact" (click)="showShippingDialog = false">Kontaktformular</a>.</p>
+					<p class="delivery-note">Lieferzeit: 3&ndash;5 Werktage</p>
+				</p-dialog>
 
 				@if (offer.notes.description) {
 					<div class="description">
@@ -143,6 +151,7 @@
 					<a routerLink="/contact">
 						<p-button label="Kontakt aufnehmen" icon="pi pi-envelope" />
 					</a>
+					<p class="legal-links">Es gelten unsere <a routerLink="/legal/terms-and-conditions">AGB</a> und <a routerLink="/legal/cancellation-policy">Widerrufsbelehrung</a>.</p>
 				</div>
 			</div>
 		</div>
