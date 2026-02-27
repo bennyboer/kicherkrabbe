@@ -196,12 +196,16 @@ h1 {
 	}
 }
 
-.description .ql-container {
+quill-view .ql-container {
 	font-family: inherit;
 	font-size: inherit;
 }
 
-.description .ql-editor {
+p-panel quill-view .ql-container {
+	font-size: 0.875rem;
+}
+
+quill-view .ql-editor {
 	padding: 0;
 }
 

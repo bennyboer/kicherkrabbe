@@ -17,7 +17,6 @@ import { ProgressSpinner } from "primeng/progressspinner";
 import { BehaviorSubject, Subject, switchMap, takeUntil } from "rxjs";
 import { SeoService } from "../../services/seo.service";
 import { type BreadcrumbItem, Breadcrumbs } from "../../shared";
-import type { OfferLink } from "../model";
 import type { Offer } from "../offer";
 import { OffersService } from "../offers.service";
 
@@ -39,10 +38,6 @@ const FABRIC_TYPE_LABELS: Record<string, string> = {
 	RAYON: "Rayon",
 };
 
-const LINK_TYPE_LABELS: Record<string, string> = {
-	PATTERN: "Schnitt",
-	FABRIC: "Stoff",
-};
 
 @Component({
 	selector: "app-offer-detail-page",
@@ -144,22 +139,7 @@ export class OfferDetailPage implements OnInit, OnDestroy {
 		return (percentage / 100).toFixed(0) + "%";
 	}
 
-	getLinkRoute(link: OfferLink): string[] {
-		switch (link.type) {
-			case "PATTERN":
-				return ["/patterns", link.id];
-			case "FABRIC":
-				return ["/fabrics", link.id];
-			default:
-				return [];
-		}
-	}
-
-	getLinkTypeLabel(link: OfferLink): string {
-		return LINK_TYPE_LABELS[link.type] ?? link.type;
-	}
-
-	goBack(): void {
+goBack(): void {
 		this.router.navigate([".."], { relativeTo: this.route });
 	}
 

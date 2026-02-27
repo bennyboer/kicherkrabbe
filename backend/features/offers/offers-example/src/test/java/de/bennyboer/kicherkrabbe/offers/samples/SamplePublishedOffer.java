@@ -43,6 +43,9 @@ public class SamplePublishedOffer {
     @Builder.Default
     private Notes notes = Notes.of(Note.of("Description"), null, null, null);
 
+    @Builder.Default
+    private boolean reserved = false;
+
     public PublishedOffer toModel() {
         return PublishedOffer.of(
                 OfferId.of(id),
@@ -54,7 +57,8 @@ public class SamplePublishedOffer {
                 Links.of(links),
                 FabricComposition.of(fabricCompositionItems),
                 pricing,
-                notes
+                notes,
+                reserved
         );
     }
 

@@ -26,6 +26,7 @@ kicherkrabbe/
 │   │   ├── mailbox/
 │   │   ├── mailing/
 │   │   ├── notifications/
+│   │   ├── offers/
 │   │   ├── patterns/
 │   │   ├── products/
 │   │   ├── telegram/

@@ -43,7 +43,12 @@
 			<div class="details-section">
 				<h1 class="offer-title">{{ offer.title }}</h1>
 
-				<div class="offer-size-badge">Größe {{ offer.size }}</div>
+				<div class="offer-badges">
+					<div class="offer-size-badge">Größe {{ offer.size }}</div>
+					@if (offer.reserved) {
+						<div class="offer-reserved-badge">Reserviert</div>
+					}
+				</div>
 
 				<div class="price-section">
 					<div class="price-info">
@@ -66,24 +71,8 @@
 					</div>
 				}
 
-				@if (offer.notes.contains.isSome()) {
-					<div class="info-section">
-						<h3>Inhalt</h3>
-						<quill-view [content]="offer.notes.contains.orElseThrow()" format="json" theme="bubble" />
-					</div>
-				}
-
-				@if (offer.notes.care.isSome()) {
-					<div class="info-section">
-						<h3>Pflegehinweise</h3>
-						<quill-view [content]="offer.notes.care.orElseThrow()" format="json" theme="bubble" />
-					</div>
-				}
-
 				@if (offer.fabricCompositionItems.length > 0) {
-					<p-divider />
-					<div class="composition-section">
-						<h2>Stoffzusammensetzung</h2>
+					<p-panel header="Stoffzusammensetzung" [toggleable]="true" [collapsed]="true" toggler="header">
 						<div class="composition-list">
 							@for (item of offer.fabricCompositionItems; track item.fabricType) {
 								<div class="composition-row">
@@ -92,38 +81,37 @@
 								</div>
 							}
 						</div>
-					</div>
+					</p-panel>
 				}
 
-				@if (offer.links.length > 0) {
-					<p-divider />
-					<div class="links-section">
-						<h2>Verwendete Materialien</h2>
-						<div class="links-list">
-							@for (link of offer.links; track link.id) {
-								<a [routerLink]="getLinkRoute(link)" class="material-link">
-									<span class="link-type">{{ getLinkTypeLabel(link) }}:</span>
-									{{ link.name }}
-								</a>
-							}
+				@if (offer.notes.care.isSome()) {
+					<p-panel header="Pflegehinweise" [toggleable]="true" [collapsed]="true" toggler="header">
+						<quill-view class="panel-text" [content]="offer.notes.care.orElseThrow()" format="json" theme="bubble" />
+					</p-panel>
+				} @else {
+					<p-panel header="Pflegehinweise" [toggleable]="true" [collapsed]="true" toggler="header">
+						<div class="care-icons">
+							<div class="care-item">
+								<i class="pi pi-sparkles"></i>
+								<span>Bei max. 30 °C waschen</span>
+							</div>
+							<div class="care-item">
+								<i class="pi pi-times-circle"></i>
+								<span>Nicht in den Trockner geben</span>
+							</div>
+							<div class="care-item">
+								<i class="pi pi-check-circle"></i>
+								<span>Bei niedriger Stufe b&uuml;gelbar</span>
+							</div>
 						</div>
-					</div>
+					</p-panel>
 				}
-
-				<p-divider />
-
-				<div class="producer-info">
-					<p><strong>Hersteller</strong>: Jenny Michel, Weststr. 23 ½, 84416 Taufkirchen (Vils)</p>
-					<p><strong>E-Mail</strong>: <a href="mailto:info@kicherkrabbe.com">info&#64;kicherkrabbe.com</a></p>
-				</div>
 
 				@if (offer.notes.safety.isSome()) {
-					<p-divider />
 					<p-panel header="Produktsicherheit" [toggleable]="true" [collapsed]="true" toggler="header">
 						<quill-view class="safety-text" [content]="offer.notes.safety.orElseThrow()" format="json" theme="bubble" />
 					</p-panel>
 				} @else {
-					<p-divider />
 					<p-panel header="Produktsicherheit" [toggleable]="true" [collapsed]="true" toggler="header">
 						<p class="safety-intro">
 							<em>Diese Kleidung wurde mit viel Sorgfalt und Liebe zum Detail handgefertigt. Bitte beachte dennoch folgende Hinweise, um die Sicherheit deines Kindes zu gewährleisten:</em>
@@ -140,6 +128,13 @@
 						<p class="safety-footer">Dieses Produkt wurde nach bestem Wissen und Gewissen hergestellt und ist für den vorgesehenen Verwendungszweck bestimmt.</p>
 					</p-panel>
 				}
+
+				<p-divider />
+
+				<div class="producer-info">
+					<p><strong>Hersteller</strong>: Jenny Michel, Weststr. 23 ½, 84416 Taufkirchen (Vils)</p>
+					<p><strong>E-Mail</strong>: <a href="mailto:info@kicherkrabbe.com">info&#64;kicherkrabbe.com</a></p>
+				</div>
 
 				<p-divider />
 

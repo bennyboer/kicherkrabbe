@@ -25,4 +25,6 @@ public class PublishedOfferDTO {
 
     public NotesDTO notes;
 
+    public boolean reserved;
+
 }

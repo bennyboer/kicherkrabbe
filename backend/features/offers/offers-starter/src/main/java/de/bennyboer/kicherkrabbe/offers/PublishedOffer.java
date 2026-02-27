@@ -33,6 +33,8 @@ public class PublishedOffer {
 
     Notes notes;
 
+    boolean reserved;
+
     public static PublishedOffer of(
             OfferId id,
             OfferAlias alias,
@@ -43,7 +45,8 @@ public class PublishedOffer {
             Links links,
             FabricComposition fabricComposition,
             Pricing pricing,
-            Notes notes
+            Notes notes,
+            boolean reserved
     ) {
         notNull(id, "Offer ID must be given");
         notNull(alias, "Alias must be given");
@@ -56,7 +59,7 @@ public class PublishedOffer {
         notNull(pricing, "Pricing must be given");
         notNull(notes, "Notes must be given");
 
-        return new PublishedOffer(id, alias, title, size, categories, images, links, fabricComposition, pricing, notes);
+        return new PublishedOffer(id, alias, title, size, categories, images, links, fabricComposition, pricing, notes, reserved);
     }
 
 }

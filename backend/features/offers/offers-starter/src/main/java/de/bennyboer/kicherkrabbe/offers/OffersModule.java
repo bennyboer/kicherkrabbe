@@ -706,7 +706,8 @@ public class OffersModule {
                 offer.getLinks(),
                 offer.getFabricComposition(),
                 offer.getPricing(),
-                offer.getNotes()
+                offer.getNotes(),
+                offer.isReserved()
         );
     }
 

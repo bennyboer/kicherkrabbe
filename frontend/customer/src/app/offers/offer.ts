@@ -18,6 +18,7 @@ export class Offer {
 	readonly fabricCompositionItems: FabricCompositionItem[];
 	readonly pricing: Pricing;
 	readonly notes: Notes;
+	readonly reserved: boolean;
 
 	private constructor(props: {
 		id: string;
@@ -30,6 +31,7 @@ export class Offer {
 		fabricCompositionItems: FabricCompositionItem[];
 		pricing: Pricing;
 		notes: Notes;
+		reserved: boolean;
 	}) {
 		validateProps(props);
 
@@ -43,6 +45,7 @@ export class Offer {
 		this.fabricCompositionItems = props.fabricCompositionItems;
 		this.pricing = props.pricing;
 		this.notes = props.notes;
+		this.reserved = props.reserved;
 	}
 
 	static of(props: {
@@ -56,6 +59,7 @@ export class Offer {
 		fabricCompositionItems?: FabricCompositionItem[];
 		pricing: Pricing;
 		notes: Notes;
+		reserved?: boolean;
 	}): Offer {
 		return new Offer({
 			id: props.id,
@@ -68,6 +72,7 @@ export class Offer {
 			fabricCompositionItems: props.fabricCompositionItems ?? [],
 			pricing: props.pricing,
 			notes: props.notes,
+			reserved: props.reserved ?? false,
 		});
 	}
 

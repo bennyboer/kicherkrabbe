@@ -50,6 +50,7 @@ interface PublishedOfferDTO {
 	fabricCompositionItems: FabricCompositionItemDTO[];
 	pricing: PricingDTO;
 	notes: NotesDTO;
+	reserved: boolean;
 }
 
 interface OffersSortDTO {
@@ -203,6 +204,7 @@ export class OffersService {
 			fabricCompositionItems: (dto.fabricCompositionItems ?? []).map((f) => this.toInternalFabricCompositionItem(f)),
 			pricing: this.toInternalPricing(dto.pricing),
 			notes: this.toInternalNotes(dto.notes),
+			reserved: dto.reserved ?? false,
 		});
 	}
 

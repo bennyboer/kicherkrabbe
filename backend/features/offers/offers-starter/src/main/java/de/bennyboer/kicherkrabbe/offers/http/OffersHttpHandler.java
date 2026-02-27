@@ -741,6 +741,7 @@ public class OffersHttpHandler {
         result.fabricCompositionItems = toFabricCompositionItemDTOs(offer.getFabricComposition());
         result.pricing = toPricingDTO(offer.getPricing());
         result.notes = toNotesDTO(offer.getNotes());
+        result.reserved = offer.isReserved();
         return result;
     }
 

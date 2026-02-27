@@ -90,6 +90,24 @@ public class QueryPublishedOffersTest extends OffersModuleTest {
         assertThat(offer).isNotNull();
         assertThat(offer.getId()).isEqualTo(OfferId.of(offerId));
         assertThat(offer.getPricing().getPrice()).isEqualTo(Money.of(1999L, Currency.euro()));
+        assertThat(offer.isReserved()).isFalse();
+    }
+
+    @Test
+    void shouldReturnReservedStateInPublishedOffer() {
+        allowUserToCreateOffers("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        String offerId = createSampleOffer(agent);
+        publishOffer(offerId, 0L, agent);
+
+        var offer = getPublishedOffer(offerId, Agent.anonymous());
+        assertThat(offer.isReserved()).isFalse();
+
+        reserveOffer(offerId, 1L, agent);
+
+        offer = getPublishedOffer(offerId, Agent.anonymous());
+        assertThat(offer.isReserved()).isTrue();
     }
 
     @Test

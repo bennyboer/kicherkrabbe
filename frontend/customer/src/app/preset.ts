@@ -263,6 +263,15 @@ export const customerPreset = definePreset(Aura, {
 				},
 			},
 		},
+		divider: {
+			colorScheme: {
+				dark: {
+					root: {
+						borderColor: "{surface.200}",
+					},
+				},
+			},
+		},
 		panel: {
 			colorScheme: {
 				dark: {
