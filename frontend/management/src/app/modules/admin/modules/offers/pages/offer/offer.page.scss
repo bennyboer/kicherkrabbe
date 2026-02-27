@@ -31,6 +31,12 @@ label {
   & > label {
     font-size: 0.8em;
   }
+
+  & > .form-field-content {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+  }
 }
 
 .product-link {

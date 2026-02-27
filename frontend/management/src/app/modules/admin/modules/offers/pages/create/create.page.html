@@ -40,6 +40,24 @@
       }
     </div>
 
+    @if (price$ | async; as priceOption) {
+      <div class="offer-detail">
+        <label>
+          Preis
+          <app-button [size]="ButtonSize.SMALL" [disabled]="creating$ | async" (click)="editPrice(priceOption)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        @if (priceOption | ifSome; as price) {
+          <span class="price-value">{{ price.toDisplayString() }}</span>
+        } @else {
+          <app-note>Kein Preis festgelegt</app-note>
+        }
+      </div>
+    }
+
     <div class="offer-detail">
       <label>Kategorien</label>
       @if (loadingCategories$ | async) {
@@ -160,24 +178,6 @@
             <app-note>Keine Sicherheitshinweise vorhanden</app-note>
           }
         </div>
-      </div>
-    }
-
-    @if (price$ | async; as priceOption) {
-      <div class="offer-detail">
-        <label>
-          Preis
-          <app-button [size]="ButtonSize.SMALL" [disabled]="creating$ | async" (click)="editPrice(priceOption)">
-            <span class="icon-button">
-              <span class="material-icons">edit</span>
-            </span>
-          </app-button>
-        </label>
-        @if (priceOption | ifSome; as price) {
-          <span class="price-value">{{ price.toDisplayString() }}</span>
-        } @else {
-          <app-note>Kein Preis festgelegt</app-note>
-        }
       </div>
     }
   </div>

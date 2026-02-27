@@ -24,6 +24,39 @@
   @if (offer$ | async | ifSome; as offer) {
     <div class="offer-details">
       <div class="offer-detail">
+        <label>Status</label>
+        <div class="status-actions">
+          <span class="status-badge" [style.background-color]="offer.status.color">
+            {{ offer.status.label }}
+          </span>
+
+          <div class="lifecycle-actions">
+            @if (offer.status === OfferStatus.DRAFT) {
+              <app-button color="primary" [disabled]="actionInProgress$ | async" (click)="publishOffer(offer)">
+                Veröffentlichen
+              </app-button>
+            }
+            @if (offer.status === OfferStatus.PUBLISHED) {
+              <app-button [disabled]="actionInProgress$ | async" (click)="unpublishOffer(offer)">
+                Veröffentlichung aufheben
+              </app-button>
+              <app-button color="primary" [disabled]="actionInProgress$ | async" (click)="reserveOffer(offer)">
+                Reservieren
+              </app-button>
+            }
+            @if (offer.status === OfferStatus.RESERVED) {
+              <app-button [disabled]="actionInProgress$ | async" (click)="unreserveOffer(offer)">
+                Reservierung aufheben
+              </app-button>
+              <app-button color="warn" [disabled]="actionInProgress$ | async" (click)="archiveOffer(offer)">
+                Archivieren
+              </app-button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="offer-detail">
         <label for="title">Titel</label>
         <div class="form-field-content">
           <input
@@ -54,6 +87,59 @@
           </app-button>
         </div>
       </div>
+
+      <div class="offer-detail">
+        <label>
+          Preis
+          <app-button [size]="ButtonSize.SMALL" (click)="editPrice(offer)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="pricing-section">
+          <span class="price-value">{{ offer.pricing.price.toDisplayString() }}</span>
+          @if (offer.pricing.discountedPrice | ifSome; as discountedPrice) {
+            <div class="discount-row">
+              <span class="discounted-price">Reduziert: {{ discountedPrice.toDisplayString() }}</span>
+              <app-button color="warn" [size]="ButtonSize.SMALL" (click)="removeDiscount(offer)">
+                <span class="icon-button">
+                  <span class="material-icons">delete</span>
+                </span>
+              </app-button>
+            </div>
+          } @else {
+            <app-button [size]="ButtonSize.SMALL" (click)="addDiscount(offer)">
+              <span class="icon-button">
+                <span class="material-icons">add</span>
+                <span>Rabatt hinzufügen</span>
+              </span>
+            </app-button>
+          }
+        </div>
+      </div>
+
+      @if (offer.pricing.priceHistory.length > 0) {
+        <div class="offer-detail">
+          <label>Preishistorie</label>
+          <table class="price-history-table">
+            <thead>
+              <tr>
+                <th class="price">Preis</th>
+                <th class="timestamp">Datum</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of offer.pricing.priceHistory; track entry.timestamp) {
+                <tr>
+                  <td class="price">{{ entry.price.toDisplayString() }}</td>
+                  <td class="timestamp">{{ entry.timestamp | date: "dd.MM.yyyy HH:mm" }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
 
       <div class="offer-detail">
         <label>Kategorien</label>
@@ -158,59 +244,6 @@
 
       <div class="offer-detail">
         <label>
-          Preis
-          <app-button [size]="ButtonSize.SMALL" (click)="editPrice(offer)">
-            <span class="icon-button">
-              <span class="material-icons">edit</span>
-            </span>
-          </app-button>
-        </label>
-        <div class="pricing-section">
-          <span class="price-value">{{ offer.pricing.price.toDisplayString() }}</span>
-          @if (offer.pricing.discountedPrice | ifSome; as discountedPrice) {
-            <div class="discount-row">
-              <span class="discounted-price">Reduziert: {{ discountedPrice.toDisplayString() }}</span>
-              <app-button color="warn" [size]="ButtonSize.SMALL" (click)="removeDiscount(offer)">
-                <span class="icon-button">
-                  <span class="material-icons">delete</span>
-                </span>
-              </app-button>
-            </div>
-          } @else {
-            <app-button [size]="ButtonSize.SMALL" (click)="addDiscount(offer)">
-              <span class="icon-button">
-                <span class="material-icons">add</span>
-                <span>Rabatt hinzufügen</span>
-              </span>
-            </app-button>
-          }
-        </div>
-      </div>
-
-      @if (offer.pricing.priceHistory.length > 0) {
-        <div class="offer-detail">
-          <label>Preishistorie</label>
-          <table class="price-history-table">
-            <thead>
-              <tr>
-                <th class="price">Preis</th>
-                <th class="timestamp">Datum</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (entry of offer.pricing.priceHistory; track entry.timestamp) {
-                <tr>
-                  <td class="price">{{ entry.price.toDisplayString() }}</td>
-                  <td class="timestamp">{{ entry.timestamp | date: "dd.MM.yyyy HH:mm" }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      }
-
-      <div class="offer-detail">
-        <label>
           Beschreibung
           <app-button [size]="ButtonSize.SMALL" (click)="editDescriptionNote(offer)">
             <span class="icon-button">
@@ -282,39 +315,6 @@
           } @else {
             <app-note>Keine Sicherheitshinweise vorhanden</app-note>
           }
-        </div>
-      </div>
-
-      <div class="offer-detail">
-        <label>Status</label>
-        <div class="status-actions">
-          <span class="status-badge" [style.background-color]="offer.status.color">
-            {{ offer.status.label }}
-          </span>
-
-          <div class="lifecycle-actions">
-            @if (offer.status === OfferStatus.DRAFT) {
-              <app-button color="primary" [disabled]="actionInProgress$ | async" (click)="publishOffer(offer)">
-                Veröffentlichen
-              </app-button>
-            }
-            @if (offer.status === OfferStatus.PUBLISHED) {
-              <app-button [disabled]="actionInProgress$ | async" (click)="unpublishOffer(offer)">
-                Veröffentlichung aufheben
-              </app-button>
-              <app-button color="primary" [disabled]="actionInProgress$ | async" (click)="reserveOffer(offer)">
-                Reservieren
-              </app-button>
-            }
-            @if (offer.status === OfferStatus.RESERVED) {
-              <app-button [disabled]="actionInProgress$ | async" (click)="unreserveOffer(offer)">
-                Reservierung aufheben
-              </app-button>
-              <app-button color="warn" [disabled]="actionInProgress$ | async" (click)="archiveOffer(offer)">
-                Archivieren
-              </app-button>
-            }
-          </div>
         </div>
       </div>
 
