@@ -116,6 +116,15 @@ public class MongoPatchingMetaRepoTest {
     }
 
     @Test
+    void shouldFailToUpdateVersionWhenLockNotHeld() {
+        repo.tryAcquireLock(instanceA, lockTimeout, clock).block();
+
+        assertThatThrownBy(() -> repo.updateVersion(1, instanceB).block())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Failed to update version - lock not held");
+    }
+
+    @Test
     void shouldReturnEmptyWhenNoMetaExists() {
         var meta = repo.findMeta().block();
 

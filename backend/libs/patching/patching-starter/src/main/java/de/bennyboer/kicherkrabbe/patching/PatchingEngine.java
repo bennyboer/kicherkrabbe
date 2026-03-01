@@ -66,6 +66,7 @@ public class PatchingEngine {
                         .doOnSuccess(ignored -> log.info("Database patching completed successfully"))
                         .then(metaRepo.releaseLock(instanceId))
                         .onErrorResume(e -> metaRepo.releaseLock(instanceId)
+                                .onErrorComplete()
                                 .then(Mono.error(e))));
     }
 
