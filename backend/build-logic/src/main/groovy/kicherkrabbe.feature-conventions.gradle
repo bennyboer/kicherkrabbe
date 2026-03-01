@@ -11,6 +11,7 @@ dependencies {
     implementation project(':libs:permissions:permissions-starter')
     implementation project(':libs:changes:changes-starter')
     implementation project(':libs:auth:auth-starter')
+    implementation project(':libs:patching:patching-starter')
 
     testImplementation project(':libs:testing')
     testImplementation project(':libs:persistence:persistence-testing')

@@ -41,6 +41,11 @@ include('libs:auth:auth-example')
 include('libs:persistence:persistence-starter')
 include('libs:persistence:persistence-testing')
 
+// Patching
+include('libs:patching:patching-core')
+include('libs:patching:patching-starter')
+include('libs:patching:patching-example')
+
 // Permissions
 include('libs:permissions:permissions-core')
 include('libs:permissions:permissions-starter')
