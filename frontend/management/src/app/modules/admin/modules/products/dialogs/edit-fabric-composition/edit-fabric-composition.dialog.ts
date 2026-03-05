@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import {
+  COTTON,
   FABRIC_TYPES,
   FabricComposition,
   FabricCompositionItem,
   FabricCompositionValidationError,
   FabricType,
+  InternalFabricType,
 } from '../../model';
 import { Dialog, DialogService } from '../../../../../shared/modules/dialog';
 import { ProductsService } from '../../services';
@@ -45,7 +47,25 @@ export interface EditFabricCompositionDialogResult {
 interface PendingCompositionItem {
   fabricType: FabricType;
   percentage: number;
+  dirty: boolean;
 }
+
+const COMMON_FABRIC_TYPES: InternalFabricType[] = [
+  InternalFabricType.COTTON,
+  InternalFabricType.ELASTANE,
+  InternalFabricType.POLYESTER,
+  InternalFabricType.VISCOSE,
+  InternalFabricType.LYOCELL,
+  InternalFabricType.MODAL,
+  InternalFabricType.LINEN,
+  InternalFabricType.WOOL,
+  InternalFabricType.SILK,
+  InternalFabricType.POLYAMIDE,
+  InternalFabricType.CASHMERE,
+  InternalFabricType.ACRYLIC,
+  InternalFabricType.NYLON,
+  InternalFabricType.HEMP,
+];
 
 @Component({
   selector: 'app-edit-fabric-composition-dialog',
@@ -61,6 +81,7 @@ export class EditFabricCompositionDialog implements OnDestroy {
         composition.items.map((item) => ({
           fabricType: item.fabricType,
           percentage: item.percentage,
+          dirty: true,
         })),
       )
       .orElse([]),
@@ -75,7 +96,14 @@ export class EditFabricCompositionDialog implements OnDestroy {
         id: fabricType.internal,
         label: fabricType.label,
       }));
-      items.sort((a, b) => a.label.localeCompare(b.label, 'de-de', { numeric: true }));
+      items.sort((a, b) => {
+        const aIndex = COMMON_FABRIC_TYPES.indexOf(a.id as InternalFabricType);
+        const bIndex = COMMON_FABRIC_TYPES.indexOf(b.id as InternalFabricType);
+        if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+        if (aIndex !== -1) return -1;
+        if (bIndex !== -1) return 1;
+        return a.label.localeCompare(b.label, 'de-de', { numeric: true });
+      });
       return items;
     }),
   );
@@ -137,16 +165,25 @@ export class EditFabricCompositionDialog implements OnDestroy {
       return;
     }
 
-    pendingItem.percentage = Math.floor(percentage * 100);
+    pendingItem.percentage = isNaN(percentage) ? 0 : Math.floor(percentage * 100);
+    pendingItem.dirty = true;
+    this.distributeRemainingPercentage();
     this.compositionItems$.next(this.compositionItems$.value);
   }
 
   addCompositionItem(): void {
-    this.compositionItems$.next([...this.compositionItems$.value, { fabricType: FABRIC_TYPES[0], percentage: 0 }]);
+    this.compositionItems$.next([
+      ...this.compositionItems$.value,
+      { fabricType: COTTON, percentage: 0, dirty: false },
+    ]);
+    this.distributeRemainingPercentage();
+    this.compositionItems$.next(this.compositionItems$.value);
   }
 
   removeCompositionItem(index: number): void {
     this.compositionItems$.next(this.compositionItems$.value.filter((_, i) => i !== index));
+    this.distributeRemainingPercentage();
+    this.compositionItems$.next(this.compositionItems$.value);
   }
 
   save(): void {
@@ -196,6 +233,24 @@ export class EditFabricCompositionDialog implements OnDestroy {
         this.dialogService.close(this.dialog.id);
       },
     );
+  }
+
+  private distributeRemainingPercentage(): void {
+    const items = this.compositionItems$.value;
+    const pristineItems = items.filter((item) => !item.dirty);
+    if (pristineItems.length === 0) {
+      return;
+    }
+
+    const dirtySum = items.filter((item) => item.dirty).reduce((sum, item) => sum + item.percentage, 0);
+    const remaining = Math.max(0, 10000 - dirtySum);
+    const perItemPercent = Math.floor(remaining / pristineItems.length / 100) * 100;
+    let leftover = remaining - perItemPercent * pristineItems.length;
+
+    for (const item of pristineItems) {
+      item.percentage = perItemPercent + (leftover >= 100 ? 100 : 0);
+      if (leftover >= 100) leftover -= 100;
+    }
   }
 
   private toFabricComposition(items: PendingCompositionItem[]): FabricComposition {

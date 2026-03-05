@@ -96,6 +96,7 @@ export class DropdownComponent implements OnDestroy, OnInit, AfterViewInit {
   private readonly openedOverlay$: BehaviorSubject<Option<OverlayRef>> = new BehaviorSubject<Option<OverlayRef>>(
     none(),
   );
+  private scrollListener: ((event: Event) => void) | null = null;
 
   constructor(
     private readonly elementRef: ElementRef,
@@ -206,6 +207,8 @@ export class DropdownComponent implements OnDestroy, OnInit, AfterViewInit {
           }),
         ),
       );
+
+      this.addScrollListener();
     }
   }
 
@@ -274,8 +277,27 @@ export class DropdownComponent implements OnDestroy, OnInit, AfterViewInit {
   }
 
   private closeOpenedOverlay(): void {
+    this.removeScrollListener();
     this.openedOverlay$.value.ifSome((overlay) => overlay.close());
     this.openedOverlay$.next(none());
     this.searchTerm$.next('');
+  }
+
+  private addScrollListener(): void {
+    this.removeScrollListener();
+    this.scrollListener = (event: Event) => {
+      if (event.target instanceof Element && event.target.closest('app-overlay')) {
+        return;
+      }
+      this.closeOpenedOverlay();
+    };
+    document.addEventListener('scroll', this.scrollListener, true);
+  }
+
+  private removeScrollListener(): void {
+    if (this.scrollListener) {
+      document.removeEventListener('scroll', this.scrollListener, true);
+      this.scrollListener = null;
+    }
   }
 }
