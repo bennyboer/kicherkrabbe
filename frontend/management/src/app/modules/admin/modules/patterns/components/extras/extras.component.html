@@ -17,7 +17,7 @@
         </tr>
       </thead>
       <tbody [nxtSortablejs]="extras" [config]="sortableConfig">
-        @for (extra of extras; track extra.id) {
+        @for (extra of extras; track extra) {
           @if (extra.editing) {
             <tr>
               <td class="col-drag-indicator">

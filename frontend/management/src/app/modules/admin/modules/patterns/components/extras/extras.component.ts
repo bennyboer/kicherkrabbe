@@ -1,20 +1,18 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { ButtonSize } from '../../../../../shared';
-import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { PatternExtra } from '../../model';
 import { Money } from '../../../../../../util';
 import currency from 'currency.js';
 import { someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 class EditablePatternExtra {
-  readonly id: string;
   readonly extra: PatternExtra;
   readonly editing: boolean;
 
   private constructor(props: { extra: PatternExtra; editing: boolean }) {
     validateProps(props);
 
-    this.id = crypto.randomUUID();
     this.extra = props.extra;
     this.editing = props.editing;
   }
@@ -62,11 +60,10 @@ class EditablePatternExtra {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
-export class ExtrasComponent implements OnInit, OnDestroy {
+export class ExtrasComponent implements OnDestroy {
   @Input()
   set extras(extras: PatternExtra[] | null) {
     someOrNone(extras).ifSome((extras) => {
-      this.preventNextChangeEmit = true;
       this.extras$.next(extras.map((extra) => EditablePatternExtra.of({ extra })));
     });
   }
@@ -77,30 +74,14 @@ export class ExtrasComponent implements OnInit, OnDestroy {
   protected readonly extras$: BehaviorSubject<EditablePatternExtra[]> = new BehaviorSubject<EditablePatternExtra[]>([]);
   private readonly destroy$: Subject<void> = new Subject<void>();
 
-  private preventNextChangeEmit: boolean = false;
-
   protected readonly ButtonSize = ButtonSize;
 
   protected readonly sortableConfig: any = {
-    onUpdate: () => this.extras$.next(this.extras$.value),
+    onUpdate: () => {
+      this.extras$.next(this.extras$.value);
+      this.emitChange();
+    },
   };
-
-  ngOnInit(): void {
-    this.preventNextChangeEmit = true;
-    this.extras$
-      .pipe(
-        filter((extras) => extras.every((e) => !e.editing)),
-        takeUntil(this.destroy$),
-      )
-      .subscribe((extras) => {
-        if (this.preventNextChangeEmit) {
-          this.preventNextChangeEmit = false;
-          return;
-        }
-
-        this.changed.emit(extras.map((e) => e.extra));
-      });
-  }
 
   ngOnDestroy(): void {
     this.extras$.complete();
@@ -118,7 +99,7 @@ export class ExtrasComponent implements OnInit, OnDestroy {
   }
 
   edit(extra: EditablePatternExtra): void {
-    const updatedExtras = this.extras$.value.map((e) => (e.id === extra.id ? extra.startEditing() : e));
+    const updatedExtras = this.extras$.value.map((e) => (e === extra ? extra.startEditing() : e));
     this.extras$.next(updatedExtras);
   }
 
@@ -133,7 +114,7 @@ export class ExtrasComponent implements OnInit, OnDestroy {
     const priceAsMoney = Money.euro(parsedPrice.intValue);
 
     const updatedExtras = this.extras$.value.map((e) => {
-      if (e.id === extra.id) {
+      if (e === extra) {
         return e.stopEditing().withName(nameTrimmed).withPrice(priceAsMoney);
       }
 
@@ -141,16 +122,21 @@ export class ExtrasComponent implements OnInit, OnDestroy {
     });
 
     this.extras$.next(updatedExtras);
+    this.emitChange();
   }
 
   delete(extra: EditablePatternExtra): void {
-    const updatedExtras = this.extras$.value.filter((e) => e.id !== extra.id);
+    const updatedExtras = this.extras$.value.filter((e) => e !== extra);
     this.extras$.next(updatedExtras);
+    this.emitChange();
   }
 
   cancel(extra: EditablePatternExtra): void {
-    const updatedExtras = this.extras$.value.map((e) => (e.id === extra.id ? e.stopEditing() : e));
-    this.preventNextChangeEmit = true;
+    const updatedExtras = this.extras$.value.map((e) => (e === extra ? e.stopEditing() : e));
     this.extras$.next(updatedExtras);
+  }
+
+  private emitChange(): void {
+    this.changed.emit(this.extras$.value.map((e) => e.extra));
   }
 }
