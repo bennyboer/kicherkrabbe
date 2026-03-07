@@ -1,6 +1,7 @@
 package de.bennyboer.kicherkrabbe.fabrics.samples;
 
 import de.bennyboer.kicherkrabbe.fabrics.*;
+import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.Singular;
 
@@ -12,6 +13,9 @@ public class SampleFabric {
 
     @Builder.Default
     private String name = "Sample Fabric";
+
+    @Builder.Default
+    private FabricKind kind = FabricKind.PATTERNED;
 
     @Builder.Default
     private String imageId = "IMAGE_ID";
@@ -27,6 +31,10 @@ public class SampleFabric {
 
     public FabricName getName() {
         return FabricName.of(name);
+    }
+
+    public FabricKind getKind() {
+        return kind;
     }
 
     public ImageId getImageId() {

@@ -70,6 +70,10 @@ public class Fabric implements Aggregate {
 
     FabricName name;
 
+    @Nullable
+    FabricKind kind;
+
+    @Nullable
     ImageId image;
 
     List<ImageId> exampleImages;
@@ -95,6 +99,7 @@ public class Fabric implements Aggregate {
                 Version.zero(),
                 null,
                 null,
+                null,
                 List.of(),
                 Set.of(),
                 Set.of(),
@@ -114,7 +119,8 @@ public class Fabric implements Aggregate {
         return switch (cmd) {
             case CreateCmd c -> ApplyCommandResult.of(CreatedEvent.of(
                     c.getName(),
-                    c.getImage(),
+                    c.getKind(),
+                    c.getImage().orElse(null),
                     c.getColors(),
                     c.getTopics(),
                     c.getAvailability()
@@ -148,7 +154,7 @@ public class Fabric implements Aggregate {
 
                 yield ApplyCommandResult.of(UnfeaturedEvent.of());
             }
-            case UpdateImagesCmd c -> ApplyCommandResult.of(ImagesUpdatedEvent.of(c.getImage(), c.getExampleImages()));
+            case UpdateImagesCmd c -> ApplyCommandResult.of(ImagesUpdatedEvent.of(c.getImage().orElse(null), c.getExampleImages()));
             case UpdateColorsCmd c -> ApplyCommandResult.of(ColorsUpdatedEvent.of(c.getColors()));
             case UpdateTopicsCmd c -> ApplyCommandResult.of(TopicsUpdatedEvent.of(c.getTopics()));
             case UpdateAvailabilityCmd c -> ApplyCommandResult.of(AvailabilityUpdatedEvent.of(c.getAvailability()));
@@ -180,7 +186,8 @@ public class Fabric implements Aggregate {
         return (switch (event) {
             case CreatedEvent e -> withId(id)
                     .withName(e.getName())
-                    .withImage(e.getImage())
+                    .withKind(e.getKind().orElse(null))
+                    .withImage(e.getImage().orElse(null))
                     .withColors(e.getColors())
                     .withTopics(e.getTopics())
                     .withAvailability(e.getAvailability())
@@ -190,7 +197,7 @@ public class Fabric implements Aggregate {
             case UnpublishedEvent ignored -> withPublished(false);
             case FeaturedEvent ignored -> withFeatured(true);
             case UnfeaturedEvent ignored -> withFeatured(false);
-            case ImagesUpdatedEvent e -> withImage(e.getImage()).withExampleImages(e.getExampleImages());
+            case ImagesUpdatedEvent e -> withImage(e.getImage().orElse(null)).withExampleImages(e.getExampleImages());
             case ColorsUpdatedEvent e -> withColors(e.getColors());
             case TopicsUpdatedEvent e -> withTopics(e.getTopics());
             case AvailabilityUpdatedEvent e -> withAvailability(e.getAvailability());
@@ -212,6 +219,14 @@ public class Fabric implements Aggregate {
             }
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());
         }).withVersion(version);
+    }
+
+    public Optional<FabricKind> getKind() {
+        return Optional.ofNullable(kind);
+    }
+
+    public Optional<ImageId> getImage() {
+        return Optional.ofNullable(image);
     }
 
     public Optional<Instant> getDeletedAt() {

@@ -4,10 +4,12 @@ import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.fabrics.ImageId;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.util.List;
+import java.util.Optional;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
 import static lombok.AccessLevel.PRIVATE;
@@ -20,15 +22,19 @@ public class ImagesUpdatedEvent implements Event {
 
     public static final Version VERSION = Version.zero();
 
+    @Nullable
     ImageId image;
 
     List<ImageId> exampleImages;
 
-    public static ImagesUpdatedEvent of(ImageId image, List<ImageId> exampleImages) {
-        notNull(image, "Image must be given");
+    public static ImagesUpdatedEvent of(@Nullable ImageId image, List<ImageId> exampleImages) {
         notNull(exampleImages, "Example images must be given");
 
         return new ImagesUpdatedEvent(image, exampleImages);
+    }
+
+    public Optional<ImageId> getImage() {
+        return Optional.ofNullable(image);
     }
 
     @Override
