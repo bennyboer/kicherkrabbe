@@ -99,7 +99,19 @@ public class FabricsModuleTest {
             Set<FabricTypeAvailabilityDTO> availability,
             Agent agent
     ) {
-        String fabricId = module.createFabric(name, imageId, colorIds, topicIds, availability, agent).block();
+        return createFabric(name, "PATTERNED", imageId, colorIds, topicIds, availability, agent);
+    }
+
+    public String createFabric(
+            String name,
+            String kind,
+            String imageId,
+            Set<String> colorIds,
+            Set<String> topicIds,
+            Set<FabricTypeAvailabilityDTO> availability,
+            Agent agent
+    ) {
+        String fabricId = module.createFabric(name, kind, imageId, colorIds, topicIds, availability, agent).block();
 
         module.updateFabricInLookup(fabricId).block();
         if (agent.getType() == AgentType.USER) {
@@ -112,6 +124,7 @@ public class FabricsModuleTest {
     public String createFabric(SampleFabric sample, Agent agent) {
         return createFabric(
                 sample.getName(),
+                sample.getKind(),
                 sample.getImageId(),
                 sample.getColorIds(),
                 sample.getTopicIds(),

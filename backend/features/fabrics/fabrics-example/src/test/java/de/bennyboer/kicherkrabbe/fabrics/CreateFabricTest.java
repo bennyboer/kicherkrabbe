@@ -49,7 +49,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         assertThat(fabric.getId()).isEqualTo(FabricId.of(fabricId));
         assertThat(fabric.getVersion()).isEqualTo(Version.zero());
         assertThat(fabric.getName()).isEqualTo(FabricName.of("Ice bear party"));
-        assertThat(fabric.getImage()).isEqualTo(ImageId.of("ICE_BEAR_IMAGE_ID"));
+        assertThat(fabric.getImage()).contains(ImageId.of("ICE_BEAR_IMAGE_ID"));
         assertThat(fabric.getColors()).containsExactlyInAnyOrder(ColorId.of("BLUE_ID"), ColorId.of("WHITE_ID"));
         assertThat(fabric.getTopics()).containsExactlyInAnyOrder(TopicId.of("WINTER_ID"), TopicId.of("ANIMALS_ID"));
         assertThat(fabric.getAvailability()).containsExactlyInAnyOrder(
@@ -65,8 +65,6 @@ public class CreateFabricTest extends FabricsModuleTest {
         String invalidName2 = null;
 
         String validImageId = "ICE_BEAR_IMAGE_ID";
-        String invalidImageId1 = "";
-        String invalidImageId2 = null;
 
         Set<String> validColorIds = Set.of("BLUE_ID", "WHITE_ID");
         Set<String> invalidColorIds = null;
@@ -95,26 +93,6 @@ public class CreateFabricTest extends FabricsModuleTest {
         assertThatThrownBy(() -> createFabric(
                 invalidName2,
                 validImageId,
-                validColorIds,
-                validTopicIds,
-                validAvailability,
-                agent
-        )).isInstanceOf(IllegalArgumentException.class);
-
-        // when: the user tries to create a fabric without image ID; then: an error is raised
-        assertThatThrownBy(() -> createFabric(
-                validName,
-                invalidImageId1,
-                validColorIds,
-                validTopicIds,
-                validAvailability,
-                agent
-        )).isInstanceOf(IllegalArgumentException.class);
-
-        // when: the user tries to create a fabric with null image ID; then: an error is raised
-        assertThatThrownBy(() -> createFabric(
-                validName,
-                invalidImageId2,
                 validColorIds,
                 validTopicIds,
                 validAvailability,

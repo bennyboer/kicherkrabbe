@@ -102,7 +102,8 @@ public class FabricsModule {
                         fabric.getId(),
                         fabric.getVersion(),
                         fabric.getName(),
-                        fabric.getImage(),
+                        fabric.getKind().orElse(null),
+                        fabric.getImage().orElse(null),
                         fabric.getExampleImages(),
                         fabric.getColors(),
                         fabric.getTopics(),
@@ -127,7 +128,8 @@ public class FabricsModule {
                                         fabric.getId(),
                                         fabric.getVersion(),
                                         fabric.getName(),
-                                        fabric.getImage(),
+                                        fabric.getKind().orElse(null),
+                                        fabric.getImage().orElse(null),
                                         fabric.getExampleImages(),
                                         fabric.getColors(),
                                         fabric.getTopics(),
@@ -151,7 +153,8 @@ public class FabricsModule {
                         fabric.getId(),
                         fabric.getName(),
                         fabric.getAlias(),
-                        fabric.getImage(),
+                        fabric.getKind().orElse(null),
+                        fabric.getImage().orElse(null),
                         fabric.getExampleImages(),
                         fabric.getColors(),
                         fabric.getTopics(),
@@ -166,7 +169,8 @@ public class FabricsModule {
                         fabric.getId(),
                         fabric.getName(),
                         fabric.getAlias(),
-                        fabric.getImage(),
+                        fabric.getKind().orElse(null),
+                        fabric.getImage().orElse(null),
                         fabric.getExampleImages(),
                         fabric.getColors(),
                         fabric.getTopics(),
@@ -214,7 +218,8 @@ public class FabricsModule {
                                         fabric.getId(),
                                         fabric.getName(),
                                         fabric.getAlias(),
-                                        fabric.getImage(),
+                                        fabric.getKind().orElse(null),
+                                        fabric.getImage().orElse(null),
                                         fabric.getExampleImages(),
                                         fabric.getColors(),
                                         fabric.getTopics(),
@@ -226,7 +231,8 @@ public class FabricsModule {
     @Transactional(propagation = MANDATORY)
     public Mono<String> createFabric(
             String name,
-            String imageId,
+            String kind,
+            @Nullable String imageId,
             Set<String> colorIds,
             Set<String> topicIds,
             Set<FabricTypeAvailabilityDTO> availability,
@@ -234,8 +240,8 @@ public class FabricsModule {
     ) {
         notNull(name, "Fabric name must be given");
         check(!name.isBlank(), "Fabric name must not be blank");
-        notNull(imageId, "Image ID must be given");
-        check(!imageId.isBlank(), "Image ID must not be blank");
+        notNull(kind, "Fabric kind must be given");
+        check(!kind.isBlank(), "Fabric kind must not be blank");
         notNull(colorIds, "Color IDs must be given");
         notNull(topicIds, "Topic IDs must be given");
         notNull(availability, "Availability must be given");
@@ -257,6 +263,8 @@ public class FabricsModule {
                 .collect(Collectors.toSet());
 
         var alias = FabricAlias.fromName(FabricName.of(name));
+        var fabricKind = FabricKind.of(kind);
+        var image = imageId != null && !imageId.isBlank() ? ImageId.of(imageId) : null;
 
         return assertAgentIsAllowedTo(agent, CREATE)
                 .then(assertTopicsAvailable(topics))
@@ -265,7 +273,8 @@ public class FabricsModule {
                 .then(assertAliasIsNotAlreadyInUse(alias, null))
                 .then(fabricService.create(
                         FabricName.of(name),
-                        ImageId.of(imageId),
+                        fabricKind,
+                        image,
                         colors,
                         topics,
                         availabilities,
@@ -331,14 +340,15 @@ public class FabricsModule {
     }
 
     @Transactional(propagation = MANDATORY)
-    public Mono<Long> updateFabricImages(String fabricId, long version, String imageId, List<String> exampleImageIds, Agent agent) {
+    public Mono<Long> updateFabricImages(String fabricId, long version, @Nullable String imageId, List<String> exampleImageIds, Agent agent) {
         var id = FabricId.of(fabricId);
+        var image = imageId != null && !imageId.isBlank() ? ImageId.of(imageId) : null;
         var exampleImages = exampleImageIds.stream()
                 .map(ImageId::of)
                 .toList();
 
         return assertAgentIsAllowedTo(agent, UPDATE_IMAGE, id)
-                .then(fabricService.updateImages(id, Version.of(version), ImageId.of(imageId), exampleImages, agent))
+                .then(fabricService.updateImages(id, Version.of(version), image, exampleImages, agent))
                 .map(Version::getValue);
     }
 
@@ -447,7 +457,8 @@ public class FabricsModule {
                         fabric.getVersion(),
                         fabric.getName(),
                         FabricAlias.fromName(fabric.getName()),
-                        fabric.getImage(),
+                        fabric.getKind().orElse(null),
+                        fabric.getImage().orElse(null),
                         fabric.getExampleImages(),
                         fabric.getColors(),
                         fabric.getTopics(),

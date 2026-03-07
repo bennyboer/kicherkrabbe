@@ -29,6 +29,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         cottonAvailability.inStock = false;
 
         request.name = "Ice bear party";
+        request.kind = "PATTERNED";
         request.imageId = "ICE_BEAR_IMAGE_ID";
         request.colorIds = Set.of("BLUE_ID", "WHITE_ID");
         request.topicIds = Set.of("WINTER_ID", "ANIMALS_ID");
@@ -40,6 +41,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return a successful response
         when(module.createFabric(
                 request.name,
+                request.kind,
                 request.imageId,
                 request.colorIds,
                 request.topicIds,
@@ -77,6 +79,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
 
         var request = new CreateFabricRequest();
         request.name = "Ice bear party";
+        request.kind = "PATTERNED";
         request.imageId = "";
         request.colorIds = Set.of("BLUE_ID", "WHITE_ID");
         request.topicIds = Set.of("WINTER_ID", "ANIMALS_ID");
@@ -88,6 +91,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return an illegal argument exception
         when(module.createFabric(
                 request.name,
+                request.kind,
                 request.imageId,
                 request.colorIds,
                 request.topicIds,
@@ -150,6 +154,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         cottonAvailability.inStock = false;
 
         request.name = "Ice bear party";
+        request.kind = "PATTERNED";
         request.imageId = "ICE_BEAR_IMAGE_ID";
         request.colorIds = Set.of("BLUE_ID", "WHITE_ID");
         request.topicIds = Set.of("WINTER_ID", "ANIMALS_ID", "MISSING_TOPIC_ID");
@@ -161,6 +166,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return a topics missing error
         when(module.createFabric(
                 request.name,
+                request.kind,
                 request.imageId,
                 request.colorIds,
                 request.topicIds,
@@ -192,6 +198,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         cottonAvailability.inStock = false;
 
         request.name = "Ice bear party";
+        request.kind = "PATTERNED";
         request.imageId = "ICE_BEAR_IMAGE_ID";
         request.colorIds = Set.of("BLUE_ID", "WHITE_ID", "MISSING_COLOR_ID");
         request.topicIds = Set.of("WINTER_ID", "ANIMALS_ID");
@@ -203,6 +210,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return a colors missing error
         when(module.createFabric(
                 request.name,
+                request.kind,
                 request.imageId,
                 request.colorIds,
                 request.topicIds,
@@ -238,6 +246,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         missingAvailability.inStock = false;
 
         request.name = "Ice bear party";
+        request.kind = "PATTERNED";
         request.imageId = "ICE_BEAR_IMAGE_ID";
         request.colorIds = Set.of("BLUE_ID", "WHITE_ID");
         request.topicIds = Set.of("WINTER_ID", "ANIMALS_ID");
@@ -249,6 +258,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         // and: the module is configured to return a fabric types missing error
         when(module.createFabric(
                 request.name,
+                request.kind,
                 request.imageId,
                 request.colorIds,
                 request.topicIds,

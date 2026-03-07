@@ -50,7 +50,7 @@ public class UpdateFabricImagesTest extends FabricsModuleTest {
         var fabric = fabrics.getFirst();
         assertThat(fabric.getId()).isEqualTo(FabricId.of(fabricId));
         assertThat(fabric.getVersion()).isEqualTo(Version.of(1));
-        assertThat(fabric.getImage()).isEqualTo(ImageId.of("NEW_IMAGE_ID"));
+        assertThat(fabric.getImage()).contains(ImageId.of("NEW_IMAGE_ID"));
         assertThat(fabric.getExampleImages()).isEmpty();
     }
 
@@ -71,7 +71,7 @@ public class UpdateFabricImagesTest extends FabricsModuleTest {
 
         // then: the fabric images are updated with example images
         var fabric = getFabric(fabricId, agent);
-        assertThat(fabric.getImage()).isEqualTo(ImageId.of("MAIN_IMAGE_ID"));
+        assertThat(fabric.getImage()).contains(ImageId.of("MAIN_IMAGE_ID"));
         assertThat(fabric.getExampleImages()).containsExactly(ImageId.of("EXAMPLE_1"), ImageId.of("EXAMPLE_2"));
     }
 

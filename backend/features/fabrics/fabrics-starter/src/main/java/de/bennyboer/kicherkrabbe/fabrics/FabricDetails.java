@@ -1,11 +1,13 @@
 package de.bennyboer.kicherkrabbe.fabrics;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
@@ -21,6 +23,10 @@ public class FabricDetails {
 
     FabricName name;
 
+    @Nullable
+    FabricKind kind;
+
+    @Nullable
     ImageId image;
 
     List<ImageId> exampleImages;
@@ -41,7 +47,8 @@ public class FabricDetails {
             FabricId id,
             Version version,
             FabricName name,
-            ImageId image,
+            @Nullable FabricKind kind,
+            @Nullable ImageId image,
             List<ImageId> exampleImages,
             Set<ColorId> colors,
             Set<TopicId> topics,
@@ -53,14 +60,21 @@ public class FabricDetails {
         notNull(id, "Fabric ID must be given");
         notNull(version, "Version must be given");
         notNull(name, "Name must be given");
-        notNull(image, "Image ID must be given");
         notNull(exampleImages, "Example image IDs must be given");
         notNull(colors, "Color IDs must be given");
         notNull(topics, "Topic IDs must be given");
         notNull(availability, "Availability must be given");
         notNull(createdAt, "Creation date must be given");
 
-        return new FabricDetails(id, version, name, image, exampleImages, colors, topics, availability, published, featured, createdAt);
+        return new FabricDetails(id, version, name, kind, image, exampleImages, colors, topics, availability, published, featured, createdAt);
+    }
+
+    public Optional<FabricKind> getKind() {
+        return Optional.ofNullable(kind);
+    }
+
+    public Optional<ImageId> getImage() {
+        return Optional.ofNullable(image);
     }
 
 }

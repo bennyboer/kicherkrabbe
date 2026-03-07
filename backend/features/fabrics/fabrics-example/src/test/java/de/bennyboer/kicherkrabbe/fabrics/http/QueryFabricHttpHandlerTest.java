@@ -8,6 +8,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.fabrics.FabricDetails;
 import de.bennyboer.kicherkrabbe.fabrics.FabricId;
+import de.bennyboer.kicherkrabbe.fabrics.FabricKind;
 import de.bennyboer.kicherkrabbe.fabrics.FabricName;
 import de.bennyboer.kicherkrabbe.fabrics.ImageId;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.QueryFabricResponse;
@@ -36,6 +37,7 @@ public class QueryFabricHttpHandlerTest extends HttpHandlerTest {
                 FabricId.of("FABRIC_ID"),
                 Version.zero(),
                 FabricName.of("Fabric name"),
+                FabricKind.PATTERNED,
                 ImageId.of("IMAGE_ID"),
                 List.of(),
                 Set.of(),
@@ -60,6 +62,7 @@ public class QueryFabricHttpHandlerTest extends HttpHandlerTest {
         assertThat(response.fabric.id).isEqualTo("FABRIC_ID");
         assertThat(response.fabric.version).isEqualTo(0L);
         assertThat(response.fabric.name).isEqualTo("Fabric name");
+        assertThat(response.fabric.kind).isEqualTo("PATTERNED");
         assertThat(response.fabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(response.fabric.colorIds).isEmpty();
         assertThat(response.fabric.topicIds).isEmpty();

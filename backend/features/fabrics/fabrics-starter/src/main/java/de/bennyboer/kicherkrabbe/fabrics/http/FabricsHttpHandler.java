@@ -236,6 +236,7 @@ public class FabricsHttpHandler {
         return request.bodyToMono(CreateFabricRequest.class)
                 .flatMap(req -> toAgent(request).flatMap(agent -> module.createFabric(
                         req.name,
+                        req.kind,
                         req.imageId,
                         req.colorIds,
                         req.topicIds,
@@ -672,7 +673,8 @@ public class FabricsHttpHandler {
         result.id = fabric.getId().getValue();
         result.version = fabric.getVersion().getValue();
         result.name = fabric.getName().getValue();
-        result.imageId = fabric.getImage().getValue();
+        result.kind = fabric.getKind().map(FabricKind::getValue).orElse(null);
+        result.imageId = fabric.getImage().map(ImageId::getValue).orElse(null);
         result.exampleImageIds = fabric.getExampleImages().stream().map(ImageId::getValue).toList();
         result.colorIds = toColorIds(fabric.getColors());
         result.topicIds = toTopicIds(fabric.getTopics());
@@ -696,7 +698,8 @@ public class FabricsHttpHandler {
         result.id = fabric.getId().getValue();
         result.alias = fabric.getAlias().getValue();
         result.name = fabric.getName().getValue();
-        result.imageId = fabric.getImage().getValue();
+        result.kind = fabric.getKind().map(FabricKind::getValue).orElse(null);
+        result.imageId = fabric.getImage().map(ImageId::getValue).orElse(null);
         result.exampleImageIds = fabric.getExampleImages().stream().map(ImageId::getValue).toList();
         result.colorIds = toColorIds(fabric.getColors());
         result.topicIds = toTopicIds(fabric.getTopics());

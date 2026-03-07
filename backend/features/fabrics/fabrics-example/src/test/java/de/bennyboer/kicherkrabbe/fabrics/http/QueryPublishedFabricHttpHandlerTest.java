@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.fabrics.FabricAlias;
 import de.bennyboer.kicherkrabbe.fabrics.FabricId;
+import de.bennyboer.kicherkrabbe.fabrics.FabricKind;
 import de.bennyboer.kicherkrabbe.fabrics.FabricName;
 import de.bennyboer.kicherkrabbe.fabrics.ImageId;
 import de.bennyboer.kicherkrabbe.fabrics.PublishedFabric;
@@ -32,6 +33,7 @@ public class QueryPublishedFabricHttpHandlerTest extends HttpHandlerTest {
                 FabricId.of("FABRIC_ID"),
                 FabricName.of("Fabric name"),
                 FabricAlias.of("fabric-name"),
+                FabricKind.PATTERNED,
                 ImageId.of("IMAGE_ID"),
                 List.of(),
                 Set.of(),
@@ -53,6 +55,7 @@ public class QueryPublishedFabricHttpHandlerTest extends HttpHandlerTest {
         assertThat(response.fabric.id).isEqualTo("FABRIC_ID");
         assertThat(response.fabric.alias).isEqualTo("fabric-name");
         assertThat(response.fabric.name).isEqualTo("Fabric name");
+        assertThat(response.fabric.kind).isEqualTo("PATTERNED");
         assertThat(response.fabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(response.fabric.colorIds).isEmpty();
         assertThat(response.fabric.topicIds).isEmpty();
@@ -69,6 +72,7 @@ public class QueryPublishedFabricHttpHandlerTest extends HttpHandlerTest {
                 FabricId.of("FABRIC_ID"),
                 FabricName.of("Fabric name"),
                 FabricAlias.of("fabric-name"),
+                FabricKind.PATTERNED,
                 ImageId.of("IMAGE_ID"),
                 List.of(),
                 Set.of(),
@@ -89,6 +93,7 @@ public class QueryPublishedFabricHttpHandlerTest extends HttpHandlerTest {
         assertThat(response.fabric.id).isEqualTo("FABRIC_ID");
         assertThat(response.fabric.alias).isEqualTo("fabric-name");
         assertThat(response.fabric.name).isEqualTo("Fabric name");
+        assertThat(response.fabric.kind).isEqualTo("PATTERNED");
         assertThat(response.fabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(response.fabric.colorIds).isEmpty();
         assertThat(response.fabric.topicIds).isEmpty();

@@ -16,6 +16,8 @@ public class CreateFabricRequest {
 
     public String name;
 
+    public String kind;
+
     public String imageId;
 
     public Set<String> colorIds;

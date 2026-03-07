@@ -43,6 +43,7 @@ public class QueryFabricsHttpHandlerTest extends HttpHandlerTest {
                         FabricId.of("FABRIC_ID"),
                         Version.of(0),
                         FabricName.of("Fabric name"),
+                        FabricKind.PATTERNED,
                         ImageId.of("IMAGE_ID"),
                         List.of(),
                         Set.of(),
@@ -75,6 +76,7 @@ public class QueryFabricsHttpHandlerTest extends HttpHandlerTest {
         var responseFabric = response.fabrics.get(0);
         assertThat(responseFabric.id).isEqualTo("FABRIC_ID");
         assertThat(responseFabric.name).isEqualTo("Fabric name");
+        assertThat(responseFabric.kind).isEqualTo("PATTERNED");
         assertThat(responseFabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(responseFabric.colorIds).isEmpty();
         assertThat(responseFabric.topicIds).isEmpty();

@@ -1,9 +1,11 @@
 package de.bennyboer.kicherkrabbe.fabrics;
 
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
@@ -19,6 +21,10 @@ public class PublishedFabric {
 
     FabricAlias alias;
 
+    @Nullable
+    FabricKind kind;
+
+    @Nullable
     ImageId image;
 
     List<ImageId> exampleImages;
@@ -33,7 +39,8 @@ public class PublishedFabric {
             FabricId id,
             FabricName name,
             FabricAlias alias,
-            ImageId image,
+            @Nullable FabricKind kind,
+            @Nullable ImageId image,
             List<ImageId> exampleImages,
             Set<ColorId> colors,
             Set<TopicId> topics,
@@ -42,13 +49,20 @@ public class PublishedFabric {
         notNull(id, "Fabric ID must be given");
         notNull(name, "Fabric name must be given");
         notNull(alias, "Fabric alias must be given");
-        notNull(image, "Fabric image must be given");
         notNull(exampleImages, "Fabric example images must be given");
         notNull(colors, "Fabric colors must be given");
         notNull(topics, "Fabric topics must be given");
         notNull(availability, "Fabric availability must be given");
 
-        return new PublishedFabric(id, name, alias, image, exampleImages, colors, topics, availability);
+        return new PublishedFabric(id, name, alias, kind, image, exampleImages, colors, topics, availability);
+    }
+
+    public Optional<FabricKind> getKind() {
+        return Optional.ofNullable(kind);
+    }
+
+    public Optional<ImageId> getImage() {
+        return Optional.ofNullable(image);
     }
 
 }

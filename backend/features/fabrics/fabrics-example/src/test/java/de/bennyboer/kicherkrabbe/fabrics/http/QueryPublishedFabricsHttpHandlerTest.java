@@ -57,6 +57,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
                         FabricId.of("FABRIC_ID"),
                         FabricName.of("Fabric name"),
                         FabricAlias.of("fabric-name"),
+                        FabricKind.PATTERNED,
                         ImageId.of("IMAGE_ID"),
                         List.of(),
                         Set.of(ColorId.of("COLOR_ID")),
@@ -85,6 +86,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
         assertThat(fabric.id).isEqualTo("FABRIC_ID");
         assertThat(fabric.alias).isEqualTo("fabric-name");
         assertThat(fabric.name).isEqualTo("Fabric name");
+        assertThat(fabric.kind).isEqualTo("PATTERNED");
         assertThat(fabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(fabric.colorIds).containsExactly("COLOR_ID");
         assertThat(fabric.topicIds).containsExactly("TOPIC_ID");
@@ -125,6 +127,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
                         FabricId.of("FABRIC_ID"),
                         FabricName.of("Fabric name"),
                         FabricAlias.of("fabric-name"),
+                        FabricKind.PATTERNED,
                         ImageId.of("IMAGE_ID"),
                         List.of(),
                         Set.of(ColorId.of("COLOR_ID")),
@@ -152,6 +155,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
         assertThat(fabric.id).isEqualTo("FABRIC_ID");
         assertThat(fabric.alias).isEqualTo("fabric-name");
         assertThat(fabric.name).isEqualTo("Fabric name");
+        assertThat(fabric.kind).isEqualTo("PATTERNED");
         assertThat(fabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(fabric.colorIds).containsExactly("COLOR_ID");
         assertThat(fabric.topicIds).containsExactly("TOPIC_ID");

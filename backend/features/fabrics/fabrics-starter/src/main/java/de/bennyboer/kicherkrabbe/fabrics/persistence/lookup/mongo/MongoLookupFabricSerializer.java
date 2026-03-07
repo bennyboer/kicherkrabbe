@@ -18,7 +18,8 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
         result.version = readModel.getVersion().getValue();
         result.name = readModel.getName().getValue();
         result.alias = readModel.getAlias().getValue();
-        result.imageId = readModel.getImage().getValue();
+        result.kind = readModel.getKind().map(FabricKind::getValue).orElse(null);
+        result.imageId = readModel.getImage().map(ImageId::getValue).orElse(null);
         result.exampleImageIds = readModel.getExampleImages()
                 .stream()
                 .map(ImageId::getValue)
@@ -48,7 +49,8 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
         var version = Version.of(serialized.version);
         var name = FabricName.of(serialized.name);
         var alias = FabricAlias.of(serialized.alias);
-        var image = ImageId.of(serialized.imageId);
+        var kind = serialized.kind != null ? FabricKind.of(serialized.kind) : null;
+        var image = serialized.imageId != null ? ImageId.of(serialized.imageId) : null;
         var exampleImages = serialized.exampleImageIds.stream().map(ImageId::of).toList();
         var colors = serialized.colorIds
                 .stream()
@@ -71,6 +73,7 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
                 version,
                 name,
                 alias,
+                kind,
                 image,
                 exampleImages,
                 colors,

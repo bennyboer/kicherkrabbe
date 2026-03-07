@@ -60,7 +60,7 @@ public class QueryFabricsTest extends FabricsModuleTest {
                 .orElseThrow();
         assertThat(firstFabric.getVersion()).isEqualTo(Version.zero());
         assertThat(firstFabric.getName()).isEqualTo(FabricName.of("Ice bear party"));
-        assertThat(firstFabric.getImage()).isEqualTo(ImageId.of("ICE_BEAR_IMAGE_ID"));
+        assertThat(firstFabric.getImage()).contains(ImageId.of("ICE_BEAR_IMAGE_ID"));
         assertThat(firstFabric.getColors()).containsExactlyInAnyOrder(ColorId.of("BLUE_ID"), ColorId.of("WHITE_ID"));
         assertThat(firstFabric.getTopics()).containsExactlyInAnyOrder(
                 TopicId.of("WINTER_ID"),
@@ -79,7 +79,7 @@ public class QueryFabricsTest extends FabricsModuleTest {
                 .orElseThrow();
         assertThat(secondFabric.getVersion()).isEqualTo(Version.zero());
         assertThat(secondFabric.getName()).isEqualTo(FabricName.of("Penguin party"));
-        assertThat(secondFabric.getImage()).isEqualTo(ImageId.of("PENGUIN_IMAGE_ID"));
+        assertThat(secondFabric.getImage()).contains(ImageId.of("PENGUIN_IMAGE_ID"));
         assertThat(secondFabric.getColors()).containsExactlyInAnyOrder(ColorId.of("BLACK_ID"), ColorId.of("WHITE_ID"));
         assertThat(secondFabric.getTopics()).containsExactlyInAnyOrder(
                 TopicId.of("WINTER_ID"),

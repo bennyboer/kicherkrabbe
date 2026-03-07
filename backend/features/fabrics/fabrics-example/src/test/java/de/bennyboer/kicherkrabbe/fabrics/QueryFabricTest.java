@@ -49,7 +49,7 @@ public class QueryFabricTest extends FabricsModuleTest {
         assertThat(fabric.getId()).isEqualTo(FabricId.of(fabricId));
         assertThat(fabric.getVersion()).isEqualTo(Version.zero());
         assertThat(fabric.getName()).isEqualTo(FabricName.of("Ice bear party"));
-        assertThat(fabric.getImage()).isEqualTo(ImageId.of("ICE_BEAR_IMAGE_ID"));
+        assertThat(fabric.getImage()).contains(ImageId.of("ICE_BEAR_IMAGE_ID"));
         assertThat(fabric.getColors()).containsExactlyInAnyOrder(ColorId.of("BLUE_ID"), ColorId.of("WHITE_ID"));
         assertThat(fabric.getTopics()).containsExactlyInAnyOrder(TopicId.of("WINTER_ID"), TopicId.of("ANIMALS_ID"));
         assertThat(fabric.getAvailability()).containsExactlyInAnyOrder(
