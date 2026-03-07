@@ -24,7 +24,11 @@
       @for (fabric of fabrics; track fabric.id) {
         <tr [routerLink]="[fabric.id]">
           <td class="image-cell">
-            <img [src]="getImageUrl(fabric.image) | authImage | async" />
+            @if (fabric.image.isSome()) {
+              <img [src]="getImageUrl(fabric.image.orElseThrow()) | authImage | async" />
+            } @else if (fabric.exampleImages.length > 0) {
+              <img [src]="getImageUrl(fabric.exampleImages[0]) | authImage | async" />
+            }
           </td>
           <td class="details-cell">
             <span class="details">

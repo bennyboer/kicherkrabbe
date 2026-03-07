@@ -35,6 +35,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
   nameInput!: ElementRef;
 
   private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private readonly kind$: BehaviorSubject<string> = new BehaviorSubject<string>('PATTERNED');
   private readonly imageId$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());
   private readonly selectedTopics$: BehaviorSubject<FabricTopic[]> = new BehaviorSubject<FabricTopic[]>([]);
   private readonly availableTopics$: BehaviorSubject<FabricTopic[]> = new BehaviorSubject<FabricTopic[]>([]);
@@ -71,6 +72,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.name$.complete();
+    this.kind$.complete();
     this.imageId$.complete();
     this.availableTopics$.complete();
     this.loadingAvailableTopics$.complete();
@@ -92,9 +94,25 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     this.name$.next(value.trim());
   }
 
+  updateKind(value: string): void {
+    this.kind$.next(value);
+    if (value === 'SOLID_COLOR') {
+      this.imageId$.next(none());
+    }
+  }
+
+  getKind(): Observable<string> {
+    return this.kind$.asObservable();
+  }
+
+  isPatterned(): Observable<boolean> {
+    return this.kind$.pipe(map((kind) => kind === 'PATTERNED'));
+  }
+
   createFabric(): boolean {
     const name = this.name$.value;
-    const image = this.imageId$.value.orElseThrow('Image ID is missing');
+    const kind = this.kind$.value;
+    const image = kind === 'PATTERNED' ? this.imageId$.value.orElseThrow('Image ID is missing') : null;
     const colors = new Set<string>(this.selectedColors$.value.map((c) => c.id));
     const topics = new Set<string>(this.selectedTopics$.value.map((t) => t.id));
     const availability: FabricTypeAvailability[] = this.selectedFabricTypes$.value.map((fabricType) =>
@@ -109,6 +127,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     this.fabricsService
       .createFabric({
         name,
+        kind,
         image,
         colors,
         topics,
@@ -119,7 +138,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
         next: () => {
           this.creatingFabric$.next(false);
           this.notificationService.publish({
-            message: `Der Stoff „${name}“ wurde erfolgreich erstellt.`,
+            message: `Der Stoff „${name}" wurde erfolgreich erstellt.`,
             type: 'success',
           });
           this.router.navigate(['..'], { relativeTo: this.route });
@@ -151,7 +170,9 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
 
   isFormValid(): Observable<boolean> {
     const nameValid$ = this.name$.pipe(map((name) => name.length > 0));
-    const imageIdValid$ = this.imageId$.pipe(map((id) => id.isSome()));
+    const imageIdValid$ = combineLatest([this.imageId$, this.kind$]).pipe(
+      map(([id, kind]) => kind === 'SOLID_COLOR' || id.isSome()),
+    );
 
     return combineLatest([nameValid$, imageIdValid$]).pipe(
       map(([nameValid, imageIdValid]) => nameValid && imageIdValid),
