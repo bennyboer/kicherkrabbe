@@ -25,6 +25,8 @@ public class QueryPublishedFabricsRequest {
 
     public FabricsSortDTO sort;
 
+    public Set<String> kinds;
+
     public long skip;
 
     public long limit;

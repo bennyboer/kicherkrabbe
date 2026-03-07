@@ -208,10 +208,25 @@ public class FabricsModuleTest {
             long limit,
             Agent agent
     ) {
+        return getPublishedFabrics(searchTerm, colorIds, topicIds, Set.of(), availability, sort, skip, limit, agent);
+    }
+
+    public PublishedFabricsPage getPublishedFabrics(
+            String searchTerm,
+            Set<String> colorIds,
+            Set<String> topicIds,
+            Set<String> kinds,
+            FabricsAvailabilityFilterDTO availability,
+            FabricsSortDTO sort,
+            long skip,
+            long limit,
+            Agent agent
+    ) {
         return module.getPublishedFabrics(
                 searchTerm,
                 colorIds,
                 topicIds,
+                kinds,
                 availability,
                 sort,
                 skip,

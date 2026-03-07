@@ -182,6 +182,7 @@ public class FabricsModule {
             String searchTerm,
             Set<String> colorIds,
             Set<String> topicIds,
+            Set<String> kindValues,
             FabricsAvailabilityFilterDTO availability,
             FabricsSortDTO sort,
             long skip,
@@ -194,6 +195,9 @@ public class FabricsModule {
         Set<TopicId> topics = topicIds.stream()
                 .map(TopicId::of)
                 .collect(Collectors.toSet());
+        Set<FabricKind> kinds = kindValues.stream()
+                .map(FabricKind::of)
+                .collect(Collectors.toSet());
         boolean filterAvailability = availability.active;
         boolean inStock = availability.inStock;
         boolean sortAscending = sort.direction == ASCENDING;
@@ -202,6 +206,7 @@ public class FabricsModule {
                         searchTerm,
                         colors,
                         topics,
+                        kinds,
                         filterAvailability,
                         inStock,
                         sortAscending,
