@@ -96,8 +96,14 @@ export class FabricsPage implements OnInit, OnDestroy {
 
 	readonly selectedTopicIds$ = this.filterState.selectedTopicIds$;
 	readonly selectedColorIds$ = this.filterState.selectedColorIds$;
+	readonly selectedKinds$ = this.filterState.selectedKinds$;
 	readonly inStockOnly$ = this.filterState.inStockOnly$;
 	readonly sortAscending$ = this.filterState.sortAscending$;
+
+	readonly kindOptions = [
+		{ label: 'Motivstoffe', value: 'PATTERNED' },
+		{ label: 'Einfarbige Stoffe', value: 'SOLID_COLOR' },
+	];
 
 	readonly hasMore$ = combineLatest([this.fabrics$, this.total$]).pipe(
 		map(([fabrics, total]) => fabrics.length < total),
@@ -106,12 +112,13 @@ export class FabricsPage implements OnInit, OnDestroy {
 	readonly hasActiveFilters$ = combineLatest([
 		this.selectedTopicIds$,
 		this.selectedColorIds$,
+		this.selectedKinds$,
 		this.inStockOnly$,
 		this.sortAscending$,
 	]).pipe(
 		map(
-			([topicIds, colorIds, inStockOnly, sortAscending]) =>
-				topicIds.length > 0 || colorIds.length > 0 || inStockOnly || !sortAscending,
+			([topicIds, colorIds, kinds, inStockOnly, sortAscending]) =>
+				topicIds.length > 0 || colorIds.length > 0 || kinds.length > 0 || inStockOnly || !sortAscending,
 		),
 	);
 
@@ -151,6 +158,10 @@ export class FabricsPage implements OnInit, OnDestroy {
 		this.selectedColorIds$.next(ids ?? []);
 	}
 
+	onKindsChange(values: string[]): void {
+		this.selectedKinds$.next(values ?? []);
+	}
+
 	onInStockChange(value: boolean): void {
 		this.inStockOnly$.next(value);
 	}
@@ -171,6 +182,7 @@ export class FabricsPage implements OnInit, OnDestroy {
 			.getFabrics({
 				topicIds: this.selectedTopicIds$.value,
 				colorIds: this.selectedColorIds$.value,
+				kinds: this.selectedKinds$.value,
 				inStockOnly: this.inStockOnly$.value || undefined,
 				sortAscending: this.sortAscending$.value,
 				skip,
@@ -230,18 +242,20 @@ export class FabricsPage implements OnInit, OnDestroy {
 		combineLatest([
 			this.selectedTopicIds$.pipe(distinctUntilChanged(arraysEqual)),
 			this.selectedColorIds$.pipe(distinctUntilChanged(arraysEqual)),
+			this.selectedKinds$.pipe(distinctUntilChanged(arraysEqual)),
 			this.inStockOnly$.pipe(distinctUntilChanged()),
 			this.sortAscending$.pipe(distinctUntilChanged()),
 		])
 			.pipe(debounceTime(100), takeUntil(this.destroy$))
-			.subscribe(([topicIds, colorIds, inStockOnly, sortAscending]) => {
-				this.loadFabrics(topicIds, colorIds, inStockOnly, sortAscending);
+			.subscribe(([topicIds, colorIds, kinds, inStockOnly, sortAscending]) => {
+				this.loadFabrics(topicIds, colorIds, kinds, inStockOnly, sortAscending);
 			});
 	}
 
 	private loadFabrics(
 		topicIds: string[],
 		colorIds: string[],
+		kinds: string[],
 		inStockOnly: boolean,
 		sortAscending: boolean,
 	): void {
@@ -252,6 +266,7 @@ export class FabricsPage implements OnInit, OnDestroy {
 			.getFabrics({
 				topicIds,
 				colorIds,
+				kinds,
 				inStockOnly: inStockOnly || undefined,
 				sortAscending,
 				skip: 0,
