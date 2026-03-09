@@ -2,9 +2,8 @@ package de.bennyboer.kicherkrabbe.fabrics;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabric;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,30 +30,33 @@ public class CleanupColorsTest extends FabricsModuleTest {
 
         // and: the user created some fabrics referencing some colors
         String fabricId1 = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
         String fabricId2 = createFabric(
-                "Polar bear party",
-                FabricKind.PATTERNED,
-                "POLAR_BEAR_IMAGE_ID",
-                Set.of("WHITE_ID"),
-                Set.of("WINTER_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Polar bear party")
+                        .imageId("POLAR_BEAR_IMAGE_ID")
+                        .colorId("WHITE_ID")
+                        .topicId("WINTER_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
         String fabricId3 = createFabric(
-                "Cat brawl",
-                FabricKind.PATTERNED,
-                "CAT_IMAGE_ID",
-                Set.of("BLACK_ID", "WHITE_ID"),
-                Set.of("ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Cat brawl")
+                        .imageId("CAT_IMAGE_ID")
+                        .colorId("BLACK_ID").colorId("WHITE_ID")
+                        .topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
 

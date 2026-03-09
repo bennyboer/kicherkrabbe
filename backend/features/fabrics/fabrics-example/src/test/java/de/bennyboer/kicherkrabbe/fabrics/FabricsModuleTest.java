@@ -31,21 +31,21 @@ import reactor.core.publisher.Mono;
 import java.time.Clock;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 public class FabricsModuleTest {
 
-    protected FabricTypeAvailabilityDTO jerseyAvailability = SampleFabricTypeAvailability.builder()
+    protected SampleFabricTypeAvailability sampleJerseyAvailability = SampleFabricTypeAvailability.builder()
             .typeId("JERSEY_ID")
             .inStock(true)
-            .build()
-            .toDTO();
+            .build();
 
-    protected FabricTypeAvailabilityDTO cottonAvailability = SampleFabricTypeAvailability.builder()
+    protected SampleFabricTypeAvailability sampleCottonAvailability = SampleFabricTypeAvailability.builder()
             .typeId("COTTON_ID")
             .inStock(false)
-            .build()
-            .toDTO();
+            .build();
+
+    protected FabricTypeAvailabilityDTO jerseyAvailability = sampleJerseyAvailability.toDTO();
+
+    protected FabricTypeAvailabilityDTO cottonAvailability = sampleCottonAvailability.toDTO();
 
     private final FabricsModuleConfig config = new FabricsModuleConfig();
 
@@ -74,7 +74,7 @@ public class FabricsModuleTest {
 
     private final FabricTypeRepo fabricTypeRepo = new InMemoryFabricTypeRepo();
 
-    private final FabricsModule module = config.fabricsModule(
+    protected final FabricsModule module = config.fabricsModule(
             fabricService,
             permissionsService,
             fabricLookupRepo,
@@ -92,16 +92,16 @@ public class FabricsModuleTest {
         return module.getFabrics(searchTerm, skip, limit, agent).block();
     }
 
-    public String createFabric(
-            String name,
-            FabricKind kind,
-            String imageId,
-            Set<String> colorIds,
-            Set<String> topicIds,
-            Set<FabricTypeAvailabilityDTO> availability,
-            Agent agent
-    ) {
-        String fabricId = module.createFabric(name, kind, imageId, colorIds, topicIds, availability, agent).block();
+    public String createFabric(SampleFabric sample, Agent agent) {
+        String fabricId = module.createFabric(
+                sample.getName(),
+                FabricKind.valueOf(sample.getKind()),
+                sample.getImageId(),
+                sample.getColorIds(),
+                sample.getTopicIds(),
+                sample.getAvailabilityDTOs(),
+                agent
+        ).block();
 
         module.updateFabricInLookup(fabricId).block();
         if (agent.getType() == AgentType.USER) {
@@ -109,23 +109,6 @@ public class FabricsModuleTest {
         }
 
         return fabricId;
-    }
-
-    public String createFabric(SampleFabric sample, Agent agent) {
-        return createFabric(
-                sample.getName().getValue(),
-                sample.getKind(),
-                sample.getImageId().getValue(),
-                sample.getColorIds().stream().map(ColorId::getValue).collect(Collectors.toSet()),
-                sample.getTopicIds().stream().map(TopicId::getValue).collect(Collectors.toSet()),
-                sample.getAvailabilities().stream().map(a -> {
-                    var dto = new FabricTypeAvailabilityDTO();
-                    dto.typeId = a.getTypeId().getValue();
-                    dto.inStock = a.isInStock();
-                    return dto;
-                }).collect(Collectors.toSet()),
-                agent
-        );
     }
 
     public String createSampleFabric(Agent agent) {

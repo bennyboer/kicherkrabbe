@@ -11,6 +11,7 @@ import de.bennyboer.kicherkrabbe.fabrics.FabricId;
 import de.bennyboer.kicherkrabbe.fabrics.FabricKind;
 import de.bennyboer.kicherkrabbe.fabrics.FabricName;
 import de.bennyboer.kicherkrabbe.fabrics.ImageId;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricKindDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.QueryFabricResponse;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -62,7 +63,7 @@ public class QueryFabricHttpHandlerTest extends HttpHandlerTest {
         assertThat(response.fabric.id).isEqualTo("FABRIC_ID");
         assertThat(response.fabric.version).isEqualTo(0L);
         assertThat(response.fabric.name).isEqualTo("Fabric name");
-        assertThat(response.fabric.kind).isEqualTo("PATTERNED");
+        assertThat(response.fabric.kind).isEqualTo(FabricKindDTO.PATTERNED);
         assertThat(response.fabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(response.fabric.colorIds).isEmpty();
         assertThat(response.fabric.topicIds).isEmpty();

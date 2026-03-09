@@ -4,11 +4,10 @@ import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabric;
 import de.bennyboer.kicherkrabbe.fabrics.unfeature.AlreadyUnfeaturedError;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -32,12 +31,13 @@ public class UnfeatureFabricTest extends FabricsModuleTest {
 
         // and: the user creates a fabric
         String fabricId = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID"),
-                Set.of("WINTER_ID"),
-                Set.of(jerseyAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID")
+                        .topicId("WINTER_ID")
+                        .availability(sampleJerseyAvailability)
+                        .build(),
                 agent
         );
 
@@ -73,12 +73,13 @@ public class UnfeatureFabricTest extends FabricsModuleTest {
 
         // and: the user creates a fabric
         String fabricId = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID"),
-                Set.of("WINTER_ID"),
-                Set.of(jerseyAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID")
+                        .topicId("WINTER_ID")
+                        .availability(sampleJerseyAvailability)
+                        .build(),
                 agent
         );
 
@@ -117,12 +118,13 @@ public class UnfeatureFabricTest extends FabricsModuleTest {
 
         // and: the user creates a fabric
         String fabricId = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID"),
-                Set.of("WINTER_ID"),
-                Set.of(jerseyAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID")
+                        .topicId("WINTER_ID")
+                        .availability(sampleJerseyAvailability)
+                        .build(),
                 agent
         );
 

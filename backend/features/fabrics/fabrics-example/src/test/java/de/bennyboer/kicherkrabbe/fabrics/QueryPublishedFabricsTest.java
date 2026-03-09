@@ -2,9 +2,10 @@ package de.bennyboer.kicherkrabbe.fabrics;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
-import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
+import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabric;
+import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabricTypeAvailability;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -37,21 +38,23 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
 
         // and: the user creates some fabrics
         String fabricId1 = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
         String fabricId2 = createFabric(
-                "Penguin party",
-                FabricKind.PATTERNED,
-                "PENGUIN_IMAGE_ID",
-                Set.of("BLACK_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Penguin party")
+                        .imageId("PENGUIN_IMAGE_ID")
+                        .colorId("BLACK_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
 
@@ -192,21 +195,23 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String fabricId1 = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
         String fabricId2 = createFabric(
-                "Penguin party",
-                FabricKind.PATTERNED,
-                "PENGUIN_IMAGE_ID",
-                Set.of("BLACK_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Penguin party")
+                        .imageId("PENGUIN_IMAGE_ID")
+                        .colorId("BLACK_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
 
@@ -300,47 +305,43 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         allowUserToCreateFabrics("USER_ID");
         var agent = Agent.user(AgentId.of("USER_ID"));
 
-        var availableInJersey = new FabricTypeAvailabilityDTO();
-        availableInJersey.typeId = "JERSEY_ID";
-        availableInJersey.inStock = true;
-
-        var notAvailableInJersey = new FabricTypeAvailabilityDTO();
-        notAvailableInJersey.typeId = "JERSEY_ID";
-        notAvailableInJersey.inStock = false;
-
-        var availableInCotton = new FabricTypeAvailabilityDTO();
-        availableInCotton.typeId = "COTTON_ID";
-        availableInCotton.inStock = true;
-
-        var notAvailableInCotton = new FabricTypeAvailabilityDTO();
-        notAvailableInCotton.typeId = "COTTON_ID";
-        notAvailableInCotton.inStock = false;
+        var availableInJersey = SampleFabricTypeAvailability.builder()
+                .typeId("JERSEY_ID").inStock(true).build();
+        var notAvailableInJersey = SampleFabricTypeAvailability.builder()
+                .typeId("JERSEY_ID").inStock(false).build();
+        var availableInCotton = SampleFabricTypeAvailability.builder()
+                .typeId("COTTON_ID").inStock(true).build();
+        var notAvailableInCotton = SampleFabricTypeAvailability.builder()
+                .typeId("COTTON_ID").inStock(false).build();
 
         String fabricId1 = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(availableInJersey, notAvailableInCotton),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(availableInJersey).availability(notAvailableInCotton)
+                        .build(),
                 agent
         );
         String fabricId2 = createFabric(
-                "Penguin party",
-                FabricKind.PATTERNED,
-                "PENGUIN_IMAGE_ID",
-                Set.of("BLACK_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(notAvailableInJersey, availableInCotton),
+                SampleFabric.builder()
+                        .name("Penguin party")
+                        .imageId("PENGUIN_IMAGE_ID")
+                        .colorId("BLACK_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(notAvailableInJersey).availability(availableInCotton)
+                        .build(),
                 agent
         );
         String fabricId3 = createFabric(
-                "Coconut party",
-                FabricKind.PATTERNED,
-                "COCONUT_IMAGE_ID",
-                Set.of("BROWN_ID", "WHITE_ID"),
-                Set.of("SUMMER_ID"),
-                Set.of(notAvailableInCotton, notAvailableInJersey),
+                SampleFabric.builder()
+                        .name("Coconut party")
+                        .imageId("COCONUT_IMAGE_ID")
+                        .colorId("BROWN_ID").colorId("WHITE_ID")
+                        .topicId("SUMMER_ID")
+                        .availability(notAvailableInCotton).availability(notAvailableInJersey)
+                        .build(),
                 agent
         );
 
@@ -451,21 +452,23 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String fabricId1 = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
         String fabricId2 = createFabric(
-                "Penguin party",
-                FabricKind.PATTERNED,
-                "PENGUIN_IMAGE_ID",
-                Set.of("BLACK_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Penguin party")
+                        .imageId("PENGUIN_IMAGE_ID")
+                        .colorId("BLACK_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
 
@@ -516,21 +519,23 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String fabricId1 = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
         String fabricId2 = createFabric(
-                "Penguin party",
-                FabricKind.PATTERNED,
-                "PENGUIN_IMAGE_ID",
-                Set.of("BLACK_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Penguin party")
+                        .imageId("PENGUIN_IMAGE_ID")
+                        .colorId("BLACK_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
 
@@ -609,21 +614,23 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String fabricId1 = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID", "PARTY_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID").topicId("PARTY_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
         String fabricId2 = createFabric(
-                "Penguin party",
-                FabricKind.PATTERNED,
-                "PENGUIN_IMAGE_ID",
-                Set.of("BLACK_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Penguin party")
+                        .imageId("PENGUIN_IMAGE_ID")
+                        .colorId("BLACK_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
 
@@ -680,21 +687,23 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         String fabricId1 = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
         String fabricId2 = createFabric(
-                "Penguin party",
-                FabricKind.PATTERNED,
-                "PENGUIN_IMAGE_ID",
-                Set.of("BLACK_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Penguin party")
+                        .imageId("PENGUIN_IMAGE_ID")
+                        .colorId("BLACK_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
 

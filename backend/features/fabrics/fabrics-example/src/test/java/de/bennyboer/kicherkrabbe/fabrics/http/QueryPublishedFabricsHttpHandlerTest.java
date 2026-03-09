@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.fabrics.http;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.fabrics.*;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricKindDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.requests.QueryPublishedFabricsRequest;
@@ -86,7 +87,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
         assertThat(fabric.id).isEqualTo("FABRIC_ID");
         assertThat(fabric.alias).isEqualTo("fabric-name");
         assertThat(fabric.name).isEqualTo("Fabric name");
-        assertThat(fabric.kind).isEqualTo("PATTERNED");
+        assertThat(fabric.kind).isEqualTo(FabricKindDTO.PATTERNED);
         assertThat(fabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(fabric.colorIds).containsExactly("COLOR_ID");
         assertThat(fabric.topicIds).containsExactly("TOPIC_ID");
@@ -155,7 +156,7 @@ public class QueryPublishedFabricsHttpHandlerTest extends HttpHandlerTest {
         assertThat(fabric.id).isEqualTo("FABRIC_ID");
         assertThat(fabric.alias).isEqualTo("fabric-name");
         assertThat(fabric.name).isEqualTo("Fabric name");
-        assertThat(fabric.kind).isEqualTo("PATTERNED");
+        assertThat(fabric.kind).isEqualTo(FabricKindDTO.PATTERNED);
         assertThat(fabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(fabric.colorIds).containsExactly("COLOR_ID");
         assertThat(fabric.topicIds).containsExactly("TOPIC_ID");

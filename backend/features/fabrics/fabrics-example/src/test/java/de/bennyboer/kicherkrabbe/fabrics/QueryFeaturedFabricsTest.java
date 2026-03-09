@@ -2,9 +2,8 @@ package de.bennyboer.kicherkrabbe.fabrics;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabric;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,21 +17,19 @@ public class QueryFeaturedFabricsTest extends FabricsModuleTest {
         markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
 
         String fabricId1 = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "IMAGE_ID",
-                Set.of(),
-                Set.of(),
-                Set.of(jerseyAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("IMAGE_ID")
+                        .availability(sampleJerseyAvailability)
+                        .build(),
                 agent
         );
         String fabricId2 = createFabric(
-                "Dotted",
-                FabricKind.PATTERNED,
-                "IMAGE_ID",
-                Set.of(),
-                Set.of(),
-                Set.of(jerseyAvailability),
+                SampleFabric.builder()
+                        .name("Dotted")
+                        .imageId("IMAGE_ID")
+                        .availability(sampleJerseyAvailability)
+                        .build(),
                 agent
         );
 
@@ -72,12 +69,11 @@ public class QueryFeaturedFabricsTest extends FabricsModuleTest {
         markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
 
         String fabricId = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "IMAGE_ID",
-                Set.of(),
-                Set.of(),
-                Set.of(jerseyAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("IMAGE_ID")
+                        .availability(sampleJerseyAvailability)
+                        .build(),
                 agent
         );
 
@@ -97,12 +93,11 @@ public class QueryFeaturedFabricsTest extends FabricsModuleTest {
         markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
 
         String fabricId = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "IMAGE_ID",
-                Set.of(),
-                Set.of(),
-                Set.of(jerseyAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("IMAGE_ID")
+                        .availability(sampleJerseyAvailability)
+                        .build(),
                 agent
         );
 
@@ -122,12 +117,11 @@ public class QueryFeaturedFabricsTest extends FabricsModuleTest {
         markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
 
         String fabricId = createFabric(
-                "Ice bear party",
-                FabricKind.PATTERNED,
-                "IMAGE_ID",
-                Set.of(),
-                Set.of(),
-                Set.of(jerseyAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("IMAGE_ID")
+                        .availability(sampleJerseyAvailability)
+                        .build(),
                 agent
         );
 
