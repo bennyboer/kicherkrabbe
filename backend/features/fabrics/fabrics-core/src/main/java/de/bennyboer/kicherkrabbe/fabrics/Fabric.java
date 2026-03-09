@@ -70,7 +70,6 @@ public class Fabric implements Aggregate {
 
     FabricName name;
 
-    @Nullable
     FabricKind kind;
 
     @Nullable
@@ -186,7 +185,7 @@ public class Fabric implements Aggregate {
         return (switch (event) {
             case CreatedEvent e -> withId(id)
                     .withName(e.getName())
-                    .withKind(e.getKind().orElse(null))
+                    .withKind(e.getKind())
                     .withImage(e.getImage().orElse(null))
                     .withColors(e.getColors())
                     .withTopics(e.getTopics())
@@ -219,10 +218,6 @@ public class Fabric implements Aggregate {
             }
             default -> throw new IllegalArgumentException("Unknown event " + event.getClass().getSimpleName());
         }).withVersion(version);
-    }
-
-    public Optional<FabricKind> getKind() {
-        return Optional.ofNullable(kind);
     }
 
     public Optional<ImageId> getImage() {

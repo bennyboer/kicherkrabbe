@@ -24,7 +24,6 @@ public class CreatedEvent implements Event {
 
     FabricName name;
 
-    @Nullable
     FabricKind kind;
 
     @Nullable
@@ -38,22 +37,19 @@ public class CreatedEvent implements Event {
 
     public static CreatedEvent of(
             FabricName name,
-            @Nullable FabricKind kind,
+            FabricKind kind,
             @Nullable ImageId image,
             Set<ColorId> colors,
             Set<TopicId> topics,
             Set<FabricTypeAvailability> availability
     ) {
         notNull(name, "Fabric name must be given");
+        notNull(kind, "Fabric kind must be given");
         notNull(colors, "Colors must be given");
         notNull(topics, "Topics must be given");
         notNull(availability, "Availability must be given");
 
         return new CreatedEvent(name, kind, image, colors, topics, availability);
-    }
-
-    public Optional<FabricKind> getKind() {
-        return Optional.ofNullable(kind);
     }
 
     public Optional<ImageId> getImage() {
