@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.fabrics.samples;
 
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricKindDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
 import jakarta.annotation.Nullable;
 import lombok.Builder;
@@ -16,7 +17,7 @@ public class SampleFabric {
     private String name = "Sample Fabric " + UUID.randomUUID().toString().substring(0, 8);
 
     @Builder.Default
-    private String kind = "PATTERNED";
+    private FabricKindDTO kind = FabricKindDTO.PATTERNED;
 
     @Nullable
     @Builder.Default
@@ -35,7 +36,7 @@ public class SampleFabric {
         return name;
     }
 
-    public String getKind() {
+    public FabricKindDTO getKind() {
         return kind;
     }
 

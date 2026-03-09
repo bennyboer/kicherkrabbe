@@ -6,6 +6,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.fabrics.http.FabricKindTransformer;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
@@ -95,7 +96,7 @@ public class FabricsModuleTest {
     public String createFabric(SampleFabric sample, Agent agent) {
         String fabricId = module.createFabric(
                 sample.getName(),
-                FabricKind.valueOf(sample.getKind()),
+                FabricKindTransformer.toFabricKind(sample.getKind()),
                 sample.getImageId(),
                 sample.getColorIds(),
                 sample.getTopicIds(),
