@@ -21,7 +21,7 @@ public class FabricDTO {
 
     String name;
 
-    String kind;
+    FabricKindDTO kind;
 
     String imageId;
 

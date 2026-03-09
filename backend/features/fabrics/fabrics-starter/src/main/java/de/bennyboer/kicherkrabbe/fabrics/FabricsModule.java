@@ -231,7 +231,7 @@ public class FabricsModule {
     @Transactional(propagation = MANDATORY)
     public Mono<String> createFabric(
             String name,
-            String kind,
+            FabricKind kind,
             @Nullable String imageId,
             Set<String> colorIds,
             Set<String> topicIds,
@@ -241,7 +241,6 @@ public class FabricsModule {
         notNull(name, "Fabric name must be given");
         check(!name.isBlank(), "Fabric name must not be blank");
         notNull(kind, "Fabric kind must be given");
-        check(!kind.isBlank(), "Fabric kind must not be blank");
         notNull(colorIds, "Color IDs must be given");
         notNull(topicIds, "Topic IDs must be given");
         notNull(availability, "Availability must be given");
@@ -263,7 +262,6 @@ public class FabricsModule {
                 .collect(Collectors.toSet());
 
         var alias = FabricAlias.fromName(FabricName.of(name));
-        var fabricKind = FabricKind.of(kind);
         var image = imageId != null && !imageId.isBlank() ? ImageId.of(imageId) : null;
 
         return assertAgentIsAllowedTo(agent, CREATE)
@@ -273,7 +271,7 @@ public class FabricsModule {
                 .then(assertAliasIsNotAlreadyInUse(alias, null))
                 .then(fabricService.create(
                         FabricName.of(name),
-                        fabricKind,
+                        kind,
                         image,
                         colors,
                         topics,

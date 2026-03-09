@@ -33,6 +33,7 @@ public class UnfeatureFabricTest extends FabricsModuleTest {
         // and: the user creates a fabric
         String fabricId = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID"),
                 Set.of("WINTER_ID"),
@@ -73,6 +74,7 @@ public class UnfeatureFabricTest extends FabricsModuleTest {
         // and: the user creates a fabric
         String fabricId = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID"),
                 Set.of("WINTER_ID"),
@@ -116,6 +118,7 @@ public class UnfeatureFabricTest extends FabricsModuleTest {
         // and: the user creates a fabric
         String fabricId = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID"),
                 Set.of("WINTER_ID"),

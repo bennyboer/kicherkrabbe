@@ -38,6 +38,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         // and: the user creates some fabrics
         String fabricId1 = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -46,6 +47,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         );
         String fabricId2 = createFabric(
                 "Penguin party",
+                FabricKind.PATTERNED,
                 "PENGUIN_IMAGE_ID",
                 Set.of("BLACK_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -191,6 +193,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
 
         String fabricId1 = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -199,6 +202,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         );
         String fabricId2 = createFabric(
                 "Penguin party",
+                FabricKind.PATTERNED,
                 "PENGUIN_IMAGE_ID",
                 Set.of("BLACK_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -314,6 +318,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
 
         String fabricId1 = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -322,6 +327,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         );
         String fabricId2 = createFabric(
                 "Penguin party",
+                FabricKind.PATTERNED,
                 "PENGUIN_IMAGE_ID",
                 Set.of("BLACK_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -330,6 +336,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         );
         String fabricId3 = createFabric(
                 "Coconut party",
+                FabricKind.PATTERNED,
                 "COCONUT_IMAGE_ID",
                 Set.of("BROWN_ID", "WHITE_ID"),
                 Set.of("SUMMER_ID"),
@@ -445,6 +452,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
 
         String fabricId1 = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -453,6 +461,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         );
         String fabricId2 = createFabric(
                 "Penguin party",
+                FabricKind.PATTERNED,
                 "PENGUIN_IMAGE_ID",
                 Set.of("BLACK_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -508,6 +517,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
 
         String fabricId1 = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -516,6 +526,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         );
         String fabricId2 = createFabric(
                 "Penguin party",
+                FabricKind.PATTERNED,
                 "PENGUIN_IMAGE_ID",
                 Set.of("BLACK_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -599,6 +610,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
 
         String fabricId1 = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID", "PARTY_ID"),
@@ -607,6 +619,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         );
         String fabricId2 = createFabric(
                 "Penguin party",
+                FabricKind.PATTERNED,
                 "PENGUIN_IMAGE_ID",
                 Set.of("BLACK_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -668,6 +681,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
 
         String fabricId1 = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -676,6 +690,7 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         );
         String fabricId2 = createFabric(
                 "Penguin party",
+                FabricKind.PATTERNED,
                 "PENGUIN_IMAGE_ID",
                 Set.of("BLACK_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),

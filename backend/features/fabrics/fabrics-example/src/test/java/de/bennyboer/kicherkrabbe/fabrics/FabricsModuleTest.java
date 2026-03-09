@@ -31,6 +31,7 @@ import reactor.core.publisher.Mono;
 import java.time.Clock;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class FabricsModuleTest {
 
@@ -93,18 +94,7 @@ public class FabricsModuleTest {
 
     public String createFabric(
             String name,
-            String imageId,
-            Set<String> colorIds,
-            Set<String> topicIds,
-            Set<FabricTypeAvailabilityDTO> availability,
-            Agent agent
-    ) {
-        return createFabric(name, "PATTERNED", imageId, colorIds, topicIds, availability, agent);
-    }
-
-    public String createFabric(
-            String name,
-            String kind,
+            FabricKind kind,
             String imageId,
             Set<String> colorIds,
             Set<String> topicIds,
@@ -123,12 +113,17 @@ public class FabricsModuleTest {
 
     public String createFabric(SampleFabric sample, Agent agent) {
         return createFabric(
-                sample.getName(),
+                sample.getName().getValue(),
                 sample.getKind(),
-                sample.getImageId(),
-                sample.getColorIds(),
-                sample.getTopicIds(),
-                sample.getAvailabilityDTOs(),
+                sample.getImageId().getValue(),
+                sample.getColorIds().stream().map(ColorId::getValue).collect(Collectors.toSet()),
+                sample.getTopicIds().stream().map(TopicId::getValue).collect(Collectors.toSet()),
+                sample.getAvailabilities().stream().map(a -> {
+                    var dto = new FabricTypeAvailabilityDTO();
+                    dto.typeId = a.getTypeId().getValue();
+                    dto.inStock = a.isInStock();
+                    return dto;
+                }).collect(Collectors.toSet()),
                 agent
         );
     }

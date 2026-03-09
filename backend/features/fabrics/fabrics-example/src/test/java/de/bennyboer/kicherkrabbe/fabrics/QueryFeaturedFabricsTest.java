@@ -19,6 +19,7 @@ public class QueryFeaturedFabricsTest extends FabricsModuleTest {
 
         String fabricId1 = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "IMAGE_ID",
                 Set.of(),
                 Set.of(),
@@ -27,6 +28,7 @@ public class QueryFeaturedFabricsTest extends FabricsModuleTest {
         );
         String fabricId2 = createFabric(
                 "Dotted",
+                FabricKind.PATTERNED,
                 "IMAGE_ID",
                 Set.of(),
                 Set.of(),
@@ -71,6 +73,7 @@ public class QueryFeaturedFabricsTest extends FabricsModuleTest {
 
         String fabricId = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "IMAGE_ID",
                 Set.of(),
                 Set.of(),
@@ -95,6 +98,7 @@ public class QueryFeaturedFabricsTest extends FabricsModuleTest {
 
         String fabricId = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "IMAGE_ID",
                 Set.of(),
                 Set.of(),
@@ -119,6 +123,7 @@ public class QueryFeaturedFabricsTest extends FabricsModuleTest {
 
         String fabricId = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "IMAGE_ID",
                 Set.of(),
                 Set.of(),

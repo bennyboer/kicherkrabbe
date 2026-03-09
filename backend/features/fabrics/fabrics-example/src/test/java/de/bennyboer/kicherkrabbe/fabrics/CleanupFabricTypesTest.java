@@ -41,6 +41,7 @@ public class CleanupFabricTypesTest extends FabricsModuleTest {
 
         String fabricId1 = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -49,6 +50,7 @@ public class CleanupFabricTypesTest extends FabricsModuleTest {
         );
         String fabricId2 = createFabric(
                 "Polar bear party",
+                FabricKind.PATTERNED,
                 "POLAR_BEAR_IMAGE_ID",
                 Set.of("WHITE_ID"),
                 Set.of("WINTER_ID"),
@@ -57,6 +59,7 @@ public class CleanupFabricTypesTest extends FabricsModuleTest {
         );
         String fabricId3 = createFabric(
                 "Cat brawl",
+                FabricKind.PATTERNED,
                 "CAT_IMAGE_ID",
                 Set.of("BLACK_ID", "WHITE_ID"),
                 Set.of("ANIMALS_ID"),

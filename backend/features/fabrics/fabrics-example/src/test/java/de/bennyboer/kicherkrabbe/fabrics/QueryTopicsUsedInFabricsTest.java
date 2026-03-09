@@ -35,6 +35,7 @@ public class QueryTopicsUsedInFabricsTest extends FabricsModuleTest {
         // and: the user creates some fabrics
         createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -43,6 +44,7 @@ public class QueryTopicsUsedInFabricsTest extends FabricsModuleTest {
         );
         createFabric(
                 "Penguin party",
+                FabricKind.PATTERNED,
                 "PENGUIN_IMAGE_ID",
                 Set.of("BLACK_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID", "BIRDS_ID"),

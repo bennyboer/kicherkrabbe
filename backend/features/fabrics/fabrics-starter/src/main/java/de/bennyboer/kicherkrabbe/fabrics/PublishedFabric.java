@@ -54,7 +54,17 @@ public class PublishedFabric {
         notNull(topics, "Fabric topics must be given");
         notNull(availability, "Fabric availability must be given");
 
-        return new PublishedFabric(id, name, alias, kind, image, exampleImages, colors, topics, availability);
+        return new PublishedFabric(
+                id,
+                name,
+                alias,
+                kind,
+                image,
+                exampleImages,
+                colors,
+                topics,
+                availability
+        );
     }
 
     public Optional<ImageId> getImage() {

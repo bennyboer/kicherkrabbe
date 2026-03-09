@@ -35,6 +35,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: the user creates a fabric
         String fabricId = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -82,6 +83,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: the user tries to create a fabric without name; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 invalidName1,
+                FabricKind.PATTERNED,
                 validImageId,
                 validColorIds,
                 validTopicIds,
@@ -92,6 +94,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: the user tries to create a fabric with null name; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 invalidName2,
+                FabricKind.PATTERNED,
                 validImageId,
                 validColorIds,
                 validTopicIds,
@@ -102,6 +105,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: the user tries to create a fabric without color IDs; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 validName,
+                FabricKind.PATTERNED,
                 validImageId,
                 invalidColorIds,
                 validTopicIds,
@@ -112,6 +116,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: the user tries to create a fabric without topic IDs; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 validName,
+                FabricKind.PATTERNED,
                 validImageId,
                 validColorIds,
                 invalidTopicIds,
@@ -122,6 +127,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: the user tries to create a fabric without availability; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 validName,
+                FabricKind.PATTERNED,
                 validImageId,
                 validColorIds,
                 validTopicIds,
@@ -151,6 +157,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: the user creates a fabric with a missing topic; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID", "SUMMER_ID"),
@@ -165,6 +172,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // and: the user creates a fabric with all topics
         createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID", "SUMMER_ID"),
@@ -182,6 +190,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // and: the user tries to create a fabric with all topics; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID", "SUMMER_ID"),
@@ -208,6 +217,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: the user creates a fabric with a missing color; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID", "RED_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -226,6 +236,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // and: the user creates a fabric with all colors
         createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID", "RED_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -243,6 +254,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // and: the user tries to create a fabric with all colors; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID", "RED_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -272,6 +284,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: the user creates a fabric with a missing fabric type; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -287,6 +300,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // and: the user creates a fabric with all fabric types
         createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -304,6 +318,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // and: the user tries to create a fabric with all fabric types; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -319,6 +334,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: a user that is not allowed to create a fabric tries to create a fabric; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 "Test",
+                FabricKind.PATTERNED,
                 "IMAGE_ID",
                 Set.of(),
                 Set.of(),
@@ -345,6 +361,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // and: a fabric is created
         String fabricId = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID"),
                 Set.of("WINTER_ID"),
@@ -355,6 +372,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: another fabric with the same name (and thus alias) is created; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "OTHER_IMAGE_ID",
                 Set.of("BLUE_ID"),
                 Set.of("WINTER_ID"),
@@ -367,6 +385,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: a fabric with a different name that slugifies to the same alias is created; then: an error is raised
         assertThatThrownBy(() -> createFabric(
                 "Ice-Bear-Party",
+                FabricKind.PATTERNED,
                 "OTHER_IMAGE_ID",
                 Set.of("BLUE_ID"),
                 Set.of("WINTER_ID"),
@@ -377,6 +396,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: a fabric with a different name is created; then: no error is raised
         createFabric(
                 "Summer flowers",
+                FabricKind.PATTERNED,
                 "SUMMER_IMAGE_ID",
                 Set.of("BLUE_ID"),
                 Set.of("WINTER_ID"),
@@ -413,6 +433,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         // when: the user creates multiple fabrics
         createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -421,6 +442,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         );
         createFabric(
                 "Summer",
+                FabricKind.PATTERNED,
                 "SUMMER_IMAGE_ID",
                 Set.of("RED_ID", "YELLOW_ID"),
                 Set.of("SUMMER_ID"),
@@ -429,6 +451,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         );
         createFabric(
                 "Winter",
+                FabricKind.PATTERNED,
                 "WINTER_IMAGE_ID",
                 Set.of("WHITE_ID", "BLUE_ID"),
                 Set.of("WINTER_ID"),

@@ -23,6 +23,7 @@ import de.bennyboer.kicherkrabbe.fabrics.update.topics.TopicsUpdatedEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class FabricEventPayloadSerializer implements EventSerializer {
@@ -77,7 +78,7 @@ public class FabricEventPayloadSerializer implements EventSerializer {
             case "CREATED" -> CreatedEvent.of(
                     FabricName.of((String) payload.get("name")),
                     FabricKind.of((String) payload.get("kind")),
-                    payload.containsKey("image") ? ImageId.of((String) payload.get("image")) : null,
+                    Optional.ofNullable((String) payload.get("image")).map(ImageId::of).orElse(null),
                     ((List<String>) payload.get("colors")).stream().map(ColorId::of).collect(Collectors.toSet()),
                     ((List<String>) payload.get("topics")).stream().map(TopicId::of).collect(Collectors.toSet()),
                     ((List<Map<String, Object>>) payload.get("availability")).stream()
@@ -93,7 +94,7 @@ public class FabricEventPayloadSerializer implements EventSerializer {
             case "FEATURED" -> FeaturedEvent.of();
             case "UNFEATURED" -> UnfeaturedEvent.of();
             case "IMAGES_UPDATED" -> ImagesUpdatedEvent.of(
-                    payload.containsKey("image") ? ImageId.of((String) payload.get("image")) : null,
+                    Optional.ofNullable((String) payload.get("image")).map(ImageId::of).orElse(null),
                     ((List<String>) payload.get("exampleImages")).stream().map(ImageId::of).toList()
             );
             case "COLORS_UPDATED" -> ColorsUpdatedEvent.of(

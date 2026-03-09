@@ -20,7 +20,7 @@ public class PublishedFabricDTO {
 
     String name;
 
-    String kind;
+    FabricKindDTO kind;
 
     String imageId;
 

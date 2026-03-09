@@ -66,7 +66,20 @@ public class FabricDetails {
         notNull(availability, "Availability must be given");
         notNull(createdAt, "Creation date must be given");
 
-        return new FabricDetails(id, version, name, kind, image, exampleImages, colors, topics, availability, published, featured, createdAt);
+        return new FabricDetails(
+                id,
+                version,
+                name,
+                kind,
+                image,
+                exampleImages,
+                colors,
+                topics,
+                availability,
+                published,
+                featured,
+                createdAt
+        );
     }
 
     public Optional<ImageId> getImage() {

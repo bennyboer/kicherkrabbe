@@ -72,7 +72,21 @@ public class LookupFabric implements VersionedReadModel<FabricId> {
         notNull(availability, "Availability must be given");
         notNull(createdAt, "Created at must be given");
 
-        return new LookupFabric(id, version, name, alias, kind, image, exampleImages, colors, topics, availability, published, featured, createdAt);
+        return new LookupFabric(
+                id,
+                version,
+                name,
+                alias,
+                kind,
+                image,
+                exampleImages,
+                colors,
+                topics,
+                availability,
+                published,
+                featured,
+                createdAt
+        );
     }
 
     public Optional<ImageId> getImage() {

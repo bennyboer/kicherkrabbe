@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.fabrics.http.api.requests;
 
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricKindDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -16,7 +17,7 @@ public class CreateFabricRequest {
 
     public String name;
 
-    public String kind;
+    public FabricKindDTO kind;
 
     public String imageId;
 

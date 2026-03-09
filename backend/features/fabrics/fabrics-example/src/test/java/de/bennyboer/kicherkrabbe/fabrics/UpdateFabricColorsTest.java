@@ -38,6 +38,7 @@ public class UpdateFabricColorsTest extends FabricsModuleTest {
         // and: the user creates a fabric
         String fabricId = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -82,6 +83,7 @@ public class UpdateFabricColorsTest extends FabricsModuleTest {
         // and: the user creates a fabric
         String fabricId = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -173,6 +175,7 @@ public class UpdateFabricColorsTest extends FabricsModuleTest {
         // and: the user creates a fabric
         String fabricId = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
@@ -213,6 +216,7 @@ public class UpdateFabricColorsTest extends FabricsModuleTest {
         // and: the user creates a fabric
         String fabricId = createFabric(
                 "Ice bear party",
+                FabricKind.PATTERNED,
                 "ICE_BEAR_IMAGE_ID",
                 Set.of("BLUE_ID", "WHITE_ID"),
                 Set.of("WINTER_ID", "ANIMALS_ID"),
