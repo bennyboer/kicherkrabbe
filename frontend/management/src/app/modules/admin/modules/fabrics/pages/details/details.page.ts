@@ -169,6 +169,13 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
       });
   }
 
+  getKindLabel(fabric: Fabric): string {
+    if (fabric.isSolidColor()) {
+      return 'Unistoff';
+    }
+    return 'Motivstoff';
+  }
+
   updateImage(fabric: Fabric, imageId: string): void {
     this.fabricsService
       .updateFabricImages(fabric.id, fabric.version, imageId, fabric.exampleImages)
@@ -191,7 +198,7 @@ export class FabricDetailsPage implements OnInit, OnDestroy {
 
   updateExampleImages(fabric: Fabric, exampleImageIds: string[]): void {
     this.fabricsService
-      .updateFabricImages(fabric.id, fabric.version, fabric.image, exampleImageIds)
+      .updateFabricImages(fabric.id, fabric.version, fabric.image.unwrap(), exampleImageIds)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {

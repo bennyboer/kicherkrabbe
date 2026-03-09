@@ -177,6 +177,7 @@ public class FabricsHttpHandler {
                         req.searchTerm,
                         req.colorIds,
                         req.topicIds,
+                        req.kinds != null ? req.kinds : Set.of(),
                         req.availability,
                         req.sort,
                         req.skip,
