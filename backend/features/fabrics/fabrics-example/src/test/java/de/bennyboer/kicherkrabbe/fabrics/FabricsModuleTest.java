@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublish
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.fabrics.http.FabricKindTransformer;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricKindDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
@@ -215,7 +216,7 @@ public class FabricsModuleTest {
             String searchTerm,
             Set<String> colorIds,
             Set<String> topicIds,
-            Set<String> kinds,
+            Set<FabricKindDTO> kinds,
             FabricsAvailabilityFilterDTO availability,
             FabricsSortDTO sort,
             long skip,
