@@ -136,7 +136,10 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 			canonical: `https://kicherkrabbe.com${canonicalPath}`,
 		});
 
-		this.seoService.setProductImage(fabric.imageId);
+		const displayImageId = fabric.getDisplayImageId();
+		if (displayImageId) {
+			this.seoService.setProductImage(displayImageId);
+		}
 
 		this.breadcrumbs$.next([
 			{ label: "Stoffe", url: "/fabrics" },
@@ -149,10 +152,11 @@ export class FabricDetailPage implements OnInit, OnDestroy {
 			{ name: fabric.name, url: canonicalPath },
 		]);
 
+		const structuredImage = displayImageId ? this.getImageUrl(displayImageId) : undefined;
 		this.seoService.setProductStructuredData({
 			name: fabric.name,
 			description: `${fabric.name} - Stoff von Kicherkrabbe für individuelle Kinderkleidung`,
-			image: this.getImageUrl(fabric.imageId),
+			image: structuredImage,
 		});
 	}
 

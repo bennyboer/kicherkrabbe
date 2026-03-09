@@ -1,5 +1,6 @@
 package de.bennyboer.kicherkrabbe.fabrics.http.api.requests;
 
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricKindDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
 import lombok.EqualsAndHashCode;
@@ -24,6 +25,8 @@ public class QueryPublishedFabricsRequest {
     public FabricsAvailabilityFilterDTO availability;
 
     public FabricsSortDTO sort;
+
+    public Set<FabricKindDTO> kinds;
 
     public long skip;
 

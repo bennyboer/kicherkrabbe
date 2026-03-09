@@ -1,13 +1,15 @@
 <p-card styleClass="product-card">
 	<ng-template #header>
 		<div class="fabric-image-container">
-			<img
-				[ngSrc]="fabric.imageId"
-				[alt]="fabric.name + ' - Stoff'"
-				class="fabric-image"
-				fill
-				sizes="(max-width: 576px) 50vw, (max-width: 992px) 33vw, 25vw"
-			/>
+			@if (fabric.getDisplayImageId(); as displayImageId) {
+				<img
+					[ngSrc]="displayImageId"
+					[alt]="fabric.name + ' - Stoff'"
+					class="fabric-image"
+					fill
+					sizes="(max-width: 576px) 50vw, (max-width: 992px) 33vw, 25vw"
+				/>
+			}
 		</div>
 	</ng-template>
 	<ng-template #title>

@@ -615,7 +615,7 @@ public abstract class FabricLookupRepoTest {
             long skip,
             long limit
     ) {
-        return repo.findPublished(searchTerm, colors, topics, filterAvailability, inStock, ascending, skip, limit).block();
+        return repo.findPublished(searchTerm, colors, topics, Set.of(), filterAvailability, inStock, ascending, skip, limit).block();
     }
 
     private void update(LookupFabric fabric) {

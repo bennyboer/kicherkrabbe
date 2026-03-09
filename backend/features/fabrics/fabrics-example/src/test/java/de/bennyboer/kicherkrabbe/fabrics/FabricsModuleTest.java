@@ -7,6 +7,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublish
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
 import de.bennyboer.kicherkrabbe.fabrics.http.FabricKindTransformer;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricKindDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
@@ -208,10 +209,25 @@ public class FabricsModuleTest {
             long limit,
             Agent agent
     ) {
+        return getPublishedFabrics(searchTerm, colorIds, topicIds, Set.of(), availability, sort, skip, limit, agent);
+    }
+
+    public PublishedFabricsPage getPublishedFabrics(
+            String searchTerm,
+            Set<String> colorIds,
+            Set<String> topicIds,
+            Set<FabricKindDTO> kinds,
+            FabricsAvailabilityFilterDTO availability,
+            FabricsSortDTO sort,
+            long skip,
+            long limit,
+            Agent agent
+    ) {
         return module.getPublishedFabrics(
                 searchTerm,
                 colorIds,
                 topicIds,
+                kinds,
                 availability,
                 sort,
                 skip,

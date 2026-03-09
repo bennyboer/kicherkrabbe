@@ -69,6 +69,7 @@ public class InMemoryFabricLookupRepo extends InMemoryEventSourcingReadModelRepo
             String searchTerm,
             Set<ColorId> colors,
             Set<TopicId> topics,
+            Set<FabricKind> kinds,
             boolean filterAvailability,
             boolean inStock,
             boolean ascending,
@@ -94,6 +95,7 @@ public class InMemoryFabricLookupRepo extends InMemoryEventSourcingReadModelRepo
                 })
                 .filter(fabric -> colors.isEmpty() || fabric.getColors().stream().anyMatch(colors::contains))
                 .filter(fabric -> topics.isEmpty() || fabric.getTopics().stream().anyMatch(topics::contains))
+                .filter(fabric -> kinds.isEmpty() || kinds.contains(fabric.getKind()))
                 .filter(fabric -> {
                     if (!filterAvailability) {
                         return true;

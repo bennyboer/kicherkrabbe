@@ -5,6 +5,8 @@ import de.bennyboer.kicherkrabbe.changes.ResourceChange;
 import de.bennyboer.kicherkrabbe.changes.ResourceChangesTracker;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
+import de.bennyboer.kicherkrabbe.fabrics.http.FabricKindTransformer;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricKindDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
@@ -182,6 +184,7 @@ public class FabricsModule {
             String searchTerm,
             Set<String> colorIds,
             Set<String> topicIds,
+            Set<FabricKindDTO> kindDTOs,
             FabricsAvailabilityFilterDTO availability,
             FabricsSortDTO sort,
             long skip,
@@ -194,6 +197,9 @@ public class FabricsModule {
         Set<TopicId> topics = topicIds.stream()
                 .map(TopicId::of)
                 .collect(Collectors.toSet());
+        Set<FabricKind> kinds = kindDTOs.stream()
+                .map(FabricKindTransformer::toFabricKind)
+                .collect(Collectors.toSet());
         boolean filterAvailability = availability.active;
         boolean inStock = availability.inStock;
         boolean sortAscending = sort.direction == ASCENDING;
@@ -202,6 +208,7 @@ public class FabricsModule {
                         searchTerm,
                         colors,
                         topics,
+                        kinds,
                         filterAvailability,
                         inStock,
                         sortAscending,

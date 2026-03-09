@@ -2,6 +2,7 @@ package de.bennyboer.kicherkrabbe.fabrics;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricKindDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
 import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabric;
@@ -498,6 +499,119 @@ public class QueryPublishedFabricsTest extends FabricsModuleTest {
         // then: the results are sorted alphabetically in descending order
         assertThat(result.getResults().get(0).getName().getValue()).isEqualTo("Penguin party");
         assertThat(result.getResults().get(1).getName().getValue()).isEqualTo("Ice bear party");
+    }
+
+    @Test
+    void shouldFilterByKind() {
+        // given: some topics and colors are available
+        markTopicAsAvailable("WINTER_ID", "Winter");
+        markColorAsAvailable("BLUE_ID", "Blue", 0, 0, 255);
+        markColorAsAvailable("WHITE_ID", "White", 255, 255, 255);
+        markFabricTypeAsAvailable("JERSEY_ID", "Jersey");
+
+        // and: some fabrics are published
+        allowUserToCreateFabrics("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        String fabricId1 = createFabric(
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .kind(FabricKindDTO.PATTERNED)
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID")
+                        .topicId("WINTER_ID")
+                        .availability(sampleJerseyAvailability)
+                        .build(),
+                agent
+        );
+        String fabricId2 = createFabric(
+                SampleFabric.builder()
+                        .name("Ocean blue")
+                        .kind(FabricKindDTO.SOLID_COLOR)
+                        .imageId(null)
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID")
+                        .availability(sampleJerseyAvailability)
+                        .build(),
+                agent
+        );
+
+        publishFabric(fabricId1, 0L, agent);
+        publishFabric(fabricId2, 0L, agent);
+
+        var availability = new FabricsAvailabilityFilterDTO();
+        availability.active = false;
+        availability.inStock = true;
+
+        var sort = new FabricsSortDTO();
+        sort.property = ALPHABETICAL;
+        sort.direction = ASCENDING;
+
+        // when: filtering by PATTERNED
+        var result = getPublishedFabrics(
+                "",
+                Set.of(),
+                Set.of(),
+                Set.of(FabricKindDTO.PATTERNED),
+                availability,
+                sort,
+                0,
+                100,
+                agent
+        );
+
+        // then: only the patterned fabric is returned
+        assertThat(result.getTotal()).isEqualTo(1);
+        assertThat(result.getResults().getFirst().getName()).isEqualTo(FabricName.of("Ice bear party"));
+
+        // when: filtering by SOLID_COLOR
+        result = getPublishedFabrics(
+                "",
+                Set.of(),
+                Set.of(),
+                Set.of(FabricKindDTO.SOLID_COLOR),
+                availability,
+                sort,
+                0,
+                100,
+                agent
+        );
+
+        // then: only the solid color fabric is returned
+        assertThat(result.getTotal()).isEqualTo(1);
+        assertThat(result.getResults().getFirst().getName()).isEqualTo(FabricName.of("Ocean blue"));
+
+        // when: filtering by both kinds
+        result = getPublishedFabrics(
+                "",
+                Set.of(),
+                Set.of(),
+                Set.of(FabricKindDTO.PATTERNED, FabricKindDTO.SOLID_COLOR),
+                availability,
+                sort,
+                0,
+                100,
+                agent
+        );
+
+        // then: both fabrics are returned
+        assertThat(result.getTotal()).isEqualTo(2);
+
+        // when: no kind filter is applied
+        result = getPublishedFabrics(
+                "",
+                Set.of(),
+                Set.of(),
+                Set.of(),
+                availability,
+                sort,
+                0,
+                100,
+                agent
+        );
+
+        // then: all fabrics are returned
+        assertThat(result.getTotal()).isEqualTo(2);
     }
 
     @Test

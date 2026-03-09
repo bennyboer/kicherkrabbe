@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.EventSourci
 import de.bennyboer.kicherkrabbe.fabrics.ColorId;
 import de.bennyboer.kicherkrabbe.fabrics.FabricAlias;
 import de.bennyboer.kicherkrabbe.fabrics.FabricId;
+import de.bennyboer.kicherkrabbe.fabrics.FabricKind;
 import de.bennyboer.kicherkrabbe.fabrics.FabricTypeId;
 import de.bennyboer.kicherkrabbe.fabrics.TopicId;
 import reactor.core.publisher.Flux;
@@ -26,6 +27,7 @@ public interface FabricLookupRepo extends EventSourcingReadModelRepo<FabricId, L
             String searchTerm,
             Set<ColorId> colors,
             Set<TopicId> topics,
+            Set<FabricKind> kinds,
             boolean filterAvailability,
             boolean inStock,
             boolean ascending,
