@@ -17,10 +17,15 @@ public class SetKindInLookupPatch implements DatabasePatch {
 
     @Override
     public Mono<Void> apply(ReactiveMongoTemplate template) {
-        var query = new Query(where("kind").exists(false));
-        var update = new Update().set("kind", "PATTERNED");
+        var lookupQuery = new Query(where("kind").exists(false));
+        var lookupUpdate = new Update().set("kind", "PATTERNED");
 
-        return template.updateMulti(query, update, "fabrics_lookup").then();
+        var eventsQuery = new Query(where("name").is("CREATED").and("payload.kind").exists(false));
+        var eventsUpdate = new Update().set("payload.kind", "PATTERNED");
+
+        return template.updateMulti(lookupQuery, lookupUpdate, "fabrics_lookup")
+                .then(template.updateMulti(eventsQuery, eventsUpdate, "fabrics_events"))
+                .then();
     }
 
 }

@@ -27,7 +27,6 @@ public class LookupFabric implements VersionedReadModel<FabricId> {
 
     FabricAlias alias;
 
-    @Nullable
     FabricKind kind;
 
     @Nullable
@@ -52,7 +51,7 @@ public class LookupFabric implements VersionedReadModel<FabricId> {
             Version version,
             FabricName name,
             FabricAlias alias,
-            @Nullable FabricKind kind,
+            FabricKind kind,
             @Nullable ImageId image,
             List<ImageId> exampleImages,
             Set<ColorId> colors,
@@ -66,6 +65,7 @@ public class LookupFabric implements VersionedReadModel<FabricId> {
         notNull(version, "Version must be given");
         notNull(name, "Name must be given");
         notNull(alias, "Alias must be given");
+        notNull(kind, "Kind must be given");
         notNull(exampleImages, "Example image IDs must be given");
         notNull(colors, "Color IDs must be given");
         notNull(topics, "Topic IDs must be given");
@@ -73,10 +73,6 @@ public class LookupFabric implements VersionedReadModel<FabricId> {
         notNull(createdAt, "Created at must be given");
 
         return new LookupFabric(id, version, name, alias, kind, image, exampleImages, colors, topics, availability, published, featured, createdAt);
-    }
-
-    public Optional<FabricKind> getKind() {
-        return Optional.ofNullable(kind);
     }
 
     public Optional<ImageId> getImage() {

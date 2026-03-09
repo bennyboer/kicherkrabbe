@@ -673,7 +673,7 @@ public class FabricsHttpHandler {
         result.id = fabric.getId().getValue();
         result.version = fabric.getVersion().getValue();
         result.name = fabric.getName().getValue();
-        result.kind = fabric.getKind().map(FabricKind::getValue).orElse(null);
+        result.kind = fabric.getKind().getValue();
         result.imageId = fabric.getImage().map(ImageId::getValue).orElse(null);
         result.exampleImageIds = fabric.getExampleImages().stream().map(ImageId::getValue).toList();
         result.colorIds = toColorIds(fabric.getColors());
@@ -698,7 +698,7 @@ public class FabricsHttpHandler {
         result.id = fabric.getId().getValue();
         result.alias = fabric.getAlias().getValue();
         result.name = fabric.getName().getValue();
-        result.kind = fabric.getKind().map(FabricKind::getValue).orElse(null);
+        result.kind = fabric.getKind().getValue();
         result.imageId = fabric.getImage().map(ImageId::getValue).orElse(null);
         result.exampleImageIds = fabric.getExampleImages().stream().map(ImageId::getValue).toList();
         result.colorIds = toColorIds(fabric.getColors());

@@ -23,7 +23,6 @@ public class FabricDetails {
 
     FabricName name;
 
-    @Nullable
     FabricKind kind;
 
     @Nullable
@@ -47,7 +46,7 @@ public class FabricDetails {
             FabricId id,
             Version version,
             FabricName name,
-            @Nullable FabricKind kind,
+            FabricKind kind,
             @Nullable ImageId image,
             List<ImageId> exampleImages,
             Set<ColorId> colors,
@@ -60,6 +59,7 @@ public class FabricDetails {
         notNull(id, "Fabric ID must be given");
         notNull(version, "Version must be given");
         notNull(name, "Name must be given");
+        notNull(kind, "Kind must be given");
         notNull(exampleImages, "Example image IDs must be given");
         notNull(colors, "Color IDs must be given");
         notNull(topics, "Topic IDs must be given");
@@ -67,10 +67,6 @@ public class FabricDetails {
         notNull(createdAt, "Creation date must be given");
 
         return new FabricDetails(id, version, name, kind, image, exampleImages, colors, topics, availability, published, featured, createdAt);
-    }
-
-    public Optional<FabricKind> getKind() {
-        return Optional.ofNullable(kind);
     }
 
     public Optional<ImageId> getImage() {

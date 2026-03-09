@@ -33,7 +33,7 @@ public class FabricEventPayloadSerializer implements EventSerializer {
             case CreatedEvent e -> {
                 var result = new HashMap<String, Object>();
                 result.put("name", e.getName().getValue());
-                e.getKind().ifPresent(k -> result.put("kind", k.getValue()));
+                result.put("kind", e.getKind().getValue());
                 e.getImage().ifPresent(i -> result.put("image", i.getValue()));
                 result.put("colors", e.getColors().stream().map(ColorId::getValue).toList());
                 result.put("topics", e.getTopics().stream().map(TopicId::getValue).toList());
@@ -76,7 +76,7 @@ public class FabricEventPayloadSerializer implements EventSerializer {
         return switch (name.getValue()) {
             case "CREATED" -> CreatedEvent.of(
                     FabricName.of((String) payload.get("name")),
-                    payload.containsKey("kind") ? FabricKind.of((String) payload.get("kind")) : null,
+                    FabricKind.of((String) payload.get("kind")),
                     payload.containsKey("image") ? ImageId.of((String) payload.get("image")) : null,
                     ((List<String>) payload.get("colors")).stream().map(ColorId::of).collect(Collectors.toSet()),
                     ((List<String>) payload.get("topics")).stream().map(TopicId::of).collect(Collectors.toSet()),

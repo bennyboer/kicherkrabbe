@@ -21,7 +21,6 @@ public class PublishedFabric {
 
     FabricAlias alias;
 
-    @Nullable
     FabricKind kind;
 
     @Nullable
@@ -39,7 +38,7 @@ public class PublishedFabric {
             FabricId id,
             FabricName name,
             FabricAlias alias,
-            @Nullable FabricKind kind,
+            FabricKind kind,
             @Nullable ImageId image,
             List<ImageId> exampleImages,
             Set<ColorId> colors,
@@ -49,16 +48,13 @@ public class PublishedFabric {
         notNull(id, "Fabric ID must be given");
         notNull(name, "Fabric name must be given");
         notNull(alias, "Fabric alias must be given");
+        notNull(kind, "Fabric kind must be given");
         notNull(exampleImages, "Fabric example images must be given");
         notNull(colors, "Fabric colors must be given");
         notNull(topics, "Fabric topics must be given");
         notNull(availability, "Fabric availability must be given");
 
         return new PublishedFabric(id, name, alias, kind, image, exampleImages, colors, topics, availability);
-    }
-
-    public Optional<FabricKind> getKind() {
-        return Optional.ofNullable(kind);
     }
 
     public Optional<ImageId> getImage() {
