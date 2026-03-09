@@ -62,6 +62,21 @@
 			</p-multiselect>
 		</div>
 
+		<div class="filter-group">
+			<label>Stoffart</label>
+			<p-multiselect
+				[options]="kindOptions"
+				[ngModel]="selectedKinds$ | async"
+				(ngModelChange)="onKindsChange($event)"
+				optionLabel="label"
+				optionValue="value"
+				placeholder="Stoffart wählen"
+				[showClear]="true"
+				selectedItemsLabel="{0} ausgewählt"
+				styleClass="w-full"
+			/>
+		</div>
+
 		<div class="filter-group toggle-group">
 			<label>Nur verfügbare</label>
 			<p-toggleswitch

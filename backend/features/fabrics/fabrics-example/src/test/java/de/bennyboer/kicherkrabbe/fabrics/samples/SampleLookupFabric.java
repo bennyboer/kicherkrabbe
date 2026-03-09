@@ -25,6 +25,9 @@ public class SampleLookupFabric {
     private FabricAlias alias;
 
     @Builder.Default
+    private FabricKind kind = FabricKind.PATTERNED;
+
+    @Builder.Default
     private ImageId image = ImageId.of("SAMPLE_IMAGE_ID");
 
     @Builder.Default
@@ -54,6 +57,7 @@ public class SampleLookupFabric {
                 version,
                 name,
                 alias != null ? alias : FabricAlias.of(FabricAlias.fromName(name).getValue() + "-" + id.getValue().substring(0, 8)),
+                kind,
                 image,
                 exampleImages,
                 colors.isEmpty() ? Set.of(ColorId.of("COLOR_ID")) : colors,

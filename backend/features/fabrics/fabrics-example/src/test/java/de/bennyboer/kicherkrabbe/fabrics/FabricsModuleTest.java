@@ -6,6 +6,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentType;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.publish.LoggingEventPublisher;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.EventSourcingRepo;
 import de.bennyboer.kicherkrabbe.eventsourcing.persistence.events.inmemory.InMemoryEventSourcingRepo;
+import de.bennyboer.kicherkrabbe.fabrics.http.FabricKindTransformer;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricKindDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsAvailabilityFilterDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricsSortDTO;
@@ -31,20 +33,21 @@ import reactor.core.publisher.Mono;
 import java.time.Clock;
 import java.util.List;
 import java.util.Set;
-
 public class FabricsModuleTest {
 
-    protected FabricTypeAvailabilityDTO jerseyAvailability = SampleFabricTypeAvailability.builder()
+    protected SampleFabricTypeAvailability sampleJerseyAvailability = SampleFabricTypeAvailability.builder()
             .typeId("JERSEY_ID")
             .inStock(true)
-            .build()
-            .toDTO();
+            .build();
 
-    protected FabricTypeAvailabilityDTO cottonAvailability = SampleFabricTypeAvailability.builder()
+    protected SampleFabricTypeAvailability sampleCottonAvailability = SampleFabricTypeAvailability.builder()
             .typeId("COTTON_ID")
             .inStock(false)
-            .build()
-            .toDTO();
+            .build();
+
+    protected FabricTypeAvailabilityDTO jerseyAvailability = sampleJerseyAvailability.toDTO();
+
+    protected FabricTypeAvailabilityDTO cottonAvailability = sampleCottonAvailability.toDTO();
 
     private final FabricsModuleConfig config = new FabricsModuleConfig();
 
@@ -73,7 +76,7 @@ public class FabricsModuleTest {
 
     private final FabricTypeRepo fabricTypeRepo = new InMemoryFabricTypeRepo();
 
-    private final FabricsModule module = config.fabricsModule(
+    protected final FabricsModule module = config.fabricsModule(
             fabricService,
             permissionsService,
             fabricLookupRepo,
@@ -91,15 +94,16 @@ public class FabricsModuleTest {
         return module.getFabrics(searchTerm, skip, limit, agent).block();
     }
 
-    public String createFabric(
-            String name,
-            String imageId,
-            Set<String> colorIds,
-            Set<String> topicIds,
-            Set<FabricTypeAvailabilityDTO> availability,
-            Agent agent
-    ) {
-        String fabricId = module.createFabric(name, imageId, colorIds, topicIds, availability, agent).block();
+    public String createFabric(SampleFabric sample, Agent agent) {
+        String fabricId = module.createFabric(
+                sample.getName(),
+                FabricKindTransformer.toFabricKind(sample.getKind()),
+                sample.getImageId(),
+                sample.getColorIds(),
+                sample.getTopicIds(),
+                sample.getAvailabilityDTOs(),
+                agent
+        ).block();
 
         module.updateFabricInLookup(fabricId).block();
         if (agent.getType() == AgentType.USER) {
@@ -107,17 +111,6 @@ public class FabricsModuleTest {
         }
 
         return fabricId;
-    }
-
-    public String createFabric(SampleFabric sample, Agent agent) {
-        return createFabric(
-                sample.getName(),
-                sample.getImageId(),
-                sample.getColorIds(),
-                sample.getTopicIds(),
-                sample.getAvailabilityDTOs(),
-                agent
-        );
     }
 
     public String createSampleFabric(Agent agent) {
@@ -216,10 +209,25 @@ public class FabricsModuleTest {
             long limit,
             Agent agent
     ) {
+        return getPublishedFabrics(searchTerm, colorIds, topicIds, Set.of(), availability, sort, skip, limit, agent);
+    }
+
+    public PublishedFabricsPage getPublishedFabrics(
+            String searchTerm,
+            Set<String> colorIds,
+            Set<String> topicIds,
+            Set<FabricKindDTO> kinds,
+            FabricsAvailabilityFilterDTO availability,
+            FabricsSortDTO sort,
+            long skip,
+            long limit,
+            Agent agent
+    ) {
         return module.getPublishedFabrics(
                 searchTerm,
                 colorIds,
                 topicIds,
+                kinds,
                 availability,
                 sort,
                 skip,

@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.fabrics.*;
+import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricKindDTO;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.requests.QueryFabricsRequest;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.responses.QueryFabricsResponse;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,7 @@ public class QueryFabricsHttpHandlerTest extends HttpHandlerTest {
                         FabricId.of("FABRIC_ID"),
                         Version.of(0),
                         FabricName.of("Fabric name"),
+                        FabricKind.PATTERNED,
                         ImageId.of("IMAGE_ID"),
                         List.of(),
                         Set.of(),
@@ -75,6 +77,7 @@ public class QueryFabricsHttpHandlerTest extends HttpHandlerTest {
         var responseFabric = response.fabrics.get(0);
         assertThat(responseFabric.id).isEqualTo("FABRIC_ID");
         assertThat(responseFabric.name).isEqualTo("Fabric name");
+        assertThat(responseFabric.kind).isEqualTo(FabricKindDTO.PATTERNED);
         assertThat(responseFabric.imageId).isEqualTo("IMAGE_ID");
         assertThat(responseFabric.colorIds).isEmpty();
         assertThat(responseFabric.topicIds).isEmpty();

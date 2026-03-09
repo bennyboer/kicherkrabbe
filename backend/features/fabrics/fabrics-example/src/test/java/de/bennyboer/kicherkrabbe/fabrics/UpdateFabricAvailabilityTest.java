@@ -5,6 +5,8 @@ import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
 import de.bennyboer.kicherkrabbe.fabrics.http.api.FabricTypeAvailabilityDTO;
+import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabric;
+import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabricTypeAvailability;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
 
@@ -35,28 +37,24 @@ public class UpdateFabricAvailabilityTest extends FabricsModuleTest {
         markFabricTypeAsAvailable("SILK_ID", "Silk");
 
         // and: the user creates a fabric
-        var jerseyAvailability = new FabricTypeAvailabilityDTO();
-        jerseyAvailability.typeId = "JERSEY_ID";
-        jerseyAvailability.inStock = false;
-
-        var cottonAvailability = new FabricTypeAvailabilityDTO();
-        cottonAvailability.typeId = "COTTON_ID";
-        cottonAvailability.inStock = false;
         String fabricId = createFabric(
-                "Ice bear party",
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(SampleFabricTypeAvailability.builder().typeId("JERSEY_ID").inStock(false).build())
+                        .availability(SampleFabricTypeAvailability.builder().typeId("COTTON_ID").inStock(false).build())
+                        .build(),
                 agent
         );
 
         // when: the user updates the availability of the fabric
-        jerseyAvailability = new FabricTypeAvailabilityDTO();
+        var jerseyAvailability = new FabricTypeAvailabilityDTO();
         jerseyAvailability.typeId = "JERSEY_ID";
         jerseyAvailability.inStock = true;
 
-        cottonAvailability = new FabricTypeAvailabilityDTO();
+        var cottonAvailability = new FabricTypeAvailabilityDTO();
         cottonAvailability.typeId = "COTTON_ID";
         cottonAvailability.inStock = true;
 
@@ -98,24 +96,19 @@ public class UpdateFabricAvailabilityTest extends FabricsModuleTest {
         markFabricTypeAsAvailable("COTTON_ID", "Cotton");
 
         // and: the user creates a fabric
-        var jerseyAvailability = new FabricTypeAvailabilityDTO();
-        jerseyAvailability.typeId = "JERSEY_ID";
-        jerseyAvailability.inStock = false;
-
-        var cottonAvailability = new FabricTypeAvailabilityDTO();
-        cottonAvailability.typeId = "COTTON_ID";
-        cottonAvailability.inStock = false;
-
         var silkAvailability = new FabricTypeAvailabilityDTO();
         silkAvailability.typeId = "SILK_ID";
         silkAvailability.inStock = false;
 
         String fabricId = createFabric(
-                "Ice bear party",
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(SampleFabricTypeAvailability.builder().typeId("JERSEY_ID").inStock(false).build())
+                        .availability(SampleFabricTypeAvailability.builder().typeId("COTTON_ID").inStock(false).build())
+                        .build(),
                 agent
         );
 
@@ -198,11 +191,13 @@ public class UpdateFabricAvailabilityTest extends FabricsModuleTest {
 
         // and: the user creates a fabric
         String fabricId = createFabric(
-                "Ice bear party",
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
 
@@ -238,11 +233,13 @@ public class UpdateFabricAvailabilityTest extends FabricsModuleTest {
 
         // and: the user creates a fabric
         String fabricId = createFabric(
-                "Ice bear party",
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
 

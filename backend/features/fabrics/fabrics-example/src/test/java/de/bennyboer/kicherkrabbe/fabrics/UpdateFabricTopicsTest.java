@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabric;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
 
@@ -37,11 +38,13 @@ public class UpdateFabricTopicsTest extends FabricsModuleTest {
 
         // and: the user creates a fabric
         String fabricId = createFabric(
-                "Ice bear party",
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
 
@@ -83,11 +86,13 @@ public class UpdateFabricTopicsTest extends FabricsModuleTest {
 
         // and: the user creates a fabric
         String fabricId = createFabric(
-                "Ice bear party",
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
 
@@ -168,11 +173,13 @@ public class UpdateFabricTopicsTest extends FabricsModuleTest {
 
         // and: the user creates a fabric
         String fabricId = createFabric(
-                "Ice bear party",
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
 
@@ -210,11 +217,13 @@ public class UpdateFabricTopicsTest extends FabricsModuleTest {
 
         // and: the user creates a fabric
         String fabricId = createFabric(
-                "Ice bear party",
-                "ICE_BEAR_IMAGE_ID",
-                Set.of("BLUE_ID", "WHITE_ID"),
-                Set.of("WINTER_ID", "ANIMALS_ID"),
-                Set.of(jerseyAvailability, cottonAvailability),
+                SampleFabric.builder()
+                        .name("Ice bear party")
+                        .imageId("ICE_BEAR_IMAGE_ID")
+                        .colorId("BLUE_ID").colorId("WHITE_ID")
+                        .topicId("WINTER_ID").topicId("ANIMALS_ID")
+                        .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
+                        .build(),
                 agent
         );
 
