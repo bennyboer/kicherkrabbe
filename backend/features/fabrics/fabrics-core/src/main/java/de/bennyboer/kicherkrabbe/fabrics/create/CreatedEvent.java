@@ -4,9 +4,11 @@ import de.bennyboer.kicherkrabbe.eventsourcing.Version;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.Event;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.EventName;
 import de.bennyboer.kicherkrabbe.fabrics.*;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
@@ -22,6 +24,9 @@ public class CreatedEvent implements Event {
 
     FabricName name;
 
+    FabricKind kind;
+
+    @Nullable
     ImageId image;
 
     Set<ColorId> colors;
@@ -32,18 +37,23 @@ public class CreatedEvent implements Event {
 
     public static CreatedEvent of(
             FabricName name,
-            ImageId image,
+            FabricKind kind,
+            @Nullable ImageId image,
             Set<ColorId> colors,
             Set<TopicId> topics,
             Set<FabricTypeAvailability> availability
     ) {
         notNull(name, "Fabric name must be given");
-        notNull(image, "Image must be given");
+        notNull(kind, "Fabric kind must be given");
         notNull(colors, "Colors must be given");
         notNull(topics, "Topics must be given");
         notNull(availability, "Availability must be given");
 
-        return new CreatedEvent(name, image, colors, topics, availability);
+        return new CreatedEvent(name, kind, image, colors, topics, availability);
+    }
+
+    public Optional<ImageId> getImage() {
+        return Optional.ofNullable(image);
     }
 
     @Override

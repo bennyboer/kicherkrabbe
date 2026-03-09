@@ -11,18 +11,21 @@ import de.bennyboer.kicherkrabbe.eventsourcing.event.listener.EventListenerFacto
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import jakarta.annotation.Nullable;
+
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Configuration
 public class AssetsMessaging {
 
-    record FabricCreatedEvent(String image, String name) {
+    record FabricCreatedEvent(@Nullable String image, String name) {
     }
 
-    record FabricImagesUpdatedEvent(String image, List<String> exampleImages) {
+    record FabricImagesUpdatedEvent(@Nullable String image, List<String> exampleImages) {
     }
 
     record FabricRenamedEvent(String name) {
@@ -173,11 +176,15 @@ public class AssetsMessaging {
                 FabricCreatedEvent.class,
                 (metadata, event) -> {
                     String fabricId = metadata.getAggregateId().getValue();
+                    Set<AssetId> assetIds = Optional.ofNullable(event.image())
+                            .map(AssetId::of)
+                            .map(Set::of)
+                            .orElse(Set.of());
 
                     return module.updateAssetReferences(
                             AssetReferenceResourceType.FABRIC,
                             AssetResourceId.of(fabricId),
-                            Set.of(AssetId.of(event.image())),
+                            assetIds,
                             event.name()
                     );
                 }
@@ -198,7 +205,9 @@ public class AssetsMessaging {
                     String fabricId = metadata.getAggregateId().getValue();
 
                     Set<AssetId> assetIds = new HashSet<>();
-                    assetIds.add(AssetId.of(event.image()));
+                    Optional.ofNullable(event.image())
+                            .map(AssetId::of)
+                            .ifPresent(assetIds::add);
                     event.exampleImages().stream()
                             .map(AssetId::of)
                             .forEach(assetIds::add);

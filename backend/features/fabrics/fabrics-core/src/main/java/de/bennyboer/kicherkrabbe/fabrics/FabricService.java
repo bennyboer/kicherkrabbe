@@ -23,6 +23,7 @@ import de.bennyboer.kicherkrabbe.fabrics.update.availability.UpdateAvailabilityC
 import de.bennyboer.kicherkrabbe.fabrics.update.colors.UpdateColorsCmd;
 import de.bennyboer.kicherkrabbe.fabrics.update.images.UpdateImagesCmd;
 import de.bennyboer.kicherkrabbe.fabrics.update.topics.UpdateTopicsCmd;
+import jakarta.annotation.Nullable;
 import reactor.core.publisher.Mono;
 
 import java.time.Clock;
@@ -44,7 +45,8 @@ public class FabricService extends AggregateService<Fabric, FabricId> {
 
     public Mono<AggregateIdAndVersion<FabricId>> create(
             FabricName name,
-            ImageId image,
+            FabricKind kind,
+            @Nullable ImageId image,
             Set<ColorId> colors,
             Set<TopicId> topics,
             Set<FabricTypeAvailability> availability,
@@ -53,6 +55,7 @@ public class FabricService extends AggregateService<Fabric, FabricId> {
         var id = FabricId.create();
         var cmd = CreateCmd.of(
                 name,
+                kind,
                 image,
                 colors,
                 topics,
@@ -83,7 +86,7 @@ public class FabricService extends AggregateService<Fabric, FabricId> {
         return dispatchCommand(id, version, agent, UnfeatureCmd.of());
     }
 
-    public Mono<Version> updateImages(FabricId id, Version version, ImageId image, List<ImageId> exampleImages, Agent agent) {
+    public Mono<Version> updateImages(FabricId id, Version version, @Nullable ImageId image, List<ImageId> exampleImages, Agent agent) {
         return dispatchCommand(id, version, agent, UpdateImagesCmd.of(image, exampleImages));
     }
 

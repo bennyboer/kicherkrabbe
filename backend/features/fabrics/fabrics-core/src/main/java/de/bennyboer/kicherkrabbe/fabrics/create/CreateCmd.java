@@ -2,9 +2,11 @@ package de.bennyboer.kicherkrabbe.fabrics.create;
 
 import de.bennyboer.kicherkrabbe.eventsourcing.command.Command;
 import de.bennyboer.kicherkrabbe.fabrics.*;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.commons.Preconditions.notNull;
@@ -16,6 +18,9 @@ public class CreateCmd implements Command {
 
     FabricName name;
 
+    FabricKind kind;
+
+    @Nullable
     ImageId image;
 
     Set<ColorId> colors;
@@ -26,18 +31,23 @@ public class CreateCmd implements Command {
 
     public static CreateCmd of(
             FabricName name,
-            ImageId image,
+            FabricKind kind,
+            @Nullable ImageId image,
             Set<ColorId> colors,
             Set<TopicId> topics,
             Set<FabricTypeAvailability> availability
     ) {
         notNull(name, "Fabric name must be given");
-        notNull(image, "Image must be given");
+        notNull(kind, "Fabric kind must be given");
         notNull(colors, "Colors must be given");
         notNull(topics, "Topics must be given");
         notNull(availability, "Availability must be given");
 
-        return new CreateCmd(name, image, colors, topics, availability);
+        return new CreateCmd(name, kind, image, colors, topics, availability);
+    }
+
+    public Optional<ImageId> getImage() {
+        return Optional.ofNullable(image);
     }
 
 }

@@ -33,6 +33,7 @@ import static de.bennyboer.kicherkrabbe.fabrics.Actions.READ;
         FabricsPermissionsConfig.class,
         FabricsHttpConfig.class,
         FabricsMessaging.class,
+        FabricsPatchingConfig.class,
         SecurityConfig.class
 })
 public class FabricsModuleConfig {

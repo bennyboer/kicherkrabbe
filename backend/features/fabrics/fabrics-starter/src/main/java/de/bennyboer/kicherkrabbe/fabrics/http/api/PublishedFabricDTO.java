@@ -20,6 +20,8 @@ public class PublishedFabricDTO {
 
     String name;
 
+    FabricKindDTO kind;
+
     String imageId;
 
     List<String> exampleImageIds;

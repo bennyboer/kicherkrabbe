@@ -33,7 +33,8 @@ interface FabricDTO {
   id: string;
   version: number;
   name: string;
-  imageId: string;
+  kind: string | null;
+  imageId: string | null;
   exampleImageIds: string[];
   colorIds: string[];
   topicIds: string[];
@@ -56,7 +57,8 @@ interface FabricChangeDTO {
 
 interface CreateFabricRequest {
   name: string;
-  imageId: string;
+  kind: string;
+  imageId: string | null;
   colorIds: string[];
   topicIds: string[];
   availability: FabricTypeAvailabilityDTO[];
@@ -112,7 +114,7 @@ interface RenameFabricRequest {
 
 interface UpdateFabricImagesRequest {
   version: number;
-  imageId: string;
+  imageId: string | null;
   exampleImageIds: string[];
 }
 
@@ -206,13 +208,15 @@ export class FabricsService implements OnDestroy {
 
   createFabric(props: {
     name: string;
-    image: ImageId;
+    kind: string;
+    image: ImageId | null;
     colors: Set<ColorId>;
     topics: Set<TopicId>;
     availability: FabricTypeAvailability[];
   }): Observable<void> {
     const request: CreateFabricRequest = {
       name: props.name,
+      kind: props.kind,
       imageId: props.image,
       colorIds: Array.from(props.colors),
       topicIds: Array.from(props.topics),
@@ -277,7 +281,7 @@ export class FabricsService implements OnDestroy {
     return this.http.post<void>(`${environment.apiUrl}/fabrics/${id}/rename`, request);
   }
 
-  updateFabricImages(id: FabricId, version: number, imageId: ImageId, exampleImageIds: ImageId[]): Observable<void> {
+  updateFabricImages(id: FabricId, version: number, imageId: ImageId | null, exampleImageIds: ImageId[]): Observable<void> {
     const request: UpdateFabricImagesRequest = { version, imageId, exampleImageIds };
 
     return this.http.post<void>(`${environment.apiUrl}/fabrics/${id}/update/images`, request);
@@ -380,7 +384,8 @@ export class FabricsService implements OnDestroy {
       id: fabric.id,
       version: fabric.version,
       name: fabric.name,
-      image: fabric.imageId,
+      kind: someOrNone(fabric.kind),
+      image: someOrNone(fabric.imageId),
       exampleImages: fabric.exampleImageIds ?? [],
       colors: new Set(fabric.colorIds),
       topics: new Set(fabric.topicIds),

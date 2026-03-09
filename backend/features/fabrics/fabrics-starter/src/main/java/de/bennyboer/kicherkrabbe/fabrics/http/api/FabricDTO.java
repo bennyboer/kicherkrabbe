@@ -21,6 +21,8 @@ public class FabricDTO {
 
     String name;
 
+    FabricKindDTO kind;
+
     String imageId;
 
     List<String> exampleImageIds;

@@ -25,6 +25,8 @@ public class MongoLookupFabric {
 
     String alias;
 
+    String kind;
+
     String imageId;
 
     List<String> exampleImageIds;

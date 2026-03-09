@@ -20,6 +20,9 @@ public class SamplePublishedFabric {
     private FabricAlias alias = FabricAlias.of("sample-fabric");
 
     @Builder.Default
+    private FabricKind kind = FabricKind.PATTERNED;
+
+    @Builder.Default
     private ImageId image = ImageId.of("IMAGE_ID");
 
     @Builder.Default
@@ -39,6 +42,7 @@ public class SamplePublishedFabric {
                 id,
                 name,
                 alias,
+                kind,
                 image,
                 exampleImages,
                 colors,

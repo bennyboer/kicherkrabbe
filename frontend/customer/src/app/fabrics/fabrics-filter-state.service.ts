@@ -9,6 +9,7 @@ const STORAGE_KEY = "fabrics-filter-state";
 interface StoredState {
 	topicIds: string[];
 	colorIds: string[];
+	kinds: string[];
 	inStockOnly: boolean;
 	sortAscending: boolean;
 }
@@ -20,6 +21,7 @@ export class FabricsFilterState {
 
 	readonly selectedTopicIds$: BehaviorSubject<string[]>;
 	readonly selectedColorIds$: BehaviorSubject<string[]>;
+	readonly selectedKinds$: BehaviorSubject<string[]>;
 	readonly inStockOnly$: BehaviorSubject<boolean>;
 	readonly sortAscending$: BehaviorSubject<boolean>;
 
@@ -30,6 +32,9 @@ export class FabricsFilterState {
 		);
 		this.selectedColorIds$ = new BehaviorSubject<string[]>(
 			stored.map((s) => s.colorIds).orElse([])
+		);
+		this.selectedKinds$ = new BehaviorSubject<string[]>(
+			stored.map((s) => s.kinds ?? []).orElse([])
 		);
 		this.inStockOnly$ = new BehaviorSubject<boolean>(
 			stored.map((s) => s.inStockOnly).orElse(false)
@@ -44,6 +49,9 @@ export class FabricsFilterState {
 		this.selectedColorIds$
 			.pipe(skip(1), takeUntilDestroyed(this.destroyRef))
 			.subscribe(() => this.saveState());
+		this.selectedKinds$
+			.pipe(skip(1), takeUntilDestroyed(this.destroyRef))
+			.subscribe(() => this.saveState());
 		this.inStockOnly$
 			.pipe(skip(1), takeUntilDestroyed(this.destroyRef))
 			.subscribe(() => this.saveState());
@@ -55,6 +63,7 @@ export class FabricsFilterState {
 	reset(): void {
 		this.selectedTopicIds$.next([]);
 		this.selectedColorIds$.next([]);
+		this.selectedKinds$.next([]);
 		this.inStockOnly$.next(false);
 		this.sortAscending$.next(true);
 	}
@@ -75,6 +84,7 @@ export class FabricsFilterState {
 			const state: StoredState = {
 				topicIds: this.selectedTopicIds$.value,
 				colorIds: this.selectedColorIds$.value,
+				kinds: this.selectedKinds$.value,
 				inStockOnly: this.inStockOnly$.value,
 				sortAscending: this.sortAscending$.value,
 			};

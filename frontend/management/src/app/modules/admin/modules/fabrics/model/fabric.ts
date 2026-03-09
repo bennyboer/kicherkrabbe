@@ -2,6 +2,7 @@ import { ImageId } from './image';
 import { ColorId } from './color';
 import { TopicId } from './topic';
 import { FabricTypeAvailability } from './availability';
+import { Option } from '@kicherkrabbe/shared';
 
 export type FabricId = string;
 
@@ -9,7 +10,8 @@ export class Fabric {
   readonly id: FabricId;
   readonly version: number;
   readonly name: string;
-  readonly image: ImageId;
+  readonly kind: Option<string>;
+  readonly image: Option<ImageId>;
   readonly exampleImages: ImageId[];
   readonly colors: Set<ColorId>;
   readonly topics: Set<TopicId>;
@@ -22,7 +24,8 @@ export class Fabric {
     id: FabricId;
     version: number;
     name: string;
-    image: ImageId;
+    kind: Option<string>;
+    image: Option<ImageId>;
     exampleImages: ImageId[];
     colors: Set<ColorId>;
     topics: Set<TopicId>;
@@ -34,6 +37,7 @@ export class Fabric {
     this.id = props.id;
     this.version = props.version;
     this.name = props.name;
+    this.kind = props.kind;
     this.image = props.image;
     this.exampleImages = props.exampleImages;
     this.colors = props.colors;
@@ -48,7 +52,8 @@ export class Fabric {
     id: FabricId;
     version: number;
     name: string;
-    image: ImageId;
+    kind: Option<string>;
+    image: Option<ImageId>;
     exampleImages: ImageId[];
     colors: Set<ColorId>;
     topics: Set<TopicId>;
@@ -58,5 +63,13 @@ export class Fabric {
     createdAt: Date;
   }): Fabric {
     return new Fabric(props);
+  }
+
+  isPatterned(): boolean {
+    return this.kind.map((k) => k === 'PATTERNED').orElse(true);
+  }
+
+  isSolidColor(): boolean {
+    return this.kind.map((k) => k === 'SOLID_COLOR').orElse(false);
   }
 }

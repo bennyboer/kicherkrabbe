@@ -6,6 +6,7 @@ import de.bennyboer.kicherkrabbe.fabrics.*;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.LookupFabric;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFabric, MongoLookupFabric> {
@@ -18,7 +19,8 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
         result.version = readModel.getVersion().getValue();
         result.name = readModel.getName().getValue();
         result.alias = readModel.getAlias().getValue();
-        result.imageId = readModel.getImage().getValue();
+        result.kind = readModel.getKind().getValue();
+        result.imageId = readModel.getImage().map(ImageId::getValue).orElse(null);
         result.exampleImageIds = readModel.getExampleImages()
                 .stream()
                 .map(ImageId::getValue)
@@ -48,7 +50,8 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
         var version = Version.of(serialized.version);
         var name = FabricName.of(serialized.name);
         var alias = FabricAlias.of(serialized.alias);
-        var image = ImageId.of(serialized.imageId);
+        var kind = FabricKind.of(serialized.kind);
+        var image = Optional.ofNullable(serialized.imageId).map(ImageId::of).orElse(null);
         var exampleImages = serialized.exampleImageIds.stream().map(ImageId::of).toList();
         var colors = serialized.colorIds
                 .stream()
@@ -71,6 +74,7 @@ public class MongoLookupFabricSerializer implements ReadModelSerializer<LookupFa
                 version,
                 name,
                 alias,
+                kind,
                 image,
                 exampleImages,
                 colors,

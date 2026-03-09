@@ -45,7 +45,7 @@ public class FabricServiceTest {
         assertThat(fabric.getId()).isEqualTo(id);
         assertThat(fabric.getVersion()).isEqualTo(Version.zero());
         assertThat(fabric.getName()).isEqualTo(FabricName.of("Fabric"));
-        assertThat(fabric.getImage()).isEqualTo(ImageId.of("image"));
+        assertThat(fabric.getImage()).contains(ImageId.of("image"));
         assertThat(fabric.getColors()).containsExactly(ColorId.of("color"));
         assertThat(fabric.getTopics()).containsExactly(TopicId.of("topic"));
         assertThat(fabric.getAvailability()).containsExactly(FabricTypeAvailability.of(
@@ -414,7 +414,7 @@ public class FabricServiceTest {
         // then: the images are updated
         var fabric = get(id);
         assertThat(fabric.getVersion()).isEqualTo(updatedVersion);
-        assertThat(fabric.getImage()).isEqualTo(ImageId.of("image 2"));
+        assertThat(fabric.getImage()).contains(ImageId.of("image 2"));
         assertThat(fabric.getExampleImages()).containsExactly(ImageId.of("example1"), ImageId.of("example2"));
     }
 
@@ -691,6 +691,7 @@ public class FabricServiceTest {
     ) {
         return fabricService.create(
                 name,
+                FabricKind.PATTERNED,
                 imageId,
                 colors,
                 topics,

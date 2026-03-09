@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.eventsourcing.persistence.readmodel.mongo.Mongo
 import de.bennyboer.kicherkrabbe.fabrics.ColorId;
 import de.bennyboer.kicherkrabbe.fabrics.FabricAlias;
 import de.bennyboer.kicherkrabbe.fabrics.FabricId;
+import de.bennyboer.kicherkrabbe.fabrics.FabricKind;
 import de.bennyboer.kicherkrabbe.fabrics.FabricTypeId;
 import de.bennyboer.kicherkrabbe.fabrics.TopicId;
 import de.bennyboer.kicherkrabbe.fabrics.persistence.lookup.FabricLookupRepo;
@@ -119,6 +120,7 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
             String searchTerm,
             Set<ColorId> colors,
             Set<TopicId> topics,
+            Set<FabricKind> kinds,
             boolean filterAvailability,
             boolean inStock,
             boolean ascending,
@@ -130,6 +132,9 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
                 .collect(Collectors.toSet());
         Set<String> topicIds = topics.stream()
                 .map(TopicId::getValue)
+                .collect(Collectors.toSet());
+        Set<String> kindValues = kinds.stream()
+                .map(FabricKind::getValue)
                 .collect(Collectors.toSet());
 
         Criteria criteria = where("published").is(true);
@@ -145,6 +150,10 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
 
         if (!topics.isEmpty()) {
             criteria = criteria.and("topicIds").in(topicIds);
+        }
+
+        if (!kinds.isEmpty()) {
+            criteria = criteria.and("kind").in(kindValues);
         }
 
         if (filterAvailability) {
@@ -257,6 +266,7 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
         IndexDefinition topicsIndex = new Index().on("topics", Sort.Direction.ASC);
         IndexDefinition availabilityFabricTypeIndex = new Index().on("availability.fabricTypeId", Sort.Direction.ASC);
         IndexDefinition availabilityInStockIndex = new Index().on("availability.inStock", Sort.Direction.ASC);
+        IndexDefinition kindIndex = new Index().on("kind", Sort.Direction.ASC);
         IndexDefinition featuredIndex = new Index().on("published", Sort.Direction.ASC).on("featured", Sort.Direction.ASC);
 
         return indexOps.createIndex(createdAtIndex)
@@ -267,6 +277,7 @@ public class MongoFabricLookupRepo extends MongoEventSourcingReadModelRepo<Fabri
                 .then(indexOps.createIndex(topicsIndex))
                 .then(indexOps.createIndex(availabilityFabricTypeIndex))
                 .then(indexOps.createIndex(availabilityInStockIndex))
+                .then(indexOps.createIndex(kindIndex))
                 .then(indexOps.createIndex(featuredIndex))
                 .then();
     }
