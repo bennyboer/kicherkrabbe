@@ -15,7 +15,8 @@ interface PublishedFabricDTO {
 	id: string;
 	alias: string;
 	name: string;
-	imageId: string;
+	kind: string | null;
+	imageId: string | null;
 	exampleImageIds: string[];
 	colorIds: string[];
 	topicIds: string[];
@@ -40,6 +41,7 @@ interface QueryPublishedFabricsRequest {
 	searchTerm: string;
 	colorIds: string[];
 	topicIds: string[];
+	kinds: string[];
 	availability: FabricsAvailabilityFilterDTO;
 	sort: FabricsSortDTO;
 	skip: number;
@@ -118,6 +120,7 @@ export class FabricsService {
 	getFabrics(props: {
 		topicIds?: string[];
 		colorIds?: string[];
+		kinds?: string[];
 		inStockOnly?: boolean;
 		sortAscending?: boolean;
 		skip?: number;
@@ -127,6 +130,7 @@ export class FabricsService {
 			searchTerm: "",
 			colorIds: props.colorIds ?? [],
 			topicIds: props.topicIds ?? [],
+			kinds: props.kinds ?? [],
 			availability: {
 				active: props.inStockOnly === true,
 				inStock: true,
@@ -228,6 +232,7 @@ export class FabricsService {
 			id: dto.id,
 			alias: dto.alias,
 			name: dto.name,
+			kind: dto.kind,
 			imageId: dto.imageId,
 			exampleImageIds: dto.exampleImageIds ?? [],
 			colorIds: dto.colorIds ?? [],

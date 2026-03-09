@@ -33,22 +33,29 @@
   @if (fabricOption.unwrap(); as fabric) {
     <div class="fabric-details">
       <div class="fabric-detail">
-        <label>
-          Bild
-          <app-button [size]="ButtonSize.SMALL" (click)="selectImage(fabric)">
-            <span class="icon-button">
-              <span class="material-icons">edit</span>
-            </span>
-          </app-button>
-        </label>
-        <div class="fabric-image">
-          @if (getImageId() | async; as imageId) {
-            <img [src]="getImageUrl(imageId) | authImage | async" alt="Bild des Stoffs" />
-          } @else {
-            <img [src]="getImageUrl(fabric.image) | authImage | async" alt="Bild des Stoffs" />
-          }
-        </div>
+        <label>Stoffart</label>
+        <span>{{ getKindLabel(fabric) }}</span>
       </div>
+
+      @if (fabric.isPatterned()) {
+        <div class="fabric-detail">
+          <label>
+            Bild
+            <app-button [size]="ButtonSize.SMALL" (click)="selectImage(fabric)">
+              <span class="icon-button">
+                <span class="material-icons">edit</span>
+              </span>
+            </app-button>
+          </label>
+          <div class="fabric-image">
+            @if (getImageId() | async; as imageId) {
+              <img [src]="getImageUrl(imageId) | authImage | async" alt="Bild des Stoffs" />
+            } @else if (fabric.image.isSome()) {
+              <img [src]="getImageUrl(fabric.image.orElseThrow()) | authImage | async" alt="Bild des Stoffs" />
+            }
+          </div>
+        </div>
+      }
 
       <div class="fabric-detail">
         <label>
