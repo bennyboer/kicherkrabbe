@@ -36,6 +36,7 @@ public class FabricEventPayloadSerializer implements EventSerializer {
                 result.put("name", e.getName().getValue());
                 result.put("kind", e.getKind().getValue());
                 e.getImage().ifPresent(i -> result.put("image", i.getValue()));
+                result.put("exampleImages", e.getExampleImages().stream().map(ImageId::getValue).toList());
                 result.put("colors", e.getColors().stream().map(ColorId::getValue).toList());
                 result.put("topics", e.getTopics().stream().map(TopicId::getValue).toList());
                 result.put("availability", e.getAvailability().stream().map(a -> Map.of(
@@ -79,6 +80,9 @@ public class FabricEventPayloadSerializer implements EventSerializer {
                     FabricName.of((String) payload.get("name")),
                     FabricKind.of((String) payload.get("kind")),
                     Optional.ofNullable((String) payload.get("image")).map(ImageId::of).orElse(null),
+                    Optional.ofNullable((List<String>) payload.get("exampleImages"))
+                            .map(ids -> ids.stream().map(ImageId::of).toList())
+                            .orElse(null),
                     ((List<String>) payload.get("colors")).stream().map(ColorId::of).collect(Collectors.toSet()),
                     ((List<String>) payload.get("topics")).stream().map(TopicId::of).collect(Collectors.toSet()),
                     ((List<Map<String, Object>>) payload.get("availability")).stream()

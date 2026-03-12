@@ -8,6 +8,7 @@ import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,6 +30,9 @@ public class CreatedEvent implements Event {
     @Nullable
     ImageId image;
 
+    @Nullable
+    List<ImageId> exampleImages;
+
     Set<ColorId> colors;
 
     Set<TopicId> topics;
@@ -39,6 +43,7 @@ public class CreatedEvent implements Event {
             FabricName name,
             FabricKind kind,
             @Nullable ImageId image,
+            @Nullable List<ImageId> exampleImages,
             Set<ColorId> colors,
             Set<TopicId> topics,
             Set<FabricTypeAvailability> availability
@@ -49,11 +54,15 @@ public class CreatedEvent implements Event {
         notNull(topics, "Topics must be given");
         notNull(availability, "Availability must be given");
 
-        return new CreatedEvent(name, kind, image, colors, topics, availability);
+        return new CreatedEvent(name, kind, image, exampleImages, colors, topics, availability);
     }
 
     public Optional<ImageId> getImage() {
         return Optional.ofNullable(image);
+    }
+
+    public List<ImageId> getExampleImages() {
+        return Optional.ofNullable(exampleImages).orElseGet(List::of);
     }
 
     @Override

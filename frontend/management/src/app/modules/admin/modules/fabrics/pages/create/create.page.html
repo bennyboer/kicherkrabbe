@@ -6,24 +6,14 @@
   <div class="form-group">
     <label>Stoffart</label>
     <div class="kind-selector">
-      <label>
-        <input
-          type="radio"
-          name="kind"
-          value="PATTERNED"
-          [checked]="(getKind() | async) === 'PATTERNED'"
-          (change)="updateKind('PATTERNED')" />
-        Motivstoff
-      </label>
-      <label>
-        <input
-          type="radio"
-          name="kind"
-          value="SOLID_COLOR"
-          [checked]="(getKind() | async) === 'SOLID_COLOR'"
-          (change)="updateKind('SOLID_COLOR')" />
-        Unistoff
-      </label>
+      <div class="kind-option" (click)="updateKind('PATTERNED')">
+        <app-radio [checked]="(getKind() | async) === 'PATTERNED'" [passive]="true"></app-radio>
+        <span>Motivstoff</span>
+      </div>
+      <div class="kind-option" (click)="updateKind('SOLID_COLOR')">
+        <app-radio [checked]="(getKind() | async) === 'SOLID_COLOR'" [passive]="true"></app-radio>
+        <span>Unistoff</span>
+      </div>
     </div>
   </div>
 

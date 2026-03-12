@@ -120,6 +120,7 @@ public class Fabric implements Aggregate {
                     c.getName(),
                     c.getKind(),
                     c.getImage().orElse(null),
+                    c.getExampleImages().isEmpty() ? null : c.getExampleImages(),
                     c.getColors(),
                     c.getTopics(),
                     c.getAvailability()
@@ -187,6 +188,7 @@ public class Fabric implements Aggregate {
                     .withName(e.getName())
                     .withKind(e.getKind())
                     .withImage(e.getImage().orElse(null))
+                    .withExampleImages(e.getExampleImages())
                     .withColors(e.getColors())
                     .withTopics(e.getTopics())
                     .withAvailability(e.getAvailability())

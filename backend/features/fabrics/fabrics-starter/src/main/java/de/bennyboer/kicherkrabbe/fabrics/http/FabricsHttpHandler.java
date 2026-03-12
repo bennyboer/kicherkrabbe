@@ -239,6 +239,7 @@ public class FabricsHttpHandler {
                         req.name,
                         FabricKindTransformer.toFabricKind(req.kind),
                         req.imageId,
+                        req.exampleImageIds,
                         req.colorIds,
                         req.topicIds,
                         req.availability,

@@ -32,6 +32,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         request.name = "Ice bear party";
         request.kind = FabricKindDTO.PATTERNED;
         request.imageId = "ICE_BEAR_IMAGE_ID";
+        request.exampleImageIds = null;
         request.colorIds = Set.of("BLUE_ID", "WHITE_ID");
         request.topicIds = Set.of("WINTER_ID", "ANIMALS_ID");
         request.availability = Set.of(jerseyAvailability, cottonAvailability);
@@ -44,6 +45,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
                 request.name,
                 FabricKind.PATTERNED,
                 request.imageId,
+                request.exampleImageIds,
                 request.colorIds,
                 request.topicIds,
                 request.availability,
@@ -82,6 +84,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         request.name = "Ice bear party";
         request.kind = FabricKindDTO.PATTERNED;
         request.imageId = "";
+        request.exampleImageIds = null;
         request.colorIds = Set.of("BLUE_ID", "WHITE_ID");
         request.topicIds = Set.of("WINTER_ID", "ANIMALS_ID");
         request.availability = Set.of(jerseyAvailability, cottonAvailability);
@@ -94,6 +97,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
                 request.name,
                 FabricKind.PATTERNED,
                 request.imageId,
+                request.exampleImageIds,
                 request.colorIds,
                 request.topicIds,
                 request.availability,
@@ -157,6 +161,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         request.name = "Ice bear party";
         request.kind = FabricKindDTO.PATTERNED;
         request.imageId = "ICE_BEAR_IMAGE_ID";
+        request.exampleImageIds = null;
         request.colorIds = Set.of("BLUE_ID", "WHITE_ID");
         request.topicIds = Set.of("WINTER_ID", "ANIMALS_ID", "MISSING_TOPIC_ID");
         request.availability = Set.of(jerseyAvailability, cottonAvailability);
@@ -169,6 +174,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
                 request.name,
                 FabricKind.PATTERNED,
                 request.imageId,
+                request.exampleImageIds,
                 request.colorIds,
                 request.topicIds,
                 request.availability,
@@ -201,6 +207,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         request.name = "Ice bear party";
         request.kind = FabricKindDTO.PATTERNED;
         request.imageId = "ICE_BEAR_IMAGE_ID";
+        request.exampleImageIds = null;
         request.colorIds = Set.of("BLUE_ID", "WHITE_ID", "MISSING_COLOR_ID");
         request.topicIds = Set.of("WINTER_ID", "ANIMALS_ID");
         request.availability = Set.of(jerseyAvailability, cottonAvailability);
@@ -213,6 +220,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
                 request.name,
                 FabricKind.PATTERNED,
                 request.imageId,
+                request.exampleImageIds,
                 request.colorIds,
                 request.topicIds,
                 request.availability,
@@ -249,6 +257,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
         request.name = "Ice bear party";
         request.kind = FabricKindDTO.PATTERNED;
         request.imageId = "ICE_BEAR_IMAGE_ID";
+        request.exampleImageIds = null;
         request.colorIds = Set.of("BLUE_ID", "WHITE_ID");
         request.topicIds = Set.of("WINTER_ID", "ANIMALS_ID");
         request.availability = Set.of(jerseyAvailability, cottonAvailability, missingAvailability);
@@ -261,6 +270,7 @@ public class CreateFabricHttpHandlerTest extends HttpHandlerTest {
                 request.name,
                 FabricKind.PATTERNED,
                 request.imageId,
+                request.exampleImageIds,
                 request.colorIds,
                 request.topicIds,
                 request.availability,

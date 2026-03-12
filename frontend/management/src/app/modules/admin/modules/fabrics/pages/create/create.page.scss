@@ -44,6 +44,20 @@ h3 {
   gap: 12px;
 }
 
+.kind-selector {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
+
+.kind-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
 .hidden {
   display: none;
 }

@@ -99,6 +99,7 @@ public class FabricsModuleTest {
                 sample.getName(),
                 FabricKindTransformer.toFabricKind(sample.getKind()),
                 sample.getImageId(),
+                sample.getExampleImageIds(),
                 sample.getColorIds(),
                 sample.getTopicIds(),
                 sample.getAvailabilityDTOs(),

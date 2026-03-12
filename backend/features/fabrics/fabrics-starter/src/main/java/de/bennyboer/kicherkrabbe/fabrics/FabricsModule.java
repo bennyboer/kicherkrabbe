@@ -240,6 +240,7 @@ public class FabricsModule {
             String name,
             FabricKind kind,
             @Nullable String imageId,
+            @Nullable List<String> exampleImageIds,
             Set<String> colorIds,
             Set<String> topicIds,
             Set<FabricTypeAvailabilityDTO> availability,
@@ -270,6 +271,9 @@ public class FabricsModule {
 
         var alias = FabricAlias.fromName(FabricName.of(name));
         var image = imageId != null && !imageId.isBlank() ? ImageId.of(imageId) : null;
+        var exampleImages = exampleImageIds != null
+                ? exampleImageIds.stream().map(ImageId::of).toList()
+                : null;
 
         return assertAgentIsAllowedTo(agent, CREATE)
                 .then(assertTopicsAvailable(topics))
@@ -280,6 +284,7 @@ public class FabricsModule {
                         FabricName.of(name),
                         kind,
                         image,
+                        exampleImages,
                         colors,
                         topics,
                         availabilities,

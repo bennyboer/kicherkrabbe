@@ -6,6 +6,7 @@ import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,6 +24,9 @@ public class CreateCmd implements Command {
     @Nullable
     ImageId image;
 
+    @Nullable
+    List<ImageId> exampleImages;
+
     Set<ColorId> colors;
 
     Set<TopicId> topics;
@@ -33,6 +37,7 @@ public class CreateCmd implements Command {
             FabricName name,
             FabricKind kind,
             @Nullable ImageId image,
+            @Nullable List<ImageId> exampleImages,
             Set<ColorId> colors,
             Set<TopicId> topics,
             Set<FabricTypeAvailability> availability
@@ -43,11 +48,15 @@ public class CreateCmd implements Command {
         notNull(topics, "Topics must be given");
         notNull(availability, "Availability must be given");
 
-        return new CreateCmd(name, kind, image, colors, topics, availability);
+        return new CreateCmd(name, kind, image, exampleImages, colors, topics, availability);
     }
 
     public Optional<ImageId> getImage() {
         return Optional.ofNullable(image);
+    }
+
+    public List<ImageId> getExampleImages() {
+        return Optional.ofNullable(exampleImages).orElseGet(List::of);
     }
 
 }

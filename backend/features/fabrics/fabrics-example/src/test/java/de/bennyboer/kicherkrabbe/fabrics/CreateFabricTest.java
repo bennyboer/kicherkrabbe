@@ -8,6 +8,7 @@ import de.bennyboer.kicherkrabbe.fabrics.samples.SampleFabric;
 import de.bennyboer.kicherkrabbe.permissions.MissingPermissionError;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +39,7 @@ public class CreateFabricTest extends FabricsModuleTest {
                 SampleFabric.builder()
                         .name("Ice bear party")
                         .imageId("ICE_BEAR_IMAGE_ID")
+                        .exampleImageIds(List.of("EXAMPLE_1", "EXAMPLE_2"))
                         .colorId("BLUE_ID").colorId("WHITE_ID")
                         .topicId("WINTER_ID").topicId("ANIMALS_ID")
                         .availability(sampleJerseyAvailability).availability(sampleCottonAvailability)
@@ -53,6 +55,7 @@ public class CreateFabricTest extends FabricsModuleTest {
         assertThat(fabric.getVersion()).isEqualTo(Version.zero());
         assertThat(fabric.getName()).isEqualTo(FabricName.of("Ice bear party"));
         assertThat(fabric.getImage()).contains(ImageId.of("ICE_BEAR_IMAGE_ID"));
+        assertThat(fabric.getExampleImages()).containsExactly(ImageId.of("EXAMPLE_1"), ImageId.of("EXAMPLE_2"));
         assertThat(fabric.getColors()).containsExactlyInAnyOrder(ColorId.of("BLUE_ID"), ColorId.of("WHITE_ID"));
         assertThat(fabric.getTopics()).containsExactlyInAnyOrder(TopicId.of("WINTER_ID"), TopicId.of("ANIMALS_ID"));
         assertThat(fabric.getAvailability()).containsExactlyInAnyOrder(
@@ -99,6 +102,7 @@ public class CreateFabricTest extends FabricsModuleTest {
                 FabricKind.PATTERNED,
                 validImageId,
                 null,
+                null,
                 validTopicIds,
                 validAvailability,
                 agent
@@ -108,6 +112,7 @@ public class CreateFabricTest extends FabricsModuleTest {
                 validName,
                 FabricKind.PATTERNED,
                 validImageId,
+                null,
                 validColorIds,
                 null,
                 validAvailability,
@@ -118,6 +123,7 @@ public class CreateFabricTest extends FabricsModuleTest {
                 validName,
                 FabricKind.PATTERNED,
                 validImageId,
+                null,
                 validColorIds,
                 validTopicIds,
                 null,

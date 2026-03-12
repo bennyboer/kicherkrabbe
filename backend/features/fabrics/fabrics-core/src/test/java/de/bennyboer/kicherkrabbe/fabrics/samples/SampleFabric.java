@@ -5,6 +5,7 @@ import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.Singular;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,10 @@ public class SampleFabric {
 
     @Builder.Default
     private String imageId = "IMAGE_ID";
+
+    @Nullable
+    @Builder.Default
+    private List<String> exampleImageIds = null;
 
     @Singular
     private Set<String> colorIds;
@@ -39,6 +44,16 @@ public class SampleFabric {
 
     public ImageId getImageId() {
         return ImageId.of(imageId);
+    }
+
+    @Nullable
+    public List<ImageId> getExampleImageIds() {
+        if (exampleImageIds == null) {
+            return null;
+        }
+        return exampleImageIds.stream()
+                .map(ImageId::of)
+                .toList();
     }
 
     public Set<ColorId> getColorIds() {

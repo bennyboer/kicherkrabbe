@@ -47,6 +47,7 @@ public class FabricService extends AggregateService<Fabric, FabricId> {
             FabricName name,
             FabricKind kind,
             @Nullable ImageId image,
+            @Nullable List<ImageId> exampleImages,
             Set<ColorId> colors,
             Set<TopicId> topics,
             Set<FabricTypeAvailability> availability,
@@ -57,6 +58,7 @@ public class FabricService extends AggregateService<Fabric, FabricId> {
                 name,
                 kind,
                 image,
+                exampleImages,
                 colors,
                 topics,
                 availability

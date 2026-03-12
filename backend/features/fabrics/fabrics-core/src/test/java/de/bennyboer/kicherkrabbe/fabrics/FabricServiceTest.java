@@ -32,39 +32,28 @@ public class FabricServiceTest {
     @Test
     void shouldCreateFabric() {
         // when: creating a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var sample = SampleFabric.builder()
+                .exampleImageIds(List.of("example1", "example2"))
+                .build();
+        var id = create(sample);
 
         // then: the fabric is created
         var fabric = get(id);
         assertThat(fabric.getId()).isEqualTo(id);
         assertThat(fabric.getVersion()).isEqualTo(Version.zero());
-        assertThat(fabric.getName()).isEqualTo(FabricName.of("Fabric"));
-        assertThat(fabric.getImage()).contains(ImageId.of("image"));
-        assertThat(fabric.getColors()).containsExactly(ColorId.of("color"));
-        assertThat(fabric.getTopics()).containsExactly(TopicId.of("topic"));
-        assertThat(fabric.getAvailability()).containsExactly(FabricTypeAvailability.of(
-                FabricTypeId.of("fabric-type"),
-                true
-        ));
+        assertThat(fabric.getName()).isEqualTo(sample.getName());
+        assertThat(fabric.getImage()).contains(sample.getImageId());
+        assertThat(fabric.getExampleImages()).isEqualTo(sample.getExampleImageIds());
+        assertThat(fabric.getColors()).isEqualTo(sample.getColorIds());
+        assertThat(fabric.getTopics()).isEqualTo(sample.getTopicIds());
+        assertThat(fabric.getAvailability()).isEqualTo(sample.getAvailabilities());
         assertThat(fabric.isNotDeleted()).isTrue();
     }
 
     @Test
     void shouldRenameFabric() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: renaming the fabric
         var updatedVersion = rename(id, Version.zero(), FabricName.of("Fabric 2"));
@@ -78,13 +67,7 @@ public class FabricServiceTest {
     @Test
     void shouldNotRenameFabricGivenAnOutdatedVersion() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // and: the fabric is renamed
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
@@ -97,13 +80,7 @@ public class FabricServiceTest {
     @Test
     void shouldDeleteFabric() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: deleting the fabric
         var updatedVersion = delete(id, Version.zero());
@@ -116,13 +93,7 @@ public class FabricServiceTest {
     @Test
     void shouldNotDeleteFabricGivenAnOutdatedVersion() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // and: the fabric is renamed
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
@@ -135,13 +106,7 @@ public class FabricServiceTest {
     @Test
     void shouldPublishFabric() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: publishing the fabric
         var updatedVersion = publish(id, Version.zero());
@@ -155,13 +120,7 @@ public class FabricServiceTest {
     @Test
     void shouldNotPublishFabricGivenAnOutdatedVersion() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // and: the fabric is renamed
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
@@ -174,13 +133,7 @@ public class FabricServiceTest {
     @Test
     void shouldRaiseErrorIfFabricAlreadyPublished() {
         // given: a published fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
         publish(id, Version.zero());
 
         // when: trying to publish the fabric again; then: an error is raised
@@ -191,13 +144,7 @@ public class FabricServiceTest {
     @Test
     void shouldUnpublishFabric() {
         // given: a published fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
         publish(id, Version.zero());
 
         // when: unpublishing the fabric
@@ -212,13 +159,7 @@ public class FabricServiceTest {
     @Test
     void shouldNotUnpublishFabricGivenAnOutdatedVersion() {
         // given: a published fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
         var version = publish(id, Version.zero());
 
         // and: the fabric is renamed
@@ -232,13 +173,7 @@ public class FabricServiceTest {
     @Test
     void shouldNotUnpublishFabricGivenAnAlreadyUnpublishedFabric() {
         // given: an unpublished fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: trying to unpublish the fabric; then: an error is raised
         assertThatThrownBy(() -> unpublish(id, Version.zero()))
@@ -248,13 +183,7 @@ public class FabricServiceTest {
     @Test
     void shouldFeatureFabric() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: featuring the fabric
         var updatedVersion = feature(id, Version.zero());
@@ -268,13 +197,7 @@ public class FabricServiceTest {
     @Test
     void shouldNotFeatureFabricGivenAnOutdatedVersion() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // and: the fabric is renamed
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
@@ -287,13 +210,7 @@ public class FabricServiceTest {
     @Test
     void shouldRaiseErrorIfFabricAlreadyFeatured() {
         // given: a featured fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
         feature(id, Version.zero());
 
         // when: trying to feature the fabric again; then: an error is raised
@@ -304,13 +221,7 @@ public class FabricServiceTest {
     @Test
     void shouldUnfeatureFabric() {
         // given: a featured fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
         feature(id, Version.zero());
 
         // when: unfeaturing the fabric
@@ -325,13 +236,7 @@ public class FabricServiceTest {
     @Test
     void shouldNotUnfeatureFabricGivenAnOutdatedVersion() {
         // given: a featured fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
         var version = feature(id, Version.zero());
 
         // and: the fabric is renamed
@@ -345,13 +250,7 @@ public class FabricServiceTest {
     @Test
     void shouldNotUnfeatureFabricGivenAnAlreadyUnfeaturedFabric() {
         // given: an unfeatured fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: trying to unfeature the fabric; then: an error is raised
         assertThatThrownBy(() -> unfeature(id, Version.zero()))
@@ -361,13 +260,7 @@ public class FabricServiceTest {
     @Test
     void shouldUpdateColors() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: updating the colors
         var updatedVersion = updateColors(id, Version.zero(), Set.of(ColorId.of("color 2"), ColorId.of("color 3")));
@@ -381,13 +274,7 @@ public class FabricServiceTest {
     @Test
     void shouldNotUpdateColorsGivenAnOutdatedVersion() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // and: the fabric is renamed
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
@@ -400,13 +287,7 @@ public class FabricServiceTest {
     @Test
     void shouldUpdateImages() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: updating the images
         var updatedVersion = updateImages(id, Version.zero(), ImageId.of("image 2"), List.of(ImageId.of("example1"), ImageId.of("example2")));
@@ -421,13 +302,7 @@ public class FabricServiceTest {
     @Test
     void shouldNotUpdateImagesGivenAnOutdatedVersion() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // and: the fabric is renamed
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
@@ -440,13 +315,7 @@ public class FabricServiceTest {
     @Test
     void shouldUpdateTopics() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: updating the topics
         var updatedVersion = updateTopics(id, Version.zero(), Set.of(TopicId.of("topic 2"), TopicId.of("topic 3")));
@@ -460,13 +329,7 @@ public class FabricServiceTest {
     @Test
     void shouldNotUpdateTopicsGivenAnOutdatedVersion() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // and: the fabric is renamed
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
@@ -479,13 +342,7 @@ public class FabricServiceTest {
     @Test
     void shouldUpdateAvailability() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: updating the availability
         var updatedVersion = updateAvailability(
@@ -507,13 +364,7 @@ public class FabricServiceTest {
     @Test
     void shouldNotUpdateAvailabilityGivenAnOutdatedVersion() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // and: the fabric is renamed
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
@@ -530,16 +381,10 @@ public class FabricServiceTest {
     @Test
     void shouldRemoveTopic() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: removing the topic
-        var updatedVersion = removeTopic(id, Version.zero(), TopicId.of("topic"));
+        var updatedVersion = removeTopic(id, Version.zero(), TopicId.of("TOPIC_ID"));
 
         // then: the topic is removed
         var fabric = get(id);
@@ -550,35 +395,23 @@ public class FabricServiceTest {
     @Test
     void shouldNotRemoveTopicGivenAnOutdatedVersion() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // and: the fabric is renamed
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
 
         // when: removing the topic with an outdated version; then: an error is raised
-        assertThatThrownBy(() -> removeTopic(id, Version.zero(), TopicId.of("topic")))
+        assertThatThrownBy(() -> removeTopic(id, Version.zero(), TopicId.of("TOPIC_ID")))
                 .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test
     void shouldRemoveColor() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: removing the color
-        var updatedVersion = removeColor(id, Version.zero(), ColorId.of("color"));
+        var updatedVersion = removeColor(id, Version.zero(), ColorId.of("COLOR_ID"));
 
         // then: the color is removed
         var fabric = get(id);
@@ -589,35 +422,23 @@ public class FabricServiceTest {
     @Test
     void shouldNotRemoveColorGivenAnOutdatedVersion() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // and: the fabric is renamed
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
 
         // when: removing the color with an outdated version; then: an error is raised
-        assertThatThrownBy(() -> removeColor(id, Version.zero(), ColorId.of("color")))
+        assertThatThrownBy(() -> removeColor(id, Version.zero(), ColorId.of("COLOR_ID")))
                 .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test
     void shouldRemoveFabricType() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: removing the fabric type
-        var updatedVersion = removeFabricType(id, Version.zero(), FabricTypeId.of("fabric-type"));
+        var updatedVersion = removeFabricType(id, Version.zero(), FabricTypeId.of("FABRIC_TYPE_ID"));
 
         // then: the fabric type is removed
         var fabric = get(id);
@@ -628,32 +449,20 @@ public class FabricServiceTest {
     @Test
     void shouldNotRemoveFabricTypeGivenAnOutdatedVersion() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric-type"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // and: the fabric is renamed
         rename(id, Version.zero(), FabricName.of("Fabric 2"));
 
         // when: removing the fabric type with an outdated version; then: an error is raised
-        assertThatThrownBy(() -> removeFabricType(id, Version.zero(), FabricTypeId.of("fabric-type")))
+        assertThatThrownBy(() -> removeFabricType(id, Version.zero(), FabricTypeId.of("FABRIC_TYPE_ID")))
                 .matches(e -> e.getCause() instanceof AggregateVersionOutdatedError);
     }
 
     @Test
     void shouldSnapshotEvery100Events() {
         // given: a fabric
-        var id = create(
-                FabricName.of("Fabric"),
-                ImageId.of("image"),
-                Set.of(ColorId.of("color")),
-                Set.of(TopicId.of("topic")),
-                Set.of(FabricTypeAvailability.of(FabricTypeId.of("fabric"), true))
-        );
+        var id = create(SampleFabric.builder().build());
 
         // when: updating the fabric 200 times
         var version = Version.zero();
@@ -682,36 +491,17 @@ public class FabricServiceTest {
         return fabricService.get(id).block();
     }
 
-    private FabricId create(
-            FabricName name,
-            ImageId imageId,
-            Set<ColorId> colors,
-            Set<TopicId> topics,
-            Set<FabricTypeAvailability> availability
-    ) {
-        return fabricService.create(
-                name,
-                FabricKind.PATTERNED,
-                imageId,
-                colors,
-                topics,
-                availability,
-                Agent.system()
-        ).block().getId();
-    }
-
     private FabricId create(SampleFabric sample) {
-        return create(
+        return fabricService.create(
                 sample.getName(),
+                sample.getKind(),
                 sample.getImageId(),
+                sample.getExampleImageIds(),
                 sample.getColorIds(),
                 sample.getTopicIds(),
-                sample.getAvailabilities()
-        );
-    }
-
-    private FabricId createSampleFabric() {
-        return create(SampleFabric.builder().build());
+                sample.getAvailabilities(),
+                Agent.system()
+        ).block().getId();
     }
 
     private Version delete(FabricId id, Version version) {

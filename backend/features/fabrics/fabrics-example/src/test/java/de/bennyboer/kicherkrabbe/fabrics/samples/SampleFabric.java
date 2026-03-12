@@ -23,6 +23,10 @@ public class SampleFabric {
     @Builder.Default
     private String imageId = "SAMPLE_IMAGE_ID";
 
+    @Nullable
+    @Builder.Default
+    private List<String> exampleImageIds = null;
+
     @Singular
     private Set<String> colorIds;
 
@@ -43,6 +47,11 @@ public class SampleFabric {
     @Nullable
     public String getImageId() {
         return imageId;
+    }
+
+    @Nullable
+    public List<String> getExampleImageIds() {
+        return exampleImageIds;
     }
 
     public Set<String> getColorIds() {
