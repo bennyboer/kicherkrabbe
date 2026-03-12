@@ -39,6 +39,30 @@
     </div>
   }
 
+  <div class="example-images-section">
+    <label>Beispielbilder</label>
+    @if (getExampleImageIds() | async; as exampleImageIds) {
+      @if (exampleImageIds.length > 0) {
+        <div class="example-images-grid">
+          @for (imageId of exampleImageIds; track imageId) {
+            <div class="example-image-item">
+              <div class="example-image-container">
+                <img [src]="getImageUrl(imageId) | authImage | async" width="100%" alt="Beispielbild" />
+              </div>
+              <app-button (click)="removeExampleImage(imageId)" color="warn">Entfernen</app-button>
+            </div>
+          }
+        </div>
+      }
+    }
+    <app-button (click)="selectExampleImages()">
+      <span class="icon-button">
+        <span class="material-icons">add_photo_alternate</span>
+        <span>Beispielbilder hinzufügen</span>
+      </span>
+    </app-button>
+  </div>
+
   <hr />
 
   <div class="form-group">

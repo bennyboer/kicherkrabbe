@@ -59,6 +59,7 @@ interface CreateFabricRequest {
   name: string;
   kind: string;
   imageId: string | null;
+  exampleImageIds: string[] | null;
   colorIds: string[];
   topicIds: string[];
   availability: FabricTypeAvailabilityDTO[];
@@ -210,6 +211,7 @@ export class FabricsService implements OnDestroy {
     name: string;
     kind: string;
     image: ImageId | null;
+    exampleImages: string[];
     colors: Set<ColorId>;
     topics: Set<TopicId>;
     availability: FabricTypeAvailability[];
@@ -218,6 +220,7 @@ export class FabricsService implements OnDestroy {
       name: props.name,
       kind: props.kind,
       imageId: props.image,
+      exampleImageIds: props.exampleImages.length > 0 ? props.exampleImages : null,
       colorIds: Array.from(props.colors),
       topicIds: Array.from(props.topics),
       availability: props.availability.map((availability) => ({

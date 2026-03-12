@@ -37,6 +37,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
   private readonly name$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   private readonly kind$: BehaviorSubject<string> = new BehaviorSubject<string>('PATTERNED');
   private readonly imageId$: BehaviorSubject<Option<string>> = new BehaviorSubject<Option<string>>(none());
+  private readonly exampleImageIds$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   private readonly selectedTopics$: BehaviorSubject<FabricTopic[]> = new BehaviorSubject<FabricTopic[]>([]);
   private readonly availableTopics$: BehaviorSubject<FabricTopic[]> = new BehaviorSubject<FabricTopic[]>([]);
   private readonly loadingAvailableTopics$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -74,6 +75,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     this.name$.complete();
     this.kind$.complete();
     this.imageId$.complete();
+    this.exampleImageIds$.complete();
     this.availableTopics$.complete();
     this.loadingAvailableTopics$.complete();
     this.selectedTopics$.complete();
@@ -113,6 +115,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
     const name = this.name$.value;
     const kind = this.kind$.value;
     const image = kind === 'PATTERNED' ? this.imageId$.value.orElseThrow('Image ID is missing') : null;
+    const exampleImages = this.exampleImageIds$.value;
     const colors = new Set<string>(this.selectedColors$.value.map((c) => c.id));
     const topics = new Set<string>(this.selectedTopics$.value.map((t) => t.id));
     const availability: FabricTypeAvailability[] = this.selectedFabricTypes$.value.map((fabricType) =>
@@ -129,6 +132,7 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
         name,
         kind,
         image,
+        exampleImages,
         colors,
         topics,
         availability,
@@ -215,6 +219,44 @@ export class CreateFabricPage implements AfterViewInit, OnInit, OnDestroy {
           this.imageId$.next(some(result.assetIds[0]));
         });
       });
+  }
+
+  selectExampleImages(): void {
+    const dialog = Dialog.create<AssetSelectDialogResult>({
+      title: 'Beispielbilder auswählen',
+      componentType: AssetSelectDialog,
+      providers: [
+        {
+          provide: AssetSelectDialogData,
+          useValue: AssetSelectDialogData.of({
+            multiple: true,
+            watermark: false,
+            initialContentTypes: ['image/png', 'image/jpeg'],
+          }),
+        },
+        { provide: AssetsService, useValue: this.assetsService },
+      ],
+      environmentInjector: this.environmentInjector,
+    });
+    this.dialogService.open(dialog);
+    this.dialogService
+      .waitUntilClosed(dialog.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        dialog.getResult().ifSome((result) => {
+          const current = this.exampleImageIds$.value;
+          const newIds = result.assetIds.filter((id) => !current.includes(id));
+          this.exampleImageIds$.next([...current, ...newIds]);
+        });
+      });
+  }
+
+  removeExampleImage(imageId: string): void {
+    this.exampleImageIds$.next(this.exampleImageIds$.value.filter((id) => id !== imageId));
+  }
+
+  getExampleImageIds(): Observable<string[]> {
+    return this.exampleImageIds$.asObservable();
   }
 
   getImageId(): Observable<string> {

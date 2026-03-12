@@ -58,6 +58,32 @@ h3 {
   cursor: pointer;
 }
 
+.example-images-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.example-images-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.example-image-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 200px;
+}
+
+.example-image-container {
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+
 .hidden {
   display: none;
 }
