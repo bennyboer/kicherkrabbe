@@ -40,6 +40,8 @@ public class RabbitMessageListenerFactory implements MessageListenerFactory {
 
     private final MessageListenerContainerManager containerManager;
 
+    private final MessageListenerConcurrencyLimiter concurrencyLimiter;
+
     @Override
     public MessageListener createListener(
             ExchangeTarget exchange,
@@ -54,7 +56,8 @@ public class RabbitMessageListenerFactory implements MessageListenerFactory {
                 inbox,
                 () -> createMessageFlux(queues.getNormal()),
                 listenerName,
-                handler
+                handler,
+                concurrencyLimiter
         );
     }
 

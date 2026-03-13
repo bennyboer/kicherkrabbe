@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.messaging.testing;
 import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInbox;
 import de.bennyboer.kicherkrabbe.messaging.inbox.persistence.MessagingInboxRepo;
 import de.bennyboer.kicherkrabbe.messaging.inbox.persistence.inmemory.InMemoryMessagingInboxRepo;
+import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerConcurrencyLimiter;
 import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
 import de.bennyboer.kicherkrabbe.messaging.outbox.MessagingOutbox;
 import de.bennyboer.kicherkrabbe.messaging.outbox.persistence.MessagingOutboxRepo;
@@ -34,12 +35,18 @@ public class InMemoryMessagingTestConfig {
     }
 
     @Bean
+    public MessageListenerConcurrencyLimiter messageListenerConcurrencyLimiter() {
+        return new MessageListenerConcurrencyLimiter(100);
+    }
+
+    @Bean
     public MessageListenerFactory messageListenerFactory(
             ReactiveTransactionManager transactionManager,
             MessagingInbox inbox,
-            InMemoryMessageBus messageBus
+            InMemoryMessageBus messageBus,
+            MessageListenerConcurrencyLimiter concurrencyLimiter
     ) {
-        return new InMemoryMessageListenerFactory(transactionManager, inbox, messageBus);
+        return new InMemoryMessageListenerFactory(transactionManager, inbox, messageBus, concurrencyLimiter);
     }
 
     @Bean

@@ -36,6 +36,8 @@ public class MessageListener {
 
     private final Function<Message, Mono<Void>> handler;
 
+    private final MessageListenerConcurrencyLimiter concurrencyLimiter;
+
     @Nullable
     private Disposable disposable;
 
@@ -44,13 +46,15 @@ public class MessageListener {
             MessagingInbox inbox,
             Supplier<Flux<AcknowledgableMessage>> deliveries,
             String name,
-            Function<Message, Mono<Void>> handler
+            Function<Message, Mono<Void>> handler,
+            MessageListenerConcurrencyLimiter concurrencyLimiter
     ) {
         this.transactionManager = transactionManager;
         this.inbox = inbox;
         this.name = name;
         this.handler = handler;
         this.deliveries = deliveries;
+        this.concurrencyLimiter = concurrencyLimiter;
     }
 
     @PostConstruct
@@ -77,6 +81,19 @@ public class MessageListener {
     }
 
     private Mono<Void> handleDelivery(AcknowledgableMessage delivery) {
+        return Mono.fromCallable(concurrencyLimiter::tryAcquire)
+                .flatMap(acquired -> {
+                    if (!acquired) {
+                        log.warn("Could not acquire concurrency permit for message listener '{}', nacking for requeue", name);
+                        return delivery.nack(true);
+                    }
+
+                    return processDelivery(delivery)
+                            .doFinally(ignored -> concurrencyLimiter.release());
+                });
+    }
+
+    private Mono<Void> processDelivery(AcknowledgableMessage delivery) {
         var transactionalOperator = TransactionalOperator.create(transactionManager);
         Message message = delivery.getMessage();
         var incomingMessageId = IncomingMessageId.of(name + message.getMessageProperties().getMessageId());

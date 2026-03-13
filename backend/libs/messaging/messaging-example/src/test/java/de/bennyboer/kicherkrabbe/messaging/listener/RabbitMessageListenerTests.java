@@ -88,7 +88,8 @@ public class RabbitMessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(true);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new RabbitMessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
+        var concurrencyLimiter = new MessageListenerConcurrencyLimiter(100);
+        var factory = new RabbitMessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager, concurrencyLimiter);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
             processedCount.incrementAndGet();
             latch.countDown();
@@ -125,7 +126,8 @@ public class RabbitMessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(false);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new RabbitMessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
+        var concurrencyLimiter = new MessageListenerConcurrencyLimiter(100);
+        var factory = new RabbitMessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager, concurrencyLimiter);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
             attemptCount.incrementAndGet();
             return Mono.error(new RuntimeException("Simulated failure"));
@@ -159,7 +161,8 @@ public class RabbitMessageListenerTests {
 
         var inboxRepo = new InMemoryMessagingInboxRepo(false);
         var inbox = new MessagingInbox(inboxRepo, Clock.systemUTC());
-        var factory = new RabbitMessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
+        var concurrencyLimiter = new MessageListenerConcurrencyLimiter(100);
+        var factory = new RabbitMessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager, concurrencyLimiter);
         var listener = factory.createListener(exchange, routingKey, listenerName, message -> {
             attemptCount.incrementAndGet();
             return Mono.error(new RuntimeException("Persistent failure"));

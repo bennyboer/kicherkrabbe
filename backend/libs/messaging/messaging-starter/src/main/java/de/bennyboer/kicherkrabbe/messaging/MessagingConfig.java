@@ -2,6 +2,7 @@ package de.bennyboer.kicherkrabbe.messaging;
 
 import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInbox;
 import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInboxConfig;
+import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerConcurrencyLimiter;
 import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerContainerManager;
 import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
 import de.bennyboer.kicherkrabbe.messaging.listener.RabbitMessageListenerFactory;
@@ -65,14 +66,28 @@ public class MessagingConfig {
     }
 
     @Bean
+    @ConditionalOnMissingBean
+    public MessageListenerConcurrencyLimiter messageListenerConcurrencyLimiter() {
+        return new MessageListenerConcurrencyLimiter(100);
+    }
+
+    @Bean
     public MessageListenerFactory messageListenerFactory(
             ConnectionFactory connectionFactory,
             RabbitAdmin rabbitAdmin,
             ReactiveTransactionManager transactionManager,
             MessagingInbox inbox,
-            MessageListenerContainerManager containerManager
+            MessageListenerContainerManager containerManager,
+            MessageListenerConcurrencyLimiter concurrencyLimiter
     ) {
-        return new RabbitMessageListenerFactory(connectionFactory, rabbitAdmin, transactionManager, inbox, containerManager);
+        return new RabbitMessageListenerFactory(
+                connectionFactory,
+                rabbitAdmin,
+                transactionManager,
+                inbox,
+                containerManager,
+                concurrencyLimiter
+        );
     }
 
 }

@@ -4,6 +4,7 @@ import de.bennyboer.kicherkrabbe.messaging.RoutingKey;
 import de.bennyboer.kicherkrabbe.messaging.inbox.MessagingInbox;
 import de.bennyboer.kicherkrabbe.messaging.listener.AcknowledgableMessage;
 import de.bennyboer.kicherkrabbe.messaging.listener.MessageListener;
+import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerConcurrencyLimiter;
 import de.bennyboer.kicherkrabbe.messaging.listener.MessageListenerFactory;
 import de.bennyboer.kicherkrabbe.messaging.target.ExchangeTarget;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,8 @@ public class InMemoryMessageListenerFactory implements MessageListenerFactory {
 
     private final InMemoryMessageBus messageBus;
 
+    private final MessageListenerConcurrencyLimiter concurrencyLimiter;
+
     @Override
     public MessageListener createListener(
             ExchangeTarget exchange,
@@ -39,7 +42,8 @@ public class InMemoryMessageListenerFactory implements MessageListenerFactory {
                 inbox,
                 sink::asFlux,
                 listenerName,
-                handler
+                handler,
+                concurrencyLimiter
         );
     }
 
