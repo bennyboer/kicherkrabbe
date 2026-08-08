@@ -236,10 +236,10 @@ public class PatternEventPayloadSerializer implements EventSerializer {
 
     private Map<String, Object> serializePricedSizeRange(PricedSizeRange pricedSizeRange) {
         Map<String, Object> result = new HashMap<>(Map.of(
-                "from", pricedSizeRange.getFrom(),
                 "price", serializeMoney(pricedSizeRange.getPrice())
         ));
 
+        pricedSizeRange.getFrom().ifPresent(from -> result.put("from", from));
         pricedSizeRange.getTo().ifPresent(to -> result.put("to", to));
         pricedSizeRange.getUnit().ifPresent(unit -> result.put("unit", unit));
 
@@ -248,7 +248,7 @@ public class PatternEventPayloadSerializer implements EventSerializer {
 
     @SuppressWarnings("unchecked")
     private PricedSizeRange deserializePricedSizeRange(Map<String, Object> pricedSizeRange) {
-        long from = ((Number) pricedSizeRange.get("from")).longValue();
+        Long from = pricedSizeRange.containsKey("from") ? ((Number) pricedSizeRange.get("from")).longValue() : null;
         Long to = pricedSizeRange.containsKey("to") ? ((Number) pricedSizeRange.get("to")).longValue() : null;
         String unit = pricedSizeRange.containsKey("unit") ? (String) pricedSizeRange.get("unit") : null;
         Money price = deserializeMoney((Map<String, Object>) pricedSizeRange.get("price"));

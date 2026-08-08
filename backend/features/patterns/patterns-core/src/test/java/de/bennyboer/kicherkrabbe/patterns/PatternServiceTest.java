@@ -612,6 +612,52 @@ public class PatternServiceTest {
     }
 
     @Test
+    void shouldUpdateVariantsGivenAVariantWithoutSizes() {
+        // given: a pattern
+        var id = createSamplePattern();
+
+        // when: updating the variants with a variant that only has a price
+        var updatedVersion = updateVariants(
+                id,
+                Version.zero(),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Tasche"),
+                                Set.of(PricedSizeRange.of(null, null, null, Money.euro(4900)))
+                        )
+                )
+        );
+
+        // then: the variant is stored without any sizes
+        var pattern = get(id);
+        assertThat(pattern.getVersion()).isEqualTo(updatedVersion);
+        assertThat(pattern.getVariants()).containsExactly(
+                PatternVariant.of(
+                        PatternVariantName.of("Tasche"),
+                        Set.of(PricedSizeRange.of(null, null, null, Money.euro(4900)))
+                )
+        );
+    }
+
+    @Test
+    void shouldFailUpdatingVariantsGivenAToSizeWithoutAFromSize() {
+        // given: a pattern
+        var id = createSamplePattern();
+
+        // when: updating the variants with a size range that has a to but no from; then: an error is raised
+        assertThatThrownBy(() -> updateVariants(
+                id,
+                Version.zero(),
+                List.of(
+                        PatternVariant.of(
+                                PatternVariantName.of("Short"),
+                                Set.of(PricedSizeRange.of(null, 86L, "EU", Money.euro(2900)))
+                        )
+                )
+        )).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void shouldNotUpdateVariantsGivenAnOutdatedVersion() {
         // given: a pattern
         var id = create(

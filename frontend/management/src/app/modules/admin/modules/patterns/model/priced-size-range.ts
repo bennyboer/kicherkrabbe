@@ -3,12 +3,12 @@ import { Option, someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 export class PricedSizeRange implements Eq<PricedSizeRange> {
   readonly id: string;
-  readonly from: number;
+  readonly from: Option<number>;
   readonly to: Option<number>;
   readonly unit: Option<string>;
   readonly price: Money;
 
-  private constructor(props: { from: number; to: Option<number>; unit: Option<string>; price: Money }) {
+  private constructor(props: { from: Option<number>; to: Option<number>; unit: Option<string>; price: Money }) {
     validateProps(props);
 
     this.id = crypto.randomUUID();
@@ -18,25 +18,20 @@ export class PricedSizeRange implements Eq<PricedSizeRange> {
     this.price = props.price;
   }
 
-  static of(props: { from?: number; to?: number | null; unit?: string | null; price?: Money }): PricedSizeRange {
+  static of(props: { from?: number | null; to?: number | null; unit?: string | null; price?: Money }): PricedSizeRange {
     return new PricedSizeRange({
-      from: someOrNone(props.from).orElse(0),
+      from: someOrNone(props.from),
       to: someOrNone(props.to),
       unit: someOrNone(props.unit),
       price: someOrNone(props.price).orElse(Money.zero()),
     });
   }
 
-  withFrom(from?: number): PricedSizeRange {
-    return someOrNone(from)
-      .map(
-        (fromSize) =>
-          new PricedSizeRange({
-            ...this,
-            from: fromSize,
-          }),
-      )
-      .orElse(this);
+  withFrom(from?: number | null): PricedSizeRange {
+    return new PricedSizeRange({
+      ...this,
+      from: someOrNone(from),
+    });
   }
 
   withTo(to?: number | null): PricedSizeRange {
@@ -67,7 +62,7 @@ export class PricedSizeRange implements Eq<PricedSizeRange> {
 
   equals(other: PricedSizeRange): boolean {
     return (
-      this.from === other.from &&
+      this.from.equals(other.from) &&
       this.to.equals(other.to) &&
       this.unit.equals(other.unit) &&
       this.price.equals(other.price)

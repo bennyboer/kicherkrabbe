@@ -773,7 +773,7 @@ public class PatternsModule {
         notNull(pricedSizeRange, "Priced size range must be given");
         notNull(pricedSizeRange.price, "Price must be given");
 
-        long from = pricedSizeRange.from;
+        Long from = pricedSizeRange.from;
         Long to = pricedSizeRange.to;
         String unit = pricedSizeRange.unit;
         Money price = toInternalMoney(pricedSizeRange.price);

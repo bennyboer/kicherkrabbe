@@ -294,7 +294,7 @@ public abstract class PatternLookupRepoTest {
                 .name(PatternName.of("A"))
                 .variant(PatternVariant.of(
                         PatternVariantName.of("Normal"),
-                        Set.of(PricedSizeRange.of(86, 92L, null, Money.euro(2900)))
+                        Set.of(PricedSizeRange.of(86L, 92L, null, Money.euro(2900)))
                 ))
                 .published(true)
                 .build()
@@ -303,7 +303,7 @@ public abstract class PatternLookupRepoTest {
                 .name(PatternName.of("B"))
                 .variant(PatternVariant.of(
                         PatternVariantName.of("Normal"),
-                        Set.of(PricedSizeRange.of(98, 104L, null, Money.euro(2900)))
+                        Set.of(PricedSizeRange.of(98L, 104L, null, Money.euro(2900)))
                 ))
                 .published(true)
                 .build()

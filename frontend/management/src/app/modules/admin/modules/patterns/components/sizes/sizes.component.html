@@ -18,7 +18,7 @@
                 <input
                   #from
                   type="text"
-                  [value]="size.size.from"
+                  [value]="stringifyOptionalNumber(size.size.from, '')"
                   (keydown.enter)="save(size, from.value, to.value, unit.value, price.value)" />
               </td>
               <td class="col-to">
@@ -58,7 +58,7 @@
             </tr>
           } @else {
             <tr>
-              <td class="col-from">{{ size.size.from }}</td>
+              <td class="col-from">{{ stringifyOptionalNumber(size.size.from, "-") }}</td>
               <td class="col-to">{{ stringifyOptionalNumber(size.size.to, "-") }}</td>
               <td class="col-unit">{{ size.size.unit.orElse("-") }}</td>
               <td class="col-price">{{ size.size.price.formatted() }}</td>

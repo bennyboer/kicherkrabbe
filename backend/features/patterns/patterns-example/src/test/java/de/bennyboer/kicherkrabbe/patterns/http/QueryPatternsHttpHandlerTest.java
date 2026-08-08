@@ -59,7 +59,7 @@ public class QueryPatternsHttpHandlerTest extends HttpHandlerTest {
                         List.of(PatternVariant.of(
                                 PatternVariantName.of("Normal"),
                                 Set.of(PricedSizeRange.of(
-                                        80,
+                                        80L,
                                         86L,
                                         null,
                                         Money.euro(2000)

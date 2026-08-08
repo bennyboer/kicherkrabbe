@@ -54,7 +54,7 @@ public class MongoLookupPatternSerializer implements ReadModelSerializer<LookupP
                             .map(pricedSizeRange -> {
                                 var mongoPricedSizeRange = new MongoLookupPricedSizeRange();
 
-                                mongoPricedSizeRange.from = pricedSizeRange.getFrom();
+                                mongoPricedSizeRange.from = pricedSizeRange.getFrom().orElse(null);
                                 mongoPricedSizeRange.to = pricedSizeRange.getTo().orElse(null);
                                 mongoPricedSizeRange.unit = pricedSizeRange.getUnit().orElse(null);
                                 mongoPricedSizeRange.price = new MongoLookupPrice();

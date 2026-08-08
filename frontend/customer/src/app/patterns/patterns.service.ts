@@ -18,7 +18,7 @@ interface MoneyDTO {
 }
 
 interface PricedSizeRangeDTO {
-	from: number;
+	from: number | null;
 	to: number | null;
 	unit: string | null;
 	price: MoneyDTO;
@@ -242,8 +242,8 @@ export class PatternsService {
 
 	private toInternalPricedSizeRange(dto: PricedSizeRangeDTO): PricedSizeRange {
 		return {
-			from: dto.from,
-			to: dto.to,
+			from: dto.from ?? null,
+			to: dto.to ?? null,
 			unit: dto.unit,
 			price: {
 				amount: dto.price.amount,

@@ -76,7 +76,7 @@ public class SampleLookupPattern {
                 variants.isEmpty()
                         ? List.of(PatternVariant.of(
                                 PatternVariantName.of("Default"),
-                                Set.of(PricedSizeRange.of(86, 92L, null, Money.euro(2900)))
+                                Set.of(PricedSizeRange.of(86L, 92L, null, Money.euro(2900)))
                         ))
                         : variants,
                 extras,

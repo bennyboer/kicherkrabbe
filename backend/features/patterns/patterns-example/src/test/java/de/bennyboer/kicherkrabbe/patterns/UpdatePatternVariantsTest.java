@@ -32,7 +32,7 @@ public class UpdatePatternVariantsTest extends PatternsModuleTest {
         var newVariant = SamplePatternVariant.builder()
                 .name("New")
                 .pricedSizeRange(SamplePricedSizeRange.builder()
-                        .from(92)
+                        .from(92L)
                         .to(98L)
                         .price(SampleMoney.builder().amount(1200).build())
                         .build())
@@ -52,9 +52,45 @@ public class UpdatePatternVariantsTest extends PatternsModuleTest {
         assertThat(newPatternVariant.getName()).isEqualTo(PatternVariantName.of("New"));
         assertThat(newPatternVariant.getPricedSizeRanges()).hasSize(1);
         var newPatternVariantPricedSizeRange = newPatternVariant.getPricedSizeRanges().iterator().next();
-        assertThat(newPatternVariantPricedSizeRange.getFrom()).isEqualTo(92);
+        assertThat(newPatternVariantPricedSizeRange.getFrom()).contains(92L);
         assertThat(newPatternVariantPricedSizeRange.getTo()).isEqualTo(Optional.of(98L));
         assertThat(newPatternVariantPricedSizeRange.getPrice()).isEqualTo(Money.euro(1200));
+    }
+
+    @Test
+    void shouldUpdatePatternVariantsWithASizelessVariantAsUser() {
+        // given: a user is allowed to create patterns
+        allowUserToCreatePatterns("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: the user creates a pattern
+        String patternId = createSamplePattern(agent);
+
+        // when: the user updates the variants of the pattern with a variant that has a price but no size
+        var newVariant = SamplePatternVariant.builder()
+                .name("Tasche")
+                .pricedSizeRange(SamplePricedSizeRange.builder()
+                        .from(null)
+                        .to(null)
+                        .price(SampleMoney.builder().amount(4900).build())
+                        .build())
+                .build()
+                .toDTO();
+
+        updatePatternVariants(patternId, 0L, List.of(newVariant), agent);
+
+        // then: the pattern has the new variant with a price but no size
+        var patterns = getPatterns(agent);
+        assertThat(patterns).hasSize(1);
+        var pattern = patterns.getFirst();
+        assertThat(pattern.getVariants()).hasSize(1);
+        var newPatternVariant = pattern.getVariants().get(0);
+        assertThat(newPatternVariant.getName()).isEqualTo(PatternVariantName.of("Tasche"));
+        assertThat(newPatternVariant.getPricedSizeRanges()).hasSize(1);
+        var newPatternVariantPricedSizeRange = newPatternVariant.getPricedSizeRanges().iterator().next();
+        assertThat(newPatternVariantPricedSizeRange.getFrom()).isEmpty();
+        assertThat(newPatternVariantPricedSizeRange.getTo()).isEmpty();
+        assertThat(newPatternVariantPricedSizeRange.getPrice()).isEqualTo(Money.euro(4900));
     }
 
     @Test

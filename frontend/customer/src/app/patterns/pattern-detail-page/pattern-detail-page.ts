@@ -114,7 +114,14 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 		return euros.toFixed(2).replace(".", ",") + " €";
 	}
 
+	hasSize(range: PricedSizeRange): boolean {
+		return range.from !== null;
+	}
+
 	formatSizeRange(range: PricedSizeRange): string {
+		if (range.from === null) {
+			return "";
+		}
 		if (range.to === null || range.from === range.to) {
 			return `${range.from}`;
 		}
@@ -122,7 +129,7 @@ export class PatternDetailPage implements OnInit, OnDestroy {
 	}
 
 	sortedSizeRanges(ranges: PricedSizeRange[]): PricedSizeRange[] {
-		return [...ranges].sort((a, b) => a.from - b.from);
+		return [...ranges].sort((a, b) => (a.from ?? -1) - (b.from ?? -1));
 	}
 
 	goBack(): void {

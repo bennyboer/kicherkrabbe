@@ -1,6 +1,6 @@
 import { Eq, Money } from '../../../../../util';
 import { PricedSizeRange } from './priced-size-range';
-import { someOrNone, validateProps } from '@kicherkrabbe/shared';
+import { none, Option, some, someOrNone, validateProps } from '@kicherkrabbe/shared';
 
 export class PatternVariant implements Eq<PatternVariant> {
   readonly id: string;
@@ -37,14 +37,11 @@ export class PatternVariant implements Eq<PatternVariant> {
   }
 
   getFormattedSizeRange(): string {
-    const smallestSize = this.getSmallestSize();
-    const largestSize = this.getLargestSize();
-
-    if (smallestSize === largestSize) {
-      return `${smallestSize}`;
-    }
-
-    return `${smallestSize} - ${largestSize}`;
+    return this.getSmallestSize()
+      .flatMap((smallest) =>
+        this.getLargestSize().map((largest) => (smallest === largest ? `${smallest}` : `${smallest} - ${largest}`)),
+      )
+      .orElse('-');
   }
 
   getFormattedPriceRange(): string {
@@ -86,23 +83,25 @@ export class PatternVariant implements Eq<PatternVariant> {
     return prices.reduce((acc, price) => (acc.isGreaterThan(price) ? acc : price), prices[0]);
   }
 
-  private getSmallestSize(): number {
-    const sizes = this.sizes.map((size) => size.from);
+  private getSmallestSize(): Option<number> {
+    const sizes = this.sizes.flatMap((size) => size.from.map((from) => [from]).orElse([]));
 
     if (sizes.length === 0) {
-      return 0;
+      return none();
     }
 
-    return sizes.reduce((acc, size) => (size < acc ? size : acc), sizes[0]);
+    return some(sizes.reduce((acc, size) => (size < acc ? size : acc), sizes[0]));
   }
 
-  private getLargestSize(): number {
-    const sizes = this.sizes.map((size) => size.to.orElse(size.from));
+  private getLargestSize(): Option<number> {
+    const sizes = this.sizes.flatMap((size) =>
+      size.from.map((from) => [size.to.orElse(from)]).orElse([] as number[]),
+    );
 
     if (sizes.length === 0) {
-      return 0;
+      return none();
     }
 
-    return sizes.reduce((acc, size) => (size > acc ? size : acc), sizes[0]);
+    return some(sizes.reduce((acc, size) => (size > acc ? size : acc), sizes[0]));
   }
 }

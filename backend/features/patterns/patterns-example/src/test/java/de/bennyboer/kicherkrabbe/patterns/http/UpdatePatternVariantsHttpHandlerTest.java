@@ -29,7 +29,7 @@ public class UpdatePatternVariantsHttpHandlerTest extends HttpHandlerTest {
 
         // and: a request to update the variants of a pattern
         var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
+        pricedSizeRange.from = 80L;
         pricedSizeRange.to = 86L;
         pricedSizeRange.unit = "EU";
         pricedSizeRange.price = new MoneyDTO();
@@ -72,13 +72,55 @@ public class UpdatePatternVariantsHttpHandlerTest extends HttpHandlerTest {
     }
 
     @Test
+    void shouldSuccessfullyUpdatePatternVariantsGivenAVariantWithoutSizes() {
+        // given: a valid token for a user
+        var token = createTokenForUser("USER_ID");
+
+        // and: a request to update the variants of a pattern with a variant that only has a price
+        var pricedSizeRange = new PricedSizeRangeDTO();
+        pricedSizeRange.price = new MoneyDTO();
+        pricedSizeRange.price.amount = 4900;
+        pricedSizeRange.price.currency = "EUR";
+
+        var variant = new PatternVariantDTO();
+        variant.name = "Tasche";
+        variant.pricedSizeRanges = Set.of(pricedSizeRange);
+
+        var request = new UpdatePatternVariantsRequest();
+        request.version = 3L;
+        request.variants = List.of(variant);
+
+        // and: the module is configured to return a successful response
+        when(module.updatePatternVariants(
+                "PATTERN_ID",
+                3L,
+                List.of(variant),
+                Agent.user(AgentId.of("USER_ID"))
+        )).thenReturn(Mono.just(4L));
+
+        // when: posting the request
+        var exchange = client.post()
+                .uri("/patterns/PATTERN_ID/update/variants")
+                .bodyValue(request)
+                .headers(headers -> headers.setBearerAuth(token))
+                .exchange();
+
+        // then: the response is successful
+        exchange.expectStatus().isOk();
+
+        // and: the response contains the new version of the pattern
+        exchange.expectBody(UpdatePatternVariantsResponse.class)
+                .value(response -> assertThat(response.version).isEqualTo(4L));
+    }
+
+    @Test
     void shouldRespondWith409OnAggregateVersionOutdatedError() {
         // given: a valid token for a user
         var token = createTokenForUser("USER_ID");
 
         // and: a request to update the variants of a pattern
         var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
+        pricedSizeRange.from = 80L;
         pricedSizeRange.to = 86L;
         pricedSizeRange.unit = "EU";
         pricedSizeRange.price = new MoneyDTO();

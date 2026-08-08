@@ -63,7 +63,7 @@ public class QueryPatternTest extends PatternsModuleTest {
         assertThat(queriedVariant.getName()).isEqualTo(PatternVariantName.of("Normal"));
         assertThat(queriedVariant.getPricedSizeRanges()).hasSize(1);
         var queriedPricedSizeRange = queriedVariant.getPricedSizeRanges().iterator().next();
-        assertThat(queriedPricedSizeRange.getFrom()).isEqualTo(80);
+        assertThat(queriedPricedSizeRange.getFrom()).contains(80L);
         assertThat(queriedPricedSizeRange.getTo()).isEqualTo(Optional.of(86L));
         assertThat(queriedPricedSizeRange.getPrice()).isEqualTo(Money.euro(1000));
         assertThat(pattern.getAttribution()).isEqualTo(PatternAttribution.of(null, PatternDesigner.of("Designer")));

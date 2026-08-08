@@ -14,7 +14,8 @@ import static lombok.AccessLevel.PUBLIC;
 @FieldDefaults(level = PUBLIC)
 public class PricedSizeRangeDTO {
 
-    long from;
+    @Nullable
+    Long from;
 
     @Nullable
     Long to;

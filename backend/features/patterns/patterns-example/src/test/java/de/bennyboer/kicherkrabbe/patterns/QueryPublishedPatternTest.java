@@ -56,7 +56,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
                         PatternVariantName.of("Normal"),
                         Set.of(
                                 PricedSizeRange.of(
-                                        80,
+                                        80L,
                                         86L,
                                         null,
                                         Money.euro(1000)
@@ -109,7 +109,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
                         PatternVariantName.of("Normal"),
                         Set.of(
                                 PricedSizeRange.of(
-                                        80,
+                                        80L,
                                         86L,
                                         null,
                                         Money.euro(1000)
@@ -162,7 +162,7 @@ public class QueryPublishedPatternTest extends PatternsModuleTest {
                         PatternVariantName.of("Normal"),
                         Set.of(
                                 PricedSizeRange.of(
-                                        80,
+                                        80L,
                                         86L,
                                         null,
                                         Money.euro(1000)

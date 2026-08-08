@@ -122,7 +122,7 @@ public class InMemoryPatternLookupRepo
                     var availableSizes = new HashSet<>();
                     for (var variant : pattern.getVariants()) {
                         for (var range : variant.getPricedSizeRanges()) {
-                            availableSizes.add(range.getFrom());
+                            range.getFrom().ifPresent(availableSizes::add);
                             range.getTo().ifPresent(availableSizes::add);
                         }
                     }

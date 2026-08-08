@@ -17,7 +17,9 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor(access = PRIVATE)
 public class PricedSizeRange {
 
-    long from;
+    @Nullable
+    @Getter(NONE)
+    Long from;
 
     @Nullable
     @Getter(NONE)
@@ -29,16 +31,23 @@ public class PricedSizeRange {
 
     Money price;
 
-    public static PricedSizeRange of(long from, @Nullable Long to, @Nullable String unit, Money price) {
+    public static PricedSizeRange of(@Nullable Long from, @Nullable Long to, @Nullable String unit, Money price) {
         notNull(price, "Price must be given");
         check(price.isPositiveOrZero(), "Price must be positive or zero");
-        check(from >= 0, "From must be positive or zero");
+        if (from != null) {
+            check(from >= 0, "From must be positive or zero");
+        }
         if (to != null) {
+            check(from != null, "From must be given when to is given");
             check(from <= to, "From must be less than or equal to to");
             check(to >= 0, "To must be positive or zero");
         }
 
         return new PricedSizeRange(from, to, unit, price);
+    }
+
+    public Optional<Long> getFrom() {
+        return Optional.ofNullable(from);
     }
 
     public Optional<Long> getTo() {

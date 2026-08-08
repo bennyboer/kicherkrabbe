@@ -813,7 +813,7 @@ public class PatternsHttpHandler {
     private PricedSizeRangeDTO toPricedSizeRangeDTO(PricedSizeRange pricedSizeRange) {
         var result = new PricedSizeRangeDTO();
 
-        result.from = pricedSizeRange.getFrom();
+        result.from = pricedSizeRange.getFrom().orElse(null);
         result.to = pricedSizeRange.getTo().orElse(null);
         result.unit = pricedSizeRange.getUnit().orElse(null);
         result.price = toMoneyDTO(pricedSizeRange.getPrice());

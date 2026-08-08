@@ -7,7 +7,7 @@ import lombok.Builder;
 public class SamplePricedSizeRange {
 
     @Builder.Default
-    private long from = 80;
+    private Long from = 80L;
 
     @Builder.Default
     private Long to = 86L;

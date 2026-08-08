@@ -85,7 +85,7 @@ export class SizesComponent implements OnDestroy {
     this.sizes$.next([
       ...this.sizes$.value,
       EditablePricedSizeRange.of({
-        size: PricedSizeRange.of({ from: 0, price: Money.zero() }),
+        size: PricedSizeRange.of({ price: Money.zero() }),
       }).startEditing(),
     ]);
   }
@@ -111,9 +111,9 @@ export class SizesComponent implements OnDestroy {
   }
 
   save(size: EditablePricedSizeRange, from: string, to: string, unit: string, price: string): void {
-    let fromSize = 0;
+    let fromSize: Option<number> = none();
     if (from) {
-      fromSize = parseInt(from, 10);
+      fromSize = someOrNone(parseInt(from, 10));
     }
 
     let toSize: Option<number> = none();
@@ -134,7 +134,7 @@ export class SizesComponent implements OnDestroy {
     const priceAsMoney = Money.euro(parsedPrice.intValue);
 
     const updatedSize = size.size
-      .withFrom(fromSize)
+      .withFrom(fromSize.orElseNull())
       .withTo(toSize.orElseNull())
       .withUnit(updatedUnit.orElseNull())
       .withPrice(priceAsMoney);

@@ -76,9 +76,13 @@
 						<div class="variant">
 							<h3 class="variant-name">{{ variant.name }}</h3>
 							<div class="size-prices">
-								@for (range of sortedSizeRanges(variant.pricedSizeRanges); track range.from) {
+								@for (range of sortedSizeRanges(variant.pricedSizeRanges); track $index) {
 									<div class="size-price-row">
-										<span class="size">Größe {{ formatSizeRange(range) }}</span>
+										@if (hasSize(range)) {
+											<span class="size">Größe {{ formatSizeRange(range) }}</span>
+										} @else {
+											<span class="size">Preis</span>
+										}
 										<span class="price">{{ formatPrice(range.price.amount) }}</span>
 									</div>
 								}

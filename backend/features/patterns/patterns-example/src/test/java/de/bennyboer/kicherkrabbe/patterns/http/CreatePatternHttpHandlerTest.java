@@ -25,7 +25,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
         attribution.designer = "EXTREME PATTERNS inc.";
 
         var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
+        pricedSizeRange.from = 80L;
         pricedSizeRange.to = 86L;
         pricedSizeRange.price = new MoneyDTO();
         pricedSizeRange.price.amount = 1000;
@@ -96,7 +96,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
         attribution.designer = "EXTREME PATTERNS inc.";
 
         var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
+        pricedSizeRange.from = 80L;
         pricedSizeRange.to = 86L;
         pricedSizeRange.price = new MoneyDTO();
         pricedSizeRange.price.amount = 1000;
@@ -191,7 +191,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
         attribution.designer = "EXTREME PATTERNS inc.";
 
         var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
+        pricedSizeRange.from = 80L;
         pricedSizeRange.to = 86L;
         pricedSizeRange.price = new MoneyDTO();
         pricedSizeRange.price.amount = 1000;
@@ -255,7 +255,7 @@ public class CreatePatternHttpHandlerTest extends HttpHandlerTest {
         attribution.designer = "EXTREME PATTERNS inc.";
 
         var pricedSizeRange = new PricedSizeRangeDTO();
-        pricedSizeRange.from = 80;
+        pricedSizeRange.from = 80L;
         pricedSizeRange.to = 86L;
         pricedSizeRange.price = new MoneyDTO();
         pricedSizeRange.price.amount = 1000;

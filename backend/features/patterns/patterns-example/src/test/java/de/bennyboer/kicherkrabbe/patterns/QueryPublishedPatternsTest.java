@@ -407,13 +407,13 @@ public class QueryPublishedPatternsTest extends PatternsModuleTest {
         var agent = Agent.user(AgentId.of("USER_ID"));
 
         var pricedSizeRange1 = SamplePricedSizeRange.builder()
-                .from(80)
+                .from(80L)
                 .to(86L)
                 .price(SampleMoney.builder().amount(1000).build())
                 .build();
 
         var pricedSizeRange2 = SamplePricedSizeRange.builder()
-                .from(92)
+                .from(92L)
                 .to(98L)
                 .price(SampleMoney.builder().amount(1200).build())
                 .build();

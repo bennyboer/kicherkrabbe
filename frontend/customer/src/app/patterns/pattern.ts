@@ -4,7 +4,7 @@ export interface Money {
 }
 
 export interface PricedSizeRange {
-	from: number;
+	from: number | null;
 	to: number | null;
 	unit: string | null;
 	price: Money;
@@ -119,7 +119,9 @@ export class Pattern {
 		const sizes = new Set<number>();
 		for (const variant of this.variants) {
 			for (const range of variant.pricedSizeRanges) {
-				sizes.add(range.from);
+				if (range.from !== null) {
+					sizes.add(range.from);
+				}
 				if (range.to !== null) {
 					sizes.add(range.to);
 				}

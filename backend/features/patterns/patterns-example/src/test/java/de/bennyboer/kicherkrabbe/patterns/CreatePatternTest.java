@@ -41,12 +41,12 @@ public class CreatePatternTest extends PatternsModuleTest {
                 .toDTO();
 
         var pricedSizeRange1 = SamplePricedSizeRange.builder()
-                .from(80)
+                .from(80L)
                 .to(86L)
                 .price(SampleMoney.builder().amount(2900).build())
                 .build();
         var pricedSizeRange2 = SamplePricedSizeRange.builder()
-                .from(92)
+                .from(92L)
                 .to(98L)
                 .price(SampleMoney.builder().amount(3200).build())
                 .build();
@@ -112,13 +112,13 @@ public class CreatePatternTest extends PatternsModuleTest {
         assertThat(pattern.getVariants()).hasSize(2);
         assertThat(pattern.getVariants().get(0).getName()).isEqualTo(PatternVariantName.of("Short"));
         assertThat(pattern.getVariants().get(0).getPricedSizeRanges()).containsExactlyInAnyOrder(
-                PricedSizeRange.of(80, 86L, null, Money.euro(2900)),
-                PricedSizeRange.of(92, 98L, null, Money.euro(3200))
+                PricedSizeRange.of(80L, 86L, null, Money.euro(2900)),
+                PricedSizeRange.of(92L, 98L, null, Money.euro(3200))
         );
         assertThat(pattern.getVariants().get(1).getName()).isEqualTo(PatternVariantName.of("Long"));
         assertThat(pattern.getVariants().get(1).getPricedSizeRanges()).containsExactlyInAnyOrder(
-                PricedSizeRange.of(80, 86L, null, Money.euro(2900)),
-                PricedSizeRange.of(92, 98L, null, Money.euro(3200))
+                PricedSizeRange.of(80L, 86L, null, Money.euro(2900)),
+                PricedSizeRange.of(92L, 98L, null, Money.euro(3200))
         );
         assertThat(pattern.getExtras()).containsExactlyInAnyOrder(
                 PatternExtra.of(PatternExtraName.of("Extra 1"), Money.euro(1000)),

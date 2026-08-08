@@ -48,7 +48,7 @@ interface PatternVariantDTO {
 }
 
 interface PricedSizeRangeDTO {
-  from: number;
+  from?: number | null;
   to?: number | null;
   unit?: string | null;
   price: MoneyDTO;
@@ -464,7 +464,7 @@ export class PatternsService implements OnDestroy {
 
   private toInternalVariant(variant: PatternVariantDTO): PatternVariant {
     const sizes = variant.pricedSizeRanges.map((range) => this.toInternalPricedSizeRange(range));
-    sizes.sort((a, b) => a.from - b.from);
+    sizes.sort((a, b) => a.from.orElse(-1) - b.from.orElse(-1));
 
     return PatternVariant.of({
       name: variant.name,
@@ -522,7 +522,7 @@ export class PatternsService implements OnDestroy {
 
   private toApiPricedSizeRange(range: PricedSizeRange): PricedSizeRangeDTO {
     return {
-      from: range.from,
+      from: range.from.orElseNull(),
       to: range.to.orElseNull(),
       unit: range.unit.orElseNull(),
       price: this.toApiMoney(range.price),
