@@ -177,6 +177,31 @@ public class AssetsMessagingTest extends EventListenerTest {
     }
 
     @Test
+    void shouldUpdateAssetReferencesOnFabricCreatedWithExampleImages() {
+        send(
+                AggregateType.of("FABRIC"),
+                AggregateId.of("FABRIC_ID"),
+                Version.of(1),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of(
+                        "image", "ASSET_1",
+                        "exampleImages", List.of("ASSET_2", "ASSET_3"),
+                        "name", "Blumentraum"
+                )
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetReferences(
+                eq(AssetReferenceResourceType.FABRIC),
+                eq(AssetResourceId.of("FABRIC_ID")),
+                eq(Set.of(AssetId.of("ASSET_1"), AssetId.of("ASSET_2"), AssetId.of("ASSET_3"))),
+                eq("Blumentraum")
+        );
+    }
+
+    @Test
     void shouldUpdateAssetReferencesOnFabricImagesUpdated() {
         send(
                 AggregateType.of("FABRIC"),

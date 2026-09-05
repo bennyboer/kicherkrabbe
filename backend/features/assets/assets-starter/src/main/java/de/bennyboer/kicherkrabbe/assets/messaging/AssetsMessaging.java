@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Configuration
 public class AssetsMessaging {
 
-    record FabricCreatedEvent(@Nullable String image, String name) {
+    record FabricCreatedEvent(@Nullable String image, @Nullable List<String> exampleImages, String name) {
     }
 
     record FabricImagesUpdatedEvent(@Nullable String image, List<String> exampleImages) {
@@ -176,10 +176,16 @@ public class AssetsMessaging {
                 FabricCreatedEvent.class,
                 (metadata, event) -> {
                     String fabricId = metadata.getAggregateId().getValue();
-                    Set<AssetId> assetIds = Optional.ofNullable(event.image())
+
+                    Set<AssetId> assetIds = new HashSet<>();
+                    Optional.ofNullable(event.image())
                             .map(AssetId::of)
-                            .map(Set::of)
-                            .orElse(Set.of());
+                            .ifPresent(assetIds::add);
+                    Optional.ofNullable(event.exampleImages())
+                            .orElseGet(List::of)
+                            .stream()
+                            .map(AssetId::of)
+                            .forEach(assetIds::add);
 
                     return module.updateAssetReferences(
                             AssetReferenceResourceType.FABRIC,
