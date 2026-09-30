@@ -16,7 +16,7 @@ import { ProgressSpinner } from "primeng/progressspinner";
 import { QuillViewComponent } from "ngx-quill";
 import { BehaviorSubject, Subject, switchMap, takeUntil } from "rxjs";
 import { SeoService } from "../../services/seo.service";
-import { Breadcrumbs, type BreadcrumbItem } from "../../shared";
+import { Breadcrumbs, type BreadcrumbItem, WarrantyNotice } from "../../shared";
 import type { Pattern, PricedSizeRange } from "../pattern";
 import { PatternsService } from "../patterns.service";
 
@@ -35,6 +35,7 @@ import { PatternsService } from "../patterns.service";
 		Panel,
 		QuillViewComponent,
 		Breadcrumbs,
+		WarrantyNotice,
 	],
 	providers: [MessageService],
 	changeDetection: ChangeDetectionStrategy.OnPush,

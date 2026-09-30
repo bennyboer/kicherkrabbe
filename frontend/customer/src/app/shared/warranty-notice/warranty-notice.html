@@ -1,0 +1,25 @@
+<button type="button" class="warranty-notice-trigger" (click)="visible.set(true)">
+	<i class="pi pi-shield"></i>
+	<span>Deine gesetzlichen Gewährleistungsrechte</span>
+</button>
+
+<p-dialog
+	header="Gesetzliche Gewährleistung"
+	[visible]="visible()"
+	(visibleChange)="visible.set($event)"
+	[modal]="true"
+	[dismissableMask]="true"
+	[style]="{ 'max-width': '640px', width: '95vw' }"
+	appendTo="body"
+>
+	<img
+		class="warranty-notice-image"
+		src="/other/warranty/legal_guarantee_notice_de.svg"
+		alt="EU-Hinweis zum gesetzlichen Gewährleistungsrecht"
+	/>
+	<p class="warranty-notice-links">
+		<a href="https://europa.eu/youreurope/garantien" target="_blank" rel="noopener">Mehr Informationen auf Your Europe</a>
+		<span class="separator">|</span>
+		<a routerLink="/legal/warranty" (click)="visible.set(false)">Gewährleistung bei Kicherkrabbe</a>
+	</p>
+</p-dialog>

@@ -129,6 +129,11 @@ export const routes: Routes = [
 			),
 	},
 	{
+		path: "legal/warranty",
+		loadComponent: () =>
+			import("./legal/warranty/warranty").then((m) => m.WarrantyPage),
+	},
+	{
 		path: "**",
 		loadComponent: () =>
 			import("./not-found/not-found-page").then((m) => m.NotFoundPage),
