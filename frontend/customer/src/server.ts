@@ -121,6 +121,7 @@ function generateSitemapXml(
 		"/legal/terms-and-conditions",
 		"/legal/privacy-policy",
 		"/legal/cancellation-policy",
+		"/legal/warranty",
 	];
 
 	const urls: string[] = [];

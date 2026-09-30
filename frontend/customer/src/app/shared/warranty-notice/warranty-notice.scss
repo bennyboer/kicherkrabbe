@@ -1,0 +1,50 @@
+:host {
+	display: block;
+	margin-top: 16px;
+}
+
+.warranty-notice-trigger {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0;
+	border: none;
+	background: none;
+	font: inherit;
+	font-size: 0.9rem;
+	color: var(--p-primary-color);
+	cursor: pointer;
+
+	&:hover span {
+		text-decoration: underline;
+	}
+}
+
+.warranty-notice-image {
+	display: block;
+	width: 100%;
+	height: auto;
+	background: #fff;
+}
+
+.warranty-notice-links {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 8px;
+	margin: 16px 0 0 0;
+	font-size: 0.875rem;
+
+	a {
+		color: var(--p-primary-color);
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	.separator {
+		color: var(--p-text-muted-color);
+	}
+}

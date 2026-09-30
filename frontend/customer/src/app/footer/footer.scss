@@ -55,7 +55,12 @@ footer {
 	}
 
 	.links {
-		justify-content: center;
+		flex-direction: column;
+		gap: 12px;
 		text-align: center;
+
+		.separator {
+			display: none;
+		}
 	}
 }

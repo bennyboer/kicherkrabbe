@@ -54,6 +54,10 @@ export const serverRoutes: ServerRoute[] = [
 		renderMode: RenderMode.Prerender,
 	},
 	{
+		path: "legal/warranty",
+		renderMode: RenderMode.Prerender,
+	},
+	{
 		path: "**",
 		renderMode: RenderMode.Server,
 		status: 404,

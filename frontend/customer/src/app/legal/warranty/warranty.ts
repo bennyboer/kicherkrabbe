@@ -1,22 +1,20 @@
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
-import { RouterLink } from "@angular/router";
 import { SeoService } from "../../services/seo.service";
 
 @Component({
-	selector: "app-terms-and-conditions",
-	templateUrl: "./terms-and-conditions.html",
-	styleUrl: "../legal.scss",
+	selector: "app-warranty",
+	templateUrl: "./warranty.html",
+	styleUrls: ["../legal.scss", "./warranty.scss"],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	standalone: true,
-	imports: [RouterLink],
 })
-export class TermsAndConditionsPage {
+export class WarrantyPage {
 	private readonly seoService = inject(SeoService);
 
 	constructor() {
 		this.seoService.updateMetaTags({
-			title: "AGB | Kicherkrabbe",
-			canonical: "https://kicherkrabbe.com/legal/terms-and-conditions",
+			title: "Gesetzliche Gewährleistung | Kicherkrabbe",
+			canonical: "https://kicherkrabbe.com/legal/warranty",
 		});
 	}
 }

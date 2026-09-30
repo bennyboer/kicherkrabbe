@@ -17,7 +17,7 @@ import { Panel } from "primeng/panel";
 import { ProgressSpinner } from "primeng/progressspinner";
 import { BehaviorSubject, Subject, switchMap, takeUntil } from "rxjs";
 import { SeoService } from "../../services/seo.service";
-import { type BreadcrumbItem, Breadcrumbs } from "../../shared";
+import { type BreadcrumbItem, Breadcrumbs, WarrantyNotice } from "../../shared";
 import type { Offer } from "../offer";
 import { OffersService } from "../offers.service";
 
@@ -56,6 +56,7 @@ const FABRIC_TYPE_LABELS: Record<string, string> = {
 		Panel,
 		QuillViewComponent,
 		Breadcrumbs,
+		WarrantyNotice,
 	],
 	providers: [MessageService],
 	changeDetection: ChangeDetectionStrategy.OnPush,
