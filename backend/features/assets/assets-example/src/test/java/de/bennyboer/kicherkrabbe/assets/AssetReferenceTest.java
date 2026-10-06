@@ -105,6 +105,23 @@ public class AssetReferenceTest extends AssetsModuleTest {
     }
 
     @Test
+    void shouldAllowAnonymousAccessWhenAssetIsReferencedByEmbroidery() {
+        var agent = Agent.user(AgentId.of("USER_ID"));
+        allowUserToCreateAssets("USER_ID");
+        var assetId = uploadSampleAsset(agent);
+
+        updateAssetReferences(AssetReferenceResourceType.EMBROIDERY, "EMBROIDERY_1", Set.of(assetId));
+
+        var content = getAssetContent(assetId, Agent.anonymous());
+        assertThat(content).isNotEmpty();
+
+        removeAssetReferencesByResource(AssetReferenceResourceType.EMBROIDERY, "EMBROIDERY_1");
+
+        assertThatThrownBy(() -> getAssetContent(assetId, Agent.anonymous()))
+                .matches(e -> e.getCause() instanceof MissingPermissionError);
+    }
+
+    @Test
     void shouldRevokeAnonymousAccessWhenPublicReferenceIsRemoved() {
         var agent = Agent.user(AgentId.of("USER_ID"));
         allowUserToCreateAssets("USER_ID");
