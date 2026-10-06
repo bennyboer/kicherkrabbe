@@ -1,8 +1,10 @@
 package de.bennyboer.kicherkrabbe.embroideries;
 
+import de.bennyboer.kicherkrabbe.auth.SecurityConfig;
 import de.bennyboer.kicherkrabbe.changes.MessagingResourceChangesTracker;
 import de.bennyboer.kicherkrabbe.changes.ResourceChangesTracker;
 import de.bennyboer.kicherkrabbe.changes.ResourceType;
+import de.bennyboer.kicherkrabbe.embroideries.http.EmbroideriesHttpConfig;
 import de.bennyboer.kicherkrabbe.embroideries.messaging.EmbroideriesMessaging;
 import de.bennyboer.kicherkrabbe.embroideries.persistence.categories.EmbroideryCategoryRepo;
 import de.bennyboer.kicherkrabbe.embroideries.persistence.categories.mongo.MongoEmbroideryCategoryRepo;
@@ -25,7 +27,9 @@ import static de.bennyboer.kicherkrabbe.embroideries.Actions.READ;
 @Import({
         EmbroideriesAggregateConfig.class,
         EmbroideriesPermissionsConfig.class,
-        EmbroideriesMessaging.class
+        EmbroideriesHttpConfig.class,
+        EmbroideriesMessaging.class,
+        SecurityConfig.class
 })
 public class EmbroideriesModuleConfig {
 
