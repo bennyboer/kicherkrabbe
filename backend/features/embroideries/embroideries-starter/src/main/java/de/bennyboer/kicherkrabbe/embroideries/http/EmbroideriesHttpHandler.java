@@ -8,12 +8,16 @@ import de.bennyboer.kicherkrabbe.embroideries.EmbroideryCategory;
 import de.bennyboer.kicherkrabbe.embroideries.EmbroideryCategoryId;
 import de.bennyboer.kicherkrabbe.embroideries.EmbroideryDetails;
 import de.bennyboer.kicherkrabbe.embroideries.EmbroideryNotFoundError;
+import de.bennyboer.kicherkrabbe.embroideries.PublishedEmbroidery;
 import de.bennyboer.kicherkrabbe.embroideries.feature.AlreadyFeaturedError;
 import de.bennyboer.kicherkrabbe.embroideries.http.api.CategoryDTO;
+import de.bennyboer.kicherkrabbe.embroideries.http.api.EmbroideriesSortDTO;
 import de.bennyboer.kicherkrabbe.embroideries.http.api.EmbroideryChangeDTO;
 import de.bennyboer.kicherkrabbe.embroideries.http.api.EmbroideryDTO;
+import de.bennyboer.kicherkrabbe.embroideries.http.api.PublishedEmbroideryDTO;
 import de.bennyboer.kicherkrabbe.embroideries.http.api.requests.CreateEmbroideryRequest;
 import de.bennyboer.kicherkrabbe.embroideries.http.api.requests.QueryEmbroideriesRequest;
+import de.bennyboer.kicherkrabbe.embroideries.http.api.requests.QueryPublishedEmbroideriesRequest;
 import de.bennyboer.kicherkrabbe.embroideries.http.api.requests.RenameEmbroideryRequest;
 import de.bennyboer.kicherkrabbe.embroideries.http.api.requests.UpdateEmbroideryCategoriesRequest;
 import de.bennyboer.kicherkrabbe.embroideries.http.api.requests.UpdateEmbroideryImageRequest;
@@ -23,6 +27,9 @@ import de.bennyboer.kicherkrabbe.embroideries.http.api.responses.PublishEmbroide
 import de.bennyboer.kicherkrabbe.embroideries.http.api.responses.QueryCategoriesResponse;
 import de.bennyboer.kicherkrabbe.embroideries.http.api.responses.QueryEmbroideriesResponse;
 import de.bennyboer.kicherkrabbe.embroideries.http.api.responses.QueryEmbroideryResponse;
+import de.bennyboer.kicherkrabbe.embroideries.http.api.responses.QueryFeaturedEmbroideriesResponse;
+import de.bennyboer.kicherkrabbe.embroideries.http.api.responses.QueryPublishedEmbroideriesResponse;
+import de.bennyboer.kicherkrabbe.embroideries.http.api.responses.QueryPublishedEmbroideryResponse;
 import de.bennyboer.kicherkrabbe.embroideries.http.api.responses.RenameEmbroideryResponse;
 import de.bennyboer.kicherkrabbe.embroideries.http.api.responses.UnfeatureEmbroideryResponse;
 import de.bennyboer.kicherkrabbe.embroideries.http.api.responses.UnpublishEmbroideryResponse;
@@ -34,6 +41,7 @@ import de.bennyboer.kicherkrabbe.embroideries.unpublish.AlreadyUnpublishedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.AggregateVersionOutdatedError;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.Agent;
 import de.bennyboer.kicherkrabbe.eventsourcing.event.metadata.agent.AgentId;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.reactive.TransactionalOperator;
@@ -42,9 +50,15 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 
+import static de.bennyboer.kicherkrabbe.embroideries.http.api.EmbroideriesSortDirectionDTO.DESCENDING;
 import static java.util.stream.Collectors.toSet;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -127,6 +141,76 @@ public class EmbroideriesHttpHandler {
                 })
                 .flatMap(response -> ServerResponse.ok().bodyValue(response))
                 .onErrorMap(EmbroideryNotFoundError.class, e -> new ResponseStatusException(NOT_FOUND, e.getMessage(), e));
+    }
+
+    public Mono<ServerResponse> getCategoriesUsedInEmbroideries(ServerRequest request) {
+        return toAgent(request)
+                .flatMapMany(module::getCategoriesUsedInEmbroideries)
+                .collectList()
+                .map(categories -> {
+                    var response = new QueryCategoriesResponse();
+                    response.categories = toCategoryDTOs(categories);
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response));
+    }
+
+    public Mono<ServerResponse> getPublishedEmbroideries(ServerRequest request) {
+        return request.bodyToMono(QueryPublishedEmbroideriesRequest.class)
+                .flatMap(req -> toAgent(request).flatMap(agent -> module.getPublishedEmbroideries(
+                        Optional.ofNullable(req.searchTerm).orElse(""),
+                        Optional.ofNullable(req.categories).orElseGet(Set::of),
+                        isAscending(req.sort),
+                        req.skip,
+                        req.limit,
+                        agent
+                )))
+                .map(page -> {
+                    var response = new QueryPublishedEmbroideriesResponse();
+                    response.embroideries = toPublishedEmbroideryDTOs(page.getResults());
+                    response.skip = page.getSkip();
+                    response.limit = page.getLimit();
+                    response.total = page.getTotal();
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(BAD_REQUEST, e.getMessage(), e));
+    }
+
+    public Mono<ServerResponse> getPublishedEmbroidery(ServerRequest request) {
+        String embroideryIdOrAlias = request.pathVariable("embroideryId");
+
+        return toAgent(request)
+                .flatMap(agent -> module.getPublishedEmbroidery(embroideryIdOrAlias, agent))
+                .map(embroidery -> {
+                    var response = new QueryPublishedEmbroideryResponse();
+                    response.embroidery = toPublishedEmbroideryDTO(embroidery);
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(NOT_FOUND, "Embroidery not available")));
+    }
+
+    public Mono<ServerResponse> getFeaturedEmbroideries(ServerRequest request) {
+        var seed = request.queryParam("seed").map(Long::parseLong);
+
+        return toAgent(request)
+                .flatMapMany(module::getFeaturedEmbroideries)
+                .collectList()
+                .map(embroideries -> {
+                    if (seed.isPresent()) {
+                        var shuffled = new ArrayList<>(embroideries);
+                        Collections.shuffle(shuffled, new Random(seed.get()));
+                        return shuffled;
+                    }
+                    return embroideries;
+                })
+                .map(embroideries -> {
+                    var response = new QueryFeaturedEmbroideriesResponse();
+                    response.embroideries = toPublishedEmbroideryDTOs(embroideries);
+                    return response;
+                })
+                .flatMap(response -> ServerResponse.ok().bodyValue(response));
     }
 
     public Mono<ServerResponse> createEmbroidery(ServerRequest request) {
@@ -338,6 +422,33 @@ public class EmbroideriesHttpHandler {
                 .map(EmbroideryCategoryId::getValue)
                 .collect(toSet());
         result.createdAt = embroidery.getCreatedAt();
+
+        return result;
+    }
+
+    private boolean isAscending(@Nullable EmbroideriesSortDTO sort) {
+        return Optional.ofNullable(sort)
+                .map(s -> s.direction != DESCENDING)
+                .orElse(true);
+    }
+
+    private List<PublishedEmbroideryDTO> toPublishedEmbroideryDTOs(List<PublishedEmbroidery> embroideries) {
+        return embroideries.stream()
+                .map(this::toPublishedEmbroideryDTO)
+                .toList();
+    }
+
+    private PublishedEmbroideryDTO toPublishedEmbroideryDTO(PublishedEmbroidery embroidery) {
+        var result = new PublishedEmbroideryDTO();
+
+        result.id = embroidery.getId().getValue();
+        result.name = embroidery.getName().getValue();
+        result.alias = embroidery.getAlias().getValue();
+        result.image = embroidery.getImage().getValue();
+        result.categories = embroidery.getCategories()
+                .stream()
+                .map(EmbroideryCategoryId::getValue)
+                .collect(toSet());
 
         return result;
     }
