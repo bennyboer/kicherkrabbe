@@ -3,10 +3,14 @@ package de.bennyboer.kicherkrabbe.embroideries.http;
 import de.bennyboer.kicherkrabbe.embroideries.EmbroideriesModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.web.reactive.function.server.RequestPredicates.DELETE;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
@@ -31,9 +35,13 @@ public class EmbroideriesHttpConfig {
                 path("/embroideries"),
                 route(POST(""), handler::getEmbroideries)
                         .andRoute(GET("/changes"), handler::getChanges)
+                        .andRoute(POST("/published"), handler::getPublishedEmbroideries)
+                        .andRoute(GET("/featured"), handler::getFeaturedEmbroideries)
                         .andRoute(GET("/categories"), handler::getAvailableCategoriesForEmbroideries)
+                        .andRoute(GET("/categories/used"), handler::getCategoriesUsedInEmbroideries)
                         .andRoute(POST("/create"), handler::createEmbroidery)
                         .andNest(path("/{embroideryId}"), route(GET(""), handler::getEmbroidery)
+                                .andRoute(GET("/published"), handler::getPublishedEmbroidery)
                                 .andRoute(POST("/rename"), handler::renameEmbroidery)
                                 .andRoute(POST("/publish"), handler::publishEmbroidery)
                                 .andRoute(POST("/unpublish"), handler::unpublishEmbroidery)
@@ -46,6 +54,14 @@ public class EmbroideriesHttpConfig {
                                                 .andRoute(POST("/categories"), handler::updateEmbroideryCategories)
                                 ))
         );
+    }
+
+    @Bean
+    public Customizer<ServerHttpSecurity.AuthorizeExchangeSpec> embroideriesAuthorizeExchangeSpecCustomizer() {
+        return exchanges -> exchanges.pathMatchers(POST, "/embroideries/published").permitAll()
+                .pathMatchers(GET, "/embroideries/featured").permitAll()
+                .pathMatchers(GET, "/embroideries/{embroideryId}/published").permitAll()
+                .pathMatchers(GET, "/embroideries/categories/used").permitAll();
     }
 
 }
