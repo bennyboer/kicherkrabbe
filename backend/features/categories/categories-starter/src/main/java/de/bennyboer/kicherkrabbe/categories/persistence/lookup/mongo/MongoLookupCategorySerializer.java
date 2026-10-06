@@ -18,6 +18,7 @@ public class MongoLookupCategorySerializer implements ReadModelSerializer<Lookup
         result.name = readModel.getName().getValue();
         result.group = switch (readModel.getGroup()) {
             case CLOTHING -> "CLOTHING";
+            case EMBROIDERY -> "EMBROIDERY";
             case NONE -> "NONE";
         };
         result.createdAt = readModel.getCreatedAt();
@@ -32,6 +33,7 @@ public class MongoLookupCategorySerializer implements ReadModelSerializer<Lookup
         var name = CategoryName.of(serialized.name);
         var group = switch (serialized.group) {
             case "CLOTHING" -> CategoryGroup.CLOTHING;
+            case "EMBROIDERY" -> CategoryGroup.EMBROIDERY;
             case "NONE" -> CategoryGroup.NONE;
             default -> throw new IllegalArgumentException("Unknown category group: " + serialized.group);
         };
