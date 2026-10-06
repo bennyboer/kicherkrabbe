@@ -148,3 +148,5 @@ include('features:offers:offers-example')
 
 // Embroideries
 include('features:embroideries:embroideries-core')
+include('features:embroideries:embroideries-starter')
+include('features:embroideries:embroideries-example')
