@@ -4,7 +4,7 @@ import { SSE } from 'sse.js';
 import { HttpClient } from '@angular/common/http';
 import { AdminAuthService } from '../../../services';
 import { environment } from '../../../../../../environments';
-import { Category, CategoryGroup, CategoryId, CLOTHING, NONE } from '../model';
+import { Category, CategoryGroup, CategoryId, CLOTHING, EMBROIDERY, NONE } from '../model';
 import { none, Option, some, someOrNone } from '@kicherkrabbe/shared';
 
 interface CategoryDTO {
@@ -17,6 +17,7 @@ interface CategoryDTO {
 
 enum CategoryGroupDTO {
   CLOTHING = 'CLOTHING',
+  EMBROIDERY = 'EMBROIDERY',
   NONE = 'NONE',
 }
 
@@ -225,6 +226,8 @@ export class CategoriesService implements OnDestroy {
 
   private toInternalCategoryGroup(group: CategoryGroupDTO): CategoryGroup {
     switch (group) {
+      case CategoryGroupDTO.EMBROIDERY:
+        return EMBROIDERY;
       case CategoryGroupDTO.CLOTHING:
         return CLOTHING;
       case CategoryGroupDTO.NONE:
@@ -236,6 +239,8 @@ export class CategoriesService implements OnDestroy {
 
   private toApiCategoryGroup(group: CategoryGroup): CategoryGroupDTO {
     switch (group) {
+      case EMBROIDERY:
+        return CategoryGroupDTO.EMBROIDERY;
       case CLOTHING:
         return CategoryGroupDTO.CLOTHING;
       case NONE:

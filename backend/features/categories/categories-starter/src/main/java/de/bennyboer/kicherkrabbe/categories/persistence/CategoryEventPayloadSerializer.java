@@ -22,6 +22,7 @@ public class CategoryEventPayloadSerializer implements EventSerializer {
                     "name", e.getName().getValue(),
                     "group", switch (e.getGroup()) {
                         case CLOTHING -> "CLOTHING";
+                        case EMBROIDERY -> "EMBROIDERY";
                         case NONE -> "NONE";
                     }
             );
@@ -32,6 +33,7 @@ public class CategoryEventPayloadSerializer implements EventSerializer {
                     "name", e.getName().getValue(),
                     "group", switch (e.getGroup()) {
                         case CLOTHING -> "CLOTHING";
+                        case EMBROIDERY -> "EMBROIDERY";
                         case NONE -> "NONE";
                     }
             );

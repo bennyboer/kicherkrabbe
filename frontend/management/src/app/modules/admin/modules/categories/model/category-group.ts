@@ -2,6 +2,7 @@ import { validateProps } from '@kicherkrabbe/shared';
 
 export enum CategoryGroupType {
   CLOTHING = 'CLOTHING',
+  EMBROIDERY = 'EMBROIDERY',
   NONE = 'NONE',
 }
 
@@ -23,6 +24,13 @@ export class CategoryGroup {
     });
   }
 
+  static embroidery(): CategoryGroup {
+    return new CategoryGroup({
+      type: CategoryGroupType.EMBROIDERY,
+      name: 'Stickereien',
+    });
+  }
+
   static none(): CategoryGroup {
     return new CategoryGroup({
       type: CategoryGroupType.NONE,
@@ -32,6 +40,7 @@ export class CategoryGroup {
 }
 
 export const CLOTHING: CategoryGroup = CategoryGroup.clothing();
+export const EMBROIDERY: CategoryGroup = CategoryGroup.embroidery();
 export const NONE: CategoryGroup = CategoryGroup.none();
 
-export const GROUPS: CategoryGroup[] = [CLOTHING, NONE];
+export const GROUPS: CategoryGroup[] = [CLOTHING, EMBROIDERY, NONE];

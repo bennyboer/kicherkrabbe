@@ -79,6 +79,7 @@ public class MongoCategoryLookupRepo
         Criteria criteria = where("_id").in(ids)
                 .and("group").is(switch (group) {
                     case CLOTHING -> "CLOTHING";
+                    case EMBROIDERY -> "EMBROIDERY";
                     case NONE -> "NONE";
                 });
 

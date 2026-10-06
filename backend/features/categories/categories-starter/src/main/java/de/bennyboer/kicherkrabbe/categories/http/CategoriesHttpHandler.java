@@ -61,6 +61,7 @@ public class CategoriesHttpHandler {
         long limit = request.queryParam("limit").map(Long::parseLong).orElse((long) Integer.MAX_VALUE);
         CategoryGroup group = switch (request.pathVariable("group")) {
             case "CLOTHING" -> CategoryGroup.CLOTHING;
+            case "EMBROIDERY" -> CategoryGroup.EMBROIDERY;
             case "NONE" -> CategoryGroup.NONE;
             default -> throw new IllegalStateException("Unexpected group: " + request.pathVariable("group"));
         };
@@ -100,6 +101,7 @@ public class CategoriesHttpHandler {
                         req.name,
                         switch (req.group) {
                             case CLOTHING -> CategoryGroup.CLOTHING;
+                            case EMBROIDERY -> CategoryGroup.EMBROIDERY;
                             case NONE -> CategoryGroup.NONE;
                         },
                         agent
@@ -168,6 +170,7 @@ public class CategoriesHttpHandler {
                             req.version,
                             switch (req.group) {
                                 case CLOTHING -> CategoryGroup.CLOTHING;
+                                case EMBROIDERY -> CategoryGroup.EMBROIDERY;
                                 case NONE -> CategoryGroup.NONE;
                             },
                             agent
@@ -242,6 +245,7 @@ public class CategoriesHttpHandler {
         result.name = details.getName().getValue();
         result.group = switch (details.getGroup()) {
             case CLOTHING -> CategoryGroupDTO.CLOTHING;
+            case EMBROIDERY -> CategoryGroupDTO.EMBROIDERY;
             case NONE -> CategoryGroupDTO.NONE;
         };
         result.createdAt = details.getCreatedAt();
