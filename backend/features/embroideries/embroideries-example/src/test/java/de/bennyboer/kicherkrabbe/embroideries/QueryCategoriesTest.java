@@ -58,6 +58,37 @@ public class QueryCategoriesTest extends EmbroideriesModuleTest {
     }
 
     @Test
+    void shouldRenameCategoryIfAvailable() {
+        // given: a user is allowed to create embroideries
+        allowUserToCreateEmbroideries("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // and: a category is available
+        markCategoryAsAvailable("ANIMALS_ID", "Animals");
+
+        // when: the available category is renamed
+        renameCategoryIfAvailable("ANIMALS_ID", "Wild animals");
+
+        // then: the category is returned with the new name
+        assertThat(getAvailableCategoriesForEmbroideries(agent)).containsExactly(
+                EmbroideryCategory.of(EmbroideryCategoryId.of("ANIMALS_ID"), EmbroideryCategoryName.of("Wild animals"))
+        );
+    }
+
+    @Test
+    void shouldNotMakeCategoryAvailableWhenRenamingAnUnknownCategory() {
+        // given: a user is allowed to create embroideries
+        allowUserToCreateEmbroideries("USER_ID");
+        var agent = Agent.user(AgentId.of("USER_ID"));
+
+        // when: a category that is not available for embroideries is renamed
+        renameCategoryIfAvailable("DRESS_ID", "Dresses");
+
+        // then: the category does not become available
+        assertThat(getAvailableCategoriesForEmbroideries(agent)).isEmpty();
+    }
+
+    @Test
     void shouldNotQueryAvailableCategoriesWhenUserIsNotAllowedToCreateEmbroideries() {
         // given: a category is available
         markCategoryAsAvailable("ANIMALS_ID", "Animals");
