@@ -306,6 +306,8 @@ export class AssetBrowserComponent implements OnInit, OnDestroy {
         return 'Schnittmuster';
       case 'PRODUCT':
         return 'Produkt';
+      case 'EMBROIDERY':
+        return 'Stickerei';
       case 'HIGHLIGHT':
         return 'Highlight';
       default:
