@@ -325,6 +325,16 @@ public class EmbroideriesModule {
         return embroideryCategoryRepo.removeById(EmbroideryCategoryId.of(id));
     }
 
+    public Mono<Void> renameCategoryIfAvailable(String id, String name) {
+        var categoryId = EmbroideryCategoryId.of(id);
+        var categoryName = EmbroideryCategoryName.of(name);
+
+        return embroideryCategoryRepo.findByIds(Set.of(categoryId))
+                .next()
+                .flatMap(category -> embroideryCategoryRepo.save(EmbroideryCategory.of(categoryId, categoryName)))
+                .then();
+    }
+
     private Permission[] toReadPublishedPermissionsForAnonymousAndSystemUsers(String embroideryId) {
         var resource = Resource.of(getResourceType(), ResourceId.of(embroideryId));
 

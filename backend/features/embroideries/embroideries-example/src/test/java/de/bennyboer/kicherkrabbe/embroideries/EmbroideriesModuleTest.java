@@ -199,4 +199,8 @@ public class EmbroideriesModuleTest {
         module.markCategoryAsUnavailable(id).block();
     }
 
+    public void renameCategoryIfAvailable(String id, String name) {
+        module.renameCategoryIfAvailable(id, name).block();
+    }
+
 }

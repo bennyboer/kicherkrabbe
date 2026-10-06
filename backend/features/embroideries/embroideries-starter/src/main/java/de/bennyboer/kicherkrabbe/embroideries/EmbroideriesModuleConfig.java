@@ -3,6 +3,7 @@ package de.bennyboer.kicherkrabbe.embroideries;
 import de.bennyboer.kicherkrabbe.changes.MessagingResourceChangesTracker;
 import de.bennyboer.kicherkrabbe.changes.ResourceChangesTracker;
 import de.bennyboer.kicherkrabbe.changes.ResourceType;
+import de.bennyboer.kicherkrabbe.embroideries.messaging.EmbroideriesMessaging;
 import de.bennyboer.kicherkrabbe.embroideries.persistence.categories.EmbroideryCategoryRepo;
 import de.bennyboer.kicherkrabbe.embroideries.persistence.categories.mongo.MongoEmbroideryCategoryRepo;
 import de.bennyboer.kicherkrabbe.embroideries.persistence.lookup.EmbroideryLookupRepo;
@@ -23,7 +24,8 @@ import static de.bennyboer.kicherkrabbe.embroideries.Actions.READ;
 @Configuration
 @Import({
         EmbroideriesAggregateConfig.class,
-        EmbroideriesPermissionsConfig.class
+        EmbroideriesPermissionsConfig.class,
+        EmbroideriesMessaging.class
 })
 public class EmbroideriesModuleConfig {
 
