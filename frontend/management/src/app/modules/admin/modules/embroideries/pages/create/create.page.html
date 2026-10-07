@@ -1,0 +1,91 @@
+<h3>Neue Stickerei erstellen</h3>
+
+<div class="embroidery-details">
+  <div class="embroidery-detail">
+    <label for="name">Name</label>
+    <input
+      #nameInput
+      id="name"
+      type="text"
+      placeholder="z.B. Krabbe"
+      autofocus
+      [disabled]="creating$ | async"
+      (input)="updateName(nameInput.value)" />
+    @if (nameMissing$ | async) {
+      <app-note level="error">Bitte gib einen Namen ein.</app-note>
+    }
+  </div>
+
+  <div class="embroidery-detail">
+    <label>
+      Bild
+      @if (imageId$ | async | ifSome) {
+        <app-button [size]="ButtonSize.SMALL" [disabled]="creating$ | async" (click)="clearImage()">
+          <span class="icon-button">
+            <span class="material-icons">close</span>
+          </span>
+        </app-button>
+      }
+    </label>
+    <div class="embroidery-image">
+      @if (imageId$ | async | ifSome; as imageId) {
+        <div class="image-container">
+          <img [src]="getImageUrl(imageId) | authImage | async" alt="Bild der Stickerei" />
+        </div>
+      } @else {
+        <app-button (click)="selectImage()">
+          <span class="icon-button">
+            <span class="material-icons">image</span>
+            <span>Bild auswählen</span>
+          </span>
+        </app-button>
+      }
+    </div>
+  </div>
+
+  <div class="embroidery-detail">
+    <label>Kategorien</label>
+    @if (loadingCategories$ | async) {
+      <div class="loading-container">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
+    } @else {
+      @if (availableCategories$ | async; as categories) {
+        @if (selectedCategories$ | async; as selectedCategories) {
+          <app-chips
+            [chips]="categoriesToChips(selectedCategories)"
+            [available]="categoriesToChips(categories)"
+            [alwaysShowOptions]="true"
+            [chipDropdownItemTemplateRef]="categoryDropdownItemTemplateRef"
+            (removed)="onCategoryRemoved($event)"
+            (added)="onCategoryAdded($event)">
+            <ng-template let-chip> {{ chip.label }}</ng-template>
+          </app-chips>
+
+          <ng-template #categoryDropdownItemTemplateRef let-chip> {{ chip.label }}</ng-template>
+        }
+      }
+    }
+  </div>
+</div>
+
+@if (!(imageId$ | async | ifSome)) {
+  <div class="error-container">
+    <app-note level="error">Ohne Bild kann die Stickerei nicht erstellt werden.</app-note>
+  </div>
+}
+
+<div class="footer">
+  <app-button routerLink="..">Abbrechen</app-button>
+
+  <app-button color="primary" [disabled]="cannotCreate$ | async" (click)="create()">
+    @if (creating$ | async) {
+      <span class="loading-button-text">
+        <app-loading-spinner size="16"></app-loading-spinner>
+        <span>Erstellt...</span>
+      </span>
+    } @else {
+      Erstellen
+    }
+  </app-button>
+</div>

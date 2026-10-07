@@ -1,0 +1,182 @@
+:host {
+  display: block;
+}
+
+.action-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  & > .left-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+  }
+
+  & > .right-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+  }
+}
+
+.dropdown-header {
+  border-bottom: 1px solid var(--background-low-contrast);
+}
+
+.dropdown-footer {
+  border-top: 1px solid var(--background-low-contrast);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75em;
+  font-weight: bold;
+  color: white;
+}
+
+.category-badge {
+  display: inline-block;
+  background-color: var(--background-low-contrast);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75em;
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+
+.featured-icon {
+  font-size: 1em;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+table.embroideries-table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 16px;
+
+  a.table-row {
+    display: table-row;
+    text-decoration: none;
+    color: inherit;
+    vertical-align: middle;
+    transition: background-color 0.2s ease-out;
+
+    &:hover {
+      background-color: var(--background-low-contrast);
+    }
+
+    &:last-child {
+      td {
+        border-bottom: none;
+      }
+    }
+  }
+
+  th {
+    user-select: none;
+    padding: 8px 16px;
+    font-weight: normal;
+    font-size: 0.8em;
+    color: rgba(var(--text-rgb), 0.7);
+    border-bottom: 4px solid var(--background-low-contrast);
+
+    &.image {
+      text-align: center;
+    }
+
+    &.name,
+    &.categories {
+      text-align: left;
+    }
+
+    &.status {
+      text-align: center;
+    }
+
+    &.created-at {
+      text-align: right;
+    }
+  }
+
+  td {
+    cursor: pointer;
+    padding: 16px 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid var(--background-low-contrast);
+
+    &.image {
+      & > img {
+        object-fit: cover;
+        border-radius: 4px;
+      }
+    }
+
+    &.status {
+      text-align: center;
+    }
+
+    &.created-at {
+      font-size: 0.8em;
+      text-align: right;
+    }
+  }
+}
+
+.footer-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+}
+
+@media only screen and (max-width: 1000px) {
+  .action-bar {
+    flex-direction: column;
+    align-items: stretch;
+
+    & > .left-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    & > .right-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  table.embroideries-table {
+    col {
+      &.categories,
+      &.status,
+      &.created-at {
+        display: none;
+      }
+    }
+
+    thead {
+      display: none;
+    }
+
+    th,
+    td {
+      &.categories,
+      &.status,
+      &.created-at {
+        display: none;
+      }
+    }
+  }
+}
