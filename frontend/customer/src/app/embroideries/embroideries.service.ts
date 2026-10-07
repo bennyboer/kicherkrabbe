@@ -1,6 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { map, Observable, shareReplay } from "rxjs";
+import { none, type Option } from "@kicherkrabbe/shared";
 import { environment } from "../../environments";
 import { Category } from "./model";
 import { Embroidery } from "./embroidery";
@@ -35,6 +36,10 @@ interface QueryPublishedEmbroideriesResponse {
 
 interface QueryPublishedEmbroideryResponse {
 	embroidery: PublishedEmbroideryDTO;
+}
+
+interface QueryFeaturedEmbroideriesResponse {
+	embroideries: PublishedEmbroideryDTO[];
 }
 
 interface CategoryDTO {
@@ -102,6 +107,19 @@ export class EmbroideriesService {
 				`${environment.apiUrl}/embroideries/${idOrAlias}/published`,
 			)
 			.pipe(map((response) => this.toInternalEmbroidery(response.embroidery)));
+	}
+
+	getFeaturedEmbroideries(seed: Option<number> = none()): Observable<Embroidery[]> {
+		let url = `${environment.apiUrl}/embroideries/featured`;
+		seed.ifSome((s) => (url += `?seed=${s}`));
+
+		return this.http
+			.get<QueryFeaturedEmbroideriesResponse>(url)
+			.pipe(
+				map((response) =>
+					response.embroideries.map((e) => this.toInternalEmbroidery(e)),
+				),
+			);
 	}
 
 	getAvailableCategories(): Observable<Category[]> {

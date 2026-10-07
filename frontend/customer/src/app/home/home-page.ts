@@ -5,6 +5,7 @@ import { map } from "rxjs";
 import { Badges } from "../badges/badges";
 import { InquirySection } from "../contact";
 import { CrabHelper } from "../crab-helper/crab-helper";
+import { EmbroideriesService, FeaturedEmbroideries } from "../embroideries";
 import { FeaturedFabrics } from "../fabrics";
 import { HighlightsComponent } from "../highlights/highlights";
 import { FeaturedOffers, OffersService } from "../offers";
@@ -25,6 +26,7 @@ import { SeoService } from "../services/seo.service";
 		FeaturedPatterns,
 		FeaturedFabrics,
 		FeaturedOffers,
+		FeaturedEmbroideries,
 		InquirySection,
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,9 +35,14 @@ export class HomePage {
 	private readonly document = inject(DOCUMENT);
 	private readonly seoService = inject(SeoService);
 	private readonly offersService = inject(OffersService);
+	private readonly embroideriesService = inject(EmbroideriesService);
 
 	readonly showOffers$ = this.offersService
 		.getOffers({ limit: 1 })
+		.pipe(map((result) => result.total > 0));
+
+	readonly showEmbroideries$ = this.embroideriesService
+		.getEmbroideries({ limit: 1 })
 		.pipe(map((result) => result.total > 0));
 
 	constructor() {
