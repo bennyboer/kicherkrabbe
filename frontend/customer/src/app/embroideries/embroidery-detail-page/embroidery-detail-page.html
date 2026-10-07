@@ -1,0 +1,55 @@
+<div class="embroidery-detail-page">
+	@let state = (state$ | async);
+	@if (!state || state.loading) {
+		<div class="loading-container">
+			<p-progressspinner strokeWidth="4" />
+		</div>
+	} @else if (state?.embroidery; as embroidery) {
+		<app-breadcrumbs [items]="(breadcrumbs$ | async) ?? []" />
+
+		<div class="content-grid">
+			<div class="gallery-section">
+				<div class="main-image">
+					<p-image
+						[src]="getImageUrl(embroidery.image)"
+						[previewImageSrc]="getOriginalImageUrl(embroidery.image)"
+						[alt]="embroidery.name"
+						[preview]="true"
+						width="100%"
+						height="100%"
+						[imageStyle]="{ 'object-fit': 'contain' }"
+						appendTo="body"
+					/>
+				</div>
+			</div>
+
+			<div class="details-section">
+				<h1 class="embroidery-title">{{ embroidery.name }}</h1>
+
+				@let categoryNames = (categoryNames$ | async) ?? [];
+				@if (categoryNames.length > 0) {
+					<div class="embroidery-badges">
+						@for (name of categoryNames; track name) {
+							<div class="category-badge">{{ name }}</div>
+						}
+					</div>
+				}
+
+				<div class="contact-cta">
+					<p>Interesse an dieser Stickerei?</p>
+					<a routerLink="/contact">
+						<p-button label="Kontakt aufnehmen" icon="pi pi-envelope" />
+					</a>
+				</div>
+			</div>
+		</div>
+	} @else {
+		<div class="not-found">
+			<p>Stickerei nicht gefunden.</p>
+			<p-button
+				label="Zurück zu Stickereien"
+				(click)="goBack()"
+			/>
+		</div>
+	}
+</div>
