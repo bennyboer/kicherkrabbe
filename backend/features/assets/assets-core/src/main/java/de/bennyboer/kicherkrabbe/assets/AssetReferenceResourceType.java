@@ -6,11 +6,12 @@ public enum AssetReferenceResourceType {
     PATTERN,
     PRODUCT,
     HIGHLIGHT,
-    OFFER;
+    OFFER,
+    EMBROIDERY;
 
     public boolean isPubliclyAccessible() {
         return switch (this) {
-            case FABRIC, PATTERN, HIGHLIGHT, OFFER -> true;
+            case FABRIC, PATTERN, HIGHLIGHT, OFFER, EMBROIDERY -> true;
             case PRODUCT -> false;
         };
     }

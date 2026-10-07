@@ -559,4 +559,84 @@ public class AssetsMessagingTest extends EventListenerTest {
         );
     }
 
+    @Test
+    void shouldUpdateAssetReferencesOnEmbroideryCreated() {
+        send(
+                AggregateType.of("EMBROIDERY"),
+                AggregateId.of("EMBROIDERY_ID"),
+                Version.of(0),
+                EventName.of("CREATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("name", "Crab", "image", "ASSET_1", "categories", List.of("CATEGORY_ID"))
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetReferences(
+                eq(AssetReferenceResourceType.EMBROIDERY),
+                eq(AssetResourceId.of("EMBROIDERY_ID")),
+                eq(Set.of(AssetId.of("ASSET_1"))),
+                eq("Crab")
+        );
+    }
+
+    @Test
+    void shouldUpdateAssetReferencesOnEmbroideryImageUpdated() {
+        send(
+                AggregateType.of("EMBROIDERY"),
+                AggregateId.of("EMBROIDERY_ID"),
+                Version.of(1),
+                EventName.of("IMAGE_UPDATED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("image", "ASSET_2")
+        );
+
+        verify(module, timeout(5000).times(1)).updateAssetReferences(
+                eq(AssetReferenceResourceType.EMBROIDERY),
+                eq(AssetResourceId.of("EMBROIDERY_ID")),
+                eq(Set.of(AssetId.of("ASSET_2")))
+        );
+    }
+
+    @Test
+    void shouldUpdateResourceNameOnEmbroideryRenamed() {
+        send(
+                AggregateType.of("EMBROIDERY"),
+                AggregateId.of("EMBROIDERY_ID"),
+                Version.of(2),
+                EventName.of("RENAMED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of("name", "Happy Crab")
+        );
+
+        verify(module, timeout(5000).times(1)).updateResourceNameInReferences(
+                eq(AssetReferenceResourceType.EMBROIDERY),
+                eq(AssetResourceId.of("EMBROIDERY_ID")),
+                eq("Happy Crab")
+        );
+    }
+
+    @Test
+    void shouldRemoveAssetReferencesOnEmbroideryDeleted() {
+        send(
+                AggregateType.of("EMBROIDERY"),
+                AggregateId.of("EMBROIDERY_ID"),
+                Version.of(3),
+                EventName.of("DELETED"),
+                Version.zero(),
+                Agent.system(),
+                Instant.now(),
+                Map.of()
+        );
+
+        verify(module, timeout(5000).times(1)).removeAssetReferencesByResource(
+                eq(AssetReferenceResourceType.EMBROIDERY),
+                eq(AssetResourceId.of("EMBROIDERY_ID"))
+        );
+    }
+
 }

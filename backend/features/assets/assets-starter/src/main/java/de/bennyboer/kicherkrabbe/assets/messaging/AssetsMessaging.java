@@ -61,6 +61,15 @@ public class AssetsMessaging {
     record OfferTitleUpdatedEvent(String title) {
     }
 
+    record EmbroideryCreatedEvent(String image, String name) {
+    }
+
+    record EmbroideryImageUpdatedEvent(String image) {
+    }
+
+    record EmbroideryRenamedEvent(String name) {
+    }
+
     @Bean("assets_onUserCreatedAllowUserToCreateAssets")
     public EventListener onUserCreatedAllowUserToCreateAssets(
             EventListenerFactory factory,
@@ -588,6 +597,93 @@ public class AssetsMessaging {
                     return module.removeAssetReferencesByResource(
                             AssetReferenceResourceType.OFFER,
                             AssetResourceId.of(offerId)
+                    );
+                }
+        );
+    }
+
+    @Bean("assets_onEmbroideryCreatedUpdateAssetReferences")
+    public EventListener onEmbroideryCreatedUpdateAssetReferences(
+            EventListenerFactory factory,
+            AssetsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "assets.embroidery-created-update-asset-references",
+                AggregateType.of("EMBROIDERY"),
+                EventName.of("CREATED"),
+                EmbroideryCreatedEvent.class,
+                (metadata, event) -> {
+                    String embroideryId = metadata.getAggregateId().getValue();
+
+                    return module.updateAssetReferences(
+                            AssetReferenceResourceType.EMBROIDERY,
+                            AssetResourceId.of(embroideryId),
+                            Set.of(AssetId.of(event.image())),
+                            event.name()
+                    );
+                }
+        );
+    }
+
+    @Bean("assets_onEmbroideryImageUpdatedUpdateAssetReferences")
+    public EventListener onEmbroideryImageUpdatedUpdateAssetReferences(
+            EventListenerFactory factory,
+            AssetsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "assets.embroidery-image-updated-update-asset-references",
+                AggregateType.of("EMBROIDERY"),
+                EventName.of("IMAGE_UPDATED"),
+                EmbroideryImageUpdatedEvent.class,
+                (metadata, event) -> {
+                    String embroideryId = metadata.getAggregateId().getValue();
+
+                    return module.updateAssetReferences(
+                            AssetReferenceResourceType.EMBROIDERY,
+                            AssetResourceId.of(embroideryId),
+                            Set.of(AssetId.of(event.image()))
+                    );
+                }
+        );
+    }
+
+    @Bean("assets_onEmbroideryRenamedUpdateResourceName")
+    public EventListener onEmbroideryRenamedUpdateResourceName(
+            EventListenerFactory factory,
+            AssetsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "assets.embroidery-renamed-update-resource-name",
+                AggregateType.of("EMBROIDERY"),
+                EventName.of("RENAMED"),
+                EmbroideryRenamedEvent.class,
+                (metadata, event) -> {
+                    String embroideryId = metadata.getAggregateId().getValue();
+
+                    return module.updateResourceNameInReferences(
+                            AssetReferenceResourceType.EMBROIDERY,
+                            AssetResourceId.of(embroideryId),
+                            event.name()
+                    );
+                }
+        );
+    }
+
+    @Bean("assets_onEmbroideryDeletedRemoveAssetReferences")
+    public EventListener onEmbroideryDeletedRemoveAssetReferences(
+            EventListenerFactory factory,
+            AssetsModule module
+    ) {
+        return factory.createEventListenerForEvent(
+                "assets.embroidery-deleted-remove-asset-references",
+                AggregateType.of("EMBROIDERY"),
+                EventName.of("DELETED"),
+                (event) -> {
+                    String embroideryId = event.getMetadata().getAggregateId().getValue();
+
+                    return module.removeAssetReferencesByResource(
+                            AssetReferenceResourceType.EMBROIDERY,
+                            AssetResourceId.of(embroideryId)
                     );
                 }
         );

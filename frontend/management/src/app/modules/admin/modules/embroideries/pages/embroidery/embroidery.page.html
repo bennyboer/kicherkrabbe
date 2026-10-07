@@ -1,0 +1,128 @@
+<div class="action-bar">
+  <app-button routerLink="..">
+    <span class="icon-button">
+      <span class="material-icons">chevron_left</span>
+      <span>Zurück</span>
+    </span>
+  </app-button>
+
+  @if (embroidery$ | async | ifSome) {
+    <app-button routerLink="delete" color="warn">
+      <span class="icon-button">
+        <span class="material-icons">delete</span>
+        <span>Löschen</span>
+      </span>
+    </app-button>
+  }
+</div>
+
+<app-loading-bar [visible]="loading$ | async"></app-loading-bar>
+
+@if (embroideryLoaded$ | async) {
+  @if (embroidery$ | async | ifSome; as embroidery) {
+    <div class="embroidery-details">
+      <div class="embroidery-detail">
+        <label>Status</label>
+        <div class="status-actions">
+          <span class="status-row">
+            <span class="status-badge" [style.background-color]="embroidery.status.color">
+              {{ embroidery.status.label }}
+            </span>
+            @if (embroidery.featured) {
+              <span class="featured-badge">
+                <span class="material-icons">star</span>
+                Hervorgehoben
+              </span>
+            }
+          </span>
+
+          <div class="lifecycle-actions">
+            @if (embroidery.published) {
+              <app-button [disabled]="actionInProgress$ | async" (click)="unpublishEmbroidery(embroidery)">
+                Veröffentlichung aufheben
+              </app-button>
+            } @else {
+              <app-button
+                color="primary"
+                [disabled]="actionInProgress$ | async"
+                (click)="publishEmbroidery(embroidery)">
+                Veröffentlichen
+              </app-button>
+            }
+            @if (embroidery.featured) {
+              <app-button [disabled]="actionInProgress$ | async" (click)="unfeatureEmbroidery(embroidery)">
+                Nicht mehr hervorheben
+              </app-button>
+            } @else {
+              <app-button [disabled]="actionInProgress$ | async" (click)="featureEmbroidery(embroidery)">
+                Hervorheben
+              </app-button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="embroidery-detail">
+        <label for="name">Name</label>
+        <div class="form-field-content">
+          <input
+            #nameInput
+            id="name"
+            type="text"
+            [value]="name$ | async"
+            (input)="updateName(nameInput.value)"
+            (keydown.enter)="saveName(embroidery)" />
+          <app-button [disabled]="cannotSaveName$ | async" (click)="saveName(embroidery)"> Speichern </app-button>
+        </div>
+      </div>
+
+      <div class="embroidery-detail">
+        <label>
+          Bild
+          <app-button [size]="ButtonSize.SMALL" [disabled]="actionInProgress$ | async" (click)="editImage(embroidery)">
+            <span class="icon-button">
+              <span class="material-icons">edit</span>
+            </span>
+          </app-button>
+        </label>
+        <div class="embroidery-image">
+          <img [src]="getImageUrl(embroidery.image) | authImage | async" [alt]="embroidery.name" />
+        </div>
+      </div>
+
+      <div class="embroidery-detail">
+        <label>Kategorien</label>
+        @if (loadingCategories$ | async) {
+          <div class="loading-container">
+            <app-loading-spinner></app-loading-spinner>
+          </div>
+        } @else {
+          @if (availableCategories$ | async; as categories) {
+            @if (selectedCategories$ | async; as selectedCategories) {
+              <app-chips
+                [chips]="categoriesToChips(toCategories(selectedCategories, categories))"
+                [available]="categoriesToChips(categories)"
+                [alwaysShowOptions]="true"
+                [chipDropdownItemTemplateRef]="categoryDropdownItemTemplateRef"
+                (removed)="onCategoryRemoved($event)"
+                (added)="onCategoryAdded($event)">
+                <ng-template let-chip> {{ chip.label }}</ng-template>
+              </app-chips>
+
+              <ng-template #categoryDropdownItemTemplateRef let-chip> {{ chip.label }}</ng-template>
+            }
+          }
+        }
+      </div>
+
+      <div class="embroidery-detail">
+        <label>Erstellt am</label>
+        <span class="embroidery-created-at"
+          >{{ embroidery.createdAt | date: "dd.MM.yyyy" }} um {{ embroidery.createdAt | date: "HH:mm" }}</span
+        >
+      </div>
+    </div>
+  } @else {
+    <app-note level="warn"> Diese Stickerei konnte nicht gefunden werden. </app-note>
+  }
+}

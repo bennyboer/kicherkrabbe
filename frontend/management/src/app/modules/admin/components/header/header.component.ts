@@ -59,6 +59,11 @@ const CATEGORIES = ManagementItem.of({
   route: 'categories',
 });
 
+const EMBROIDERIES = ManagementItem.of({
+  label: 'Stickereien',
+  route: 'embroideries',
+});
+
 const MAILBOX = ManagementItem.of({
   label: 'Postfach',
   route: 'mailbox',
@@ -110,6 +115,7 @@ const ESSENTIAL_MANAGEMENT_ITEMS = [
   COLORS,
   FABRICS,
   PATTERNS,
+  EMBROIDERIES,
   CATEGORIES,
   MAILBOX,
   INQUIRIES,

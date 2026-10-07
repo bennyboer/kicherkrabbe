@@ -97,6 +97,8 @@ export class CategoriesPage implements OnInit, OnDestroy {
 
   private dropdownItemToCategoryGroupType(item: DropdownItemId): CategoryGroupType {
     switch (item) {
+      case 'EMBROIDERY':
+        return CategoryGroupType.EMBROIDERY;
       case 'CLOTHING':
         return CategoryGroupType.CLOTHING;
       case 'NONE':

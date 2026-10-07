@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import static de.bennyboer.kicherkrabbe.categories.CategoryGroup.CLOTHING;
+import static de.bennyboer.kicherkrabbe.categories.CategoryGroup.EMBROIDERY;
 import static de.bennyboer.kicherkrabbe.categories.CategoryGroup.NONE;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -284,10 +285,18 @@ public abstract class CategoryLookupRepoTest {
                 NONE,
                 Instant.parse("2024-03-12T09:00:00.00Z")
         );
+        var category5 = LookupCategory.of(
+                CategoryId.create(),
+                Version.zero(),
+                CategoryName.of("Animals"),
+                EMBROIDERY,
+                Instant.parse("2024-03-12T08:00:00.00Z")
+        );
         update(category1);
         update(category2);
         update(category3);
         update(category4);
+        update(category5);
 
         // when: finding categories by group
         var categories = findByGroup(
@@ -336,6 +345,18 @@ public abstract class CategoryLookupRepoTest {
 
         // then: the categories are found by another group
         assertThat(categories).containsExactly(category4);
+
+        // when: finding categories by the embroidery group
+        categories = findByGroup(
+                Set.of(category1.getId(), category2.getId(), category3.getId(), category4.getId(), category5.getId()),
+                EMBROIDERY,
+                "",
+                0,
+                10
+        );
+
+        // then: only the embroidery categories are found
+        assertThat(categories).containsExactly(category5);
     }
 
     private void update(LookupCategory category) {
