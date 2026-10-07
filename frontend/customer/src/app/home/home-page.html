@@ -30,6 +30,16 @@
 		<a routerLink="/fabrics">Alle Stoffe anzeigen ›</a>
 	</div>
 </section>
+@if (showEmbroideries$ | async) {
+	<section>
+		<a routerLink="/embroideries"><h1>Stickereien</h1></a>
+		<p class="section-subtitle">Entdecke unsere Stickereien - schreib mir, wenn du dir ein Motiv für dein Unikat wünschst.</p>
+		<app-featured-embroideries></app-featured-embroideries>
+		<div class="show-all-link">
+			<a routerLink="/embroideries">Alle Stickereien anzeigen ›</a>
+		</div>
+	</section>
+}
 <section id="contact-form">
 	<h1>Anfrage</h1>
 	<p class="section-subtitle">Du hast deinen Favoriten gefunden? Schreib mir hier deine Wünsche und ich melde mich bei dir.</p>

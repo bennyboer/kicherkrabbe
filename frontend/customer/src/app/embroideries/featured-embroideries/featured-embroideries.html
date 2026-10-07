@@ -1,0 +1,31 @@
+@if (items$ | async; as items) {
+	@if (items.length > 1) {
+		<p-carousel
+			[value]="items"
+			[numVisible]="4"
+			[numScroll]="1"
+			[circular]="false"
+			[showNavigators]="showNavigators$ | async"
+			[responsiveOptions]="responsiveOptions"
+		>
+			<ng-template #item let-item>
+				<div class="carousel-item">
+					@if (item.type === "embroidery") {
+						@defer (on viewport) {
+							<a [routerLink]="['/embroideries', item.embroidery.alias]" class="product-link">
+								<app-embroidery-card [embroidery]="item.embroidery"></app-embroidery-card>
+							</a>
+						} @placeholder {
+							<div class="card-placeholder"></div>
+						}
+					} @else {
+						<app-show-more-card
+							label="Weitere Stickereien..."
+							link="/embroideries"
+						></app-show-more-card>
+					}
+				</div>
+			</ng-template>
+		</p-carousel>
+	}
+}
