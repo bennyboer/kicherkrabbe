@@ -29,6 +29,11 @@ interface PublishedOfferDTO {
 	alias: string;
 }
 
+interface PublishedEmbroideryDTO {
+	id: string;
+	alias: string;
+}
+
 interface SitemapCache {
 	xml: string;
 	timestamp: number;
@@ -104,16 +109,39 @@ async function fetchOffers(): Promise<PublishedOfferDTO[]> {
 	}
 }
 
+async function fetchEmbroideries(): Promise<PublishedEmbroideryDTO[]> {
+	try {
+		const response = await fetch(`${API_URL}/embroideries/published`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				searchTerm: "",
+				categories: [],
+				sort: { property: "ALPHABETICAL", direction: "ASCENDING" },
+				skip: 0,
+				limit: 1000,
+			}),
+		});
+		if (!response.ok) return [];
+		const data = await response.json();
+		return data.embroideries || [];
+	} catch {
+		return [];
+	}
+}
+
 function generateSitemapXml(
 	patterns: PublishedPatternDTO[],
 	fabrics: PublishedFabricDTO[],
-	offers: PublishedOfferDTO[]
+	offers: PublishedOfferDTO[],
+	embroideries: PublishedEmbroideryDTO[]
 ): string {
 	const staticRoutes = [
 		"",
 		"/patterns",
 		"/fabrics",
 		"/offers",
+		"/embroideries",
 		"/contact",
 		"/landing/hochzeit",
 		"/landing/tracht",
@@ -162,6 +190,15 @@ function generateSitemapXml(
   </url>`);
 	}
 
+	for (const embroidery of embroideries) {
+		urls.push(`
+  <url>
+    <loc>${SITE_URL}/embroideries/${embroidery.alias}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`);
+	}
+
 	return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.join("")}
 </urlset>`;
@@ -176,13 +213,14 @@ app.get("/sitemap.xml", async (_req, res) => {
 		return;
 	}
 
-	const [patterns, fabrics, offers] = await Promise.all([
+	const [patterns, fabrics, offers, embroideries] = await Promise.all([
 		fetchPatterns(),
 		fetchFabrics(),
 		fetchOffers(),
+		fetchEmbroideries(),
 	]);
 
-	const xml = generateSitemapXml(patterns, fabrics, offers);
+	const xml = generateSitemapXml(patterns, fabrics, offers, embroideries);
 	sitemapCache = { xml, timestamp: now };
 
 	res.set("Content-Type", "application/xml");

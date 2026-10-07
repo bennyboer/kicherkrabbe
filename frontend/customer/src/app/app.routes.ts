@@ -5,6 +5,8 @@ import { FabricsFilterState } from "./fabrics/fabrics-filter-state.service";
 import { FabricsShell } from "./fabrics/fabrics-shell";
 import { OffersFilterState } from "./offers/offers-filter-state.service";
 import { OffersShell } from "./offers/offers-shell";
+import { EmbroideriesFilterState } from "./embroideries/embroideries-filter-state.service";
+import { EmbroideriesShell } from "./embroideries/embroideries-shell";
 
 export const routes: Routes = [
 	{
@@ -71,6 +73,27 @@ export const routes: Routes = [
 				loadComponent: () =>
 					import("./offers/offer-detail-page/offer-detail-page").then(
 						(m) => m.OfferDetailPage,
+					),
+			},
+		],
+	},
+	{
+		path: "embroideries",
+		component: EmbroideriesShell,
+		providers: [EmbroideriesFilterState],
+		children: [
+			{
+				path: "",
+				loadComponent: () =>
+					import("./embroideries/embroideries-page/embroideries-page").then(
+						(m) => m.EmbroideriesPage,
+					),
+			},
+			{
+				path: ":id",
+				loadComponent: () =>
+					import("./embroideries/embroidery-detail-page/embroidery-detail-page").then(
+						(m) => m.EmbroideryDetailPage,
 					),
 			},
 		],

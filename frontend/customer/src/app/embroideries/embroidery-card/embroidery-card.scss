@@ -1,0 +1,15 @@
+:host {
+	display: block;
+	width: 100%;
+}
+
+.embroidery-image-container {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1;
+}
+
+.embroidery-image {
+	border-radius: 8px 8px 0 0;
+	object-fit: cover;
+}
