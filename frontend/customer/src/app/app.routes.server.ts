@@ -22,6 +22,14 @@ export const serverRoutes: ServerRoute[] = [
 		renderMode: RenderMode.Server,
 	},
 	{
+		path: "offers",
+		renderMode: RenderMode.Server,
+	},
+	{
+		path: "offers/:id",
+		renderMode: RenderMode.Server,
+	},
+	{
 		path: "embroideries",
 		renderMode: RenderMode.Server,
 	},
