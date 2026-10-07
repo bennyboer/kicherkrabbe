@@ -59,6 +59,11 @@ const routes: Routes = [
         loadChildren: () => import('./modules/patterns/patterns.module').then((m) => m.PatternsModule),
       },
       {
+        path: 'embroideries',
+        title: 'Stickerei-Verwaltung',
+        loadChildren: () => import('./modules/embroideries/embroideries.module').then((m) => m.EmbroideriesModule),
+      },
+      {
         path: 'categories',
         title: 'Kategorienverwaltung',
         loadChildren: () => import('./modules/categories/categories.module').then((m) => m.CategoriesModule),
