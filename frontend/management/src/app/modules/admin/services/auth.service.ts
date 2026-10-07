@@ -128,8 +128,11 @@ export class AdminAuthService implements OnDestroy {
       (rt) => {
         this.refreshToken$.next(some(rt));
         this.refreshAccessToken()
-          .pipe(take(1))
-          .subscribe(() => this.initialized$.next(true));
+          .pipe(
+            take(1),
+            finalize(() => this.initialized$.next(true)),
+          )
+          .subscribe();
       },
       () => {
         this.initialized$.next(true);
